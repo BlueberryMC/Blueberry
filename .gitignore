@@ -1,0 +1,12 @@
+.idea/
+*.iml
+dependency-reduced-pom.xml
+/MagmaCube/
+/Blueberry/src/*
+/Blueberry/
+/Blueberry/target/
+target/
+/target/
+work/testClient/
+/logs/
+/Blueberry-Client

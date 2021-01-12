@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Wed, 13 Jan 2021 03:54:01 +0900
+Subject: [PATCH] POM Changes
+
+
+diff --git a/pom.xml b/pom.xml
+index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..8ef8a526b584c6093a75eb569c241f6df057969b 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -3,9 +3,11 @@
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+-        <artifactId>minecraft-parent</artifactId>
+-        <groupId>xyz.acrylicstyle.minecraft</groupId>
+-        <version>1.16.4</version>
++        <!-- Blueberry start -->
++        <artifactId>blueberry-parent</artifactId>
++        <groupId>net.blueberrymc</groupId>
++        <version>dev-SNAPSHOT</version>
++        <!-- Blueberry end -->
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+     
+@@ -14,10 +16,12 @@
+         <lwjgl.version>3.2.2</lwjgl.version>
+     </properties>
+ 
+-    <artifactId>minecraft</artifactId>
++    <!-- Blueberry start -->
++    <artifactId>blueberry</artifactId>
++    <version>1.16.4</version>
++    <!-- Blueberry end -->
+ 
+     <build>
+-        <finalName>Minecraft</finalName>
+         <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+@@ -59,6 +63,13 @@
+     </repositories>
+ 
+     <dependencies>
++        <!-- Blueberry start -->
++        <dependency>
++            <groupId>net.blueberrymc</groupId>
++            <artifactId>blueberry-api</artifactId>
++            <version>1.16.4</version>
++        </dependency>
++        <!-- Blueberry end -->
+         <dependency>
+             <groupId>com.google.code.findbugs</groupId>
+             <artifactId>jsr305</artifactId>

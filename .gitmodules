@@ -1,0 +1,3 @@
+[submodule "MagmaCube"]
+	path = MagmaCube
+	url = https://github.com/acrylic-style/MagmaCube
