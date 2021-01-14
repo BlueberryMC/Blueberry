@@ -1,0 +1,18 @@
+{
+  "gui.screens.mods": "Mods",
+  "gui.screens.mods.refresh": "Refresh",
+  "gui.screens.mods.enable": "Enable",
+  "gui.screens.mods.disable": "Disable",
+  "gui.screens.mods.config": "Config",
+  "gui.screens.mod_config.title": "Mod Config",
+  "gui.screens.mod_config.test.description": "This mod config is intended for playing with config GUI. Settings will not be saved.",
+  "gui.screens.mod_config.test.nest1": "Nest #1",
+  "gui.screens.mod_config.test.nest2": "Nest #2",
+  "gui.screens.mod_config.test.boolean": "Boolean type (true/false)",
+  "item.blueberry.3d": "3D",
+  "blueberry.mod.config.debugRenderer.title": "Debug Renderers",
+  "blueberry.mod.config.test.title": "Testing",
+  "multiplayer.compatible": "Compatible with client (%d mods present)",
+  "multiplayer.incompatible": "Incompatible with client (%d mods present)",
+  "multiplayer.vanilla": "Vanilla server"
+}

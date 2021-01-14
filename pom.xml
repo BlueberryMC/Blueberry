@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
     <version>dev-SNAPSHOT</version>
     <modules>
-        <module>blueberry</module>
-        <module>blueberry-api</module>
+        <module>Blueberry-Client</module>
+        <module>Blueberry-API</module>
     </modules>
     <name>Blueberry-Parent</name>
     <properties>

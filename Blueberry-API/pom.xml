@@ -10,12 +10,35 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>blueberry-api</artifactId>
-    <version>1.16.4</version>
+    <version>0.0.1</version>
     <name>Blueberry-API</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>xyz.acrylicstyle.minecraft</groupId>
+            <artifactId>minecraft</artifactId>
+            <version>1.16.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.26</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>18.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>8.0.1</version>
+        </dependency>
+    </dependencies>
 </project>

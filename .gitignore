@@ -2,11 +2,13 @@
 *.iml
 dependency-reduced-pom.xml
 /MagmaCube/
-/Blueberry/src/*
-/Blueberry/
-/Blueberry/target/
+/Blueberry-Client/src/*
+/Blueberry-Client/
+/Blueberry-Client/target/
 target/
 /target/
-work/testClient/
+/work/testClient/
+/work/testServer/
 /logs/
 /Blueberry-Client
+*.release[bB]ackup

@@ -1,0 +1,110 @@
+package net.blueberrymc.common.bml;
+
+import com.google.common.collect.ImmutableList;
+import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.config.ModDescriptionFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public interface ModLoader {
+    /**
+     * Returns the list of registered mods.
+     * @return mods list
+     */
+    @NotNull
+    List<BlueberryMod> getLoadedMods();
+
+    @NotNull
+    default List<BlueberryMod> getActiveMods() {
+        List<BlueberryMod> mods = new ArrayList<>();
+        getLoadedMods().forEach(mod -> {
+            if (mod.getStateList().getCurrentState() != ModState.UNLOADED) mods.add(mod);
+        });
+        return ImmutableList.copyOf(mods);
+    }
+
+    /**
+     * Try to find mods in the current directory and loads all loadable mods.
+     */
+    void loadMods();
+
+    /**
+     * Returns the current config directory.
+     * @return the config directory
+     */
+    @NotNull
+    File getConfigDir();
+
+    /**
+     * Returns the current mods directory.
+     * @return the mods directory
+     */
+    @NotNull
+    File getModsDir();
+
+    /**
+     * Load a mod from specific file.
+     * @param file the file
+     * @return the loaded mod
+     * @throws InvalidModException if this file is an invalid mod
+     */
+    @NotNull
+    BlueberryMod loadMod(@NotNull File file) throws InvalidModException;
+
+    /**
+     * Try to enable a mod that was been disabled.
+     * @param mod the mod to enable
+     */
+    void enableMod(@NotNull BlueberryMod mod);
+
+    /**
+     * Try to disable a mod.
+     * @param mod the mod to disable
+     */
+    void disableMod(@NotNull BlueberryMod mod);
+
+    /**
+     * Read mod description file from the file.
+     * @param file the file
+     * @return the mod description file
+     * @throws InvalidModDescriptionException if mod description file is corrupt
+     */
+    @NotNull
+    ModDescriptionFile getModDescription(@NotNull File file) throws InvalidModDescriptionException;
+
+    /**
+     * Try to register a mod.
+     * @deprecated internal or debug usage only
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @NotNull
+    @Deprecated
+    <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz) throws InvalidModException;
+
+    void callPreInit();
+
+    void callInit();
+
+    void callPostInit();
+
+    @SuppressWarnings("deprecation")
+    @Nullable
+    default InputStream getResourceAsStream(@NotNull String name) {
+        InputStream in = null;
+        for (BlueberryMod mod : this.getLoadedMods()) {
+            ModClassLoader cl = mod.getRawClassLoader();
+            if (cl != null) {
+                in = cl.getResourceAsStream(name);
+                if (in != null) break;
+            }
+            in = mod.getClass().getResourceAsStream(name);
+            if (in != null) break;
+        }
+        return in;
+    }
+}

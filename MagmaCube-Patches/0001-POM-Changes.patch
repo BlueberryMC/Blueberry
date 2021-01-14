@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..8ef8a526b584c6093a75eb569c241f6df057969b 100644
+index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58cca9657d2 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -23,7 +23,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..8ef8a526b584c6093a75eb569c241f6d
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -14,10 +16,12 @@
+@@ -14,10 +16,13 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
@@ -31,6 +31,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..8ef8a526b584c6093a75eb569c241f6d
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
 +    <version>1.16.4</version>
++    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
      <build>
@@ -38,7 +39,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..8ef8a526b584c6093a75eb569c241f6d
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -59,6 +63,13 @@
+@@ -59,6 +64,13 @@
      </repositories>
  
      <dependencies>
@@ -46,9 +47,44 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..8ef8a526b584c6093a75eb569c241f6d
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>1.16.4</version>
++            <version>0.0.1</version>
 +        </dependency>
 +        <!-- Blueberry end -->
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
+diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
+index 4d80e4054f8436bd8fd1af85a8121a70304a256f..5e2a6841cf2d3827c4b1370a60ab8d52c853c652 100644
+--- a/src/main/java/net/minecraft/client/ClientBrandRetriever.java
++++ b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
+@@ -2,6 +2,6 @@ package net.minecraft.client;
+ 
+ public class ClientBrandRetriever {
+    public static String getClientModName() {
+-      return "magmacube"; // MagmaCube > vanilla!
++      return "blueberry"; // Blueberry > // MagmaCube > vanilla!
+    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index cefe71ac531d5d5ab4fecdb25f8563cd3c8d47c2..1c43e24133df0987e4bad8796e98e1e3fc0e2c05 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -895,7 +895,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+    }
+ 
+    public String getServerModName() {
+-      return "vanilla";
++      return "blueberry"; // Blueberry > vanilla
+    }
+ 
+    public CrashReport fillReport(CrashReport crashReport) {
+@@ -1240,7 +1240,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+    }
+ 
+    public CompletableFuture<Void> reloadResources(Collection<String> collection) {
+-      CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(() -> (ImmutableList)collection.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()), this).thenCompose((immutableList) -> ServerResources.loadResources(immutableList, this.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED, this.getFunctionCompilationLevel(), this.executor, this)).thenAcceptAsync((serverResources) -> {
++      CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(() -> collection.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()), this).thenCompose((immutableList) -> ServerResources.loadResources(immutableList, this.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED, this.getFunctionCompilationLevel(), this.executor, this)).thenAcceptAsync((serverResources) -> { // Blueberry - decompile error
+          this.resources.close();
+          this.resources = serverResources;
+          this.packRepository.setSelected(collection);

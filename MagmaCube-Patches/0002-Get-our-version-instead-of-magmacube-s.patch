@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Thu, 14 Jan 2021 01:44:21 +0900
+Subject: [PATCH] Get our version instead of magmacube's
+
+
+diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
+index c16627f8c11309e0c576ca4829138eab3ae74463..c7205d2b4c5b21840f2f104a430f9fb91c065df9 100644
+--- a/src/main/java/net/minecraft/DetectedVersion.java
++++ b/src/main/java/net/minecraft/DetectedVersion.java
+@@ -24,7 +24,7 @@ public class DetectedVersion implements GameVersion {
+    private final int packVersion;
+    private final Date buildTime;
+    private final String releaseTarget;
+-   @javax.annotation.Nullable public final String magmaCubeVersion; // MagmaCube
++   @javax.annotation.Nullable public final String magmaCubeVersion = net.blueberrymc.common.util.Versioning.getVersion().getMagmaCubeCommit(); // MagmaCube // Blueberry
+ 
+    private DetectedVersion() {
+       this.id = UUID.randomUUID().toString().replaceAll("-", "");
+@@ -35,7 +35,7 @@ public class DetectedVersion implements GameVersion {
+       this.packVersion = 6;
+       this.buildTime = new Date();
+       this.releaseTarget = "1.16.4";
+-      this.magmaCubeVersion = "debug"; // MagmaCube
++      // this.magmaCubeVersion = "debug"; // MagmaCube // Blueberry
+    }
+ 
+    private DetectedVersion(JsonObject jsonObject) {
+@@ -47,7 +47,7 @@ public class DetectedVersion implements GameVersion {
+       this.protocolVersion = GsonHelper.getAsInt(jsonObject, "protocol_version");
+       this.packVersion = GsonHelper.getAsInt(jsonObject, "pack_version");
+       this.buildTime = Date.from(ZonedDateTime.parse(GsonHelper.getAsString(jsonObject, "build_time")).toInstant());
+-      this.magmaCubeVersion = jsonObject.has("magmacube_version") ? GsonHelper.getAsString(jsonObject, "magmacube_version") : "debug"; // MagmaCube
++      // this.magmaCubeVersion = jsonObject.has("magmacube_version") ? GsonHelper.getAsString(jsonObject, "magmacube_version") : "debug"; // MagmaCube // Blueberry
+    }
+ 
+    public static GameVersion tryDetectVersion() {
+diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
+index 4ced50fdc9cec839caa9b044fedfabbc714ac6d2..98366f9b6e540f63dfd2083ecda13daa0370f1af 100644
+--- a/src/main/java/net/minecraft/client/Minecraft.java
++++ b/src/main/java/net/minecraft/client/Minecraft.java
+@@ -664,7 +664,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+    }
+ 
+    public String getLaunchedVersion() {
+-      return this.launchedVersion;
++      return net.blueberrymc.common.util.Versioning.getVersion().getFullyQualifiedVersion(); // Blueberry
+    }
+ 
+    public String getVersionType() {

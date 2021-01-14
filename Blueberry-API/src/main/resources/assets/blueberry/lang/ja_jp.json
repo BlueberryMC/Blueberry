@@ -1,0 +1,13 @@
+{
+  "gui.screens.mods": "Mod 一覧",
+  "gui.screens.mods.refresh": "再読み込み",
+  "gui.screens.mods.enable": "有効化",
+  "gui.screens.mods.disable": "無効化",
+  "gui.screens.mods.config": "設定",
+  "gui.screens.mod_config.title": "Mod 設定",
+  "gui.screens.mod_config.test.description": "このMod 設定は設定GUIを試すためのものです。設定は保存されません。",
+  "gui.screens.mod_config.test.nest1": "グループ #1",
+  "gui.screens.mod_config.test.nest2": "グループ #2",
+  "gui.screens.mod_config.test.boolean": "ブール値 (true/false)",
+  "blueberry.mod.config.debugRenderer.title": "デバッグレンダラー"
+}

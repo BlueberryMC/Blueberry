@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="[Windows] Run Server" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="net.minecraft.server.Main" />
+    <module name="blueberry" />
+    <option name="PROGRAM_PARAMETERS" value="nogui" />
+    <option name="VM_PARAMETERS" value="-Dlog4j.configuration=log4j2.xml -Xmx4G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/work/testServer" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

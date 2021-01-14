@@ -1,0 +1,389 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Thu, 14 Jan 2021 01:44:46 +0900
+Subject: [PATCH] Mods support
+
+
+diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
+index be7b9f64269553712f5f3bef70989b7e08911e0f..45de7323427b147180b94d4268cbf9e0851de3d2 100644
+--- a/src/main/java/net/minecraft/CrashReport.java
++++ b/src/main/java/net/minecraft/CrashReport.java
+@@ -56,6 +56,24 @@ public class CrashReport {
+          List<String> list = (List)Util.getVmArguments().collect(Collectors.toList());
+          return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));
+       }));
++      // Blueberry start
++      this.systemDetails.setDetail("Blueberry Version", net.blueberrymc.common.util.Versioning.getVersion().getFullyQualifiedVersion());
++      this.systemDetails.setDetail("Mods", () -> {
++         StringBuilder sb = new StringBuilder("\n");
++         sb.append("      Status:\n");
++         sb.append("        L = Loaded\n");
++         sb.append("        P = Pre Init\n");
++         sb.append("        I = Init\n");
++         sb.append("        J = Post Init\n");
++         sb.append("        A = Available\n");
++         sb.append("        E = Errored\n");
++         sb.append("        U = Unloaded\n");
++         for (net.blueberrymc.common.bml.BlueberryMod mod : net.blueberrymc.common.Blueberry.getModLoader().getLoadedMods()) {
++            sb.append("      ").append(mod.getName()).append(" (").append(mod.getDescription().getModId()).append(") [").append(mod.getDescription().getVersion()).append("] - ").append(mod.getStateList().toString()).append("\n");
++         }
++         return sb.toString();
++      });
++      // Blueberry end
+    }
+ 
+    public String getTitle() {
+@@ -246,6 +264,6 @@ public class CrashReport {
+    }
+ 
+    public static void preload() {
+-      (new CrashReport("Don't panic!", new Throwable())).getFriendlyReport();
++      LOGGER.info((new CrashReport("Don't panic!", new Throwable())).getFriendlyReport()); // Blueberry
+    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
+index 98366f9b6e540f63dfd2083ecda13daa0370f1af..f6634445ba7ba7871452ae385700a6c8f4c3ab61 100644
+--- a/src/main/java/net/minecraft/client/Minecraft.java
++++ b/src/main/java/net/minecraft/client/Minecraft.java
+@@ -426,6 +426,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+       this.mainRenderTarget = new RenderTarget(this.window.getWidth(), this.window.getHeight(), true, ON_OSX);
+       this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+       this.resourceManager = new SimpleReloadableResourceManager(PackType.CLIENT_RESOURCES);
++      net.blueberrymc.common.Blueberry.getModLoader().callPreInit(); // Blueberry
+       this.resourcePackRepository.reload();
+       this.options.loadSelectedResourcePacks(this.resourcePackRepository);
+       this.languageManager = new LanguageManager(this.options.languageCode);
+@@ -494,6 +495,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+ 
+       LoadingOverlay.registerTextures(this);
+       List<PackResources> list = this.resourcePackRepository.openAllSelected();
++      net.blueberrymc.common.Blueberry.getModLoader().callInit(); // Blueberry
+       this.setOverlay(new LoadingOverlay(this, this.resourceManager.createFullReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
+             if (SharedConstants.IS_RUNNING_IN_IDE) {
+                this.selfTest();
+@@ -676,7 +678,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+    }
+ 
+    public static void crash(CrashReport crashReport) {
+-      File file = new File(getInstance().gameDirectory, "crash-reports");
++      File file = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
+       File file2 = new File(file, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
+       Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport());
+       if (crashReport.getSaveFile() != null) {
+diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
+index 14a5f0918a06d269223d4662b2d45631adca22b9..2239fdef3d5abe0cfa12b7dc729f93e2b673c9e9 100644
+--- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
++++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
+@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
+ import java.util.stream.Collectors;
+ import java.util.stream.Stream;
+ import javax.annotation.Nullable;
++import net.blueberrymc.common.Blueberry; // Blueberry
+ import net.minecraft.ChatFormatting;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.Util;
+@@ -336,6 +337,12 @@ public class DebugScreenOverlay extends GuiComponent {
+       long l3 = Runtime.getRuntime().freeMemory();
+       long l4 = l2 - l3;
+       List<String> list = Lists.newArrayList(new String[]{String.format("Java: %s %dbit", System.getProperty("java.version"), this.minecraft.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", l4 * 100L / l, bytesToMegabytes(l4), bytesToMegabytes(l)), String.format("Allocated: % 2d%% %03dMB", l2 * 100L / l, bytesToMegabytes(l2)), "", String.format("CPU: %s", GlUtil.getCpuInfo()), "", String.format("Display: %dx%d (%s)", Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), GlUtil.getVendor()), GlUtil.getRenderer(), GlUtil.getOpenGLVersion()});
++      // Blueberry start
++      list.add("");
++      list.add("MagmaCube " + Blueberry.getVersion().getMagmaCubeCommit());
++      list.add("Blueberry " + Blueberry.getVersion().getFullyQualifiedVersion());
++      list.add(Blueberry.getModLoader().getLoadedMods().size() + " mods loaded, " + Blueberry.getModLoader().getActiveMods().size() + " mods active");
++      // Blueberry end
+       if (this.minecraft.showOnlyReducedInfo()) {
+          return list;
+       } else {
+diff --git a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
+index ada09e458f4a7b36be27492139e504485b041055..11e29536d7c6b82552020eb86af90c0d3f560a98 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
++++ b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
+@@ -99,6 +99,7 @@ public class LoadingOverlay extends Overlay {
+       }
+ 
+       if (f2 >= 2.0F) {
++         net.blueberrymc.common.Blueberry.getModLoader().callPostInit(); // Blueberry
+          this.minecraft.setOverlay((Overlay)null);
+       }
+ 
+diff --git a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
+index 9d525ee42d903ec65bc5085beb0fed7300d1021b..927d290d1440bd20deae450160ba9dfe509a4443 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
++++ b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
+@@ -76,7 +76,7 @@ public class PauseScreen extends Screen {
+       if (!this.minecraft.isLocalServer()) {
+          button2.setMessage(new TranslatableComponent("menu.disconnect"));
+       }
+-
++      this.addButton(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
+    }
+ 
+    public void tick() {
+diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
+index fc9ddc6ef836797a921822c2e61e37c4407e3ea5..c575709dc011aca9d58e43887f7dc4fcc57d0fea 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
++++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
+@@ -132,7 +132,8 @@ public class TitleScreen extends Screen {
+          Screen screen = (Screen)(this.minecraft.options.skipMultiplayerWarning ? new JoinMultiplayerScreen(this) : new SafetyScreen(this));
+          this.minecraft.setScreen(screen);
+       }, onTooltip))).active = flag;
+-      (this.addButton(new Button(this.width / 2 - 100, i + i2 * 2, 200, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
++      (this.addButton(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
++      (this.addButton(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
+    }
+ 
+    private void createDemoMenuOptions(int i, int i2) {
+@@ -238,8 +239,10 @@ public class TitleScreen extends Screen {
+             s = s + I18n.get("menu.modded");
+          }
+ 
+-         drawString(poseStack, this.font, "MagmaCube " + ((net.minecraft.DetectedVersion) SharedConstants.getCurrentVersion()).magmaCubeVersion, 2, this.height - 20, 0xFFFFFF | i6); // MagmaCube
+-         drawString(poseStack, this.font, s, 2, this.height - 10, 16777215 | i6);
++         drawString(poseStack, this.font, "Blueberry " + net.blueberrymc.common.Blueberry.getVersion().getFullyQualifiedVersion(), 2, this.height - 40, 0xFFFFFF | i6); // Blueberry
++         drawString(poseStack, this.font, "MagmaCube " + ((net.minecraft.DetectedVersion) SharedConstants.getCurrentVersion()).magmaCubeVersion, 2, this.height - 30, 0xFFFFFF | i6); // MagmaCube // Blueberry - offset 20 -> 30
++         drawString(poseStack, this.font, s, 2, this.height - 20, 16777215 | i6); // Blueberry - offset 10 -> 20
++         drawString(poseStack, this.font, net.blueberrymc.common.Blueberry.getModLoader().getLoadedMods().size() + " mods loaded, " + net.blueberrymc.common.Blueberry.getModLoader().getActiveMods().size() + " mods active", 2, this.height - 10, 0xFFFFFF | i6); // Blueberry
+          drawString(poseStack, this.font, "Copyright Mojang AB. Do not distribute!", this.copyrightX, this.height - 10, 16777215 | i6);
+          if (i > this.copyrightX && i < this.copyrightX + this.copyrightWidth && i2 > this.height - 10 && i2 < this.height) {
+             fill(poseStack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | i6);
+diff --git a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
+index cdcf9795e6835d86f75ea495b1f47830b21b28c5..e76d229b58e6b23b836047ebbfb685972961b924 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
++++ b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
+@@ -273,6 +273,12 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
+          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+          this.minecraft.getTextureManager().bind(GuiComponent.GUI_ICONS_LOCATION);
+          GuiComponent.blit(poseStack, i3 + i4 - 15, i2, (float)(i10 * 10), (float)(176 + i11 * 8), 10, 8, 256, 256);
++         // Blueberry start
++         if (serverData.serverType != null) {
++            this.minecraft.getTextureManager().bind(net.blueberrymc.client.gui.BlueberryGuiComponents.GUI_ICONS_LOCATION);
++            GuiComponent.blit(poseStack, i3 + i4 - 18, i2 + 8, (float) 0.0F, (float) (serverData.serverType.getOffset() * 16), 16, 16, 256, 256);
++         }
++         // Blueberry end
+          String s = this.serverData.getIconB64();
+          if (!Objects.equals(s, this.lastIconB64)) {
+             if (this.uploadServerIcon(s)) {
+@@ -293,6 +299,12 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
+          int i20 = i7 - i2;
+          if (i19 >= i4 - 15 && i19 <= i4 - 5 && i20 >= 0 && i20 <= 8) {
+             this.screen.setToolTip(Collections.singletonList(component2));
++            // Blueberry start
++         } else if (serverData.serverType != null && i19 >= i4 - 18 && i19 <= i4 - 5 && i20 >= 0 && i20 <= 22) {
++            String text = serverData.serverType.getBlueberryText().getContents();
++            if (text.contains("%d")) text = String.format(text, serverData.modsCount);
++            this.screen.setToolTip(Collections.singletonList(new TextComponent(text)));
++            // Blueberry end
+          } else if (i19 >= i4 - i9 - 15 - 2 && i19 <= i4 - 15 - 2 && i20 >= 0 && i20 <= 8) {
+             this.screen.setToolTip(list2);
+          }
+diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
+index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..4d95bd6940d7b08d4cc04081860bce9d026eb212 100644
+--- a/src/main/java/net/minecraft/client/main/Main.java
++++ b/src/main/java/net/minecraft/client/main/Main.java
+@@ -37,6 +37,7 @@ public class Main {
+    // MagmaCube start - decompile error
+    public static void main(String[] args) {
+       if (net.minecraft.SharedConstants.IS_RUNNING_IN_IDE) org.lwjgl.glfw.GLFW.glfwInit(); // MagmaCube - lwjgl debug agent causes glGetError to crash when we didn't call glfwInit
++      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT); // Blueberry
+       OptionParser optionparser = new OptionParser();
+       optionparser.allowsUnrecognizedOptions();
+       optionparser.accepts("demo");
+diff --git a/src/main/java/net/minecraft/client/multiplayer/ServerData.java b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
+index 35658fbbbcf466e1cebdd151d0c3ed998ada23d6..055bf341241f681ce899e1bf79c3c5575c8df0a6 100644
+--- a/src/main/java/net/minecraft/client/multiplayer/ServerData.java
++++ b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
+@@ -23,6 +23,8 @@ public class ServerData {
+    @Nullable
+    private String iconB64;
+    private boolean lan;
++   public net.blueberrymc.common.network.ServerType serverType = null; // Blueberry
++   public int modsCount = 0; // Blueberry
+ 
+    public ServerData(String s, String s2, boolean flag) {
+       this.name = s;
+diff --git a/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java b/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java
+index be7aeb31fa0ea4fb4d0020107cfb306279fe6579..6b464011872c5639f3e313b0542676b40d7ea9a4 100644
+--- a/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java
++++ b/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java
+@@ -65,6 +65,7 @@ public class ServerStatusPinger {
+                connection.disconnect(new TranslatableComponent("multiplayer.status.unrequested"));
+             } else {
+                this.receivedPing = true;
++               serverData.serverType = net.blueberrymc.common.network.ServerType.VANILLA; // Blueberry
+                ServerStatus serverStatus = clientboundStatusResponsePacket.getStatus();
+                if (serverStatus.getDescription() != null) {
+                   serverData.motd = serverStatus.getDescription();
+@@ -126,6 +127,19 @@ public class ServerStatusPinger {
+             connection.disconnect(new TranslatableComponent("multiplayer.status.finished"));
+          }
+ 
++         // Blueberry start
++         @Override
++         public void handleBlueberryHandshakeResponse(net.blueberrymc.common.network.ClientboundBlueberryHandshakePacket packet) {
++            boolean compatible = net.blueberrymc.common.util.ListUtils.isCompatible(packet.getModInfos(), net.blueberrymc.common.Blueberry.getModManager().getModInfos());
++            if (compatible) {
++               serverData.serverType = net.blueberrymc.common.network.ServerType.BLUEBERRY_GOOD;
++            } else {
++               serverData.serverType = net.blueberrymc.common.network.ServerType.BLUEBERRY_BAD;
++            }
++            serverData.modsCount = packet.getModInfos().size();
++         }
++         // Blueberry end
++
+          public void onDisconnect(Component component) {
+             if (!this.success) {
+                ServerStatusPinger.LOGGER.error("Can't ping {}: {}", serverData.ip, component.getString());
+diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
+index 370533063dbc1c5949cbc5dae1a272647e54b19f..c8f834f3108579c8411899c5787751401b08c6d6 100644
+--- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
++++ b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
+@@ -71,6 +71,7 @@ public class ClientPackSource implements RepositorySource {
+       if (pack2 != null) {
+          consumer.accept(pack2);
+       }
++      net.blueberrymc.common.Blueberry.getModManager().loadPacks(consumer, packConstructor); // Blueberry
+ 
+    }
+ 
+diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
+index e3abd92466e682b3393e100426fe47746edb1925..7563e944af6c51bc22e26cfba8fc6dac0544b2f8 100644
+--- a/src/main/java/net/minecraft/commands/Commands.java
++++ b/src/main/java/net/minecraft/commands/Commands.java
+@@ -164,6 +164,7 @@ public class Commands {
+       WeatherCommand.register(this.dispatcher);
+       WorldBorderCommand.register(this.dispatcher);
+       if (SharedConstants.IS_RUNNING_IN_IDE) {
++         net.blueberrymc.common.commands.BlueberryTestCommand.register(dispatcher); // Blueberry
+          TestCommand.register(this.dispatcher);
+       }
+ 
+diff --git a/src/main/java/net/minecraft/network/ConnectionProtocol.java b/src/main/java/net/minecraft/network/ConnectionProtocol.java
+index 971ed313199c15de7d507791d84e31788820d300..66b866edf7ec1415e148cf7ff0f54d767aff9507 100644
+--- a/src/main/java/net/minecraft/network/ConnectionProtocol.java
++++ b/src/main/java/net/minecraft/network/ConnectionProtocol.java
+@@ -164,7 +164,7 @@ import org.apache.logging.log4j.LogManager;
+ public enum ConnectionProtocol {
+    HANDSHAKING(-1, protocol().addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ClientIntentionPacket.class, ClientIntentionPacket::new))),
+    PLAY(0, protocol().addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ClientboundAddEntityPacket.class, ClientboundAddEntityPacket::new).addPacket(ClientboundAddExperienceOrbPacket.class, ClientboundAddExperienceOrbPacket::new).addPacket(ClientboundAddMobPacket.class, ClientboundAddMobPacket::new).addPacket(ClientboundAddPaintingPacket.class, ClientboundAddPaintingPacket::new).addPacket(ClientboundAddPlayerPacket.class, ClientboundAddPlayerPacket::new).addPacket(ClientboundAnimatePacket.class, ClientboundAnimatePacket::new).addPacket(ClientboundAwardStatsPacket.class, ClientboundAwardStatsPacket::new).addPacket(ClientboundBlockBreakAckPacket.class, ClientboundBlockBreakAckPacket::new).addPacket(ClientboundBlockDestructionPacket.class, ClientboundBlockDestructionPacket::new).addPacket(ClientboundBlockEntityDataPacket.class, ClientboundBlockEntityDataPacket::new).addPacket(ClientboundBlockEventPacket.class, ClientboundBlockEventPacket::new).addPacket(ClientboundBlockUpdatePacket.class, ClientboundBlockUpdatePacket::new).addPacket(ClientboundBossEventPacket.class, ClientboundBossEventPacket::new).addPacket(ClientboundChangeDifficultyPacket.class, ClientboundChangeDifficultyPacket::new).addPacket(ClientboundChatPacket.class, ClientboundChatPacket::new).addPacket(ClientboundCommandSuggestionsPacket.class, ClientboundCommandSuggestionsPacket::new).addPacket(ClientboundCommandsPacket.class, ClientboundCommandsPacket::new).addPacket(ClientboundContainerAckPacket.class, ClientboundContainerAckPacket::new).addPacket(ClientboundContainerClosePacket.class, ClientboundContainerClosePacket::new).addPacket(ClientboundContainerSetContentPacket.class, ClientboundContainerSetContentPacket::new).addPacket(ClientboundContainerSetDataPacket.class, ClientboundContainerSetDataPacket::new).addPacket(ClientboundContainerSetSlotPacket.class, ClientboundContainerSetSlotPacket::new).addPacket(ClientboundCooldownPacket.class, ClientboundCooldownPacket::new).addPacket(ClientboundCustomPayloadPacket.class, ClientboundCustomPayloadPacket::new).addPacket(ClientboundCustomSoundPacket.class, ClientboundCustomSoundPacket::new).addPacket(ClientboundDisconnectPacket.class, ClientboundDisconnectPacket::new).addPacket(ClientboundEntityEventPacket.class, ClientboundEntityEventPacket::new).addPacket(ClientboundExplodePacket.class, ClientboundExplodePacket::new).addPacket(ClientboundForgetLevelChunkPacket.class, ClientboundForgetLevelChunkPacket::new).addPacket(ClientboundGameEventPacket.class, ClientboundGameEventPacket::new).addPacket(ClientboundHorseScreenOpenPacket.class, ClientboundHorseScreenOpenPacket::new).addPacket(ClientboundKeepAlivePacket.class, ClientboundKeepAlivePacket::new).addPacket(ClientboundLevelChunkPacket.class, ClientboundLevelChunkPacket::new).addPacket(ClientboundLevelEventPacket.class, ClientboundLevelEventPacket::new).addPacket(ClientboundLevelParticlesPacket.class, ClientboundLevelParticlesPacket::new).addPacket(ClientboundLightUpdatePacket.class, ClientboundLightUpdatePacket::new).addPacket(ClientboundLoginPacket.class, ClientboundLoginPacket::new).addPacket(ClientboundMapItemDataPacket.class, ClientboundMapItemDataPacket::new).addPacket(ClientboundMerchantOffersPacket.class, ClientboundMerchantOffersPacket::new).addPacket(ClientboundMoveEntityPacket.Pos.class, ClientboundMoveEntityPacket.Pos::new).addPacket(ClientboundMoveEntityPacket.PosRot.class, ClientboundMoveEntityPacket.PosRot::new).addPacket(ClientboundMoveEntityPacket.Rot.class, ClientboundMoveEntityPacket.Rot::new).addPacket(ClientboundMoveEntityPacket.class, ClientboundMoveEntityPacket::new).addPacket(ClientboundMoveVehiclePacket.class, ClientboundMoveVehiclePacket::new).addPacket(ClientboundOpenBookPacket.class, ClientboundOpenBookPacket::new).addPacket(ClientboundOpenScreenPacket.class, ClientboundOpenScreenPacket::new).addPacket(ClientboundOpenSignEditorPacket.class, ClientboundOpenSignEditorPacket::new).addPacket(ClientboundPlaceGhostRecipePacket.class, ClientboundPlaceGhostRecipePacket::new).addPacket(ClientboundPlayerAbilitiesPacket.class, ClientboundPlayerAbilitiesPacket::new).addPacket(ClientboundPlayerCombatPacket.class, ClientboundPlayerCombatPacket::new).addPacket(ClientboundPlayerInfoPacket.class, ClientboundPlayerInfoPacket::new).addPacket(ClientboundPlayerLookAtPacket.class, ClientboundPlayerLookAtPacket::new).addPacket(ClientboundPlayerPositionPacket.class, ClientboundPlayerPositionPacket::new).addPacket(ClientboundRecipePacket.class, ClientboundRecipePacket::new).addPacket(ClientboundRemoveEntitiesPacket.class, ClientboundRemoveEntitiesPacket::new).addPacket(ClientboundRemoveMobEffectPacket.class, ClientboundRemoveMobEffectPacket::new).addPacket(ClientboundResourcePackPacket.class, ClientboundResourcePackPacket::new).addPacket(ClientboundRespawnPacket.class, ClientboundRespawnPacket::new).addPacket(ClientboundRotateHeadPacket.class, ClientboundRotateHeadPacket::new).addPacket(ClientboundSectionBlocksUpdatePacket.class, ClientboundSectionBlocksUpdatePacket::new).addPacket(ClientboundSelectAdvancementsTabPacket.class, ClientboundSelectAdvancementsTabPacket::new).addPacket(ClientboundSetBorderPacket.class, ClientboundSetBorderPacket::new).addPacket(ClientboundSetCameraPacket.class, ClientboundSetCameraPacket::new).addPacket(ClientboundSetCarriedItemPacket.class, ClientboundSetCarriedItemPacket::new).addPacket(ClientboundSetChunkCacheCenterPacket.class, ClientboundSetChunkCacheCenterPacket::new).addPacket(ClientboundSetChunkCacheRadiusPacket.class, ClientboundSetChunkCacheRadiusPacket::new).addPacket(ClientboundSetDefaultSpawnPositionPacket.class, ClientboundSetDefaultSpawnPositionPacket::new).addPacket(ClientboundSetDisplayObjectivePacket.class, ClientboundSetDisplayObjectivePacket::new).addPacket(ClientboundSetEntityDataPacket.class, ClientboundSetEntityDataPacket::new).addPacket(ClientboundSetEntityLinkPacket.class, ClientboundSetEntityLinkPacket::new).addPacket(ClientboundSetEntityMotionPacket.class, ClientboundSetEntityMotionPacket::new).addPacket(ClientboundSetEquipmentPacket.class, ClientboundSetEquipmentPacket::new).addPacket(ClientboundSetExperiencePacket.class, ClientboundSetExperiencePacket::new).addPacket(ClientboundSetHealthPacket.class, ClientboundSetHealthPacket::new).addPacket(ClientboundSetObjectivePacket.class, ClientboundSetObjectivePacket::new).addPacket(ClientboundSetPassengersPacket.class, ClientboundSetPassengersPacket::new).addPacket(ClientboundSetPlayerTeamPacket.class, ClientboundSetPlayerTeamPacket::new).addPacket(ClientboundSetScorePacket.class, ClientboundSetScorePacket::new).addPacket(ClientboundSetTimePacket.class, ClientboundSetTimePacket::new).addPacket(ClientboundSetTitlesPacket.class, ClientboundSetTitlesPacket::new).addPacket(ClientboundSoundEntityPacket.class, ClientboundSoundEntityPacket::new).addPacket(ClientboundSoundPacket.class, ClientboundSoundPacket::new).addPacket(ClientboundStopSoundPacket.class, ClientboundStopSoundPacket::new).addPacket(ClientboundTabListPacket.class, ClientboundTabListPacket::new).addPacket(ClientboundTagQueryPacket.class, ClientboundTagQueryPacket::new).addPacket(ClientboundTakeItemEntityPacket.class, ClientboundTakeItemEntityPacket::new).addPacket(ClientboundTeleportEntityPacket.class, ClientboundTeleportEntityPacket::new).addPacket(ClientboundUpdateAdvancementsPacket.class, ClientboundUpdateAdvancementsPacket::new).addPacket(ClientboundUpdateAttributesPacket.class, ClientboundUpdateAttributesPacket::new).addPacket(ClientboundUpdateMobEffectPacket.class, ClientboundUpdateMobEffectPacket::new).addPacket(ClientboundUpdateRecipesPacket.class, ClientboundUpdateRecipesPacket::new).addPacket(ClientboundUpdateTagsPacket.class, ClientboundUpdateTagsPacket::new)).addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ServerboundAcceptTeleportationPacket.class, ServerboundAcceptTeleportationPacket::new).addPacket(ServerboundBlockEntityTagQuery.class, ServerboundBlockEntityTagQuery::new).addPacket(ServerboundChangeDifficultyPacket.class, ServerboundChangeDifficultyPacket::new).addPacket(ServerboundChatPacket.class, ServerboundChatPacket::new).addPacket(ServerboundClientCommandPacket.class, ServerboundClientCommandPacket::new).addPacket(ServerboundClientInformationPacket.class, ServerboundClientInformationPacket::new).addPacket(ServerboundCommandSuggestionPacket.class, ServerboundCommandSuggestionPacket::new).addPacket(ServerboundContainerAckPacket.class, ServerboundContainerAckPacket::new).addPacket(ServerboundContainerButtonClickPacket.class, ServerboundContainerButtonClickPacket::new).addPacket(ServerboundContainerClickPacket.class, ServerboundContainerClickPacket::new).addPacket(ServerboundContainerClosePacket.class, ServerboundContainerClosePacket::new).addPacket(ServerboundCustomPayloadPacket.class, ServerboundCustomPayloadPacket::new).addPacket(ServerboundEditBookPacket.class, ServerboundEditBookPacket::new).addPacket(ServerboundEntityTagQuery.class, ServerboundEntityTagQuery::new).addPacket(ServerboundInteractPacket.class, ServerboundInteractPacket::new).addPacket(ServerboundJigsawGeneratePacket.class, ServerboundJigsawGeneratePacket::new).addPacket(ServerboundKeepAlivePacket.class, ServerboundKeepAlivePacket::new).addPacket(ServerboundLockDifficultyPacket.class, ServerboundLockDifficultyPacket::new).addPacket(ServerboundMovePlayerPacket.Pos.class, ServerboundMovePlayerPacket.Pos::new).addPacket(ServerboundMovePlayerPacket.PosRot.class, ServerboundMovePlayerPacket.PosRot::new).addPacket(ServerboundMovePlayerPacket.Rot.class, ServerboundMovePlayerPacket.Rot::new).addPacket(ServerboundMovePlayerPacket.class, ServerboundMovePlayerPacket::new).addPacket(ServerboundMoveVehiclePacket.class, ServerboundMoveVehiclePacket::new).addPacket(ServerboundPaddleBoatPacket.class, ServerboundPaddleBoatPacket::new).addPacket(ServerboundPickItemPacket.class, ServerboundPickItemPacket::new).addPacket(ServerboundPlaceRecipePacket.class, ServerboundPlaceRecipePacket::new).addPacket(ServerboundPlayerAbilitiesPacket.class, ServerboundPlayerAbilitiesPacket::new).addPacket(ServerboundPlayerActionPacket.class, ServerboundPlayerActionPacket::new).addPacket(ServerboundPlayerCommandPacket.class, ServerboundPlayerCommandPacket::new).addPacket(ServerboundPlayerInputPacket.class, ServerboundPlayerInputPacket::new).addPacket(ServerboundRecipeBookChangeSettingsPacket.class, ServerboundRecipeBookChangeSettingsPacket::new).addPacket(ServerboundRecipeBookSeenRecipePacket.class, ServerboundRecipeBookSeenRecipePacket::new).addPacket(ServerboundRenameItemPacket.class, ServerboundRenameItemPacket::new).addPacket(ServerboundResourcePackPacket.class, ServerboundResourcePackPacket::new).addPacket(ServerboundSeenAdvancementsPacket.class, ServerboundSeenAdvancementsPacket::new).addPacket(ServerboundSelectTradePacket.class, ServerboundSelectTradePacket::new).addPacket(ServerboundSetBeaconPacket.class, ServerboundSetBeaconPacket::new).addPacket(ServerboundSetCarriedItemPacket.class, ServerboundSetCarriedItemPacket::new).addPacket(ServerboundSetCommandBlockPacket.class, ServerboundSetCommandBlockPacket::new).addPacket(ServerboundSetCommandMinecartPacket.class, ServerboundSetCommandMinecartPacket::new).addPacket(ServerboundSetCreativeModeSlotPacket.class, ServerboundSetCreativeModeSlotPacket::new).addPacket(ServerboundSetJigsawBlockPacket.class, ServerboundSetJigsawBlockPacket::new).addPacket(ServerboundSetStructureBlockPacket.class, ServerboundSetStructureBlockPacket::new).addPacket(ServerboundSignUpdatePacket.class, ServerboundSignUpdatePacket::new).addPacket(ServerboundSwingPacket.class, ServerboundSwingPacket::new).addPacket(ServerboundTeleportToEntityPacket.class, ServerboundTeleportToEntityPacket::new).addPacket(ServerboundUseItemOnPacket.class, ServerboundUseItemOnPacket::new).addPacket(ServerboundUseItemPacket.class, ServerboundUseItemPacket::new))),
+-   STATUS(1, protocol().addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ServerboundStatusRequestPacket.class, ServerboundStatusRequestPacket::new).addPacket(ServerboundPingRequestPacket.class, ServerboundPingRequestPacket::new)).addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ClientboundStatusResponsePacket.class, ClientboundStatusResponsePacket::new).addPacket(ClientboundPongResponsePacket.class, ClientboundPongResponsePacket::new))),
++   STATUS(1, protocol().addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ServerboundStatusRequestPacket.class, ServerboundStatusRequestPacket::new).addPacket(ServerboundPingRequestPacket.class, ServerboundPingRequestPacket::new)).addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ClientboundStatusResponsePacket.class, ClientboundStatusResponsePacket::new).addPacket(ClientboundPongResponsePacket.class, ClientboundPongResponsePacket::new).addPacket(net.blueberrymc.common.network.ClientboundBlueberryHandshakePacket.class, net.blueberrymc.common.network.ClientboundBlueberryHandshakePacket::new))), // Blueberry
+    LOGIN(2, protocol().addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ClientboundLoginDisconnectPacket.class, ClientboundLoginDisconnectPacket::new).addPacket(ClientboundHelloPacket.class, ClientboundHelloPacket::new).addPacket(ClientboundGameProfilePacket.class, ClientboundGameProfilePacket::new).addPacket(ClientboundLoginCompressionPacket.class, ClientboundLoginCompressionPacket::new).addPacket(ClientboundCustomQueryPacket.class, ClientboundCustomQueryPacket::new)).addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet()).addPacket(ServerboundHelloPacket.class, ServerboundHelloPacket::new).addPacket(ServerboundKeyPacket.class, ServerboundKeyPacket::new).addPacket(ServerboundCustomQueryPacket.class, ServerboundCustomQueryPacket::new)));
+ 
+    private static final ConnectionProtocol[] LOOKUP = new ConnectionProtocol[4];
+diff --git a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java b/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
+index 13602ef3920c0b2521a512ca01769568391b927a..11592adc6fe35c0666797402e6982d2c8b76741e 100644
+--- a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
++++ b/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
+@@ -2,7 +2,7 @@ package net.minecraft.network.protocol.status;
+ 
+ import net.minecraft.network.PacketListener;
+ 
+-public interface ClientStatusPacketListener extends PacketListener {
++public interface ClientStatusPacketListener extends PacketListener, net.blueberrymc.common.network.ClientBlueberryPacketListener { // Blueberry
+    void handleStatusResponse(ClientboundStatusResponsePacket var1);
+ 
+    void handlePongResponse(ClientboundPongResponsePacket var1);
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 0bc723f0ce400081616179420f6c8f0b3b29a5fb..e3cfcbfbb9c5e9babd42332923cdc0905132d515 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -55,6 +55,7 @@ public class Main {
+    private static final Logger LOGGER = LogManager.getLogger();
+ 
+    public static void main(String[] strings) {
++      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER); // Blueberry
+       OptionParser optionParser = new OptionParser();
+       OptionSpec<Void> optionSpec = optionParser.accepts("nogui");
+       OptionSpec<Void> optionSpec2 = optionParser.accepts("initSettings", "Initializes 'server.properties' and 'eula.txt', then quits");
+@@ -153,6 +154,7 @@ public class Main {
+          final DedicatedServer dedicatedServer = MinecraftServer.spin((threadx) -> {
+             // MagmaCube start - decompile error
+             DedicatedServer dedicatedServerx = new DedicatedServer(threadx, registryHolder, levelStorageAccess, packRepository, serverResources, worldData2, dedicatedServerSettings, DataFixers.getDataFixer(), minecraftSessionService, gameProfileRepository, gameProfileCache, LoggerChunkProgressListener::new);
++            ((net.blueberrymc.server.BlueberryServer) net.blueberrymc.common.Blueberry.getUtil()).setServer(dedicatedServerx); // Blueberry
+             dedicatedServerx.setSingleplayerName((String)optionSet.valueOf(optionSpec9));
+             dedicatedServerx.setPort(optionSet.valueOf(optionSpec12));
+             dedicatedServerx.setDemo(optionSet.has(optionSpec3));
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 1c43e24133df0987e4bad8796e98e1e3fc0e2c05..24883e4ccc2b5958945ac2e43226f3bf7f761195 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -238,6 +238,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+       this.proxy = proxy;
+       this.packRepository = packRepository;
+       this.resources = serverResources;
++      if (net.blueberrymc.common.Blueberry.isServer()) net.blueberrymc.common.Blueberry.getModLoader().callPreInit(); // Blueberry
+       this.sessionService = minecraftSessionService;
+       this.profileRepository = gameProfileRepository;
+       this.profileCache = gameProfileCache;
+@@ -250,6 +251,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+       this.structureManager = new StructureManager(serverResources.getResourceManager(), levelStorageAccess, dataFixer);
+       this.serverThread = thread;
+       this.executor = Util.backgroundExecutor();
++      if (net.blueberrymc.common.Blueberry.isServer()) net.blueberrymc.common.Blueberry.getModLoader().callInit(); // Blueberry
+    }
+ 
+    private void readScoreboard(DimensionDataStorage dimensionDataStorage) {
+@@ -605,6 +607,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             this.status.setDescription(new TextComponent(this.motd));
+             this.status.setVersion(new ServerStatus.Version(SharedConstants.getCurrentVersion().getName(), SharedConstants.getCurrentVersion().getProtocolVersion()));
+             this.updateStatusIcon(this.status);
++            if (net.blueberrymc.common.Blueberry.isServer()) net.blueberrymc.common.Blueberry.getModLoader().callPostInit(); // Blueberry
+ 
+             while(this.running) {
+                long l = Util.getMillis() - this.nextTickTime;
+diff --git a/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
+index 73df4b61da787635e4a52f963f3576ae15fe51ca..565902bfd519aa0899d71fcb34195265c5db7dee 100644
+--- a/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
+@@ -34,6 +34,7 @@ public class ServerStatusPacketListenerImpl implements ServerStatusPacketListene
+       } else {
+          this.hasRequestedStatus = true;
+          this.connection.send(new ClientboundStatusResponsePacket(this.server.getStatus()));
++         this.connection.send(new net.blueberrymc.common.network.ClientboundBlueberryHandshakePacket(net.blueberrymc.common.Blueberry.getModManager().getModInfos())); // Blueberry
+       }
+    }
+ 
+diff --git a/src/main/resources/log4j2-debug.xml b/src/main/resources/log4j2-debug.xml
+index aea01980678d1a4f74982b0c08f42456d557b124..cabc65a1a5255cb445e4e2ac59f83b759eea9979 100644
+--- a/src/main/resources/log4j2-debug.xml
++++ b/src/main/resources/log4j2-debug.xml
+@@ -2,13 +2,13 @@
+ <Configuration status="WARN" packages="com.mojang.util">
+     <Appenders>
+         <Console name="SysOut" target="SYSTEM_OUT">
+-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n" />
++            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%c]: %msg%n" />
+         </Console>
+         <Queue name="ServerGuiConsole">
+-            <PatternLayout pattern="[%d{HH:mm:ss} %level]: %msg%n" />
++            <PatternLayout pattern="[%d{HH:mm:ss} %level] [%c]: %msg%n" />
+         </Queue>
+         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n" />
++            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%c]: %msg%n" />
+             <Policies>
+                 <TimeBasedTriggeringPolicy />
+                 <OnStartupTriggeringPolicy />
+diff --git a/src/main/resources/log4j2.xml b/src/main/resources/log4j2.xml
+index 4d156f225141165e5dca26becdde59f089e98649..a37eb8ec516cb291c30269eabdda1bbee0aa07f0 100644
+--- a/src/main/resources/log4j2.xml
++++ b/src/main/resources/log4j2.xml
+@@ -2,13 +2,13 @@
+ <Configuration status="WARN" packages="com.mojang.util">
+     <Appenders>
+         <Console name="SysOut" target="SYSTEM_OUT">
+-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n" />
++            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%c]: %msg%n" />
+         </Console>
+         <Queue name="ServerGuiConsole">
+-            <PatternLayout pattern="[%d{HH:mm:ss} %level]: %msg%n" />
++            <PatternLayout pattern="[%d{HH:mm:ss} %level] [%c]: %msg%n" />
+         </Queue>
+         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n" />
++            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%c]: %msg%n" />
+             <Policies>
+                 <TimeBasedTriggeringPolicy />
+                 <OnStartupTriggeringPolicy />
