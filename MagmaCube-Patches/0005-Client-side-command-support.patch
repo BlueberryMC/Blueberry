@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Fri, 15 Jan 2021 19:48:53 +0900
+Subject: [PATCH] Client-side command support
+
+
+diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
+index 6e741774a491786c3700dc3a4b3bfc249f5eb60c..d3eea213798a3c647e4ee745b7af550e4479e8bf 100644
+--- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
++++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
+@@ -261,6 +261,7 @@ public class LocalPlayer extends AbstractClientPlayer {
+    }
+ 
+    public void chat(String s) {
++      if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.createCommandSourceStack(), s); // Blueberry
+       this.connection.send(new ServerboundChatPacket(s));
+    }
+ 
