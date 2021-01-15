@@ -4,6 +4,10 @@
 
 Open-source modding API for Minecraft
 
+## Why?
+- Faster update (since it uses mojang mapping, no need to make our mapping)
+- Deobfuscated code (classes, fields, methods)
+
 ## Important Warning
 **Blueberry is a very small project.**
 While I try to make this project bigger, there's literally almost no API for now.

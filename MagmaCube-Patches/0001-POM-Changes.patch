@@ -14,7 +14,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58c
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>1.16.4</version>
+-        <version>1.16.5</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +30,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58c
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.16.4</version>
++    <version>1.16.5</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -47,7 +47,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58c
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.1</version>
++            <version>0.0.2</version>
 +        </dependency>
 +        <!-- Blueberry end -->
          <dependency>

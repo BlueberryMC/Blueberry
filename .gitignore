@@ -9,6 +9,7 @@ target/
 /target/
 /work/testClient/
 /work/testServer/
+/work/mcdev/
 /logs/
 /Blueberry-Client
 *.release[bB]ackup
