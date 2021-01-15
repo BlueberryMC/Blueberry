@@ -94,6 +94,7 @@ public class Blueberry {
             net.minecraft.client.Minecraft.crash(crashReport);
         } else {
             File file = new File(new File("crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
+            LOGGER.error(crashReport.getFriendlyReport());
             if (crashReport.saveToFile(file)) {
                 LOGGER.error("This crash report has been saved to: {}", file.getAbsolutePath());
             } else {

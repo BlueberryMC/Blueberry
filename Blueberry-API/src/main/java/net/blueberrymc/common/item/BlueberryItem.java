@@ -13,7 +13,7 @@ public abstract class BlueberryItem extends Item {
         this.mod = mod;
     }
 
-    public BlueberryMod getMod() {
+    public final BlueberryMod getMod() {
         return mod;
     }
 

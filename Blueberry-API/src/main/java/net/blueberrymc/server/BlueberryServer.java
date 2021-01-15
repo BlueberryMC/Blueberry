@@ -14,7 +14,7 @@ public class BlueberryServer implements BlueberryUtil {
     }
 
     private MinecraftServer server = null;
-    public void setServer(MinecraftServer minecraftServer) {
+    public void setServer(@NotNull MinecraftServer minecraftServer) {
         if (this.server != null) throw new IllegalArgumentException("Cannot redefine MinecraftServer");
         this.server = minecraftServer;
     }
