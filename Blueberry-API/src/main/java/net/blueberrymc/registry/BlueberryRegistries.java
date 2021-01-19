@@ -1,5 +1,6 @@
 package net.blueberrymc.registry;
 
+import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -39,7 +40,7 @@ public final class BlueberryRegistries<T> {
     }
 
     public void register(@NotNull String namespace, @NotNull String id, @NotNull T object) {
-        //if (has(namespace, id)) return;
+        //if (has(namespace, id)) return; // TODO: figure out why it returns true even if it's not yet registered
         register(new ResourceLocation(namespace, id), object);
     }
 
@@ -53,6 +54,15 @@ public final class BlueberryRegistries<T> {
         return get(new ResourceLocation(namespace, id));
     }
 
+    public int getId(@NotNull T t) {
+        return registry.getId(t);
+    }
+
+    @Nullable
+    public T byId(int id) {
+        return registry.byId(id);
+    }
+
     public boolean has(@NotNull ResourceLocation location) {
         return get(location) != null;
     }
@@ -62,6 +72,8 @@ public final class BlueberryRegistries<T> {
     }
 
     public void register(@NotNull ResourceLocation location, @NotNull T object) {
+        Preconditions.checkNotNull(location, "ResourceLocation cannot be null");
+        Preconditions.checkNotNull(object, "value cannot be null");
         LOGGER.info("Registering " + object.getClass().getSimpleName() + ": " + location);
         if (object instanceof BlockItem) {
             ((BlockItem) object).registerBlocks(Item.BY_BLOCK, (Item) object);
