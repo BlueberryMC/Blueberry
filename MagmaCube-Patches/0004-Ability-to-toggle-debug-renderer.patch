@@ -5,10 +5,10 @@ Subject: [PATCH] Ability to toggle debug renderer
 
 
 diff --git a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
-index de88c21cdb5e679c9513c9eb46c36aec637a7347..8b93721e0205d224c95fcab0fb31e04454d504a4 100644
+index 8fc43ce6900994ddcba1da67e9e64afb10f53890..2a5c3bb55eda24c960e3071d8cbde97dbf417f49 100644
 --- a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
-@@ -21,6 +21,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
+@@ -22,6 +22,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.EntityHitResult;
  import net.minecraft.world.phys.Vec3;
@@ -16,7 +16,7 @@ index de88c21cdb5e679c9513c9eb46c36aec637a7347..8b93721e0205d224c95fcab0fb31e044
  
  public class DebugRenderer {
     public final PathfindingRenderer pathfindingRenderer = new PathfindingRenderer();
-@@ -91,29 +92,26 @@ public class DebugRenderer {
+@@ -95,29 +96,26 @@ public class DebugRenderer {
  
     public void render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, double d, double d2, double d3) {
        if (this.renderChunkborder && !Minecraft.getInstance().showOnlyReducedInfo()) {

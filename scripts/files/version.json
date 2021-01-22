@@ -127,4 +127,4 @@
   },
   "mainClass": "net.minecraft.client.main.Main",
   "minimumLauncherVersion": 21,
-  "type": "release",
+  "type": "snapshot",

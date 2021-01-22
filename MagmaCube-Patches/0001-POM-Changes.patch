@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58cca9657d2 100644
+index 188f05879c6e182c651847b3ddde36c6519307f2..a271dfcaa50e3d1de0656f22e038abe7d5950b9c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -14,7 +14,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58c
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>1.16.5</version>
+-        <version>21w03a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +30,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58c
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.16.5</version>
++    <version>21w03a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -47,7 +47,7 @@ index 98a8c81f7f9b80b4b5141215aab0ee6f50b5cbc8..1a39fd8a4ac76bce5fc826770a05f58c
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.2</version>
++            <version>0.0.3</version>
 +        </dependency>
 +        <!-- Blueberry end -->
          <dependency>
@@ -66,25 +66,3 @@ index 4d80e4054f8436bd8fd1af85a8121a70304a256f..5e2a6841cf2d3827c4b1370a60ab8d52
     }
  }
 \ No newline at end of file
-diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index cefe71ac531d5d5ab4fecdb25f8563cd3c8d47c2..1c43e24133df0987e4bad8796e98e1e3fc0e2c05 100644
---- a/src/main/java/net/minecraft/server/MinecraftServer.java
-+++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -895,7 +895,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-    }
- 
-    public String getServerModName() {
--      return "vanilla";
-+      return "blueberry"; // Blueberry > vanilla
-    }
- 
-    public CrashReport fillReport(CrashReport crashReport) {
-@@ -1240,7 +1240,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-    }
- 
-    public CompletableFuture<Void> reloadResources(Collection<String> collection) {
--      CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(() -> (ImmutableList)collection.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()), this).thenCompose((immutableList) -> ServerResources.loadResources(immutableList, this.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED, this.getFunctionCompilationLevel(), this.executor, this)).thenAcceptAsync((serverResources) -> {
-+      CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(() -> collection.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()), this).thenCompose((immutableList) -> ServerResources.loadResources(immutableList, this.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED, this.getFunctionCompilationLevel(), this.executor, this)).thenAcceptAsync((serverResources) -> { // Blueberry - decompile error
-          this.resources.close();
-          this.resources = serverResources;
-          this.packRepository.setSelected(collection);
