@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueberryPacketListener> {
+public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueberryPacketListener> { // TODO: can we use custom payload instead?
     private List<ModInfo> modInfos;
 
     public ClientboundBlueberryHandshakePacket() {}
