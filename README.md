@@ -15,6 +15,10 @@ It takes a long time to make this project bigger and get good APIs.
 
 assets/blueberry/textures/gui/icons.png is from FML, obviously. (thanks FML, MinecraftForge team)
 
+## Bugs
+- Bug with resource manager? Texture goes nothing when mod resource pack is located at higher than default
+- Builtin packs says "outdated"
+
 ## Todo
 - Provide easy way to create profile or version in launcher for Blueberry
   - probably with bsdiff
