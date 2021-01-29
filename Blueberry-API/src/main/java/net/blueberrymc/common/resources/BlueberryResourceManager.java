@@ -2,13 +2,11 @@ package net.blueberrymc.common.resources;
 
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.DetectedVersion;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.FolderPackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
-import net.minecraft.server.packs.resources.Resource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
@@ -39,12 +37,12 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                         return createMetadata(mod);
                     }
                     InputStream in = mod.getClass().getResourceAsStream("/" + s);
-                    if (in == null && mod.hasClassLoader()) in = mod.getClassLoader().getResourceAsStream("/" + s);
+                    if (in == null) in = mod.getClassLoader().getResourceAsStream("/" + s);
                     if (in == null) {
                         try {
                             File file = new File(mod.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
                             if (file.exists() && file.isDirectory()) {
-                                File entry = new File(file.getAbsolutePath() + "/" + s);
+                                File entry = new File(file, s);
                                 if (entry.exists() && entry.isFile()) {
                                     in = new FileInputStream(entry);
                                 }
@@ -76,9 +74,8 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                     if (s.equals("pack.mcmeta")) {
                         return createMetadata(mod);
                     }
-                    if (s.contains("blueberry")) System.out.println("Finding (File): " + s);
                     InputStream in = mod.getClass().getResourceAsStream("/" + s);
-                    if (in == null && mod.hasClassLoader()) in = mod.getClassLoader().getResourceAsStream("/" + s);
+                    if (in == null) in = mod.getClassLoader().getResourceAsStream("/" + s);
                     if (in != null) return in;
                     return super.getResource(s);
                 }
@@ -108,7 +105,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
         return new ByteArrayInputStream(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    public PackResources getPackResources() {
+    public @NotNull PackResources getPackResources() {
         return packResources;
     }
 

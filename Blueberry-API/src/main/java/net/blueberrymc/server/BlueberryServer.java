@@ -33,4 +33,7 @@ public class BlueberryServer implements BlueberryUtil {
             ((DedicatedServer) this.server).stopServer();
         }
     }
+
+    @Override
+    public void reloadResourcePacks() {}
 }

@@ -2,21 +2,20 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
+import net.blueberrymc.common.bml.config.VisualConfig;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.ModDescriptionFile;
-import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.TextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-public class BlueberryMod {
-    volatile static boolean isFile = false;
+public class BlueberryMod implements ModInfo {
     private Logger logger = LogManager.getLogger();
     private final ModStateList stateList = new ModStateList();
     private BlueberryModLoader modLoader;
@@ -26,25 +25,23 @@ public class BlueberryMod {
     private RootCompoundVisualConfig visualConfig;
     private File file;
     private BlueberryResourceManager resourceManager;
+    boolean first = true;
 
     public BlueberryMod() {
-        if (!SharedConstants.IS_RUNNING_IN_IDE || isFile) {
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            if (!(classLoader instanceof ModClassLoader)) {
-                throw new IllegalStateException("BlueberryMod requires " + ModClassLoader.class.getCanonicalName() + " (Got " + classLoader.getClass().getCanonicalName() + " instead)");
-            }
-            try {
-                ((ModClassLoader) classLoader).initialize(this);
-            } catch (RuntimeException ex) {
-                this.logger.error("Failed to initialize mod", ex);
-                ex.printStackTrace();
-                throw ex;
-            }
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        if (!(classLoader instanceof ModClassLoader)) {
+            throw new IllegalStateException("BlueberryMod requires " + ModClassLoader.class.getCanonicalName() + " (Got " + classLoader.getClass().getCanonicalName() + " instead)");
+        }
+        try {
+            ((ModClassLoader) classLoader).initialize(this);
+        } catch (RuntimeException ex) {
+            this.logger.fatal("Failed to initialize mod", ex);
+            throw ex;
         }
     }
 
     final void init(BlueberryModLoader modLoader, ModDescriptionFile description, ModClassLoader classLoader, File file) {
-        if (classLoader == null && !SharedConstants.IS_RUNNING_IN_IDE) {
+        if (classLoader == null) {
             throw new IllegalArgumentException("Cannot initialize mods with null classLoader");
         }
         this.modLoader = modLoader;
@@ -62,88 +59,96 @@ public class BlueberryMod {
         }
     }
 
-    void setDescription(ModDescriptionFile description) {
-        this.description = description;
+    /**
+     * Use this method to check whether the first initialization (meaning minecraft is loading) is in progress.
+     */
+    protected final boolean isFirst() {
+        return first;
     }
 
-    public boolean isUnloaded() {
+    public final boolean isUnloaded() {
         return getStateList().getCurrentState() == ModState.UNLOADED;
     }
 
     @NotNull
-    public BlueberryModLoader getModLoader() {
+    public final BlueberryModLoader getModLoader() {
         return modLoader;
     }
 
     @NotNull
-    public ModDescriptionFile getDescription() {
+    public final ModDescriptionFile getDescription() {
         return description;
     }
 
     @NotNull
-    public ModClassLoader getClassLoader() {
-        if (classLoader == null && SharedConstants.IS_RUNNING_IN_IDE) {
-            throw new UnsupportedOperationException("Not available in debug environment");
-        } else {
-            if (classLoader == null) throw new AssertionError("classLoader should not be null!");
-            return classLoader;
-        }
-    }
-
-    public boolean hasClassLoader() {
-        return classLoader != null;
-    }
-
-    /**
-     * @deprecated internal usage only
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Nullable
-    @Deprecated
-    public ModClassLoader getRawClassLoader() {
+    public final ModClassLoader getClassLoader() {
+        if (classLoader == null) throw new AssertionError("classLoader should not be null!");
         return classLoader;
     }
 
+    @Override
     @NotNull
-    public String getName() {
+    public final String getName() {
         return this.description.getName();
     }
 
+    @Override
     @NotNull
-    public Logger getLogger() {
+    public final String getModId() {
+        return this.description.getModId();
+    }
+
+    @NotNull
+    public final Logger getLogger() {
         return logger;
     }
 
     @NotNull
-    public ModStateList getStateList() { return stateList; }
+    public final ModStateList getStateList() { return stateList; }
 
     @NotNull
-    public ModConfig getConfig() {
+    public final ModConfig getConfig() {
         return config;
     }
 
     @NotNull
-    public File getFile() {
+    public final File getFile() {
         return file;
     }
 
     @NotNull
-    public RootCompoundVisualConfig getVisualConfig() {
+    public final RootCompoundVisualConfig getVisualConfig() {
         return visualConfig;
     }
 
-    public void setVisualConfig(@NotNull RootCompoundVisualConfig visualConfig) {
+    public final void setVisualConfig(@NotNull RootCompoundVisualConfig visualConfig) {
         Preconditions.checkNotNull(visualConfig, "cannot set null VisualConfig");
         this.visualConfig = visualConfig;
     }
 
-    public void setResourceManager(BlueberryResourceManager resourceManager) {
+    public final void setResourceManager(BlueberryResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
-    public BlueberryResourceManager getResourceManager() {
+    public final BlueberryResourceManager getResourceManager() {
         if (resourceManager == null) throw new IllegalArgumentException("ResourceManager is not defined (yet)");
         return resourceManager;
+    }
+
+    /**
+     * Saves the configuration file. {@link VisualConfig#id(String)} must be called to valid config path to work.
+     * @param compoundVisualConfig the visual config
+     */
+    public void save(@NotNull("compoundVisualConfig") CompoundVisualConfig compoundVisualConfig) {
+        for (VisualConfig<?> config : compoundVisualConfig) {
+            if (config instanceof CompoundVisualConfig) {
+                save((CompoundVisualConfig) config);
+                continue;
+            }
+            if (config.getId() != null) {
+                this.getConfig().set(config.getId(), config.get());
+            }
+        }
     }
 
     /**

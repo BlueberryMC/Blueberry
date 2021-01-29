@@ -8,4 +8,9 @@ public class BlueberryNope implements BlueberryUtil {
     public @NotNull ResourceManager getResourceManager() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void reloadResourcePacks() {
+        throw new UnsupportedOperationException();
+    }
 }

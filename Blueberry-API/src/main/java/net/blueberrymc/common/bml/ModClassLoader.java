@@ -17,8 +17,6 @@ import java.security.CodeSource;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 public class ModClassLoader extends URLClassLoader {
@@ -26,7 +24,7 @@ public class ModClassLoader extends URLClassLoader {
     protected final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
     protected final ModDescriptionFile description;
     protected final File file;
-    protected final JarFile jar;
+    protected final ModFile modFile;
     protected final Manifest manifest;
     protected final BlueberryMod mod;
     protected final URL url;
@@ -41,8 +39,8 @@ public class ModClassLoader extends URLClassLoader {
         super(new URL[]{file.toURI().toURL()}, parent);
         this.file = file;
         this.modLoader = modLoader;
-        this.jar = new JarFile(file);
-        this.manifest = jar.getManifest();
+        this.modFile = new ModFile(file);
+        this.manifest = modFile.getManifest();
         this.description = description;
         this.url = file.toURI().toURL();
         try {
@@ -58,9 +56,7 @@ public class ModClassLoader extends URLClassLoader {
             } catch (ClassCastException ex) {
                 throw new InvalidModException("Main class '" + description.getMainClass() + "' of mod '" + description.getModId() + "' does not extend BlueberryMod");
             }
-            BlueberryMod.isFile = true;
             mod = modClass.newInstance();
-            BlueberryMod.isFile = false;
         } catch (IllegalAccessException ex) {
             throw new InvalidModException("No public constructor", ex);
         } catch (InstantiationException ex) {
@@ -107,10 +103,10 @@ public class ModClassLoader extends URLClassLoader {
         }
         if (result == null) {
             String path = name.replace(".", "/").concat(".class");
-            JarEntry entry = this.jar.getJarEntry(path);
+            ModFileEntry entry = this.modFile.getEntry(path);
             if (entry != null) {
                 byte[] bytes;
-                try (InputStream in = jar.getInputStream(entry)) {
+                try (InputStream in = entry.getInputStream()) {
                     bytes = ByteStreams.toByteArray(in);
                 } catch (IOException ex) {
                     throw new ClassNotFoundException(name, ex);
@@ -153,7 +149,7 @@ public class ModClassLoader extends URLClassLoader {
         try {
             super.close();
         } finally {
-            jar.close();
+            modFile.close();
         }
     }
 
@@ -164,11 +160,9 @@ public class ModClassLoader extends URLClassLoader {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         if (mod.getClass().getClassLoader() != this)
             throw new IllegalArgumentException("Cannot initialize mod outside of this class loader");
-        if (!mod.getClass().getCanonicalName().startsWith("net.blueberrymc.common.Internal") && !mod.getClass().getCanonicalName().endsWith("Mod")) {
-            if (this.mod != null && this.initializedMod != null)
-                throw new IllegalArgumentException("Cannot reinitialize mod", state);
-        }
-        state = new IllegalStateException("Initialization");
+        if (this.mod != null && this.initializedMod != null)
+            throw new IllegalArgumentException("Cannot reinitialize mod: " + description.getModId(), state);
+        state = new IllegalStateException("Initialization: " + description.getModId());
         this.initializedMod = mod;
         mod.getStateList().add(ModState.LOADED);
         mod.init(modLoader, description, this, this.file);

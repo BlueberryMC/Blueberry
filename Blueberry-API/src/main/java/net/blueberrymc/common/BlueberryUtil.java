@@ -11,4 +11,6 @@ public interface BlueberryUtil {
      */
     @Nullable
     ResourceManager getResourceManager();
+
+    void reloadResourcePacks();
 }

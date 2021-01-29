@@ -1,6 +1,7 @@
 package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.EventHandler;
 import net.blueberrymc.common.bml.event.HandlerList;
@@ -13,17 +14,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EventManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ConcurrentHashMap<Class<? extends Event>, HandlerList> handlerMap = new ConcurrentHashMap<>();
 
-    private void logInvalidHandler(Method method, String message) {
-        LOGGER.warn("Invalid EventHandler: {} at {}", message, method.toGenericString());
+    private void logInvalidHandler(Method method, String message, String mod) {
+        LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod);
     }
 
     public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
@@ -34,15 +34,11 @@ public class EventManager {
             if (method.isSynthetic()) continue;
             if (!method.isAnnotationPresent(EventHandler.class)) continue;
             if (method.getParameterCount() != 1) {
-                logInvalidHandler(method, "parameter count is not 1");
+                logInvalidHandler(method, "parameter count is not 1", mod.getModId());
                 continue;
             }
             if (!method.getReturnType().equals(void.class)) {
-                logInvalidHandler(method, "return type must be void");
-                continue;
-            }
-            if (Modifier.isStatic(method.getModifiers())) {
-                logInvalidHandler(method, "method must not be static");
+                logInvalidHandler(method, "return type must be void", mod.getModId());
                 continue;
             }
             /* // TODO: do we need this check?
@@ -53,7 +49,11 @@ public class EventManager {
             */
             Class<?> clazz = method.getParameters()[0].getType();
             if (!Event.class.isAssignableFrom(clazz)) {
-                logInvalidHandler(method, "return type is not assignable from net.blueberrymc.common.bml.event.Event");
+                logInvalidHandler(method, "parameter type is not assignable from " + Event.class.getCanonicalName(), mod.getModId());
+                continue;
+            }
+            if (Modifier.isAbstract(clazz.getModifiers())) {
+                logInvalidHandler(method, clazz.getCanonicalName() + " is abstract; cannot register listener", mod.getModId());
                 continue;
             }
             Class<? extends Event> eventClass = clazz.asSubclass(Event.class);
@@ -63,17 +63,25 @@ public class EventManager {
     }
 
     public void unregisterEvents(@NotNull BlueberryMod mod) {
+        Preconditions.checkNotNull(mod, "mod cannot be null");
         handlerMap.values().forEach(handlerList -> handlerList.remove(mod));
     }
 
-    public void callEvent(@NotNull Event event) {
-        Preconditions.checkNotNull(event, "event cannot be null");
-        getHandlerList(event.getClass()).fire(event);
+    public void unregisterEvents(@NotNull Listener listener) {
+        Preconditions.checkNotNull(listener, "listener cannot be null");
+        handlerMap.values().forEach(handlerList -> handlerList.remove(listener));
     }
 
     @NotNull
-    public List<Class<? extends Event>> getKnownEvents() {
-        return new ArrayList<>(handlerMap.keySet());
+    public <T extends Event> T callEvent(@NotNull T event) {
+        Preconditions.checkNotNull(event, "event cannot be null");
+        getHandlerList(event.getClass()).fire(event);
+        return event;
+    }
+
+    @NotNull
+    public Set<Class<? extends Event>> getKnownEvents() {
+        return handlerMap.keySet();
     }
 
     @NotNull

@@ -10,4 +10,9 @@ public class BlueberryClient implements BlueberryUtil {
     public @NotNull ResourceManager getResourceManager() {
         return Minecraft.getInstance().getResourceManager();
     }
+
+    @Override
+    public void reloadResourcePacks() {
+        Minecraft.getInstance().reloadResourcePacks();
+    }
 }

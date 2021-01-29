@@ -1,6 +1,7 @@
 package net.blueberrymc.config;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.bml.ModInfo;
 import net.blueberrymc.config.yaml.YamlArray;
 import net.blueberrymc.config.yaml.YamlObject;
 import org.apache.logging.log4j.LogManager;
@@ -9,10 +10,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
-public class ModDescriptionFile {
+public class ModDescriptionFile implements ModInfo {
     private static final Pattern PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
     private static final Logger LOGGER = LogManager.getLogger();
     @NotNull protected final String modId;
@@ -23,7 +26,7 @@ public class ModDescriptionFile {
     @Nullable protected final String credits;
     @Nullable protected final List<String> description;
     protected final boolean unloadable;
-    @NotNull protected final List<String> depends;
+    @NotNull protected final Set<String> depends;
 
     public ModDescriptionFile(@NotNull String modId,
                               @NotNull String version,
@@ -43,9 +46,10 @@ public class ModDescriptionFile {
         this.credits = credits;
         this.description = description;
         this.unloadable = unloadable;
-        this.depends = depends == null ? new ArrayList<>() : depends;
+        this.depends = depends == null ? new HashSet<>() : new HashSet<>(depends);
     }
 
+    @Override
     @NotNull
     public String getModId() {
         return modId;
@@ -61,6 +65,7 @@ public class ModDescriptionFile {
         return mainClass;
     }
 
+    @Override
     @NotNull
     public String getName() {
         return name;
@@ -86,7 +91,7 @@ public class ModDescriptionFile {
     }
 
     @NotNull
-    public List<String> getDepends() {
+    public Set<String> getDepends() {
         return depends;
     }
 

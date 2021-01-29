@@ -3,15 +3,16 @@ package net.blueberrymc.common.item;
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class BlueberryItem extends Item {
+public abstract class BlueberryBucketItem extends BucketItem {
     private final BlueberryMod mod;
 
-    public BlueberryItem(@NotNull("mod") BlueberryMod mod, @NotNull("properties") Properties properties) {
-        super(properties);
+    public BlueberryBucketItem(@NotNull("mod") BlueberryMod mod, @NotNull("fluid") Fluid fluid, @NotNull("properties") Properties properties) {
+        super(fluid, properties);
         Preconditions.checkNotNull(mod, "mod cannot be null");
         this.mod = mod;
     }

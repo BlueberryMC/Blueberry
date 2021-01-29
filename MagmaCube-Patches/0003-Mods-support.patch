@@ -43,7 +43,7 @@ index be7b9f64269553712f5f3bef70989b7e08911e0f..45de7323427b147180b94d4268cbf9e0
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 98366f9b6e540f63dfd2083ecda13daa0370f1af..f6634445ba7ba7871452ae385700a6c8f4c3ab61 100644
+index 98366f9b6e540f63dfd2083ecda13daa0370f1af..877673a1c076d44f4dd0caf5623a6744a8cdf871 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -426,6 +426,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -54,7 +54,16 @@ index 98366f9b6e540f63dfd2083ecda13daa0370f1af..f6634445ba7ba7871452ae385700a6c8
        this.resourcePackRepository.reload();
        this.options.loadSelectedResourcePacks(this.resourcePackRepository);
        this.languageManager = new LanguageManager(this.options.languageCode);
-@@ -494,6 +495,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -487,13 +488,14 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+       this.window.setDefaultErrorCallback();
+       this.resizeDisplay();
+       if (s != null) {
+-         this.setScreen(new ConnectScreen(new TitleScreen(), this, s, i));
++         this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(new ConnectScreen(new TitleScreen(), this, s, i))); // Blueberry
+       } else {
+-         this.setScreen(new TitleScreen(true));
++         this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(new TitleScreen())); // Blueberry
+       }
  
        LoadingOverlay.registerTextures(this);
        List<PackResources> list = this.resourcePackRepository.openAllSelected();
@@ -97,7 +106,7 @@ index 14a5f0918a06d269223d4662b2d45631adca22b9..2239fdef3d5abe0cfa12b7dc729f93e2
           return list;
        } else {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
-index ada09e458f4a7b36be27492139e504485b041055..11e29536d7c6b82552020eb86af90c0d3f560a98 100644
+index ada09e458f4a7b36be27492139e504485b041055..24f046f9069c4d38e4e7bb65d842359eb11d4ce4 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
 @@ -99,6 +99,7 @@ public class LoadingOverlay extends Overlay {
@@ -108,6 +117,14 @@ index ada09e458f4a7b36be27492139e504485b041055..11e29536d7c6b82552020eb86af90c0d
           this.minecraft.setOverlay((Overlay)null);
        }
  
+@@ -112,6 +113,7 @@ public class LoadingOverlay extends Overlay {
+ 
+          this.fadeOutStart = Util.getMillis();
+          if (this.minecraft.screen != null) {
++            if (this.minecraft.screen instanceof net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen) ((net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen) minecraft.screen).refresh(); // Blueberry
+             this.minecraft.screen.init(this.minecraft, this.minecraft.getWindow().getGuiScaledWidth(), this.minecraft.getWindow().getGuiScaledHeight());
+          }
+       }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 index 9d525ee42d903ec65bc5085beb0fed7300d1021b..927d290d1440bd20deae450160ba9dfe509a4443 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
@@ -179,17 +196,17 @@ index cdcf9795e6835d86f75ea495b1f47830b21b28c5..e76d229b58e6b23b836047ebbfb68597
              this.screen.setToolTip(list2);
           }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..4d95bd6940d7b08d4cc04081860bce9d026eb212 100644
+index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..47b081252ab7761fcb308c4aaa5e5e9a8294f131 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -37,6 +37,7 @@ public class Main {
-    // MagmaCube start - decompile error
-    public static void main(String[] args) {
-       if (net.minecraft.SharedConstants.IS_RUNNING_IN_IDE) org.lwjgl.glfw.GLFW.glfwInit(); // MagmaCube - lwjgl debug agent causes glGetError to crash when we didn't call glfwInit
-+      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT); // Blueberry
-       OptionParser optionparser = new OptionParser();
-       optionparser.allowsUnrecognizedOptions();
-       optionparser.accepts("demo");
+@@ -107,6 +107,7 @@ public class Main {
+       PropertyMap propertymap1 = GsonHelper.fromJson(gson, parseArgument(optionset, optionspec19), PropertyMap.class);
+       String s4 = parseArgument(optionset, optionspec22);
+       File file1 = parseArgument(optionset, optionspec2);
++      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1); // Blueberry
+       File file2 = optionset.has(optionspec3) ? parseArgument(optionset, optionspec3) : new File(file1, "assets/");
+       File file3 = optionset.has(optionspec4) ? parseArgument(optionset, optionspec4) : new File(file1, "resourcepacks/");
+       String s5 = optionset.has(optionspec11) ? optionspec11.value(optionset) : Player.createPlayerUUID(optionspec10.value(optionset)).toString();
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ServerData.java b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
 index 35658fbbbcf466e1cebdd151d0c3ed998ada23d6..055bf341241f681ce899e1bf79c3c5575c8df0a6 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ServerData.java
@@ -235,6 +252,87 @@ index be7aeb31fa0ea4fb4d0020107cfb306279fe6579..6b464011872c5639f3e313b0542676b4
           public void onDisconnect(Component component) {
              if (!this.success) {
                 ServerStatusPinger.LOGGER.error("Can't ping {}: {}", serverData.ip, component.getString());
+diff --git a/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java b/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
+index 8ec13bf63bd870be5984a19206bf2f5532810ce3..d6b0305730bcdb6d8dbbf494825a130f19dc1d40 100644
+--- a/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
++++ b/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
+@@ -68,9 +68,13 @@ public class LiquidBlockRenderer {
+ 
+    public boolean tesselate(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, VertexConsumer vertexConsumer, FluidState fluidState) {
+       boolean flag = fluidState.is(FluidTags.LAVA);
+-      TextureAtlasSprite[] textureAtlasSprites = flag ? this.lavaIcons : this.waterIcons;
++      TextureAtlasSprite[] textureAtlasSprites = net.blueberrymc.client.world.level.fluid.FluidSpriteManager.getSprites(fluidState); //flag ? this.lavaIcons : this.waterIcons; // Blueberry
+       BlockState blockState = blockAndTintGetter.getBlockState(blockPos);
+       int i = flag ? 16777215 : BiomeColors.getAverageWaterColor(blockAndTintGetter, blockPos);
++      // Blueberry start
++      net.blueberrymc.client.event.render.LiquidBlockRenderEvent event = net.blueberrymc.client.event.ClientEventFactory.callLiquidBlockRenderEvent(fluidState, blockPos, i);
++      i = event.getColor();
++      // Blueberry end
+       float f = (float)(i >> 16 & 255) / 255.0F;
+       float f2 = (float)(i >> 8 & 255) / 255.0F;
+       float f3 = (float)(i & 255) / 255.0F;
+diff --git a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
+index de88c21cdb5e679c9513c9eb46c36aec637a7347..49f24ccad1e5da26372a8e0a98e23a5380267ebf 100644
+--- a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
++++ b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
+@@ -21,6 +21,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.Vec3;
++import static net.blueberrymc.common.bml.mod.InternalBlueberryMod.*; // Blueberry
+ 
+ public class DebugRenderer {
+    public final PathfindingRenderer pathfindingRenderer = new PathfindingRenderer();
+@@ -91,29 +92,26 @@ public class DebugRenderer {
+ 
+    public void render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, double d, double d2, double d3) {
+       if (this.renderChunkborder && !Minecraft.getInstance().showOnlyReducedInfo()) {
+-         this.chunkBorderRenderer.render(poseStack, bufferSource, d, d2, d3);
+-         // MagmaCube start - show debug renderer with F3+G
+-         if (net.minecraft.SharedConstants.IS_RUNNING_IN_IDE) {
+-            this.pathfindingRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.waterDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.chunkBorderRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.heightMapRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.collisionBoxRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.neighborsUpdateRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.caveRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.structureRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.lightDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.worldGenAttemptRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.solidFaceRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.chunkRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.brainDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.villageSectionsDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.beeDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.raidDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.goalSelectorRenderer.render(poseStack, bufferSource, d, d2, d3);
+-            this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
+-         }
+-         // MagmaCube end - show debug renderer with F3+G
++         // Blueberry start
++            if (showDRPathfinding) this.pathfindingRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRWaterDebug) this.waterDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRChunkBorder) this.chunkBorderRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRHeightMap) this.heightMapRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRCollisionBox) this.collisionBoxRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRNeighborsUpdate) this.neighborsUpdateRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRCave) this.caveRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRStructure) this.structureRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRLightDebug) this.lightDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRWorldGenAttempt) this.worldGenAttemptRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRSolidFace) this.solidFaceRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRChunk) this.chunkRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRBrainDebug) this.brainDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRVillageSectionsDebug) this.villageSectionsDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRBeeDebug) this.beeDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRRaidDebug) this.raidDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRGoalSelector) this.goalSelectorRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (showDRGameTestDebug) this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++         // Blueberry end
+       }
+ 
+       this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
 diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 index 370533063dbc1c5949cbc5dae1a272647e54b19f..c8f834f3108579c8411899c5787751401b08c6d6 100644
 --- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
@@ -286,17 +384,17 @@ index 13602ef3920c0b2521a512ca01769568391b927a..11592adc6fe35c0666797402e6982d2c
  
     void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 0bc723f0ce400081616179420f6c8f0b3b29a5fb..e3cfcbfbb9c5e9babd42332923cdc0905132d515 100644
+index 0bc723f0ce400081616179420f6c8f0b3b29a5fb..bae94f772cd754c89dd9eff027c75f2fe2981cdb 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -55,6 +55,7 @@ public class Main {
-    private static final Logger LOGGER = LogManager.getLogger();
+@@ -99,6 +99,7 @@ public class Main {
+          }
  
-    public static void main(String[] strings) {
-+      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER); // Blueberry
-       OptionParser optionParser = new OptionParser();
-       OptionSpec<Void> optionSpec = optionParser.accepts("nogui");
-       OptionSpec<Void> optionSpec2 = optionParser.accepts("initSettings", "Initializes 'server.properties' and 'eula.txt', then quits");
+          File file = new File((String)optionSet.valueOf(optionSpec10));
++         net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
+          YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
+          MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
+          GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 @@ -153,6 +154,7 @@ public class Main {
           final DedicatedServer dedicatedServer = MinecraftServer.spin((threadx) -> {
              // MagmaCube start - decompile error

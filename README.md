@@ -13,7 +13,9 @@ Open-source modding API for Minecraft
 While I try to make this project bigger, there's literally almost no API for now.
 It takes a long time to make this project bigger and get good APIs.
 
-assets/blueberry/textures/gui/icons.png is from FML, obviously. (thanks FML, MinecraftForge team)
+## Known Issues
+- Synchronization issues with the server and client, with fluids probably.
+  - Triggering block update causes nearby fluids to render normally
 
 ## Todo
 - Provide easy way to create profile or version in launcher for Blueberry

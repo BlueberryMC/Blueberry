@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "base": "item/bucket",
+    "fluid": "blueberry:item/mask/bucket_fluid"
+  }
+}

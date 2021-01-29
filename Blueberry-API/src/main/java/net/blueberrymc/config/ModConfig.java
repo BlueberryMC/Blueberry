@@ -6,6 +6,7 @@ import net.blueberrymc.config.yaml.YamlObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class ModConfig {
         config.save(this.configFile);
     }
 
-    public void set(String path, Object value) {
+    public void set(@NotNull("path") String path, @Nullable Object value) {
         YamlObject parent = null;
         YamlObject object = getConfig();
         String[] arr = path.split("\\.");
@@ -92,13 +93,18 @@ public class ModConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T get(String path, T def) {
+    public <T> T get(@NotNull("path") String path, @Nullable T def) {
         YamlObject object = getConfig();
         String[] arr = path.split("\\.");
         for (int i = 0; i < arr.length; i++) {
             boolean last = i + 1 == arr.length;
             if (last) {
-                T result = (T) object.getRawData().get(arr[i]);
+                T result;
+                try {
+                    result = (T) object.getRawData().get(arr[i]);
+                } catch (ClassCastException ex) {
+                    return def;
+                }
                 if (result == null) return def;
                 return result;
             } else {
@@ -109,39 +115,71 @@ public class ModConfig {
         return def;
     }
 
-    public boolean getBoolean(String path, boolean def) {
+    public boolean getBoolean(@NotNull("path") String path) {
+        return getBoolean(path, false);
+    }
+
+    public boolean getBoolean(@NotNull("path") String path, boolean def) {
         return get(path, def);
     }
 
-    public String getString(String path, String def) {
+    public String getString(@NotNull("path") String path) {
+        return getString(path, null);
+    }
+
+    public String getString(@NotNull("path") String path, @Nullable String def) {
         return get(path, def);
     }
 
-    public float getFloat(String path, float def) {
+    public float getFloat(@NotNull("path") String path) {
+        return getFloat(path, 0.0F);
+    }
+
+    public float getFloat(@NotNull("path") String path, float def) {
+        return (float) getDouble(path, def);
+    }
+
+    public double getDouble(@NotNull("path") String path) {
+        return getDouble(path, 0.0D);
+    }
+
+    public double getDouble(@NotNull("path") String path, double def) {
         return get(path, def);
     }
 
-    public double getDouble(String path, double def) {
+    public int getInt(@NotNull("path") String path) {
+        return getInt(path, 0);
+    }
+
+    public int getInt(@NotNull("path") String path, int def) {
         return get(path, def);
     }
 
-    public int getInt(String path, int def) {
+    public long getLong(@NotNull("path") String path) {
+        return getLong(path, 0);
+    }
+
+    public long getLong(@NotNull("path") String path, long def) {
         return get(path, def);
     }
 
-    public long getLong(String path, long def) {
-        return get(path, def);
+    public byte getByte(@NotNull("path") String path) {
+        return getByte(path, (byte) 0);
     }
 
-    public byte getByte(String path, byte def) {
-        return get(path, def);
+    public byte getByte(@NotNull("path") String path, byte def) {
+        return (byte) getInt(path, def);
     }
 
-    public short getShort(String path, short def) {
-        return get(path, def);
+    public short getShort(@NotNull("path") String path) {
+        return getShort(path, (short) 0);
     }
 
-    public YamlObject getOrCreateObject(YamlObject parent, String path) {
+    public short getShort(@NotNull("path") String path, short def) {
+        return (short) getInt(path, def);
+    }
+
+    public YamlObject getOrCreateObject(@NotNull("parent") YamlObject parent, @NotNull("path") String path) {
         YamlObject obj = parent.getObject(path);
         if (obj == null) {
             obj = new YamlObject();

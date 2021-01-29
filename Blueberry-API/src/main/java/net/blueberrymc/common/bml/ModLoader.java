@@ -1,7 +1,6 @@
 package net.blueberrymc.common.bml;
 
 import com.google.common.collect.ImmutableList;
-import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.config.ModDescriptionFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +9,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public interface ModLoader {
     /**
@@ -19,6 +19,12 @@ public interface ModLoader {
     @NotNull
     List<BlueberryMod> getLoadedMods();
 
+    default <T> List<T> mapLoadedMods(@NotNull Function<BlueberryMod, T> mapFunction) {
+        List<T> list = new ArrayList<>();
+        getLoadedMods().forEach(mod -> list.add(mapFunction.apply(mod)));
+        return list;
+    }
+
     @NotNull
     default List<BlueberryMod> getActiveMods() {
         List<BlueberryMod> mods = new ArrayList<>();
@@ -26,6 +32,12 @@ public interface ModLoader {
             if (mod.getStateList().getCurrentState() != ModState.UNLOADED) mods.add(mod);
         });
         return ImmutableList.copyOf(mods);
+    }
+
+    default <T> List<T> mapActiveMods(@NotNull Function<BlueberryMod, T> mapFunction) {
+        List<T> list = new ArrayList<>();
+        getActiveMods().forEach(mod -> list.add(mapFunction.apply(mod)));
+        return list;
     }
 
     /**
@@ -92,18 +104,13 @@ public interface ModLoader {
 
     void callPostInit();
 
-    @SuppressWarnings("deprecation")
     @Nullable
     default InputStream getResourceAsStream(@NotNull String name) {
         InputStream in = null;
         for (BlueberryMod mod : this.getLoadedMods()) {
-            ModClassLoader cl = mod.getRawClassLoader();
-            if (cl != null) {
-                in = cl.getResourceAsStream(name);
-                if (in != null) break;
-            }
-            in = mod.getClass().getResourceAsStream(name);
-            if (in != null) break;
+            ModClassLoader cl = mod.getClassLoader();
+            if ((in = cl.getResourceAsStream(name)) != null) break;
+            if ((in = mod.getClass().getResourceAsStream(name)) != null) break;
         }
         return in;
     }
