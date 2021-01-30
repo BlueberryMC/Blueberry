@@ -1,4 +1,4 @@
-package net.blueberrymc.common.network;
+package net.blueberrymc.network;
 
 import net.blueberrymc.client.resources.BlueberryCommonComponents;
 import net.blueberrymc.client.resources.BlueberryText;

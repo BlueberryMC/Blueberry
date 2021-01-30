@@ -1,4 +1,4 @@
-package net.blueberrymc.common.network.mod;
+package net.blueberrymc.network.mod;
 
 import org.jetbrains.annotations.NotNull;
 

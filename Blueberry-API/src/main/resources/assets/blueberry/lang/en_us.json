@@ -17,7 +17,7 @@
   "blueberry.mod.config.test.title": "Testing",
   "gui.screens.mod_loading_problem.title": "Problem(s) detected during loading mods",
   "gui.screens.mod_loading_problem.open_log_file": "Open Log File",
-  "multiplayer.compatible": "Compatible with client (%d mods present)",
-  "multiplayer.incompatible": "Incompatible with client (%d mods present)",
+  "multiplayer.compatible": "Compatible with server (%d mods present)",
+  "multiplayer.incompatible": "Incompatible with server (%d mods present)",
   "multiplayer.vanilla": "Vanilla server"
 }

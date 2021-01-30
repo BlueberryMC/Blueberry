@@ -1,6 +1,6 @@
-package net.blueberrymc.common.network;
+package net.blueberrymc.network.client.handshake;
 
-import net.blueberrymc.common.network.mod.ModInfo;
+import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueberryPacketListener> { // TODO: can we use custom payload instead?
+public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueberryHandshakePacketListener> {
     private List<ModInfo> modInfos;
 
     public ClientboundBlueberryHandshakePacket() {}
@@ -39,7 +39,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueber
     }
 
     @Override
-    public void handle(ClientBlueberryPacketListener clientBlueberryPacketListener) {
+    public void handle(ClientBlueberryHandshakePacketListener clientBlueberryPacketListener) {
         clientBlueberryPacketListener.handleBlueberryHandshakeResponse(this);
     }
 

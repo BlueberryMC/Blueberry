@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.Listener;
-import net.blueberrymc.common.network.mod.ModInfo;
+import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import org.jetbrains.annotations.NotNull;
