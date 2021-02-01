@@ -1,5 +1,6 @@
 package net.blueberrymc.common;
 
+import net.minecraft.CrashReport;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,4 +14,6 @@ public interface BlueberryUtil {
     ResourceManager getResourceManager();
 
     void reloadResourcePacks();
+
+    void crash(@NotNull CrashReport crashReport);
 }

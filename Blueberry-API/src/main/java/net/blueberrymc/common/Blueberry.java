@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import net.blueberrymc.client.BlueberryClient;
 import net.blueberrymc.common.bml.BlueberryModLoader;
 import net.blueberrymc.common.bml.EventManager;
-import net.blueberrymc.common.bml.mod.InternalBlueberryMod;
 import net.blueberrymc.common.bml.ModLoader;
 import net.blueberrymc.common.bml.ModManager;
+import net.blueberrymc.common.bml.mod.InternalBlueberryMod;
 import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.server.BlueberryServer;
@@ -17,8 +17,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Blueberry {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -128,21 +126,7 @@ public class Blueberry {
     }
 
     public static void crash(@NotNull("crashReport") CrashReport crashReport) {
-        Preconditions.checkNotNull(crashReport, "crashReport cannot be null");
-        if (isClient()) {
-            net.minecraft.client.Minecraft.fillReport(null, null, null, crashReport);
-            net.minecraft.client.Minecraft.crash(crashReport);
-        } else {
-            File file = new File(new File("crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
-            LOGGER.error(crashReport.getFriendlyReport());
-            if (crashReport.saveToFile(file)) {
-                LOGGER.error("This crash report has been saved to: {}", file.getAbsolutePath());
-            } else {
-                LOGGER.error("We were unable to save this crash report to disk.");
-            }
-            if (isServer()) ((BlueberryServer) util).stopServer();
-            System.exit(1);
-        }
+        getUtil().crash(crashReport);
     }
 
     public static void crash(@NotNull Throwable throwable, @NotNull String message) {
