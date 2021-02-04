@@ -21,11 +21,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.AbstractMap;
@@ -34,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 public class BlueberryModLoader implements ModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -246,60 +241,14 @@ public class BlueberryModLoader implements ModLoader {
     @NotNull
     public ModDescriptionFile getModDescription(@NotNull File file) throws InvalidModDescriptionException {
         Preconditions.checkNotNull(file, "file cannot be null");
-        if (file.isFile()) {
-            return readModDescriptionFromFile(file);
-        } else {
-            return readModDescriptionFromDirectory(file);
-        }
-    }
-
-    @NotNull
-    public ModDescriptionFile readModDescriptionFromFile(@NotNull File file) throws InvalidModDescriptionException {
-        if (!file.isFile()) throw new InvalidModDescriptionException(file.getName() + " is not a file");
-        JarFile jar = null;
-        InputStream in = null;
         try {
-            jar = new JarFile(file);
-            JarEntry entry = jar.getJarEntry("mod.yml");
-            if (entry == null) {
-                throw new InvalidModDescriptionException(new FileNotFoundException(file.getName() + " does not contain mod.yml"));
+            ModFile modFile = new ModFile(file);
+            try (InputStream in = modFile.getResourceAsStream("mod.yml")) {
+                if (in == null) throw new InvalidModDescriptionException(file.getName() + " does not contain mod.yml");
+                return ModDescriptionFile.read(new YamlConfiguration(in).asObject());
             }
-            in = jar.getInputStream(entry);
-            return ModDescriptionFile.read(new YamlConfiguration(in).asObject());
-        } catch (IOException | YAMLException | ClassCastException | NullPointerException ex) {
+        } catch (IOException ex) {
             throw new InvalidModDescriptionException(ex);
-        } finally {
-            if (jar != null) {
-                try {
-                    jar.close();
-                } catch (IOException ignore) {}
-            }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignore) {}
-            }
-        }
-    }
-
-    @NotNull
-    public ModDescriptionFile readModDescriptionFromDirectory(@NotNull File file) throws InvalidModDescriptionException {
-        if (!file.isDirectory()) throw new InvalidModDescriptionException(file.getName() + " is not a directory");
-        File entry = new File(file, "mod.yml");
-        if (!entry.exists()) throw new InvalidModDescriptionException(file.getName() + " does not contain mod.yml");
-        if (!entry.isFile()) throw new InvalidModDescriptionException("mod.yml is not a file");
-        if (!entry.canRead()) throw new InvalidModDescriptionException("Cannot read " + entry.getName() + " - not enough permission?");
-        FileInputStream in = null;
-        try {
-            return ModDescriptionFile.read(new YamlConfiguration(in = new FileInputStream(entry)).asObject());
-        } catch (IOException | YAMLException | ClassCastException | NullPointerException ex) {
-            throw new InvalidModDescriptionException(ex);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignore) {}
-            }
         }
     }
 
@@ -307,12 +256,6 @@ public class BlueberryModLoader implements ModLoader {
     @NotNull
     @Override
     public <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz) throws InvalidModException {
-        /*
-        if (id2ModMap.containsKey(description.getModId())) {
-            LOGGER.warn(description.getModId() + " is already cached, returning them.");
-            return (T) id2ModMap.get(description.getModId());
-        }
-        */
         AtomicBoolean cancel = new AtomicBoolean(false);
         if (description.getDepends().contains(description.getModId())) {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself (check mod.yml)", true));
