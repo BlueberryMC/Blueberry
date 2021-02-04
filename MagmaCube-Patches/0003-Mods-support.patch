@@ -196,14 +196,24 @@ index cdcf9795e6835d86f75ea495b1f47830b21b28c5..e76d229b58e6b23b836047ebbfb68597
              this.screen.setToolTip(list2);
           }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..47b081252ab7761fcb308c4aaa5e5e9a8294f131 100644
+index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..420cb78609ca13b7e6c97edb6ad5f3cfb0543271 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -107,6 +107,7 @@ public class Main {
+@@ -73,6 +73,8 @@ public class Main {
+       if (!list.isEmpty()) {
+          System.out.println("Completely ignored arguments: " + list);
+       }
++      File file1 = parseArgument(optionset, optionspec2); // Blueberry - moved from below
++      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1); // Blueberry
+ 
+       String s = parseArgument(optionset, optionspec6);
+       Proxy proxy = Proxy.NO_PROXY;
+@@ -106,7 +108,7 @@ public class Main {
+       PropertyMap propertymap = GsonHelper.fromJson(gson, parseArgument(optionset, optionspec18), PropertyMap.class);
        PropertyMap propertymap1 = GsonHelper.fromJson(gson, parseArgument(optionset, optionspec19), PropertyMap.class);
        String s4 = parseArgument(optionset, optionspec22);
-       File file1 = parseArgument(optionset, optionspec2);
-+      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1); // Blueberry
+-      File file1 = parseArgument(optionset, optionspec2);
++      // File file1 = parseArgument(optionset, optionspec2); // Blueberry - moved up
        File file2 = optionset.has(optionspec3) ? parseArgument(optionset, optionspec3) : new File(file1, "assets/");
        File file3 = optionset.has(optionspec4) ? parseArgument(optionset, optionspec4) : new File(file1, "resourcepacks/");
        String s5 = optionset.has(optionspec11) ? optionspec11.value(optionset) : Player.createPlayerUUID(optionspec10.value(optionset)).toString();
@@ -405,18 +415,28 @@ index 13602ef3920c0b2521a512ca01769568391b927a..d6958f5ad2032f9344039df13e7cf29f
  
     void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 0bc723f0ce400081616179420f6c8f0b3b29a5fb..bae94f772cd754c89dd9eff027c75f2fe2981cdb 100644
+index 0bc723f0ce400081616179420f6c8f0b3b29a5fb..859c5d8092b3fc134e451292d35db127de1a75f9 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -99,6 +99,7 @@ public class Main {
+@@ -77,6 +77,8 @@ public class Main {
+             optionParser.printHelpOn(System.err);
+             return;
+          }
++         File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved from below
++         net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
+ 
+          CrashReport.preload();
+          Bootstrap.bootStrap();
+@@ -98,7 +100,7 @@ public class Main {
+             return;
           }
  
-          File file = new File((String)optionSet.valueOf(optionSpec10));
-+         net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
+-         File file = new File((String)optionSet.valueOf(optionSpec10));
++         // File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved up
           YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
           MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
           GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-@@ -153,6 +154,7 @@ public class Main {
+@@ -153,6 +155,7 @@ public class Main {
           final DedicatedServer dedicatedServer = MinecraftServer.spin((threadx) -> {
              // MagmaCube start - decompile error
              DedicatedServer dedicatedServerx = new DedicatedServer(threadx, registryHolder, levelStorageAccess, packRepository, serverResources, worldData2, dedicatedServerSettings, DataFixers.getDataFixer(), minecraftSessionService, gameProfileRepository, gameProfileCache, LoggerChunkProgressListener::new);

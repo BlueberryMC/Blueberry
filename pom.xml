@@ -11,6 +11,7 @@
     <modules>
         <module>Blueberry-Client</module>
         <module>Blueberry-API</module>
+        <module>minecraftforge-api</module>
     </modules>
     <name>Blueberry-Parent</name>
     <properties>

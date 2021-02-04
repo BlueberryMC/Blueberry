@@ -9,21 +9,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>blueberry-api</artifactId>
-    <version>0.0.2</version>
-    <name>Blueberry-API</name>
-
+    <!-- we don't need to specify our version really, since it's just forge support / compatibility. -->
+    <artifactId>minecraftforge-api</artifactId>
+    <name>MinecraftForge-API</name>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-    <repositories>
-        <repository>
-            <id>sponge-powered</id>
-            <url>https://repo.spongepowered.org/maven/</url>
-        </repository>
-    </repositories>
     <dependencies>
+        <dependency>
+            <groupId>net.blueberrymc</groupId>
+            <artifactId>blueberry-api</artifactId>
+            <version>0.0.2</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>xyz.acrylicstyle.minecraft</groupId>
             <artifactId>minecraft</artifactId>
@@ -31,29 +30,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>18.0.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>8.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>mixin</artifactId>
-            <version>0.7.11-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.minecraft</groupId>
-            <artifactId>launchwrapper</artifactId>
         </dependency>
     </dependencies>
 </project>
