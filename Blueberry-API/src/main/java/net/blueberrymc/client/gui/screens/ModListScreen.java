@@ -1,5 +1,6 @@
 package net.blueberrymc.client.gui.screens;
 
+import com.google.common.base.Joiner;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
@@ -53,6 +54,8 @@ public class ModListScreen extends Screen {
         super.init();
     }
 
+    private static final Joiner JOINER = Joiner.on(", ");
+
     public void render(PoseStack poseStack, int i, int i2, float f) {
         this.modsList.render(poseStack, i, i2, f);
         drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
@@ -70,13 +73,13 @@ public class ModListScreen extends Screen {
             drawString(poseStack, this.font, "Mod Name: " + mod.getName(), this.width / 4, y, 16777215);
             drawString(poseStack, this.font, "Mod ID: " + mod.getDescription().getModId(), this.width / 4, y += 10, 16777215);
             drawString(poseStack, this.font, "Version: " + mod.getDescription().getVersion(), this.width / 4, y += 10, 16777215);
-            String authors = mod.getDescription().getAuthors();
+            List<String> authors = mod.getDescription().getAuthors();
             if (authors != null) {
-                drawString(poseStack, this.font, "Authors: " + authors, this.width / 4, y += 10, 16777215);
+                drawString(poseStack, this.font, "Authors: " + JOINER.join(authors), this.width / 4, y += 10, 16777215);
             }
-            String credits = mod.getDescription().getCredits();
+            List<String> credits = mod.getDescription().getCredits();
             if (credits != null) {
-                drawString(poseStack, this.font, "Credits: " + credits, this.width / 4, y += 10, 16777215);
+                drawString(poseStack, this.font, "Credits: " + JOINER.join(credits), this.width / 4, y += 10, 16777215);
             }
             drawString(poseStack, this.font, "Status: " + mod.getStateList().getCurrentState().getName(), this.width / 4, y += 10, 16777215);
             List<String> description = mod.getDescription().getDescription();

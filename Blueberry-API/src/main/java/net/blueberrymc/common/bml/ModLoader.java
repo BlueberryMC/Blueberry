@@ -91,7 +91,7 @@ public interface ModLoader {
 
     /**
      * Try to register a mod.
-     * @deprecated internal or debug usage only
+     * @deprecated unstable API
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
     @NotNull

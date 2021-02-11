@@ -22,8 +22,8 @@ public class ModDescriptionFile implements ModInfo {
     @NotNull protected final String version;
     @NotNull protected final String mainClass;
     @NotNull protected final String name;
-    @Nullable protected final String authors;
-    @Nullable protected final String credits;
+    @Nullable protected final List<String> authors;
+    @Nullable protected final List<String> credits;
     @Nullable protected final List<String> description;
     protected final boolean unloadable;
     @NotNull protected final Set<String> depends;
@@ -32,8 +32,8 @@ public class ModDescriptionFile implements ModInfo {
                               @NotNull String version,
                               @NotNull String mainClass,
                               @NotNull String name,
-                              @Nullable String authors,
-                              @Nullable String credits,
+                              @Nullable List<String> authors,
+                              @Nullable List<String> credits,
                               @Nullable List<String> description,
                               boolean unloadable,
                               @Nullable List<String> depends) {
@@ -72,12 +72,12 @@ public class ModDescriptionFile implements ModInfo {
     }
 
     @Nullable
-    public String getAuthors() {
+    public List<String> getAuthors() {
         return authors;
     }
 
     @Nullable
-    public String getCredits() {
+    public List<String> getCredits() {
         return credits;
     }
 
@@ -100,35 +100,17 @@ public class ModDescriptionFile implements ModInfo {
         String version = yaml.getString("version");
         String mainClass = yaml.getString("main");
         String name = yaml.getString("name");
-        StringBuilder authors = new StringBuilder(yaml.getString("author", ""));
+        String author = yaml.getString("author");
+        String credit = yaml.getString("credit");
         YamlArray authorsArray = yaml.getArray("authors");
-        if (authorsArray != null && !authorsArray.isEmpty()) {
-            authors = new StringBuilder();
-            boolean first = true;
-            for (Object o : authorsArray) {
-                String s = o instanceof String ? (String) o : o.toString();
-                if (first) {
-                    first = false;
-                } else {
-                    authors.append(", ");
-                }
-                authors.append(s);
-            }
+        if (author != null) {
+            if (authorsArray == null) authorsArray = new YamlArray();
+            authorsArray.add(author);
         }
-        StringBuilder credits = new StringBuilder(yaml.getString("credits", ""));
         YamlArray creditsArray = yaml.getArray("credits");
-        if (creditsArray != null && !creditsArray.isEmpty()) {
-            credits = new StringBuilder();
-            boolean first = true;
-            for (Object o : creditsArray) {
-                String s = o instanceof String ? (String) o : o.toString();
-                if (first) {
-                    first = false;
-                } else {
-                    authors.append(", ");
-                }
-                credits.append(s).append("\n");
-            }
+        if (credit != null) {
+            if (creditsArray == null) creditsArray = new YamlArray();
+            creditsArray.add(credit);
         }
         YamlArray descriptionArray = yaml.getArray("description");
         List<String> description = descriptionArray == null ? null : descriptionArray.mapAsType(o -> o instanceof String ? (String) o : o.toString());
@@ -144,7 +126,17 @@ public class ModDescriptionFile implements ModInfo {
         if (description == null) {
             LOGGER.info("Mod description for " + name + " is missing");
         }
-        return new ModDescriptionFile(modId, version, mainClass, name, authors.toString(), credits.toString(), description, unloadable, depends);
+        return new ModDescriptionFile(
+                modId,
+                version,
+                mainClass,
+                name,
+                authorsArray == null ? null : authorsArray.mapAsType(Object::toString),
+                creditsArray == null ? null : creditsArray.mapAsType(Object::toString),
+                description,
+                unloadable,
+                depends
+        );
     }
 
     @Override

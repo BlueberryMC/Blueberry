@@ -3,6 +3,8 @@ package net.blueberrymc.common.bml;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
@@ -57,6 +59,7 @@ public class BlueberryModLoader implements ModLoader {
         if (this.modsDir.isFile()) {
             throw new IllegalStateException("mods directory is not a directory");
         }
+        fillClasses(classes);
     }
 
     @Override
@@ -282,7 +285,12 @@ public class BlueberryModLoader implements ModLoader {
         }
         ModClassLoader modClassLoader;
         try {
-            modClassLoader = new ModClassLoader(this, this.getClass().getClassLoader(), description, new File(clazz.getProtectionDomain().getCodeSource().getLocation().toURI()));
+            String path = clazz.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            path = path.replace("\\", "/");
+            path = path.replace(clazz.getPackage().getName().replace(".", "/"), "");
+            path = path.replaceAll("(.*)/.*\\.class", "$1");
+            LOGGER.debug("Class Path of " + clazz.getCanonicalName() + ": " + path);
+            modClassLoader = new ModClassLoader(this, this.getClass().getClassLoader(), description, new File(path));
         } catch (Throwable ex) {
             throw new InvalidModException(ex);
         }
@@ -384,5 +392,10 @@ public class BlueberryModLoader implements ModLoader {
         if (!classes.containsKey(name)) {
             classes.put(name, clazz);
         }
+    }
+
+    private static void fillClasses(Map<String, Class<?>> classes) {
+        classes.put("net.minecraftforge.fml.relauncher.Side", Side.class);
+        classes.put("net.minecraftforge.fml.relauncher.SideOnly", SideOnly.class);
     }
 }

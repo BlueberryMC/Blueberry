@@ -113,8 +113,8 @@ public class Blueberry {
         Preconditions.checkNotNull(gameDir, "gameDir cannot be null");
         Blueberry.side = side;
         Blueberry.gameDir = gameDir;
-        modLoader = new BlueberryModLoader();
         try {
+            modLoader = new BlueberryModLoader();
             BlueberryVersion version = getVersion();
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             InternalBlueberryMod.register();

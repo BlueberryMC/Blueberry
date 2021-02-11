@@ -21,7 +21,11 @@ public class ModFile implements Closeable, AutoCloseable {
     public ModFile(@NotNull("file") File file) throws IOException {
         Preconditions.checkNotNull(file, "file cannot be null");
         if (file.isFile()) {
-            jar = new JarFile(file);
+            try {
+                jar = new JarFile(file);
+            } catch (IOException ex) {
+                throw new IOException("Could not load " + file.getAbsolutePath(), ex);
+            }
             dir = null;
         } else {
             jar = null;
