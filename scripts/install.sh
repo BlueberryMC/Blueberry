@@ -7,13 +7,8 @@ fi
 version=""
 basedir="."
 source ./scripts/functions.sh
-blueberryVersion=
-WORLD_VERSION=2586
-PROTOCOL_VERSION=754
-PACK_VERSION=6
 apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
 datetime=$(date +%Y-%m-%dT%T%:z)
-commit=$(git rev-parse HEAD | head -c 10)
 if [ "$nobuild" == "true" ]; then
   echo "Skipping build, installing version."
 else

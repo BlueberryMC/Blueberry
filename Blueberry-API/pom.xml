@@ -27,7 +27,7 @@
         <dependency>
             <groupId>xyz.acrylicstyle.minecraft</groupId>
             <artifactId>minecraft</artifactId>
-            <version>1.16.5</version>
+            <version>21w07a</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -54,6 +54,21 @@
         <dependency>
             <groupId>net.minecraft</groupId>
             <artifactId>launchwrapper</artifactId>
+            <version>1.12</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.lwjgl.lwjgl</groupId>
+                    <artifactId>lwjgl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.lwjgl</groupId>
+                    <artifactId>lwjgl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.lwjgl</groupId>
+                    <artifactId>lwjgl-openal</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

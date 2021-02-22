@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
+import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.BlueberryEvil;
 import net.blueberrymc.config.ModDescriptionFile;
 import org.jetbrains.annotations.NotNull;
@@ -111,7 +112,7 @@ public class ModClassLoader extends URLClassLoader {
                 } catch (IOException ex) {
                     throw new ClassNotFoundException(name, ex);
                 }
-                bytes = BlueberryEvil.processClass(name, bytes);
+                bytes = Blueberry.getUtil().processClass(name, bytes);
                 int dot = name.lastIndexOf('.');
                 if (dot != -1) {
                     String pkgName = name.substring(0, dot);

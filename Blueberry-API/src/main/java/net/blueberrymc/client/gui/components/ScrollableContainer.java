@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -143,7 +144,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       if (this.renderBackground) {
          this.minecraft.getTextureManager().bind(GuiComponent.BACKGROUND_LOCATION);
          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-         bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
+         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
          bufferBuilder.vertex(this.left, this.bottom, 0.0D).uv((float)this.left / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
          bufferBuilder.vertex(this.right, this.bottom, 0.0D).uv((float)this.right / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
          bufferBuilder.vertex(this.right, this.top, 0.0D).uv((float)this.right / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
@@ -162,7 +163,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
          this.minecraft.getTextureManager().bind(GuiComponent.BACKGROUND_LOCATION);
          RenderSystem.enableDepthTest();
          RenderSystem.depthFunc(519);
-         bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
+         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
          bufferBuilder.vertex(this.left, this.top, -100.0D).uv(0.0F, (float)this.top / 32.0F).color(64, 64, 64, 255).endVertex();
          bufferBuilder.vertex(this.left + this.width, this.top, -100.0D).uv((float)this.width / 32.0F, (float)this.top / 32.0F).color(64, 64, 64, 255).endVertex();
          bufferBuilder.vertex(this.left + this.width, 0.0D, -100.0D).uv((float)this.width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
@@ -179,7 +180,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
          RenderSystem.disableAlphaTest();
          RenderSystem.shadeModel(7425);
          RenderSystem.disableTexture();
-         bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
+         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
          bufferBuilder.vertex(this.left, this.top + 4, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
          bufferBuilder.vertex(this.right, this.top + 4, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
          bufferBuilder.vertex(this.right, this.top, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
@@ -201,7 +202,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
             i11 = this.top;
          }
 
-         bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
+         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
          bufferBuilder.vertex(i3, this.bottom, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
          bufferBuilder.vertex(i4, this.bottom, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
          bufferBuilder.vertex(i4, this.top, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();

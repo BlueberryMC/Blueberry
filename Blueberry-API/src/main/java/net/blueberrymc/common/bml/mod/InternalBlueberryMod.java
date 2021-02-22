@@ -25,6 +25,7 @@ import net.minecraft.world.level.material.Material;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class InternalBlueberryMod extends BlueberryMod {
     public static MilkFluid FLOWING_MILK;
@@ -58,8 +59,8 @@ public class InternalBlueberryMod extends BlueberryMod {
                 Versioning.getVersion().getFullyQualifiedVersion(),
                 "net.blueberrymc.common.bml.mod.InternalBlueberryMod",
                 "Blueberry",
-                "Blueberry development team",
-                "MagmaCube",
+                Collections.singletonList("Blueberry development team"),
+                Collections.singletonList("MagmaCube"),
                 Arrays.asList("Modding API for Minecraft", "Disabling this mod has no effect on functionally."),
                 true,
                 null);

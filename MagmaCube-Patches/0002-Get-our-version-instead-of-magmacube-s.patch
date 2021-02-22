@@ -5,11 +5,11 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index c16627f8c11309e0c576ca4829138eab3ae74463..c7205d2b4c5b21840f2f104a430f9fb91c065df9 100644
+index cd659dda61fd0e6527b27a32851aaa250ee05c9b..15ff957e9d4219657be6f1ba00901a21a6d2ecb1 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
-@@ -24,7 +24,7 @@ public class DetectedVersion implements GameVersion {
-    private final int packVersion;
+@@ -26,7 +26,7 @@ public class DetectedVersion implements GameVersion {
+    private final int dataPackVersion;
     private final Date buildTime;
     private final String releaseTarget;
 -   @javax.annotation.Nullable public final String magmaCubeVersion; // MagmaCube
@@ -17,18 +17,18 @@ index c16627f8c11309e0c576ca4829138eab3ae74463..c7205d2b4c5b21840f2f104a430f9fb9
  
     private DetectedVersion() {
        this.id = UUID.randomUUID().toString().replaceAll("-", "");
-@@ -35,7 +35,7 @@ public class DetectedVersion implements GameVersion {
-       this.packVersion = 6;
+@@ -38,7 +38,7 @@ public class DetectedVersion implements GameVersion {
+       this.dataPackVersion = 7;
        this.buildTime = new Date();
-       this.releaseTarget = "1.16.5";
+       this.releaseTarget = "1.17";
 -      this.magmaCubeVersion = "debug"; // MagmaCube
 +      // this.magmaCubeVersion = "debug"; // MagmaCube // Blueberry
     }
  
     private DetectedVersion(JsonObject jsonObject) {
-@@ -47,7 +47,7 @@ public class DetectedVersion implements GameVersion {
-       this.protocolVersion = GsonHelper.getAsInt(jsonObject, "protocol_version");
-       this.packVersion = GsonHelper.getAsInt(jsonObject, "pack_version");
+@@ -52,7 +52,7 @@ public class DetectedVersion implements GameVersion {
+       this.resourcePackVersion = GsonHelper.getAsInt(jsonObject2, "resource");
+       this.dataPackVersion = GsonHelper.getAsInt(jsonObject2, "data");
        this.buildTime = Date.from(ZonedDateTime.parse(GsonHelper.getAsString(jsonObject, "build_time")).toInstant());
 -      this.magmaCubeVersion = jsonObject.has("magmacube_version") ? GsonHelper.getAsString(jsonObject, "magmacube_version") : "debug"; // MagmaCube
 +      // this.magmaCubeVersion = jsonObject.has("magmacube_version") ? GsonHelper.getAsString(jsonObject, "magmacube_version") : "debug"; // MagmaCube // Blueberry
@@ -36,10 +36,10 @@ index c16627f8c11309e0c576ca4829138eab3ae74463..c7205d2b4c5b21840f2f104a430f9fb9
  
     public static GameVersion tryDetectVersion() {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 4ced50fdc9cec839caa9b044fedfabbc714ac6d2..98366f9b6e540f63dfd2083ecda13daa0370f1af 100644
+index 8b2a257c8e71db31767b90ee7d55005110d5899a..5707abb15044b5f43c3d815dde540de450efd8ee 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -664,7 +664,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -667,7 +667,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
     }
  
     public String getLaunchedVersion() {
