@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 7f21b31eafab375c5370a9d213db0eeea84a3b9e..089d9fc4442fa08de92d74cce6931c9959018319 100644
+index 7f21b31eafab375c5370a9d213db0eeea84a3b9e..25553f4495fbdee6225f7f53ca9cb74ea3c7d9a7 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -39,7 +39,17 @@ index 7f21b31eafab375c5370a9d213db0eeea84a3b9e..089d9fc4442fa08de92d74cce6931c99
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -59,6 +64,18 @@
+@@ -39,6 +44,9 @@
+                             <artifact>*:*</artifact>
+                             <excludes>
+                                 <exclude>**/Log4j2Plugins.dat</exclude>
++                                <exclude>META-INF/*.SF</exclude>
++                                <exclude>META-INF/*.DSA</exclude>
++                                <exclude>META-INF/*.RSA</exclude>
+                             </excludes>
+                         </filter>
+                     </filters>
+@@ -59,6 +67,18 @@
      </repositories>
  
      <dependencies>
