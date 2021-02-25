@@ -3,12 +3,12 @@ package net.blueberrymc.network.client.handshake;
 import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.status.ClientStatusPacketListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueberryHandshakePacketListener> {
+public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusPacketListener> {
     private List<ModInfo> modInfos;
 
     public ClientboundBlueberryHandshakePacket() {}
@@ -17,8 +17,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueber
         this.modInfos = modInfos;
     }
 
-    @Override
-    public void read(FriendlyByteBuf friendlyByteBuf) throws IOException {
+    public ClientboundBlueberryHandshakePacket(FriendlyByteBuf friendlyByteBuf) {
         this.modInfos = new ArrayList<>();
         int size = friendlyByteBuf.readInt();
         for (int i = 0; i < size; i++) {
@@ -29,7 +28,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueber
     }
 
     @Override
-    public void write(FriendlyByteBuf friendlyByteBuf) throws IOException {
+    public void write(FriendlyByteBuf friendlyByteBuf) {
         List<ModInfo> modInfoList = modInfos;
         friendlyByteBuf.writeInt(modInfoList.size());
         for (ModInfo modInfo : modInfoList) {
@@ -39,8 +38,8 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientBlueber
     }
 
     @Override
-    public void handle(ClientBlueberryHandshakePacketListener clientBlueberryPacketListener) {
-        clientBlueberryPacketListener.handleBlueberryHandshakeResponse(this);
+    public void handle(ClientStatusPacketListener clientBlueberryPacketListener) {
+        ((ClientBlueberryHandshakePacketListener) clientBlueberryPacketListener).handleBlueberryHandshakeResponse(this);
     }
 
     /**
