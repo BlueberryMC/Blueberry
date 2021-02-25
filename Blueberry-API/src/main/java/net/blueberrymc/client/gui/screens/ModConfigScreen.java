@@ -51,6 +51,12 @@ public class ModConfigScreen extends Screen {
         }));
         int offset = 38;
         for (VisualConfig<?> config : this.compoundVisualConfig) {
+            Button.OnTooltip onTooltip;
+            if (config.getDescription() != null) {
+                onTooltip = (button, poseStack, i, i1) -> this.renderTooltip(poseStack, this.minecraft.font.split(config.getDescription(), Math.max(this.width / 2 - 43, 170)), i, i1);
+            } else {
+                onTooltip = Button.NO_TOOLTIP;
+            }
             if (config instanceof CompoundVisualConfig) {
                 CompoundVisualConfig compoundVisualConfig = (CompoundVisualConfig) config;
                 Component component;
@@ -63,14 +69,14 @@ public class ModConfigScreen extends Screen {
                 }
                 container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, component, button -> {
                     this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this));
-                }));
+                }, onTooltip));
             } else if (config instanceof BooleanVisualConfig) {
                 BooleanVisualConfig booleanVisualConfig = (BooleanVisualConfig) config;
                 container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, getButtonMessage(booleanVisualConfig), (button) -> {
                     Boolean curr = booleanVisualConfig.get();
                     booleanVisualConfig.set(!(curr != null && curr));
                     updateBooleanButton(booleanVisualConfig, button);
-                }));
+                }, onTooltip));
             }
         }
         this.children.add(container);

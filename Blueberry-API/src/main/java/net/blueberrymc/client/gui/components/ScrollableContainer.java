@@ -95,14 +95,14 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
    }
 
    @Nullable
-   protected final E getEntryAtPosition(double d, double d2) {
-      int rowRadius = this.getRowWidth() / 2;
+   protected final E getEntryAtPosition(double x, double y) {
+      int rowRadius = this.getRowWidth() / 6; // 2 -> 6
       int renderRange = this.left + this.width / 2;
-      int i3 = renderRange - rowRadius;
-      int i4 = renderRange + rowRadius;
-      int i5 = Mth.floor(d2 - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
-      int i6 = i5 / this.itemHeight;
-      return d < (double)this.getScrollbarPosition() && d >= (double)i3 && d <= (double)i4 && i6 >= 0 && i5 >= 0 && i6 < this.getItemCount() ? this.children().get(i6) : null;
+      double left = renderRange - rowRadius;
+      double right = renderRange + rowRadius;
+      int height = Mth.floor(y - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
+      int entryHeight = height / this.itemHeight;
+      return x < (double) this.getScrollbarPosition() && x >= left && x <= right && entryHeight >= 0 && height >= 0 && entryHeight < this.getItemCount() ? this.children().get(entryHeight) : null;
    }
 
    public void updateSize(int width, int height, int top, int bottom) {
@@ -219,6 +219,13 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       }
 
       this.renderDecorations(poseStack, i, i2);
+      children.forEach(e -> {
+         if (e instanceof AbstractWidget) {
+            if (((AbstractWidget) e).isFocused()) {
+               ((AbstractWidget) e).renderToolTip(poseStack, i, i2);
+            }
+         }
+      });
       RenderSystem.enableTexture();
       RenderSystem.shadeModel(7424);
       RenderSystem.enableAlphaTest();

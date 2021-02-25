@@ -1,6 +1,7 @@
 package net.blueberrymc.common.bml.config;
 
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class VisualConfig<T> {
     private final Component component;
@@ -32,7 +33,20 @@ public abstract class VisualConfig<T> {
         return defaultValue;
     }
 
-    // it's not used anywhere in the Blueberry API, so you can use it for storing config path, etc.
+    @Nullable
+    private Component description;
+
+    public VisualConfig<T> description(@Nullable Component description) {
+        this.description = description;
+        return this;
+    }
+
+    @Nullable
+    public Component getDescription() {
+        return description;
+    }
+
+    // you can use it for anything like storing config path, etc.
     private String id;
 
     public VisualConfig<T> id(String id) {

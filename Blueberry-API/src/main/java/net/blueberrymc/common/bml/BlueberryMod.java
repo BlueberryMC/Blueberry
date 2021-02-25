@@ -136,7 +136,7 @@ public class BlueberryMod implements ModInfo {
     }
 
     /**
-     * Saves the configuration file. {@link VisualConfig#id(String)} must be called to valid config path to work.
+     * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
      * @param compoundVisualConfig the visual config
      */
     public void save(@NotNull("compoundVisualConfig") CompoundVisualConfig compoundVisualConfig) {

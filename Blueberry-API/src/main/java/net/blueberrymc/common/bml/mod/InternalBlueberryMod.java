@@ -51,6 +51,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean showDRGameTestDebug = false;
     public static boolean liquidMilk = false;
     public static boolean item3d = false;
+    public static boolean discordRpc = false;
 
     @SuppressWarnings("deprecation")
     public static void register() {
@@ -105,8 +106,12 @@ public class InternalBlueberryMod extends BlueberryMod {
                         .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk")).id("gamePlay.liquidMilk"))
         );
         this.getVisualConfig().add(
+                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
+                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc"), this.getConfig().getBoolean("misc.discordRpc")).id("misc.discordRpc"))
+        );
+        this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.title"))
-                        .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d")).id("test.3d"))
+                        .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d")).id("test.3d").description(new TextComponent("Yes!")))
         );
         registerVisualConfigTest();
         reload();
@@ -192,5 +197,6 @@ public class InternalBlueberryMod extends BlueberryMod {
         showDRGameTestDebug = getConfig().getBoolean("debugRenderer.gameTestDebug", false);
         liquidMilk = getConfig().getBoolean("gamePlay.liquidMilk", false);
         item3d = getConfig().getBoolean("test.3d", false);
+        discordRpc = getConfig().getBoolean("misc.discordRpc", false);
     }
 }
