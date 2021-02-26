@@ -19,6 +19,9 @@ public interface ModLoader {
     @NotNull
     List<BlueberryMod> getLoadedMods();
 
+    @Nullable
+    BlueberryMod getModById(@NotNull String modId);
+
     default <T> List<T> mapLoadedMods(@NotNull Function<BlueberryMod, T> mapFunction) {
         List<T> list = new ArrayList<>();
         getLoadedMods().forEach(mod -> list.add(mapFunction.apply(mod)));

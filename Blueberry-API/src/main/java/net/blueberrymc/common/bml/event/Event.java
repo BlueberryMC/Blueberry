@@ -37,6 +37,14 @@ public abstract class Event {
         }
     }
 
+    /**
+     * Checks if this event is asynchronous. The event call will fail on these cases:
+     * <ul>
+     *     <li>the event is <b>asynchronous</b> but the event is fired synchronously.</li>
+     *     <li>the event is <b>synchronous</b> (not asynchronous) but the event is fired asynchronously.</li>
+     * </ul>
+     * @return whether the event is asynchronous
+     */
     public final boolean isAsynchronous() {
         return async;
     }

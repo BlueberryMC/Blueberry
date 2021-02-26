@@ -8,6 +8,7 @@ import net.blueberrymc.common.bml.event.HandlerList;
 import net.blueberrymc.common.bml.event.Listener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -72,9 +73,22 @@ public class EventManager {
         handlerMap.values().forEach(handlerList -> handlerList.remove(listener));
     }
 
+    /**
+     * Calls an event.
+     * @param event the event
+     * @throws IllegalStateException Thrown when an asynchronous/synchronous event is fired from wrong thread.
+     * @return the fired event
+     */
+    @Contract("_ -> param1")
     @NotNull
     public <T extends Event> T callEvent(@NotNull T event) {
         Preconditions.checkNotNull(event, "event cannot be null");
+        if (Blueberry.getUtil().isOnGameThread() && event.isAsynchronous()) {
+            throw new IllegalStateException(event.getEventName() + " cannot be triggered asynchronously from " + Thread.currentThread().getName());
+        }
+        if (!Blueberry.getUtil().isOnGameThread() && !event.isAsynchronous()) {
+            throw new IllegalStateException(event.getEventName() + " cannot be triggered synchronously from " + Thread.currentThread().getName());
+        }
         getHandlerList(event.getClass()).fire(event);
         return event;
     }

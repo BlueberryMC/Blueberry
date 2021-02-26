@@ -1,10 +1,13 @@
 package net.blueberrymc.client.event.render;
 
+import net.blueberrymc.client.event.AsyncEvent;
+import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 
+@AsyncEvent
 public class LiquidBlockRenderEvent extends RenderEvent {
     private static final HandlerList handlerList = new HandlerList();
     private final FluidState fluidState;
@@ -12,7 +15,7 @@ public class LiquidBlockRenderEvent extends RenderEvent {
     private int color;
 
     public LiquidBlockRenderEvent(@NotNull FluidState fluidState, @NotNull BlockPos blockPos, int color) {
-        super();
+        super(!Blueberry.getUtil().isOnGameThread());
         this.fluidState = fluidState;
         this.blockPos = blockPos;
         this.color = color;

@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 
-public class RefField<T> implements RefModifierEditor<RefField<T>, Field> {
+public class RefField<T> {
     @NotNull
     private final Field field;
 
@@ -116,7 +116,4 @@ public class RefField<T> implements RefModifierEditor<RefField<T>, Field> {
     @NotNull
     @Contract(pure = true)
     public Type getGenericType() { return this.field.getGenericType(); }
-
-    @Override
-    public @NotNull Member getMember() { return field; }
 }

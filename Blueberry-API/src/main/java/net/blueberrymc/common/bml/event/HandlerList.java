@@ -61,7 +61,7 @@ public class HandlerList {
                     method.invoke(entry.getKey(), event);
                 }
             } catch (Throwable e) {
-                throw new EventException("Could not pass event to listener " + entry.getKey().getClass().getCanonicalName() + " of mod " + entry.getValue().getName(), e);
+                throw new EventException("Could not pass event " + event.getEventName() + " to listener " + entry.getKey().getClass().getCanonicalName() + " of mod " + entry.getValue().getName(), e);
             }
         });
     }

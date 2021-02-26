@@ -2,17 +2,29 @@ package net.blueberrymc.common.bml.mod;
 
 import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.BlueberryUtil;
+import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.bml.ModState;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.item.SimpleBlueberryBucketItem;
 import net.blueberrymc.common.item.SimpleBlueberryItem;
+import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.server.command.ModIdArgument;
 import net.blueberrymc.world.level.BlueberryLiquidBlock;
 import net.blueberrymc.world.level.material.MilkFluid;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.network.chat.TextComponent;
@@ -24,7 +36,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class InternalBlueberryMod extends BlueberryMod {
@@ -37,7 +48,6 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean showDRHeightMap = false;
     public static boolean showDRCollisionBox = false;
     public static boolean showDRNeighborsUpdate = false;
-    public static boolean showDRCave = false;
     public static boolean showDRStructure = false;
     public static boolean showDRLightDebug = false;
     public static boolean showDRWorldGenAttempt = false;
@@ -51,7 +61,8 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean showDRGameTestDebug = false;
     public static boolean liquidMilk = false;
     public static boolean item3d = false;
-    public static boolean discordRpc = false;
+    public static boolean discordRpc = true;
+    public static boolean discordRpcShowServerIp = false;
 
     @SuppressWarnings("deprecation")
     public static void register() {
@@ -62,14 +73,17 @@ public class InternalBlueberryMod extends BlueberryMod {
                 "Blueberry",
                 Collections.singletonList("Blueberry development team"),
                 Collections.singletonList("MagmaCube"),
-                Arrays.asList("Modding API for Minecraft", "Disabling this mod has no effect on functionally."),
-                true,
+                Collections.singletonList("Modding API for Minecraft"),
+                false,
                 null);
         Blueberry.getModLoader().forceRegisterMod(description, InternalBlueberryMod.class);
     }
 
     @Override
     public void onLoad() {
+        if (isFirst()) {
+            Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
+        }
         this.getVisualConfig().onSave = config -> {
             this.save(config);
             reload();
@@ -88,7 +102,6 @@ public class InternalBlueberryMod extends BlueberryMod {
                         .add(new BooleanVisualConfig(new TextComponent("Height Map Renderer"), this.getConfig().getBoolean("debugRenderer.heightMap", false)).id("debugRenderer.heightMap"))
                         .add(new BooleanVisualConfig(new TextComponent("Collision Box Renderer"), this.getConfig().getBoolean("debugRenderer.collisionBox", false)).id("debugRenderer.collisionBox"))
                         .add(new BooleanVisualConfig(new TextComponent("Neighbors Update Renderer"), this.getConfig().getBoolean("debugRenderer.neighborsUpdate", false)).id("debugRenderer.neighborsUpdate"))
-                        .add(new BooleanVisualConfig(new TextComponent("Cave Renderer"), this.getConfig().getBoolean("debugRenderer.cave", false)).id("debugRenderer.cave"))
                         .add(new BooleanVisualConfig(new TextComponent("Structure Renderer"), this.getConfig().getBoolean("debugRenderer.structure", false)).id("debugRenderer.structure"))
                         .add(new BooleanVisualConfig(new TextComponent("Light Debug Renderer"), this.getConfig().getBoolean("debugRenderer.lightDebug", false)).id("debugRenderer.lightDebug"))
                         .add(new BooleanVisualConfig(new TextComponent("World Gen Attempt Renderer"), this.getConfig().getBoolean("debugRenderer.worldGenAttempt", false)).id("debugRenderer.worldGenAttempt"))
@@ -107,7 +120,9 @@ public class InternalBlueberryMod extends BlueberryMod {
         );
         this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
-                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc"), this.getConfig().getBoolean("misc.discordRpc")).id("misc.discordRpc"))
+                        .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
+                                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enabled"), this.getConfig().getBoolean("misc.discordRpc.enabled")).id("misc.discordRpc.enabled"))
+                                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp")).id("misc.discordRpc.showServerIp")))
         );
         this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.title"))
@@ -123,6 +138,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     @Override
     public void onPreInit() {
         if (isFirst()) {
+            Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
             registerArgumentTypes();
         }
         FLOWING_MILK = MilkFluid.Flowing.INSTANCE;
@@ -131,6 +147,13 @@ public class InternalBlueberryMod extends BlueberryMod {
         registerFluids();
         registerBlocks();
         registerItems();
+    }
+
+    @Override
+    public void onInit() {
+        if (isFirst()) {
+            Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
+        }
     }
 
     private void registerVisualConfigTest() {
@@ -156,7 +179,12 @@ public class InternalBlueberryMod extends BlueberryMod {
 
     @Override
     public void onPostInit() {
-        if (!isFirst()) Blueberry.getUtil().reloadResourcePacks();
+        if (isFirst()) {
+            refreshDiscordStatus(Minecraft.getInstance().screen);
+        }
+        if (!isFirst()) {
+            Blueberry.getUtil().reloadResourcePacks();
+        }
     }
 
     private void registerBlocks() {
@@ -183,7 +211,6 @@ public class InternalBlueberryMod extends BlueberryMod {
         showDRHeightMap = getConfig().getBoolean("debugRenderer.heightMap", false);
         showDRCollisionBox = getConfig().getBoolean("debugRenderer.collisionBox", false);
         showDRNeighborsUpdate = getConfig().getBoolean("debugRenderer.neighborsUpdate", false);
-        showDRCave = getConfig().getBoolean("debugRenderer.cave", false);
         showDRStructure = getConfig().getBoolean("debugRenderer.structure", false);
         showDRLightDebug = getConfig().getBoolean("debugRenderer.lightDebug", false);
         showDRWorldGenAttempt = getConfig().getBoolean("debugRenderer.worldGenAttempt", false);
@@ -197,6 +224,54 @@ public class InternalBlueberryMod extends BlueberryMod {
         showDRGameTestDebug = getConfig().getBoolean("debugRenderer.gameTestDebug", false);
         liquidMilk = getConfig().getBoolean("gamePlay.liquidMilk", false);
         item3d = getConfig().getBoolean("test.3d", false);
-        discordRpc = getConfig().getBoolean("misc.discordRpc", false);
+        discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
+        discordRpcShowServerIp = getConfig().getBoolean("misc.discordRpc.showServerIp", false);
+        if (Blueberry.getSide() == Side.CLIENT) {
+            DiscordRPCTaskExecutor.init(discordRpc);
+            ModState currentState = getStateList().getCurrentState();
+            if (currentState == ModState.AVAILABLE || currentState == ModState.UNLOADED) {
+                refreshDiscordStatus(Minecraft.getInstance().screen);
+            }
+        }
+    }
+
+    public static void refreshDiscordStatus(Screen screen) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (screen instanceof JoinMultiplayerScreen) {
+            Blueberry.getUtil().updateDiscordStatus("In Server List Menu");
+            return;
+        } else if (screen instanceof TitleScreen) {
+            Blueberry.getUtil().updateDiscordStatus("In Main Menu");
+            return;
+        } else if (screen instanceof SelectWorldScreen) {
+            Blueberry.getUtil().updateDiscordStatus("In Select World Menu");
+            return;
+        }
+        if (screen == null) {
+            LocalPlayer player = minecraft.player;
+            if (player == null) {
+                Blueberry.getUtil().updateDiscordStatus("In Main Menu");
+                return;
+            }
+            IntegratedServer integratedServer = minecraft.getSingleplayerServer();
+            if (minecraft.isLocalServer() && integratedServer != null) {
+                Blueberry.getUtil().updateDiscordStatus("Playing on Single Player", integratedServer.getWorldData().getLevelName(), BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                return;
+            }
+            if (minecraft.isConnectedToRealms()) {
+                Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                return;
+            }
+            ServerData serverData = minecraft.getCurrentServer();
+            if (serverData != null) {
+                if (serverData.isLan()) {
+                    Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    return;
+                } else {
+                    Blueberry.getUtil().updateDiscordStatus("Playing on third-party server", InternalBlueberryMod.discordRpcShowServerIp ? serverData.ip : null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    return;
+                }
+            }
+        }
     }
 }

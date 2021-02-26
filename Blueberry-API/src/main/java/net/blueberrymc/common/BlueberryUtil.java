@@ -1,6 +1,9 @@
 package net.blueberrymc.common;
 
+import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.common.util.BlueberryEvil;
+import net.blueberrymc.common.util.SimpleEntry;
+import net.blueberrymc.common.util.Versioning;
 import net.minecraft.CrashReport;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +24,35 @@ public interface BlueberryUtil {
     void reloadResourcePacks();
 
     void crash(@NotNull CrashReport crashReport);
+
+    default boolean isOnGameThread() {
+        return false;
+    }
+
+    SimpleEntry<String, String> BLUEBERRY_ICON = SimpleEntry.of("blueberry",Versioning.getVersion().getFullyQualifiedVersion());
+
+    default void updateDiscordStatus(@Nullable String details) {
+        updateDiscordStatus(details, null);
+    }
+
+    default void updateDiscordStatus(@Nullable String details, @Nullable String state) {
+        updateDiscordStatus(details, state, BLUEBERRY_ICON);
+    }
+
+    default void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage) {
+        updateDiscordStatus(details, state, bigImage, null);
+    }
+
+    default void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage) {
+        updateDiscordStatus(details, state, bigImage, smallImage, 0);
+    }
+
+    default void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {}
+
+    @Nullable
+    default DiscordRichPresence getDiscordRichPresenceQueue() { return null; }
+
+    default void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {}
 
     default byte[] processClass(String path, byte[] b) {
         try {

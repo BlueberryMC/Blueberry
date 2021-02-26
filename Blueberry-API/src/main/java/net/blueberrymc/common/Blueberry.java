@@ -6,8 +6,10 @@ import net.blueberrymc.common.bml.BlueberryModLoader;
 import net.blueberrymc.common.bml.EventManager;
 import net.blueberrymc.common.bml.ModLoader;
 import net.blueberrymc.common.bml.ModManager;
+import net.blueberrymc.common.bml.ModState;
 import net.blueberrymc.common.bml.mod.InternalBlueberryMod;
 import net.blueberrymc.common.util.BlueberryVersion;
+import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.server.BlueberryServer;
 import net.minecraft.CrashReport;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Objects;
 
 public class Blueberry {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -107,10 +110,17 @@ public class Blueberry {
         return util;
     }
 
+    public static ModState getCurrentState() {
+        ModState state = Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
+        if (state == ModState.UNLOADED) return ModState.AVAILABLE; // should not return UNLOADED
+        return state;
+    }
+
     public static void bootstrap(@NotNull("side") Side side, @NotNull("gameDir") File gameDir) {
         Preconditions.checkArgument(Blueberry.side == null, "Blueberry is already initialized!");
         Preconditions.checkArgument(side != Side.BOTH, "Invalid Side: " + side.name());
         Preconditions.checkNotNull(gameDir, "gameDir cannot be null");
+        Runtime.getRuntime().addShutdownHook(new Thread(DiscordRPCTaskExecutor::shutdown));
         Blueberry.side = side;
         Blueberry.gameDir = gameDir;
         try {

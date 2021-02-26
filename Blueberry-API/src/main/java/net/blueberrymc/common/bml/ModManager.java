@@ -8,6 +8,7 @@ import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,5 +69,18 @@ public class ModManager {
             modInfos.add(new ModInfo(mod.getDescription().getModId(), mod.getDescription().getVersion()));
         });
         return ImmutableList.copyOf(modInfos);
+    }
+
+    @Nullable
+    public BlueberryMod getModById(@NotNull String modId) {
+        return Blueberry.getModLoader().getModById(modId);
+    }
+
+    @Nullable
+    public BlueberryMod getModByName(@NotNull String modName) {
+        for (BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
+            if (mod.getName().equals(modName)) return mod;
+        }
+        return null;
     }
 }

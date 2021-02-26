@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-public class RefMethod<T> extends RefExecutable implements RefModifierEditor<RefMethod<T>, Method> {
+public class RefMethod<T> extends RefExecutable {
     @NotNull
     private final Method method;
 

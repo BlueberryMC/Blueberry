@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 
-public class RefConstructor<T> extends RefExecutable implements RefModifierEditor<RefConstructor<T>, Constructor<T>> {
+public class RefConstructor<T> extends RefExecutable {
     @NotNull
     private final Constructor<T> constructor;
 

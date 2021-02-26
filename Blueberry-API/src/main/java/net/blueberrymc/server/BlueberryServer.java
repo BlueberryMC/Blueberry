@@ -60,4 +60,9 @@ public class BlueberryServer implements BlueberryUtil {
         this.stopServer();
         System.exit(1);
     }
+
+    @Override
+    public boolean isOnGameThread() {
+        return server.isSameThread();
+    }
 }

@@ -68,6 +68,11 @@ public class BlueberryModLoader implements ModLoader {
     }
 
     @Override
+    public @Nullable BlueberryMod getModById(@NotNull String modId) {
+        return id2ModMap.get(modId);
+    }
+
+    @Override
     public void loadMods() {
         LOGGER.info("Looking for mods in " + this.getModsDir().getAbsolutePath());
         List<File> toLoad = new ArrayList<>();

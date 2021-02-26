@@ -4,6 +4,10 @@ import net.blueberrymc.common.bml.event.Event;
 
 public abstract class RenderEvent extends Event {
     public RenderEvent() {
-        super(true);
+        super();
+    }
+
+    public RenderEvent(boolean async) {
+        super(async);
     }
 }
