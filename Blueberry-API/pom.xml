@@ -31,7 +31,7 @@
         <dependency>
             <groupId>xyz.acrylicstyle.minecraft</groupId>
             <artifactId>minecraft</artifactId>
-            <version>21w08a</version>
+            <version>21w08b</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

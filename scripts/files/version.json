@@ -106,13 +106,13 @@
     ]
   },
   "assetIndex": {
-    "id": "1.16",
-    "sha1": "1e185d112e2ee017330fb83700b5eaa93fb5cdfd",
-    "size": 295515,
-    "totalSize": 329392786,
-    "url": "https://launchermeta.mojang.com/v1/packages/1e185d112e2ee017330fb83700b5eaa93fb5cdfd/1.16.json"
+    "id": "1.17",
+    "sha1": "0305fa3b64cb3e7c32cab0d3458eb4d948ebf18f",
+    "size": 337572,
+    "totalSize": 341866312,
+    "url": "https://launchermeta.mojang.com/v1/packages/0305fa3b64cb3e7c32cab0d3458eb4d948ebf18f/1.17.json"
   },
-  "assets": "1.16",
+  "assets": "1.17",
   "logging": {
     "client": {
       "argument": "-Dlog4j.configurationFile=${path}",
@@ -127,4 +127,4 @@
   },
   "mainClass": "net.minecraft.client.main.Main",
   "minimumLauncherVersion": 21,
-  "type": "release",
+  "type": "snapshot",
