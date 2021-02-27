@@ -28,27 +28,23 @@ public class HandlerList {
     public void remove(@NotNull("mod") BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         List<Method> toRemove = new ArrayList<>();
-        synchronized (methods) {
-            methods.forEach((method, entry) -> {
-                if (entry.getValue().equals(mod)) {
-                    toRemove.add(method);
-                }
-            });
-            toRemove.forEach(methods::remove);
-        }
+        methods.forEach((method, entry) -> {
+            if (entry.getValue().equals(mod)) {
+                toRemove.add(method);
+            }
+        });
+        toRemove.forEach(methods::remove);
     }
 
     public void remove(@NotNull("listener") Listener listener) {
         Preconditions.checkNotNull(listener, "listener cannot be null");
         List<Method> toRemove = new ArrayList<>();
-        synchronized (methods) {
-            methods.forEach((method, entry) -> {
-                if (entry.getKey().equals(listener)) {
-                    toRemove.add(method);
-                }
-            });
-            toRemove.forEach(methods::remove);
-        }
+        methods.forEach((method, entry) -> {
+            if (entry.getKey().equals(listener)) {
+                toRemove.add(method);
+            }
+        });
+        toRemove.forEach(methods::remove);
     }
 
     public void fire(@NotNull("event") Event event) {
@@ -61,7 +57,8 @@ public class HandlerList {
                     method.invoke(entry.getKey(), event);
                 }
             } catch (Throwable e) {
-                throw new EventException("Could not pass event " + event.getEventName() + " to listener " + entry.getKey().getClass().getCanonicalName() + " of mod " + entry.getValue().getName(), e);
+                Throwable cause = e.getCause() != null ? e.getCause() : e.getCause();
+                new EventException("Could not pass event " + event.getEventName() + " to listener " + entry.getKey().getClass().getCanonicalName() + " of mod " + entry.getValue().getName(), cause).printStackTrace();
             }
         });
     }
