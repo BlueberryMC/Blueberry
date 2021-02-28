@@ -7,7 +7,15 @@ import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.util.SimpleEntry;
 import net.minecraft.CrashReport;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +23,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class BlueberryClient implements BlueberryUtil {
     private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();
+    @Nullable private final BlueberryClient impl;
+
+    public BlueberryClient() {
+        this(null);
+    }
+
+    public BlueberryClient(@Nullable BlueberryClient impl) {
+        this.impl = impl;
+    }
 
     @Override
     public @NotNull ResourceManager getResourceManager() {
@@ -64,5 +81,23 @@ public class BlueberryClient implements BlueberryUtil {
     @Override
     public void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {
         discordRichPresenceQueue.set(discordRichPresence);
+    }
+
+    @NotNull
+    public BlueberryClient getImpl() {
+        if (impl == null) throw new IllegalArgumentException("impl isn't defined (yet)");
+        return impl;
+    }
+
+    public void registerSpecialBlockEntityRenderer(BlockEntityType<?> blockEntityType, BlockEntityRenderer<?> blockEntityRenderer) {
+        getImpl().registerSpecialBlockEntityRenderer(blockEntityType, blockEntityRenderer);
+    }
+
+    public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(MenuType<? extends M> menuType, ScreenConstructor<M, U> screenConstructor) {
+        getImpl().registerMenuScreensFactory(menuType, screenConstructor);
+    }
+
+    public interface ScreenConstructor<T extends AbstractContainerMenu, U extends Screen & MenuAccess<T>> {
+        U create(T menu, Inventory inventory, Component component);
     }
 }

@@ -302,14 +302,14 @@ index 8ec13bf63bd870be5984a19206bf2f5532810ce3..d6b0305730bcdb6d8dbbf494825a130f
        float f2 = (float)(i >> 8 & 255) / 255.0F;
        float f3 = (float)(i & 255) / 255.0F;
 diff --git a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
-index 93b723daad84174ad8822d0516f5136dd5737a16..d5a3bde34c45e4ec7ee49425942b6fc1d24dcf56 100644
+index 93b723daad84174ad8822d0516f5136dd5737a16..857b3b6f2a1cd742d1f24f9c8010b7bf82adf635 100644
 --- a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
 @@ -22,6 +22,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.EntityHitResult;
  import net.minecraft.world.phys.Vec3;
-+import static net.blueberrymc.common.bml.mod.InternalBlueberryMod.*; // Blueberry
++import static net.blueberrymc.common.bml.InternalBlueberryMod.*; // Blueberry
  
  public class DebugRenderer {
     public final PathfindingRenderer pathfindingRenderer = new PathfindingRenderer();

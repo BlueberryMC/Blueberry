@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>blueberry-api</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>Blueberry-API</name>
 
     <properties>
@@ -54,11 +54,13 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>mixin</artifactId>
             <version>0.7.11-SNAPSHOT</version>
+            <scope>provided</scope> <!-- do not include in the jar for now -->
         </dependency>
         <dependency>
             <groupId>net.minecraft</groupId>
             <artifactId>launchwrapper</artifactId>
             <version>1.12</version>
+            <scope>provided</scope> <!-- do not include in the jar for now -->
             <exclusions>
                 <exclusion>
                     <groupId>org.lwjgl.lwjgl</groupId>

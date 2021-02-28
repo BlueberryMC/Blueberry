@@ -1,23 +1,22 @@
-package net.blueberrymc.common.bml.mod;
+package net.blueberrymc.common.bml;
 
 import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
-import net.blueberrymc.common.bml.BlueberryMod;
-import net.blueberrymc.common.bml.ModState;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.item.SimpleBlueberryBucketItem;
 import net.blueberrymc.common.item.SimpleBlueberryItem;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
-import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.server.command.ModIdArgument;
 import net.blueberrymc.world.level.BlueberryLiquidBlock;
 import net.blueberrymc.world.level.material.MilkFluid;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
@@ -35,8 +34,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InternalBlueberryMod extends BlueberryMod {
     public static MilkFluid FLOWING_MILK;
@@ -62,25 +62,15 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean liquidMilk = false;
     public static boolean item3d = false;
     public static boolean discordRpc = true;
-    public static boolean discordRpcShowServerIp = false;
+    public static AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
 
-    @SuppressWarnings("deprecation")
-    public static void register() {
-        ModDescriptionFile description = new ModDescriptionFile(
-                "blueberry",
-                Versioning.getVersion().getFullyQualifiedVersion(),
-                "net.blueberrymc.common.bml.mod.InternalBlueberryMod",
-                "Blueberry",
-                Collections.singletonList("Blueberry development team"),
-                Collections.singletonList("MagmaCube"),
-                Collections.singletonList("Modding API for Minecraft"),
-                false,
-                null);
-        Blueberry.getModLoader().forceRegisterMod(description, InternalBlueberryMod.class);
+    protected InternalBlueberryMod(BlueberryModLoader modLoader, ModDescriptionFile description, ClassLoader classLoader, File file) {
+        super(modLoader, description, classLoader, file);
     }
 
     @Override
     public void onLoad() {
+        getLogger().info("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getCanonicalName());
         if (isFirst()) {
             Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
         }
@@ -131,7 +121,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         registerVisualConfigTest();
         reload();
         if (isFirst()) {
-            Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener());
+            Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
         }
     }
 
@@ -180,7 +170,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     @Override
     public void onPostInit() {
         if (isFirst()) {
-            refreshDiscordStatus(Minecraft.getInstance().screen);
+            refreshDiscordStatus();
         }
         if (!isFirst()) {
             Blueberry.getUtil().reloadResourcePacks();
@@ -225,7 +215,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         liquidMilk = getConfig().getBoolean("gamePlay.liquidMilk", false);
         item3d = getConfig().getBoolean("test.3d", false);
         discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
-        discordRpcShowServerIp = getConfig().getBoolean("misc.discordRpc.showServerIp", false);
+        discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
         if (Blueberry.getSide() == Side.CLIENT) {
             DiscordRPCTaskExecutor.init(discordRpc);
             ModState currentState = getStateList().getCurrentState();
@@ -235,16 +225,27 @@ public class InternalBlueberryMod extends BlueberryMod {
         }
     }
 
-    public static void refreshDiscordStatus(Screen screen) {
+    public void refreshDiscordStatus() {
+        if (Blueberry.getSide() == Side.CLIENT) refreshDiscordStatus(Minecraft.getInstance().screen);
+    }
+
+    public void refreshDiscordStatus(Screen screen) {
         Minecraft minecraft = Minecraft.getInstance();
+        ServerData serverData = minecraft.getCurrentServer();
         if (screen instanceof JoinMultiplayerScreen) {
-            Blueberry.getUtil().updateDiscordStatus("In Server List Menu");
+            Blueberry.getUtil().updateDiscordStatus("In Server List Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
             return;
         } else if (screen instanceof TitleScreen) {
-            Blueberry.getUtil().updateDiscordStatus("In Main Menu");
+            Blueberry.getUtil().updateDiscordStatus("In Main Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
             return;
         } else if (screen instanceof SelectWorldScreen) {
             Blueberry.getUtil().updateDiscordStatus("In Select World Menu");
+            return;
+        } else if (screen instanceof ConnectScreen && serverData != null) {
+            Blueberry.getUtil().updateDiscordStatus("Connecting to server", discordRpcShowServerIp.get() ? serverData.ip : null);
+            return;
+        } else if (screen instanceof PauseScreen) {
+            Blueberry.getUtil().updateDiscordStatus("Pausing the game");
             return;
         }
         if (screen == null) {
@@ -262,13 +263,13 @@ public class InternalBlueberryMod extends BlueberryMod {
                 Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                 return;
             }
-            ServerData serverData = minecraft.getCurrentServer();
             if (serverData != null) {
                 if (serverData.isLan()) {
                     Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                     return;
                 } else {
-                    Blueberry.getUtil().updateDiscordStatus("Playing on third-party server", InternalBlueberryMod.discordRpcShowServerIp ? serverData.ip : null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    System.out.println("Show server ip: " + discordRpcShowServerIp.get());
+                    Blueberry.getUtil().updateDiscordStatus("Playing on third-party server", discordRpcShowServerIp.get() ? serverData.ip : null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                     return;
                 }
             }

@@ -20,7 +20,7 @@ public class BlueberryMod implements ModInfo {
     private final ModStateList stateList = new ModStateList();
     private BlueberryModLoader modLoader;
     private ModDescriptionFile description;
-    private ModClassLoader classLoader;
+    private ClassLoader classLoader;
     private ModConfig config;
     private RootCompoundVisualConfig visualConfig;
     private File file;
@@ -40,7 +40,15 @@ public class BlueberryMod implements ModInfo {
         }
     }
 
-    final void init(BlueberryModLoader modLoader, ModDescriptionFile description, ModClassLoader classLoader, File file) {
+    @SuppressWarnings("unused")
+    protected BlueberryMod(BlueberryModLoader modLoader, ModDescriptionFile description, ClassLoader classLoader, File file) {
+        if (!ClassLoader.getSystemClassLoader().equals(this.getClass().getClassLoader()))
+            throw new IllegalStateException("This constructor requires system class loader");
+        this.getStateList().add(ModState.LOADED);
+        init(modLoader, description, classLoader, file);
+    }
+
+    final void init(BlueberryModLoader modLoader, ModDescriptionFile description, ClassLoader classLoader, File file) {
         if (classLoader == null) {
             throw new IllegalArgumentException("Cannot initialize mods with null classLoader");
         }
@@ -81,7 +89,7 @@ public class BlueberryMod implements ModInfo {
     }
 
     @NotNull
-    public final ModClassLoader getClassLoader() {
+    public final ClassLoader getClassLoader() {
         if (classLoader == null) throw new AssertionError("classLoader should not be null!");
         return classLoader;
     }

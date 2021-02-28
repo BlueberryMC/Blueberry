@@ -1,13 +1,20 @@
 package net.blueberrymc.registry;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.ModClassLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class BlueberryRegistries<T> {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -26,6 +34,8 @@ public final class BlueberryRegistries<T> {
     public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPES = new BlueberryRegistries<>(Registry.PARTICLE_TYPE);
     public static final BlueberryRegistries<Block> BLOCK = new BlueberryRegistries<>(Registry.BLOCK);
     public static final BlueberryRegistries<Item> ITEM = new BlueberryRegistries<>(Registry.ITEM);
+    public static final BlueberryRegistries<MenuType<?>> MENU = new BlueberryRegistries<>(Registry.MENU);
+    public static final BlueberryRegistries<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new BlueberryRegistries<>(Registry.BLOCK_ENTITY_TYPE);
     public static final BlueberryRegistries<Fluid> FLUID = new BlueberryRegistries<>(Registry.FLUID, fluid -> {
         for (FluidState fluidState : fluid.getStateDefinition().getPossibleStates()) {
             Fluid.FLUID_STATE_REGISTRY.add(fluidState);
@@ -97,6 +107,13 @@ public final class BlueberryRegistries<T> {
         R result = Registry.register(registry, location, object);
         if (registerAction != null) registerAction.accept(object);
         return result;
+    }
+
+    public static synchronized <T extends BlockEntity> void bindTileEntityRenderer(
+            @NotNull BlockEntityType<T> blockEntityType,
+            @NotNull Function<? super BlockEntityRenderDispatcher, ? extends BlockEntityRenderer<? super T>> rendererFactory
+    ) {
+        Blueberry.getUtil().asClient().registerSpecialBlockEntityRenderer(blockEntityType, rendererFactory.apply(Minecraft.getInstance().getBlockEntityRenderDispatcher()));
     }
 
     private static void init() {

@@ -27,10 +27,14 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,7 +44,7 @@ public class BlueberryModLoader implements ModLoader {
     private final ConcurrentHashMap<String, Map.Entry<ModDescriptionFile, File>> descriptions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Map.Entry<ModDescriptionFile, File>> filePath2descriptionMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, BlueberryMod> id2ModMap = new ConcurrentHashMap<>();
-    private final List<ModClassLoader> loaders = new ArrayList<>();
+    private final Set<ModClassLoader> loaders = new HashSet<>();
     private final List<BlueberryMod> registeredMods = new ArrayList<>();
     private final List<String> circularDependency = new ArrayList<>();
     private final File configDir = new File(Blueberry.getGameDir(), "config");
@@ -118,7 +122,13 @@ public class BlueberryModLoader implements ModLoader {
             }
         }
         LOGGER.info("Found " + toLoad.size() + " mods to load (files: {}, directories: {})", fileCount, dirCount);
-        toLoad.forEach(this::preloadMod);
+        toLoad.forEach(file -> {
+            try {
+                preloadMod(file);
+            } catch (Throwable throwable) {
+                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), throwable, false));
+            }
+        });
         descriptions.forEach((modId, entry) -> {
             for (String depend : entry.getKey().getDepends()) {
                 Map.Entry<ModDescriptionFile, File> dependDesc = descriptions.get(depend);
@@ -227,7 +237,9 @@ public class BlueberryModLoader implements ModLoader {
             LOGGER.error("Failed to enable a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
             mod.getStateList().add(ModState.ERRORED);
         }
-        loaders.add(mod.getClassLoader());
+        if (mod.getClassLoader() instanceof ModClassLoader) {
+            loaders.add((ModClassLoader) mod.getClassLoader());
+        }
         if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) {
             LOGGER.info("Enabled mod " + mod.getDescription().getModId());
         }
@@ -241,6 +253,7 @@ public class BlueberryModLoader implements ModLoader {
         } catch (Throwable throwable) {
             LOGGER.error("Failed to unload a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
         }
+        //noinspection SuspiciousMethodCalls
         loaders.remove(mod.getClassLoader());
         LOGGER.info("Disabled mod " + mod.getDescription().getModId());
     }
@@ -260,10 +273,9 @@ public class BlueberryModLoader implements ModLoader {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "RedundantCast" })
-    @NotNull
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz) throws InvalidModException {
+    public <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz, boolean useModClassLoader) throws InvalidModException {
         AtomicBoolean cancel = new AtomicBoolean(false);
         if (description.getDepends().contains(description.getModId())) {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself (check mod.yml)", true));
@@ -272,7 +284,7 @@ public class BlueberryModLoader implements ModLoader {
         for (String depend : description.getDepends()) {
             Map.Entry<ModDescriptionFile, File> dependDesc = descriptions.get(depend);
             if (dependDesc == null) {
-                String message = "Required dependency \"" + depend + "\" is missing (download a mod, and put on mods folder)";
+                String message = "Required dependency \"" + depend + "\" is missing (download the mod, and put on mods folder)";
                 LOGGER.error(description.getModId() + ": " + message);
                 ModLoadingErrors.add(new ModLoadingError(description, new UnknownModDependencyException(message), false));
                 cancel.set(true);
@@ -286,31 +298,40 @@ public class BlueberryModLoader implements ModLoader {
         }
         if (cancel.get()) throw new InvalidModException("Could not register mod " + description.getModId());
         if (!circularDependency.isEmpty()) {
-            LOGGER.error("Following mods has circular dependency, cannot load: {}", ListUtils.join(circularDependency, ", "));
+            throw new InvalidModException("Following mods has circular dependency, cannot load: " + ListUtils.join(circularDependency, ", "));
         }
-        ModClassLoader modClassLoader;
+        BlueberryMod mod;
+        String path;
         try {
-            String path = clazz.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-            path = path.replace("\\", "/");
-            path = path.replace(clazz.getPackage().getName().replace(".", "/"), "");
-            path = path.replaceAll("(.*)/.*\\.class", "$1");
-            LOGGER.debug("Class Path of " + clazz.getCanonicalName() + ": " + path);
-            modClassLoader = new ModClassLoader(this, this.getClass().getClassLoader(), description, new File(path));
-        } catch (Throwable ex) {
-            throw new InvalidModException(ex);
+            path = clazz.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+        } catch (URISyntaxException e) {
+            throw new InvalidModException(e);
         }
-        loaders.add(modClassLoader);
-        BlueberryMod mod = modClassLoader.mod;
-        try {
-            ((T) mod).getClass().getClassLoader();
-        } catch (ClassCastException ex) {
-            loaders.remove(modClassLoader);
-            throw new InvalidModException(ex);
+        path = path.replace("\\", "/");
+        path = path.replace(clazz.getPackage().getName().replace(".", "/"), "");
+        path = path.replaceAll("(.*)/.*\\.class", "$1");
+        LOGGER.debug("Class Path of " + clazz.getCanonicalName() + ": " + path);
+        File file = new File(path);
+        if (useModClassLoader) {
+            ModClassLoader modClassLoader;
+            try {
+                modClassLoader = new ModClassLoader(this, this.getClass().getClassLoader(), description, file);
+            } catch (Throwable ex) {
+                throw new InvalidModException(ex);
+            }
+            loaders.add(modClassLoader);
+            mod = modClassLoader.mod;
+        } else {
+            try {
+                mod = clazz.getDeclaredConstructor(BlueberryModLoader.class, ModDescriptionFile.class, ClassLoader.class, File.class).newInstance(this, description, this.getClass().getClassLoader(), file);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new InvalidModException(e);
+            }
         }
         descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, null));
         id2ModMap.put(description.getModId(), mod);
         registeredMods.add(mod);
-        LOGGER.info("Loaded mod {} ({}) from class {}", mod.getName(), mod.getDescription().getModId(), clazz.getCanonicalName());
+        LOGGER.info("Loaded mod {} ({}) from class {}/{}", mod.getName(), mod.getDescription().getModId(), mod.getClass().getCanonicalName(), clazz.getCanonicalName());
         return (T) mod;
     }
 
@@ -339,7 +360,7 @@ public class BlueberryModLoader implements ModLoader {
                 mod.onPreInit();
             } catch (Throwable throwable) {
                 mod.getStateList().add(ModState.ERRORED);
-                Blueberry.crash(throwable, "Pre Initialization of " + mod.getName() + " (" + mod.getDescription().getModId() + ")");
+                Blueberry.crash(Blueberry.pauseInIde(throwable), "Pre Initialization of " + mod.getName() + " (" + mod.getDescription().getModId() + ")");
             }
         });
     }

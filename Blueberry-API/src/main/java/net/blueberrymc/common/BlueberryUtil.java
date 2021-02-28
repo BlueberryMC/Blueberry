@@ -1,9 +1,11 @@
 package net.blueberrymc.common;
 
 import net.arikia.dev.drpc.DiscordRichPresence;
+import net.blueberrymc.client.BlueberryClient;
 import net.blueberrymc.common.util.BlueberryEvil;
 import net.blueberrymc.common.util.SimpleEntry;
 import net.blueberrymc.common.util.Versioning;
+import net.blueberrymc.server.BlueberryServer;
 import net.minecraft.CrashReport;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
@@ -54,12 +56,27 @@ public interface BlueberryUtil {
 
     default void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {}
 
-    default byte[] processClass(String path, byte[] b) {
+    default byte[] processClass(@NotNull String path, byte[] b) {
         try {
             b = BlueberryEvil.convert(b);
         } catch (Throwable ex) {
             LOGGER.error("Could not convert " + path);
         }
         return b;
+    }
+
+    @NotNull
+    default BlueberryUtil getImpl() {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    default BlueberryClient asClient() {
+        return (BlueberryClient) this;
+    }
+
+    @NotNull
+    default BlueberryServer asServer() {
+        return (BlueberryServer) this;
     }
 }

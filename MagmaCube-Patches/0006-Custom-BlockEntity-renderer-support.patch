@@ -1,0 +1,303 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Sun, 28 Feb 2021 16:33:41 +0900
+Subject: [PATCH] Custom BlockEntity renderer support
+
+
+diff --git a/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..ddfbfd20036873be17b2cf3332bd1f652c7e6fc9
+--- /dev/null
++++ b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
+@@ -0,0 +1,20 @@
++package net.blueberrymc.client;
++
++import net.minecraft.client.Minecraft;
++import net.minecraft.client.gui.screens.MenuScreens;
++import net.minecraft.client.gui.screens.Screen;
++import net.minecraft.client.gui.screens.inventory.MenuAccess;
++import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
++import net.minecraft.world.inventory.AbstractContainerMenu;
++import net.minecraft.world.inventory.MenuType;
++import net.minecraft.world.level.block.entity.BlockEntityType;
++
++public class BlueberryClientImpl extends BlueberryClient {
++    public void registerSpecialBlockEntityRenderer(BlockEntityType<?> blockEntityType, BlockEntityRenderer<?> blockEntityRenderer) {
++        Minecraft.getInstance().getBlockEntityRenderDispatcher().registerSpecialRenderer(blockEntityType, blockEntityRenderer);
++    }
++
++    public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(MenuType<? extends M> menuType, ScreenConstructor<M, U> screenConstructor) {
++        MenuScreens.register(menuType, screenConstructor::create);
++    }
++}
+diff --git a/src/main/java/net/blueberrymc/server/BlueberryServerImpl.java b/src/main/java/net/blueberrymc/server/BlueberryServerImpl.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b24eb568f
+--- /dev/null
++++ b/src/main/java/net/blueberrymc/server/BlueberryServerImpl.java
+@@ -0,0 +1,4 @@
++package net.blueberrymc.server;
++
++public class BlueberryServerImpl extends BlueberryServer {
++}
+diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
+index 317b080ec094f6025fb3439752384cbe450b8890..dc914bf2fee628082d59f0b31c9b01c59f03646d 100644
+--- a/src/main/java/net/minecraft/client/Minecraft.java
++++ b/src/main/java/net/minecraft/client/Minecraft.java
+@@ -454,6 +454,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+       this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer);
+       this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
+       BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
++      BlockEntityWithoutLevelRenderer.instance = blockEntityWithoutLevelRenderer; // Blueberry
+       this.resourceManager.registerReloadListener(blockEntityWithoutLevelRenderer);
+       this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
+       this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
+diff --git a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
+index 3605e08a4e6d29381b5ca970d099d89e21dcacdd..00f2a854268231da2b2b2d260724366b6efb5e52 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
++++ b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
+@@ -54,7 +54,8 @@ public class MenuScreens {
+       return (MenuScreens.ScreenConstructor)SCREENS.get(menuType);
+    }
+ 
+-   private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
++   // Blueberry - private -> public
++   public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
+       MenuScreens.ScreenConstructor<?, ?> screenConstructor2 = (MenuScreens.ScreenConstructor)SCREENS.put(menuType, screenConstructor);
+       if (screenConstructor2 != null) {
+          throw new IllegalStateException("Duplicate registration for " + Registry.MENU.getKey(menuType));
+@@ -101,6 +102,7 @@ public class MenuScreens {
+       register(MenuType.STONECUTTER, StonecutterScreen::new);
+    }
+ 
++   public // Blueberry
+    interface ScreenConstructor<T extends AbstractContainerMenu, U extends Screen & MenuAccess<T>> {
+       default void fromPacket(Component component, MenuType<T> menuType, Minecraft minecraft, int i) {
+          U screen = this.create(menuType.create(i, minecraft.player.getInventory()), minecraft.player.getInventory(), component);
+diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
+index 914bb3da9d50eb56744e81d0776f0828ed95d94b..b2ca3b5def26fc7b21eeb978292d39b055988638 100644
+--- a/src/main/java/net/minecraft/client/main/Main.java
++++ b/src/main/java/net/minecraft/client/main/Main.java
+@@ -39,7 +39,7 @@ public class Main {
+       try {
+          main0(args);
+       } finally {
+-         net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdown();
++         net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdownNow();
+       }
+    }
+    // Blueberry end
+@@ -84,7 +84,7 @@ public class Main {
+          System.out.println("Completely ignored arguments: " + list);
+       }
+       File file1 = parseArgument(optionset, optionspec2); // Blueberry - moved from below
+-      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1); // Blueberry
++      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1, new net.blueberrymc.client.BlueberryClientImpl()); // Blueberry
+ 
+       String s = parseArgument(optionset, optionspec6);
+       Proxy proxy = Proxy.NO_PROXY;
+diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+index e41e191da07716ed0969c4a3922d20a46c0356a2..ba194d16a8c42203a0d2838a0c0aeef853310130 100644
+--- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
++++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -895,6 +895,7 @@ public class ClientPacketListener implements ClientGamePacketListener, net.blueb
+ 
+    public void handleOpenScreen(ClientboundOpenScreenPacket clientboundOpenScreenPacket) {
+       PacketUtils.ensureRunningOnSameThread(clientboundOpenScreenPacket, this, this.minecraft);
++      LOGGER.debug("Opening Menu: " + clientboundOpenScreenPacket.getRawType()); // Blueberry
+       MenuScreens.create(clientboundOpenScreenPacket.getType(), this.minecraft, clientboundOpenScreenPacket.getContainerId(), clientboundOpenScreenPacket.getTitle());
+    }
+ 
+diff --git a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
+index f879e2d45e836747aa62b85092af6f81a0fee418..8e8fd24c57edb78bad0f112d7a17d55fff7329c1 100644
+--- a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
++++ b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
+@@ -56,6 +56,7 @@ import org.apache.commons.lang3.StringUtils;
+ public class BlockEntityWithoutLevelRenderer implements ResourceManagerReloadListener {
+    private static final ShulkerBoxBlockEntity[] SHULKER_BOXES = (ShulkerBoxBlockEntity[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map((dyeColor) -> new ShulkerBoxBlockEntity(dyeColor, BlockPos.ZERO, Blocks.SHULKER_BOX.defaultBlockState())).toArray((i) -> new ShulkerBoxBlockEntity[i]);
+    private static final ShulkerBoxBlockEntity DEFAULT_SHULKER_BOX = new ShulkerBoxBlockEntity(BlockPos.ZERO, Blocks.SHULKER_BOX.defaultBlockState());
++   public static BlockEntityWithoutLevelRenderer instance; // Blueberry
+    private final ChestBlockEntity chest = new ChestBlockEntity(BlockPos.ZERO, Blocks.CHEST.defaultBlockState());
+    private final ChestBlockEntity trappedChest = new TrappedChestBlockEntity(BlockPos.ZERO, Blocks.TRAPPED_CHEST.defaultBlockState());
+    private final EnderChestBlockEntity enderChest = new EnderChestBlockEntity(BlockPos.ZERO, Blocks.ENDER_CHEST.defaultBlockState());
+diff --git a/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java b/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
+index cbbbc0012c12debd2a32806d19dad11ce5d98c12..c0e5c21da70fd7959e15c8429041bacecbe84671 100644
+--- a/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
++++ b/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
+@@ -94,7 +94,10 @@ public class BlockRenderDispatcher implements ResourceManagerReloadListener {
+             this.modelRenderer.renderModel(poseStack.last(), multiBufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(blockState, false)), blockState, bakedModel, f, f2, f3, i, i2);
+             break;
+          case ENTITYBLOCK_ANIMATED:
+-            this.blockEntityRenderer.renderByItem(new ItemStack(blockState.getBlock()), ItemTransforms.TransformType.NONE, poseStack, multiBufferSource, i, i2);
++            // Blueberry start
++            ItemStack stack = new ItemStack(blockState.getBlock());
++            stack.getItem().getRenderer().renderByItem(stack, ItemTransforms.TransformType.NONE, poseStack, multiBufferSource, i, i2);
++            // Blueberry end
+          }
+ 
+       }
+diff --git a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
+index afa38c8380f4d3749683497a0f113c09b2ed7690..6f87e2d941438f56d1451981d7a9a01c2c504e10 100644
+--- a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
++++ b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
+@@ -109,4 +109,10 @@ public class BlockEntityRenderDispatcher implements ResourceManagerReloadListene
+       BlockEntityRendererProvider.Context context = new BlockEntityRendererProvider.Context(this, (BlockRenderDispatcher)this.blockRenderDispatcher.get(), this.entityModelSet, this.font);
+       this.renderers = BlockEntityRenderers.createEntityRenderers(context);
+    }
++
++   // Blueberry start
++   public final void registerSpecialRenderer(BlockEntityType<?> blockEntityType, BlockEntityRenderer<?> blockEntityRenderer) {
++      this.renderers.put(blockEntityType, blockEntityRenderer);
++   }
++   // Blueberry end
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
+index 06f8fadd15da65ebbc246edb41d2685c966bf1f3..ac59622d70338f22f6fb35eb5a28cf0e6aafee52 100644
+--- a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
++++ b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
+@@ -11,7 +11,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
+ public class BlockEntityRenderers {
+    private static final Map<BlockEntityType<?>, BlockEntityRendererProvider<?>> PROVIDERS = Maps.newHashMap();
+ 
+-   private static <T extends BlockEntity> void register(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
++   // Blueberry - private -> public
++   public static <T extends BlockEntity> void register(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
+       PROVIDERS.put(blockEntityType, blockEntityRendererProvider);
+    }
+ 
+diff --git a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
+index 3e499be014e0b5f2064fa15daa92a22b00501cbc..bd26ac05a9c701d0e706adaefc93f61b97607943 100644
+--- a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
++++ b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
+@@ -141,7 +141,7 @@ public class ItemRenderer implements ResourceManagerReloadListener {
+ 
+             this.renderModelLists(bakedModel, itemStack, i, i2, poseStack, vertexConsumer);
+          } else {
+-            this.blockEntityRenderer.renderByItem(itemStack, transformType, poseStack, multiBufferSource, i, i2);
++            itemStack.getItem().getRenderer().renderByItem(itemStack, transformType, poseStack, multiBufferSource, i, i2); // Blueberry
+          }
+ 
+          poseStack.popPose();
+diff --git a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
+index a85dccd3e08385a90044386e44ac2897e35c56b8..f540b981ce2766e702605da917c6bb645eab0225 100644
+--- a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
++++ b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
+@@ -93,6 +93,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
+       int i3 = Integer.MAX_VALUE;
+       int i4 = 1 << i;
+       profilerFiller.popPush("extracting_frames");
++      net.blueberrymc.client.event.ClientEventFactory.callPreTextureStitchEvent(this, set); // Blueberry
+ 
+       for(TextureAtlasSprite.Info info : this.getBasicSpriteInfos(resourceManager, set)) {
+          i3 = Math.min(i3, Math.min(info.width(), info.height()));
+diff --git a/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java b/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java
+index e771cba46855f40b9ccdee0d9669e2d10f3e6347..c1f8118b36630699ff59adbbe302dc8625432e6f 100644
+--- a/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java
++++ b/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java
+@@ -43,6 +43,8 @@ public class ClientboundOpenScreenPacket implements Packet<ClientGamePacketListe
+       return Registry.MENU.byId(this.type);
+    }
+ 
++   public int getRawType() { return this.type; } // Blueberry
++
+    public Component getTitle() {
+       return this.title;
+    }
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 47f1d39080fb106e7128eeab169b2f59385b0fca..ea38e5ece5d9b4d0cd1c3559c97e9c33033a4ac7 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -80,7 +80,7 @@ public class Main {
+             return;
+          }
+          File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved from below
+-         net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
++         net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file, new net.blueberrymc.server.BlueberryServerImpl()); // Blueberry
+ 
+          CrashReport.preload();
+          Bootstrap.bootStrap();
+diff --git a/src/main/java/net/minecraft/world/inventory/MenuType.java b/src/main/java/net/minecraft/world/inventory/MenuType.java
+index 631631221d5f2b26635da9513564531f8cf90baf..cc57add0223b8a963495e91571e29fd0cc71e9ef 100644
+--- a/src/main/java/net/minecraft/world/inventory/MenuType.java
++++ b/src/main/java/net/minecraft/world/inventory/MenuType.java
+@@ -34,7 +34,8 @@ public class MenuType<T extends AbstractContainerMenu> {
+       return Registry.register(Registry.MENU, s, new MenuType<>(menuSupplier));
+    }
+ 
+-   private MenuType(MenuType.MenuSupplier<T> menuSupplier) {
++   // Blueberry - private -> public
++   public MenuType(MenuType.MenuSupplier<T> menuSupplier) {
+       this.constructor = menuSupplier;
+    }
+ 
+@@ -42,6 +43,7 @@ public class MenuType<T extends AbstractContainerMenu> {
+       return this.constructor.create(i, inventory);
+    }
+ 
++   public // Blueberry
+    interface MenuSupplier<T extends AbstractContainerMenu> {
+       T create(int var1, Inventory var2);
+    }
+diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
+index 760c6c7e53b62d3abfdd375f899850cc860169f0..334d4085e358685db169888f34620ae8f9ef3ff8 100644
+--- a/src/main/java/net/minecraft/world/item/Item.java
++++ b/src/main/java/net/minecraft/world/item/Item.java
+@@ -90,6 +90,7 @@ public class Item implements ItemLike {
+          }
+       }
+ 
++      this.renderer = properties.renderer; // Blueberry
+    }
+ 
+    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int i) {
+@@ -369,6 +370,15 @@ public class Item implements ItemLike {
+       return true;
+    }
+ 
++   // Blueberry start
++   private final java.util.function.Supplier<net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer> renderer;
++
++   public final net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getRenderer() {
++      net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer renderer = this.renderer != null ? this.renderer.get() : null;
++      return renderer != null ? renderer : net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer.instance;
++   }
++   // Blueberry end
++
+    public static class Properties {
+       private int maxStackSize = 64;
+       private int maxDamage;
+@@ -377,6 +387,7 @@ public class Item implements ItemLike {
+       private Rarity rarity = Rarity.COMMON;
+       private FoodProperties foodProperties;
+       private boolean isFireResistant;
++      private java.util.function.Supplier<net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer> renderer; // Blueberry
+ 
+       public Item.Properties food(FoodProperties foodProperties) {
+          this.foodProperties = foodProperties;
+@@ -421,5 +432,12 @@ public class Item implements ItemLike {
+          this.isFireResistant = true;
+          return this;
+       }
++
++      // Blueberry start
++      public Item.Properties renderer(java.util.function.Supplier<net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer> renderer) {
++         this.renderer = renderer;
++         return this;
++      }
++      // Blueberry end
+    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java b/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java
+index 87343e6da0effc7738019e56480aab430254ab02..23f986e14be7b14568740f83d1b7f3fbfec843c9 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java
+@@ -93,6 +93,7 @@ public class BlockEntityType<T extends BlockEntity> {
+    }
+ 
+    @FunctionalInterface
++   public // Blueberry
+    interface BlockEntitySupplier<T extends BlockEntity> {
+       T create(BlockPos var1, BlockState var2);
+    }

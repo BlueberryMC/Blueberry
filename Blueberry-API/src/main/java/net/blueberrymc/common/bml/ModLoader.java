@@ -97,9 +97,8 @@ public interface ModLoader {
      * @deprecated unstable API
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
-    @NotNull
     @Deprecated
-    <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz) throws InvalidModException;
+    <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz, boolean useModClassLoader) throws InvalidModException;
 
     void callPreInit();
 
@@ -111,7 +110,7 @@ public interface ModLoader {
     default InputStream getResourceAsStream(@NotNull String name) {
         InputStream in = null;
         for (BlueberryMod mod : this.getLoadedMods()) {
-            ModClassLoader cl = mod.getClassLoader();
+            ClassLoader cl = mod.getClassLoader();
             if ((in = cl.getResourceAsStream(name)) != null) break;
             if ((in = mod.getClass().getResourceAsStream(name)) != null) break;
         }

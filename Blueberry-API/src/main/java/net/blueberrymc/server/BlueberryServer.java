@@ -17,6 +17,15 @@ import java.util.Date;
 
 public class BlueberryServer implements BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
+    @Nullable private final BlueberryServer impl;
+
+    public BlueberryServer() {
+        this(null);
+    }
+
+    public BlueberryServer(@Nullable BlueberryServer impl) {
+        this.impl = impl;
+    }
 
     @Override
     public @Nullable ResourceManager getResourceManager() {
@@ -64,5 +73,12 @@ public class BlueberryServer implements BlueberryUtil {
     @Override
     public boolean isOnGameThread() {
         return server.isSameThread();
+    }
+
+    @NotNull
+    @Override
+    public BlueberryServer getImpl() {
+        if (impl == null) throw new IllegalArgumentException("impl isn't defined (yet)");
+        return impl;
     }
 }
