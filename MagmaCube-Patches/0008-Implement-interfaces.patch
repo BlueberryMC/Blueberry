@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Wed, 3 Mar 2021 11:59:37 +0900
+Subject: [PATCH] Implement interfaces
+
+
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index d9ec1201a4954fb91d113a7a4007fa2aa0e28888..c66c6679776d3ce6cca93ba5c23791e86aae4e21 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -66,7 +66,7 @@ import net.minecraft.world.scores.Scoreboard;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+-public abstract class Level implements LevelAccessor, AutoCloseable {
++public abstract class Level implements LevelAccessor, AutoCloseable, net.blueberrymc.world.level.BlueberryLevelAccessor { // Blueberry - implement BlueberryLevelAccessor
+    protected static final Logger LOGGER = LogManager.getLogger();
+    public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey.elementKey(Registry.DIMENSION_REGISTRY), ResourceKey::location);
+    public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("overworld"));

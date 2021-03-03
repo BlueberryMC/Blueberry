@@ -6,10 +6,10 @@ Subject: [PATCH] Custom BlockEntity renderer support
 
 diff --git a/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ddfbfd20036873be17b2cf3332bd1f652c7e6fc9
+index 0000000000000000000000000000000000000000..82f560b47ec3def0c2ddf248a4005dfb28538ded
 --- /dev/null
 +++ b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,21 @@
 +package net.blueberrymc.client;
 +
 +import net.minecraft.client.Minecraft;
@@ -20,13 +20,14 @@ index 0000000000000000000000000000000000000000..ddfbfd20036873be17b2cf3332bd1f65
 +import net.minecraft.world.inventory.AbstractContainerMenu;
 +import net.minecraft.world.inventory.MenuType;
 +import net.minecraft.world.level.block.entity.BlockEntityType;
++import org.jetbrains.annotations.NotNull;
 +
 +public class BlueberryClientImpl extends BlueberryClient {
-+    public void registerSpecialBlockEntityRenderer(BlockEntityType<?> blockEntityType, BlockEntityRenderer<?> blockEntityRenderer) {
++    public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
 +        Minecraft.getInstance().getBlockEntityRenderDispatcher().registerSpecialRenderer(blockEntityType, blockEntityRenderer);
 +    }
 +
-+    public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(MenuType<? extends M> menuType, ScreenConstructor<M, U> screenConstructor) {
++    public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(@NotNull MenuType<? extends M> menuType, @NotNull ScreenConstructor<M, U> screenConstructor) {
 +        MenuScreens.register(menuType, screenConstructor::create);
 +    }
 +}
@@ -137,15 +138,25 @@ index cbbbc0012c12debd2a32806d19dad11ce5d98c12..c0e5c21da70fd7959e15c8429041bace
  
        }
 diff --git a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-index afa38c8380f4d3749683497a0f113c09b2ed7690..6f87e2d941438f56d1451981d7a9a01c2c504e10 100644
+index afa38c8380f4d3749683497a0f113c09b2ed7690..d89135b31903098950524b65f64218398010e61d 100644
 --- a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -109,4 +109,10 @@ public class BlockEntityRenderDispatcher implements ResourceManagerReloadListene
+@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
+ import net.minecraft.world.level.block.entity.BlockEntityType;
+ import net.minecraft.world.phys.HitResult;
+ 
+-public class BlockEntityRenderDispatcher implements ResourceManagerReloadListener {
++public class BlockEntityRenderDispatcher implements ResourceManagerReloadListener, net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher { // Blueberry - implement MinecraftBlockEntityRenderDispatcher
+    private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
+    private final BufferBuilder singleRenderBuffer = new BufferBuilder(256);
+    private final Font font;
+@@ -109,4 +109,11 @@ public class BlockEntityRenderDispatcher implements ResourceManagerReloadListene
        BlockEntityRendererProvider.Context context = new BlockEntityRendererProvider.Context(this, (BlockRenderDispatcher)this.blockRenderDispatcher.get(), this.entityModelSet, this.font);
        this.renderers = BlockEntityRenderers.createEntityRenderers(context);
     }
 +
 +   // Blueberry start
++   @Override
 +   public final void registerSpecialRenderer(BlockEntityType<?> blockEntityType, BlockEntityRenderer<?> blockEntityRenderer) {
 +      this.renderers.put(blockEntityType, blockEntityRenderer);
 +   }
