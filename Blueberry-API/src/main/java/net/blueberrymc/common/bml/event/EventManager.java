@@ -1,12 +1,8 @@
-package net.blueberrymc.common.bml;
+package net.blueberrymc.common.bml.event;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
-import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.EventHandler;
-import net.blueberrymc.common.bml.event.EventPriority;
-import net.blueberrymc.common.bml.event.HandlerList;
-import net.blueberrymc.common.bml.event.Listener;
+import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.util.ThrowableConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -3,14 +3,12 @@ package net.blueberrymc.client.event;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
-import net.blueberrymc.common.event.AsyncEvent;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@AsyncEvent
 public class TextureStitchEvent extends Event {
     private final TextureAtlas textureAtlas;
 

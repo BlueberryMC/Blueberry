@@ -3,7 +3,7 @@ package net.blueberrymc.common;
 import com.google.common.base.Preconditions;
 import net.blueberrymc.client.BlueberryClient;
 import net.blueberrymc.common.bml.BlueberryModLoader;
-import net.blueberrymc.common.bml.EventManager;
+import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.ModLoader;
 import net.blueberrymc.common.bml.ModManager;
 import net.blueberrymc.common.bml.ModState;

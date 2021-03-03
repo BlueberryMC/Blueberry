@@ -3,6 +3,7 @@ package net.blueberrymc.common.bml;
 import com.google.common.collect.ImmutableList;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
+import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.event.Listener;
 import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.server.packs.repository.Pack;

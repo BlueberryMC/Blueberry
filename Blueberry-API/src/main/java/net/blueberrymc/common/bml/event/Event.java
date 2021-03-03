@@ -2,7 +2,6 @@ package net.blueberrymc.common.bml.event;
 
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
-import net.blueberrymc.common.bml.EventManager;
 import org.jetbrains.annotations.NotNull;
 
 /**

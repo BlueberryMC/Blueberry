@@ -1,7 +1,6 @@
 package net.blueberrymc.common.event.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.blueberrymc.common.event.AsyncEvent;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
@@ -10,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-@AsyncEvent // this event may be called at early stage of mod loading
 public class CommandRegistrationEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
 

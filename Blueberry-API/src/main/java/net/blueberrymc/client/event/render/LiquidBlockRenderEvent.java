@@ -1,13 +1,11 @@
 package net.blueberrymc.client.event.render;
 
-import net.blueberrymc.common.event.AsyncEvent;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 
-@AsyncEvent
 public class LiquidBlockRenderEvent extends RenderEvent {
     private static final HandlerList handlerList = new HandlerList();
     private final FluidState fluidState;
