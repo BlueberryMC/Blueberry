@@ -4,8 +4,10 @@ import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.EventHandler;
+import net.blueberrymc.common.bml.event.EventPriority;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.blueberrymc.common.bml.event.Listener;
+import net.blueberrymc.common.util.ThrowableConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -14,8 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.AbstractMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,10 +30,10 @@ public class EventManager {
     public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         Preconditions.checkNotNull(listener, "listener cannot be null");
-        Map.Entry<Listener, BlueberryMod> entry = new AbstractMap.SimpleImmutableEntry<>(listener, mod);
         for (Method method : listener.getClass().getMethods()) {
             if (method.isSynthetic()) continue;
             if (!method.isAnnotationPresent(EventHandler.class)) continue;
+            EventHandler eventHandler = method.getAnnotation(EventHandler.class);
             if (method.getParameterCount() != 1) {
                 logInvalidHandler(method, "parameter count is not 1", mod.getModId());
                 continue;
@@ -59,8 +59,15 @@ public class EventManager {
             }
             Class<? extends Event> eventClass = clazz.asSubclass(Event.class);
             HandlerList handlerList = getHandlerList(eventClass);
-            handlerList.add(method, entry);
+            boolean isStatic = Modifier.isStatic(method.getModifiers());
+            ThrowableConsumer<Event> consumer = isStatic ? event -> method.invoke(null, event) : event -> method.invoke(listener, event);
+            handlerList.add(consumer, eventHandler.priority(), listener, mod);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Event> void registerEvent(@NotNull Class<T> clazz, @NotNull BlueberryMod mod, @NotNull EventPriority priority, @NotNull ThrowableConsumer<T> consumer) {
+        getHandlerList(clazz).add(event -> consumer.accept((T) event), priority, null, mod);
     }
 
     public void unregisterEvents(@NotNull BlueberryMod mod) {

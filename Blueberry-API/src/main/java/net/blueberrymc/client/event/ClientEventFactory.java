@@ -21,14 +21,14 @@ public class ClientEventFactory {
     }
 
     public static void callScreenChangedEvent(@Nullable Screen screen) {
-        Blueberry.getEventManager().callEvent(new ScreenChangedEvent(screen));
+        new ScreenChangedEvent(screen).callEvent();
     }
 
     public static void callOverlayChangedEvent(@Nullable Overlay overlay) {
-        Blueberry.getEventManager().callEvent(new OverlayChangedEvent(overlay));
+        new OverlayChangedEvent(overlay).callEvent();
     }
 
     public static void callPreTextureStitchEvent(@NotNull TextureAtlas textureAtlas, @NotNull Set<ResourceLocation> sprites) {
-        Blueberry.getEventManager().callEvent(new TextureStitchEvent.Pre(textureAtlas, sprites));
+        new TextureStitchEvent.Pre(textureAtlas, sprites).callEvent();
     }
 }

@@ -2,64 +2,63 @@ package net.blueberrymc.common.bml.event;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.util.ThrowableConsumer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 public class HandlerList {
-    private final ConcurrentHashMap<Method, Map.Entry<Listener, BlueberryMod>> methods = new ConcurrentHashMap<>();
+    @NotNull
+    private final Set<RegisteredListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
-    public void add(@NotNull Method method, @NotNull Map.Entry<Listener, BlueberryMod> entry) {
-        Preconditions.checkNotNull(method, "method cannot be null");
-        Preconditions.checkNotNull(entry, "entry cannot be null");
-        synchronized (methods) {
-            if (methods.containsKey(method)) {
-                throw new IllegalArgumentException("Event handler conflict: " + methods.get(method).getValue().getName() + " and " + entry.getValue().getName());
-            }
-            methods.put(method, entry);
-        }
+    public void add(@NotNull ThrowableConsumer<@NotNull Event> consumer, @NotNull EventPriority priority, @Nullable Listener listener, @NotNull BlueberryMod mod) {
+        Preconditions.checkNotNull(consumer, "consumer cannot be null");
+        Preconditions.checkNotNull(priority, "priority cannot be null");
+        Preconditions.checkNotNull(mod, "mod cannot be null");
+        listeners.add(new RegisteredListener(consumer, priority, listener, mod));
     }
 
     public void remove(@NotNull("mod") BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
-        List<Method> toRemove = new ArrayList<>();
-        methods.forEach((method, entry) -> {
-            if (entry.getValue().equals(mod)) {
-                toRemove.add(method);
+        List<RegisteredListener> toRemove = new ArrayList<>();
+        listeners.forEach(registeredListener -> {
+            if (mod.equals(registeredListener.getMod())) {
+                toRemove.add(registeredListener);
             }
         });
-        toRemove.forEach(methods::remove);
+        toRemove.forEach(listeners::remove);
     }
 
     public void remove(@NotNull("listener") Listener listener) {
         Preconditions.checkNotNull(listener, "listener cannot be null");
-        List<Method> toRemove = new ArrayList<>();
-        methods.forEach((method, entry) -> {
-            if (entry.getKey().equals(listener)) {
-                toRemove.add(method);
+        List<RegisteredListener> toRemove = new ArrayList<>();
+        listeners.forEach(registeredListener -> {
+            if (listener.equals(registeredListener.getListener())) {
+                toRemove.add(registeredListener);
             }
         });
-        toRemove.forEach(methods::remove);
+        toRemove.forEach(listeners::remove);
     }
 
     public void fire(@NotNull("event") Event event) {
         Preconditions.checkNotNull(event, "event cannot be null");
-        this.methods.forEach((method, entry) -> {
-            try {
-                if (Modifier.isStatic(method.getModifiers())) {
-                    method.invoke(null, event);
-                } else {
-                    method.invoke(entry.getKey(), event);
-                }
-            } catch (Throwable e) {
-                Throwable cause = e.getCause() != null ? e.getCause() : e.getCause();
-                new EventException("Could not pass event " + event.getEventName() + " to listener " + entry.getKey().getClass().getCanonicalName() + " of mod " + entry.getValue().getName(), cause).printStackTrace();
-            }
-        });
+        this.listeners
+                .stream()
+                .sorted(Comparator.comparingInt(registeredListener -> registeredListener.getPriority().getSlot()))
+                .forEach(registeredListener -> {
+                    try {
+                        registeredListener.getExecutor().accept(event);
+                    } catch (Throwable e) {
+                        Throwable cause = e.getCause() != null ? e.getCause() : e.getCause();
+                        String listenerName = registeredListener.getListener() == null ? null : registeredListener.getListener().getClass().getCanonicalName();
+                        new EventException("Could not pass event " + event.getEventName() + " to listener " + listenerName + " of mod " + registeredListener.getMod().getName(), cause).printStackTrace();
+                    }
+                });
     }
 }

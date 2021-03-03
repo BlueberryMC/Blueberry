@@ -1,4 +1,4 @@
-package net.blueberrymc.client.event;
+package net.blueberrymc.common.event;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,6 @@
 package net.blueberrymc.client.event.render;
 
-import net.blueberrymc.client.event.AsyncEvent;
+import net.blueberrymc.common.event.AsyncEvent;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.core.BlockPos;

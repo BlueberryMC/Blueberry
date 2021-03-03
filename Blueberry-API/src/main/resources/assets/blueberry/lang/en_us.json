@@ -23,5 +23,6 @@
   "gui.screens.mod_loading_problem.open_log_file": "Open Log File",
   "multiplayer.compatible": "Compatible with server (%d mods present)",
   "multiplayer.incompatible": "Incompatible with server (%d mods present)",
-  "multiplayer.vanilla": "Vanilla server"
+  "multiplayer.vanilla": "Vanilla server",
+  "command.argument.mod_id.invalid_Mod": "Unknown mod"
 }
