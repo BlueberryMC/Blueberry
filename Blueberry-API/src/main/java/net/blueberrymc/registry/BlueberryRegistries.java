@@ -1,7 +1,7 @@
 package net.blueberrymc.registry;
 
 import com.google.common.base.Preconditions;
-import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -113,7 +113,7 @@ public final class BlueberryRegistries<T> {
             @NotNull BlockEntityType<T> blockEntityType,
             @NotNull Function<? super BlockEntityRenderDispatcher, ? extends BlockEntityRenderer<? super T>> rendererFactory
     ) {
-        Blueberry.getUtil().asClient().registerSpecialBlockEntityRenderer(blockEntityType, rendererFactory.apply(Minecraft.getInstance().getBlockEntityRenderDispatcher()));
+        ((MinecraftBlockEntityRenderDispatcher) Minecraft.getInstance().getBlockEntityRenderDispatcher()).registerSpecialRenderer(blockEntityType, rendererFactory.apply(Minecraft.getInstance().getBlockEntityRenderDispatcher()));
     }
 
     private static void init() {

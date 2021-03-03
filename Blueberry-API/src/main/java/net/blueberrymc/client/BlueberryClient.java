@@ -3,7 +3,10 @@ package net.blueberrymc.client;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.arikia.dev.drpc.DiscordRichPresence;
+import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
 import net.blueberrymc.common.BlueberryUtil;
+import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.util.SimpleEntry;
 import net.minecraft.CrashReport;
 import net.minecraft.client.Minecraft;
@@ -11,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -21,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@SideOnly(Side.CLIENT)
 public class BlueberryClient implements BlueberryUtil {
     private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();
     @Nullable private final BlueberryClient impl;
@@ -61,7 +66,7 @@ public class BlueberryClient implements BlueberryUtil {
     // <start or end>
     @Override
     public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {
-        discordRichPresenceQueue.set(
+        setDiscordRichPresenceQueue(
                 new DiscordRichPresence
                         .Builder(state)
                         .setDetails(details)
@@ -83,17 +88,22 @@ public class BlueberryClient implements BlueberryUtil {
         discordRichPresenceQueue.set(discordRichPresence);
     }
 
+    @Nullable
+    public MinecraftServer getIntegratedServer() {
+        return Minecraft.getInstance().getSingleplayerServer();
+    }
+
     @NotNull
     public BlueberryClient getImpl() {
         if (impl == null) throw new IllegalArgumentException("impl isn't defined (yet)");
         return impl;
     }
 
-    public void registerSpecialBlockEntityRenderer(BlockEntityType<?> blockEntityType, BlockEntityRenderer<?> blockEntityRenderer) {
-        getImpl().registerSpecialBlockEntityRenderer(blockEntityType, blockEntityRenderer);
+    public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
+        ((MinecraftBlockEntityRenderDispatcher) Minecraft.getInstance().getBlockEntityRenderDispatcher()).registerSpecialRenderer(blockEntityType, blockEntityRenderer);
     }
 
-    public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(MenuType<? extends M> menuType, ScreenConstructor<M, U> screenConstructor) {
+    public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(@NotNull MenuType<? extends M> menuType, @NotNull ScreenConstructor<M, U> screenConstructor) {
         getImpl().registerMenuScreensFactory(menuType, screenConstructor);
     }
 

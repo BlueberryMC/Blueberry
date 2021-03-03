@@ -1,6 +1,7 @@
 package net.blueberrymc.common;
 
 import net.minecraft.CrashReport;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 

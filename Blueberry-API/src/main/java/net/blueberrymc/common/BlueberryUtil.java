@@ -70,6 +70,7 @@ public interface BlueberryUtil {
         throw new UnsupportedOperationException();
     }
 
+    @SideOnly(Side.CLIENT)
     @NotNull
     default BlueberryClient asClient() {
         return (BlueberryClient) this;
