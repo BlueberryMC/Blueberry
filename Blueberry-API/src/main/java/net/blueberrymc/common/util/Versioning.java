@@ -14,8 +14,7 @@ public class Versioning {
 
     public static BlueberryVersion getVersion() {
         if (VERSION != null) return VERSION;
-        InputStream stream = Blueberry.class.getResourceAsStream("api-version.properties");
-        if (stream == null) stream = Blueberry.class.getClassLoader().getResourceAsStream("api-version.properties");
+        InputStream stream = ResourceLocator.getInstance(Blueberry.class).getResourceAsStream("/api-version.properties");
         Properties properties = new Properties();
         String name = "blueberry";
         String version = "unknown";
@@ -31,7 +30,17 @@ public class Versioning {
                 commit = properties.getProperty("commit", commit);
                 builtAt = properties.getProperty("builtAt", builtAt);
             } catch (IOException ex) {
-                LOGGER.error("Blueberry API version information is corrupt", ex);
+                LOGGER.error("Blueberry API version information is corrupt (api-version.properties)", ex);
+            }
+        } else {
+            stream = ResourceLocator.getInstance(Blueberry.class).getResourceAsStream("/maven/net.blueberrymc/blueberry-api/pom.properties");
+            if (stream != null) {
+                try {
+                    properties.load(stream);
+                    version = properties.getProperty("version", version);
+                } catch (IOException ex) {
+                    LOGGER.error("Blueberry API version information is corrupt (pom.properties)", ex);
+                }
             }
         }
         VERSION = new BlueberryVersion(name, version, magmaCubeCommit, commit, builtAt);
