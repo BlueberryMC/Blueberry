@@ -108,7 +108,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         );
         this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.title"))
-                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk")).id("gamePlay.liquidMilk"))
+                        //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk")).id("gamePlay.liquidMilk"))
         );
         this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
@@ -160,9 +160,6 @@ public class InternalBlueberryMod extends BlueberryMod {
         if (item3d) {
             BlueberryRegistries.ITEM.register("blueberry", "3d", new SimpleBlueberryItem(this, new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC).rarity(Rarity.EPIC), item -> new BlueberryText("blueberry", "item.blueberry.3d")));
         }
-        if (liquidMilk) {
-            //BlueberryRegistries.ITEM.register("blueberry", "milk_bucket", new SimpleBlueberryBucketItem(this, MILK, new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC), item -> new BlueberryText("blueberry", "item.blueberry.milk_bucket")));
-        }
     }
 
     @Override
@@ -171,16 +168,9 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     private void registerBlocks() {
-        if (liquidMilk) {
-            //BlueberryRegistries.BLOCK.register("blueberry", "milk", MILK_BLOCK);
-        }
     }
 
     private void registerFluids() {
-        if (liquidMilk) {
-            //BlueberryRegistries.FLUID.register("blueberry", "flowing_milk", FLOWING_MILK);
-            //BlueberryRegistries.FLUID.register("blueberry", "milk", MILK);
-        }
     }
 
     private void registerArgumentTypes() {
