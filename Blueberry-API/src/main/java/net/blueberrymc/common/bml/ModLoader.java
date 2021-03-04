@@ -22,6 +22,7 @@ public interface ModLoader {
     @Nullable
     BlueberryMod getModById(@NotNull String modId);
 
+    @NotNull
     default <T> List<T> mapLoadedMods(@NotNull Function<BlueberryMod, T> mapFunction) {
         List<T> list = new ArrayList<>();
         getLoadedMods().forEach(mod -> list.add(mapFunction.apply(mod)));
@@ -37,6 +38,7 @@ public interface ModLoader {
         return ImmutableList.copyOf(mods);
     }
 
+    @NotNull
     default <T> List<T> mapActiveMods(@NotNull Function<BlueberryMod, T> mapFunction) {
         List<T> list = new ArrayList<>();
         getActiveMods().forEach(mod -> list.add(mapFunction.apply(mod)));

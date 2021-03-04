@@ -116,6 +116,7 @@ public class ActionableResult<T> {
     @Contract("!null -> !null; null -> _")
     public T orElse(@Nullable T other) { return value == null ? other : value; }
 
+    @Contract("_ -> _")
     public T orElseGet(@NotNull Supplier<? extends T> supplier) { return value == null ? supplier.get() : value; }
 
     @NotNull

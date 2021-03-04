@@ -27,7 +27,7 @@ public class ModConfigScreen extends Screen {
     private final Screen previousScreen;
     private final Component description;
 
-    public ModConfigScreen(CompoundVisualConfig compoundVisualConfig, Screen screen) {
+    public ModConfigScreen(@NotNull CompoundVisualConfig compoundVisualConfig, @NotNull Screen screen) {
         super(title(compoundVisualConfig));
         this.compoundVisualConfig = compoundVisualConfig;
         RootCompoundVisualConfig root = this.compoundVisualConfig.getRoot();
@@ -83,11 +83,12 @@ public class ModConfigScreen extends Screen {
         super.init();
     }
 
-    private void updateBooleanButton(BooleanVisualConfig booleanVisualConfig, Button button) {
+    private void updateBooleanButton(@NotNull BooleanVisualConfig booleanVisualConfig, @NotNull Button button) {
         button.setMessage(getButtonMessage(booleanVisualConfig));
     }
 
-    private static Component getButtonMessage(BooleanVisualConfig booleanVisualConfig) {
+    @NotNull
+    private static Component getButtonMessage(@NotNull BooleanVisualConfig booleanVisualConfig) {
         Boolean bool = booleanVisualConfig.get();
         MutableComponent component = new TextComponent("").withStyle(ChatFormatting.YELLOW);
         if (booleanVisualConfig.getComponent() != null) {
@@ -99,7 +100,7 @@ public class ModConfigScreen extends Screen {
         return component;
     }
 
-    public void render(PoseStack poseStack, int i, int i2, float f) {
+    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
         this.renderBackground(poseStack);
         this.children.forEach(e -> {
             if (e instanceof ScrollableContainer) {
@@ -113,6 +114,7 @@ public class ModConfigScreen extends Screen {
         super.render(poseStack, i, i2, f);
     }
 
+    @NotNull
     private static BlueberryText title(@NotNull CompoundVisualConfig compoundVisualConfig) {
         BlueberryText text = new BlueberryText("blueberry", "gui.screens.mod_config.title");
         CompoundVisualConfig parent = compoundVisualConfig;

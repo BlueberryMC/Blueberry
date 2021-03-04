@@ -3,6 +3,7 @@ package net.blueberrymc.common.util;
 import net.blueberrymc.common.Blueberry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ public class Versioning {
     private static final Logger LOGGER = LogManager.getLogger();
     private static BlueberryVersion VERSION = null;
 
+    @NotNull
     public static BlueberryVersion getVersion() {
         if (VERSION != null) return VERSION;
         InputStream stream = ResourceLocator.getInstance(Blueberry.class).getResourceAsStream("/api-version.properties");

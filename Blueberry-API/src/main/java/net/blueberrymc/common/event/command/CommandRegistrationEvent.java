@@ -33,6 +33,7 @@ public class CommandRegistrationEvent extends Event {
         registerer.accept(dispatcher);
     }
 
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlerList;
     }

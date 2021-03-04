@@ -4,6 +4,7 @@ import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.status.ClientStatusPacketListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +14,11 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
 
     public ClientboundBlueberryHandshakePacket() {}
 
-    public ClientboundBlueberryHandshakePacket(List<ModInfo> modInfos) {
+    public ClientboundBlueberryHandshakePacket(@NotNull List<ModInfo> modInfos) {
         this.modInfos = modInfos;
     }
 
-    public ClientboundBlueberryHandshakePacket(FriendlyByteBuf friendlyByteBuf) {
+    public ClientboundBlueberryHandshakePacket(@NotNull FriendlyByteBuf friendlyByteBuf) {
         this.modInfos = new ArrayList<>();
         int size = friendlyByteBuf.readInt();
         for (int i = 0; i < size; i++) {
@@ -28,7 +29,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
     }
 
     @Override
-    public void write(FriendlyByteBuf friendlyByteBuf) {
+    public void write(@NotNull FriendlyByteBuf friendlyByteBuf) {
         List<ModInfo> modInfoList = modInfos;
         friendlyByteBuf.writeInt(modInfoList.size());
         for (ModInfo modInfo : modInfoList) {
@@ -38,7 +39,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
     }
 
     @Override
-    public void handle(ClientStatusPacketListener clientBlueberryPacketListener) {
+    public void handle(@NotNull ClientStatusPacketListener clientBlueberryPacketListener) {
         ((ClientBlueberryHandshakePacketListener) clientBlueberryPacketListener).handleBlueberryHandshakeResponse(this);
     }
 
@@ -47,6 +48,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
      * between client were used, the client will be rejected.
      * @return the list of mods
      */
+    @NotNull
     public List<ModInfo> getModInfos() {
         return modInfos;
     }

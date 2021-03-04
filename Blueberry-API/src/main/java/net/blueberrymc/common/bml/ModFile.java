@@ -34,7 +34,7 @@ public class ModFile implements Closeable, AutoCloseable {
     }
 
     @Nullable
-    public ModFileEntry getEntry(String name) {
+    public ModFileEntry getEntry(@NotNull String name) {
         JarEntry entry = getJarEntry(name);
         if (jar != null && entry != null) {
             try {
@@ -48,7 +48,7 @@ public class ModFile implements Closeable, AutoCloseable {
     }
 
     @Nullable
-    public JarEntry getJarEntry(String name) {
+    public JarEntry getJarEntry(@NotNull String name) {
         return jar == null ? null : jar.getJarEntry(name);
     }
 

@@ -21,25 +21,28 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Random;
 
 public abstract class MilkFluid extends FlowingFluid {
+   @NotNull
    public Fluid getFlowing() {
       return Flowing.INSTANCE;
    }
 
+   @NotNull
    public Fluid getSource() {
       return Source.INSTANCE;
    }
 
+   @NotNull
    public Item getBucket() {
-      return BlueberryRegistries.ITEM.get("blueberry", "milk_bucket");
+      return Objects.requireNonNull(BlueberryRegistries.ITEM.get("blueberry", "milk_bucket"));
    }
 
-   public void animateTick(Level level, BlockPos blockPos, FluidState fluidState, Random random) {
+   public void animateTick(@NotNull Level level, @NotNull BlockPos blockPos, @NotNull FluidState fluidState, @NotNull Random random) {
       if (!fluidState.isSource() && !fluidState.getValue(FALLING)) {
          if (random.nextInt(64) == 0) {
             level.playLocalSound((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D, SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
@@ -58,34 +61,35 @@ public abstract class MilkFluid extends FlowingFluid {
       return true;
    }
 
-   protected void beforeDestroyingBlock(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState) {
+   protected void beforeDestroyingBlock(@NotNull LevelAccessor levelAccessor, @NotNull BlockPos blockPos, @NotNull BlockState blockState) {
       BlockEntity blockEntity = blockState.hasBlockEntity() ? levelAccessor.getBlockEntity(blockPos) : null;
       Block.dropResources(blockState, levelAccessor, blockPos, blockEntity);
    }
 
-   public int getSlopeFindDistance(LevelReader levelReader) {
+   public int getSlopeFindDistance(@NotNull LevelReader levelReader) {
       return 4;
    }
 
-   public BlockState createLegacyBlock(FluidState fluidState) {
+   @NotNull
+   public BlockState createLegacyBlock(@NotNull FluidState fluidState) {
       return Objects.requireNonNull(BlueberryRegistries.BLOCK.get("blueberry", "milk"))
               .defaultBlockState()
               .setValue(LiquidBlock.LEVEL, getLegacyLevel(fluidState));
    }
 
-   public boolean isSame(Fluid fluid) {
+   public boolean isSame(@NotNull Fluid fluid) {
       return fluid == Source.INSTANCE || fluid == Flowing.INSTANCE;
    }
 
-   public int getDropOff(LevelReader levelReader) {
+   public int getDropOff(@NotNull LevelReader levelReader) {
       return 1;
    }
 
-   public int getTickDelay(LevelReader levelReader) {
+   public int getTickDelay(@NotNull LevelReader levelReader) {
       return 5;
    }
 
-   public boolean canBeReplacedWith(FluidState fluidState, BlockGetter blockGetter, BlockPos blockPos, Fluid fluid, Direction direction) {
+   public boolean canBeReplacedWith(@NotNull FluidState fluidState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull Fluid fluid, @NotNull Direction direction) {
       return direction == Direction.DOWN && !fluid.is(FluidTags.WATER);
    }
 
@@ -96,16 +100,16 @@ public abstract class MilkFluid extends FlowingFluid {
    public static class Flowing extends MilkFluid {
       public static final Flowing INSTANCE = new Flowing();
 
-      protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> builder) {
+      protected void createFluidStateDefinition(@NotNull StateDefinition.@NotNull Builder<Fluid, FluidState> builder) {
          super.createFluidStateDefinition(builder);
          builder.add(LEVEL);
       }
 
-      public int getAmount(FluidState fluidState) {
+      public int getAmount(@NotNull FluidState fluidState) {
          return fluidState.getValue(LEVEL);
       }
 
-      public boolean isSource(FluidState fluidState) {
+      public boolean isSource(@NotNull FluidState fluidState) {
          return false;
       }
    }
@@ -113,11 +117,11 @@ public abstract class MilkFluid extends FlowingFluid {
    public static class Source extends MilkFluid {
       public static final Source INSTANCE = new Source();
 
-      public int getAmount(FluidState fluidState) {
+      public int getAmount(@NotNull FluidState fluidState) {
          return 8;
       }
 
-      public boolean isSource(FluidState fluidState) {
+      public boolean isSource(@NotNull FluidState fluidState) {
          return true;
       }
    }

@@ -108,6 +108,7 @@ public class BlueberryClient implements BlueberryUtil {
     }
 
     public interface ScreenConstructor<T extends AbstractContainerMenu, U extends Screen & MenuAccess<T>> {
-        U create(T menu, Inventory inventory, Component component);
+        @NotNull
+        U create(@NotNull T menu, @NotNull Inventory inventory, @NotNull Component component);
     }
 }

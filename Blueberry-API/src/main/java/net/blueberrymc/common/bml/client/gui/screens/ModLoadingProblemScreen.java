@@ -13,15 +13,15 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.CommonComponents;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class ModLoadingProblemScreen extends Screen {
     private ProblemList problemList;
     private Screen screen;
 
-    public ModLoadingProblemScreen(Screen screen) {
+    public ModLoadingProblemScreen(@NotNull Screen screen) {
         super(new BlueberryText("blueberry", "gui.screens.mod_loading_problem.title").withStyle(ModLoadingErrors.hasErrors() ? ChatFormatting.RED : ChatFormatting.YELLOW));
         this.screen = screen;
     }
@@ -48,14 +48,14 @@ public class ModLoadingProblemScreen extends Screen {
         super.init();
     }
 
-    public void render(PoseStack poseStack, int i, int i2, float f) {
+    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
         this.problemList.render(poseStack, i, i2, f);
         drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
         super.render(poseStack, i, i2, f);
     }
 
     class ProblemList extends ObjectSelectionList<ProblemList.Entry> {
-        public ProblemList(Minecraft minecraft) {
+        public ProblemList(@NotNull Minecraft minecraft) {
             super(minecraft, ModLoadingProblemScreen.this.width, ModLoadingProblemScreen.this.height, 32, ModLoadingProblemScreen.this.height - 65 + 4, 18);
 
             for (ModLoadingError error : ModLoadingErrors.getErrors()) {
@@ -78,7 +78,7 @@ public class ModLoadingProblemScreen extends Screen {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(PoseStack poseStack) {
+        protected void renderBackground(@NotNull PoseStack poseStack) {
             ModLoadingProblemScreen.this.renderBackground(poseStack);
         }
 
@@ -89,11 +89,11 @@ public class ModLoadingProblemScreen extends Screen {
         public class Entry extends ObjectSelectionList.Entry<Entry> {
             private final ModLoadingError error;
 
-            public Entry(ModLoadingError error) {
+            public Entry(@NotNull ModLoadingError error) {
                 this.error = error;
             }
 
-            public void render(PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+            public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
                 String modName = this.error.modInfo.getName();
                 String s = modName + ": " + this.error.getMessage();
                 ModLoadingProblemScreen.this.font.drawShadow(poseStack, s, (float)(ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2), (float)(i2 + 2), this.error.isWarning ? 0xFFFF55 : 0xFF5555, true);

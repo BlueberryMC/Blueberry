@@ -2,6 +2,7 @@ package net.blueberrymc.common.util.reflect;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
@@ -20,8 +21,9 @@ public class RefMethod<T> extends RefExecutable {
      * @param args invoke arguments
      * @return the return value
      */
+    @Contract
     @Deprecated
-    public Object invokeObj(Object obj, Object... args) {
+    public Object invokeObj(@Nullable Object obj, @Nullable Object@Nullable... args) {
         try {
             return this.method.invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -34,7 +36,8 @@ public class RefMethod<T> extends RefExecutable {
         this.method = method;
     }
 
-    public Object invoke(T obj, Object... args) {
+    @Contract
+    public Object invoke(@Nullable T obj, @Nullable Object@Nullable... args) {
         try {
             return this.method.invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException e) {

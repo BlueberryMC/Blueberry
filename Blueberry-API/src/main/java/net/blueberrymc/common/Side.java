@@ -1,5 +1,7 @@
 package net.blueberrymc.common;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Locale;
 
 public enum Side {
@@ -8,5 +10,6 @@ public enum Side {
     BOTH,
     ;
 
+    @NotNull
     public String getName() { return name().toLowerCase(Locale.ROOT); }
 }

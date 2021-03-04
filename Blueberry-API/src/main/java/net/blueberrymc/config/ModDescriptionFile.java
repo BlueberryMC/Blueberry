@@ -95,7 +95,8 @@ public class ModDescriptionFile implements ModInfo {
         return depends;
     }
 
-    public static ModDescriptionFile read(YamlObject yaml) {
+    @NotNull
+    public static ModDescriptionFile read(@NotNull YamlObject yaml) {
         String modId = yaml.getString("id");
         String version = yaml.getString("version");
         String mainClass = yaml.getString("main");

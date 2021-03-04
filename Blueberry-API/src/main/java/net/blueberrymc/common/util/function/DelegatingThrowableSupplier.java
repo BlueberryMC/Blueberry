@@ -24,6 +24,7 @@ public abstract class DelegatingThrowableSupplier<T> implements ThrowableSupplie
         return result == null ? result = ThrowableSupplier.super.entry() : result;
     }
 
+    @Nullable
     @Override
     public final T evaluate() throws Throwable { return delegate().evaluate(); }
 

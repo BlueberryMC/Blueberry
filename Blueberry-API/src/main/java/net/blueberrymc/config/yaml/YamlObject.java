@@ -62,6 +62,8 @@ public class YamlObject implements YamlMember {
         return this;
     }
 
+    @Contract(pure = true)
+    @Nullable
     @SuppressWarnings("unchecked")
     public YamlObject getObject(@NotNull String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -74,6 +76,8 @@ public class YamlObject implements YamlMember {
         }
     }
 
+    @Contract(pure = true)
+    @Nullable
     public YamlArray getArray(@NotNull String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
         if (!this.map.containsKey(key)) return null;
@@ -85,11 +89,13 @@ public class YamlObject implements YamlMember {
         }
     }
 
+    @Contract
     public String getString(@NotNull String key) {
         if (!this.map.containsKey(key) || this.map.get(key) == null) return null;
         return this.map.get(key).toString();
     }
 
+    @Contract("_, !null -> !null")
     public String getString(@NotNull String key, @Nullable String def) {
         String s = getString(key);
         return s == null ? def : s;
@@ -104,6 +110,7 @@ public class YamlObject implements YamlMember {
         return def;
     }
 
+    @Contract
     public Number getNumber(@NotNull String key) {
         if (!this.map.containsKey(key) || this.map.get(key) == null) return null;
         Object o = this.map.get(key);
@@ -111,7 +118,8 @@ public class YamlObject implements YamlMember {
         return null;
     }
 
-    public Number getNumber(@NotNull String key, Number def) {
+    @Contract("_, !null -> !null")
+    public Number getNumber(@NotNull String key, @Nullable Number def) {
         Number number = getNumber(key);
         return number == null ? def : number;
     }

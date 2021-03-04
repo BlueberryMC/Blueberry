@@ -45,6 +45,7 @@ public class LiquidBlockRenderEvent extends RenderEvent {
         this.color = color;
     }
 
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlerList;
     }

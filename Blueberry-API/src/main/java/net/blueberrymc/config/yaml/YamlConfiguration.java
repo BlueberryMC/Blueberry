@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class YamlConfiguration {
     public static final Yaml DEFAULT = new Yaml();
@@ -71,7 +72,8 @@ public class YamlConfiguration {
      * Returns raw data returned from the yaml parser.
      * @return raw data
      */
-    public Object getData() { return data; }
+    @NotNull
+    public Object getData() { return Objects.requireNonNull(data); }
 
     public void save(@NotNull File file, @NotNull YamlMember member) throws IOException {
         saveTo(file, yaml, member);

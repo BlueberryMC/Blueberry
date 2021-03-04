@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BlueberryItem extends Item {
     private final BlueberryMod mod;
@@ -21,6 +22,7 @@ public abstract class BlueberryItem extends Item {
         return mod;
     }
 
+    @Nullable
     @Override
-    public abstract Component getName(ItemStack itemStack);
+    public abstract Component getName(@NotNull ItemStack itemStack);
 }

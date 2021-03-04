@@ -5,7 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class ListUtils {
-    public static String join(List<String> list, String separator) {
+    @NotNull
+    public static String join(@NotNull List<String> list, @NotNull String separator) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (String s : list) {

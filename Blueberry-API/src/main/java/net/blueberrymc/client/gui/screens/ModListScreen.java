@@ -10,8 +10,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ModListScreen extends Screen {
@@ -20,7 +20,7 @@ public class ModListScreen extends Screen {
     private Button unloadButton;
     private Button configButton;
 
-    public ModListScreen(Screen screen) {
+    public ModListScreen(@NotNull Screen screen) {
         super(new BlueberryText("blueberry", "gui.screens.mods"));
         this.previousScreen = screen;
     }
@@ -56,7 +56,7 @@ public class ModListScreen extends Screen {
 
     private static final Joiner JOINER = Joiner.on(", ");
 
-    public void render(PoseStack poseStack, int i, int i2, float f) {
+    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
         this.modsList.render(poseStack, i, i2, f);
         drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
         ModsList.Entry entry = this.modsList.getSelected();
@@ -94,7 +94,7 @@ public class ModListScreen extends Screen {
     }
 
     class ModsList extends ObjectSelectionList<ModsList.Entry> {
-        public ModsList(Minecraft minecraft) {
+        public ModsList(@NotNull Minecraft minecraft) {
             super(minecraft, ModListScreen.this.width / 5, ModListScreen.this.height, 32, ModListScreen.this.height - 65 + 4, 18);
 
             for(BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
@@ -118,7 +118,7 @@ public class ModListScreen extends Screen {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(PoseStack poseStack) {
+        protected void renderBackground(@NotNull PoseStack poseStack) {
             ModListScreen.this.renderBackground(poseStack);
         }
 
@@ -129,11 +129,11 @@ public class ModListScreen extends Screen {
         public class Entry extends ObjectSelectionList.Entry<Entry> {
             private final BlueberryMod mod;
 
-            public Entry(BlueberryMod mod) {
+            public Entry(@NotNull BlueberryMod mod) {
                 this.mod = mod;
             }
 
-            public void render(PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+            public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
                 String s = this.mod.getName();
                 ModListScreen.this.font.drawShadow(poseStack, s, (float)(ModsList.this.width / 2 - ModListScreen.this.font.width(s) / 2), (float)(i2 + 2), 16777215, true);
             }

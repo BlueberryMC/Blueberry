@@ -11,9 +11,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class FluidSpriteManager {
     private static final TextureAtlasSprite[] lavaIcons = new TextureAtlasSprite[2];
@@ -27,6 +29,7 @@ public class FluidSpriteManager {
         map.put(fluid, material);
     }
 
+    @Nullable
     public static Material get(@NotNull("fluid") Fluid fluid) {
         return map.get(fluid);
     }
@@ -48,7 +51,7 @@ public class FluidSpriteManager {
         try {
             TextureAtlasSprite[] sprites = new TextureAtlasSprite[2];
             sprites[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluidState.createLegacyBlock()).getParticleIcon();
-            sprites[1] = get(fluidState.getType()).sprite();
+            sprites[1] = Objects.requireNonNull(get(fluidState.getType())).sprite();
             return sprites;
         } catch (RuntimeException ex) { // ignore
             return waterIcons;

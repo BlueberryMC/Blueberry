@@ -82,7 +82,7 @@ public class ThrowableActionableResult<T> extends ActionableResult<T> {
 
     @Contract(pure = true)
     @NotNull
-    public static <V> ThrowableActionableResult<V> success(V value) { return ofNullable(value); }
+    public static <V> ThrowableActionableResult<V> success(@Nullable V value) { return ofNullable(value); }
 
     @Contract(pure = true)
     @NotNull

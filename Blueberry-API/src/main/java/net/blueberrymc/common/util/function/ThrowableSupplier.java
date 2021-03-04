@@ -41,5 +41,6 @@ public interface ThrowableSupplier<T> extends Supplier<T> {
      * Gets a result.
      * @return a result
      */
+    @Nullable
     T evaluate() throws Throwable;
 }

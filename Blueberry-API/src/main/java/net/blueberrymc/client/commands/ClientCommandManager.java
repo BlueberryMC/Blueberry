@@ -69,7 +69,8 @@ public class ClientCommandManager {
         return DISPATCHER;
     }
 
-    public static CommandDispatcher<SharedSuggestionProvider> getRoot(Player player) {
+    @NotNull
+    public static CommandDispatcher<SharedSuggestionProvider> getRoot(@NotNull Player player) {
         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
         RootCommandNode<SharedSuggestionProvider> rootCommandNode = new RootCommandNode<>();
         map.put(getDispatcher().getRoot(), rootCommandNode);
@@ -78,7 +79,7 @@ public class ClientCommandManager {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void fillUsableCommands(CommandNode<CommandSourceStack> commandNode, CommandNode<SharedSuggestionProvider> commandNode2, CommandSourceStack commandSourceStack, Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map) {
+    private static void fillUsableCommands(@NotNull CommandNode<CommandSourceStack> commandNode, @NotNull CommandNode<SharedSuggestionProvider> commandNode2, CommandSourceStack commandSourceStack, @NotNull Map<CommandNode<CommandSourceStack>, @NotNull CommandNode<SharedSuggestionProvider>> map) {
         for(CommandNode<CommandSourceStack> commandNode3 : commandNode.getChildren()) {
             if (commandNode3.canUse(commandSourceStack)) {
                 ArgumentBuilder<SharedSuggestionProvider, ?> argumentBuilder = (ArgumentBuilder) commandNode3.createBuilder();
@@ -106,7 +107,7 @@ public class ClientCommandManager {
 
     }
 
-    public static int performCommand(CommandSourceStack commandSourceStack, String s) {
+    public static int performCommand(@NotNull CommandSourceStack commandSourceStack, @NotNull String s) {
         StringReader stringReader = new StringReader(s);
         if (stringReader.canRead() && stringReader.peek() == '/') {
             stringReader.skip();

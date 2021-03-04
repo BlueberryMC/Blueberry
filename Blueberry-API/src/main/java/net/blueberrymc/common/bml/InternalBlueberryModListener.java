@@ -6,23 +6,24 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.EventHandler;
 import net.blueberrymc.common.bml.event.Listener;
 import net.blueberrymc.world.level.material.MilkFluid;
+import org.jetbrains.annotations.NotNull;
 
 public class InternalBlueberryModListener implements Listener {
     private final InternalBlueberryMod mod;
 
-    InternalBlueberryModListener(InternalBlueberryMod mod) {
+    InternalBlueberryModListener(@NotNull InternalBlueberryMod mod) {
         this.mod = mod;
     }
 
     @EventHandler
-    public static void onLiquidBlockRender(LiquidBlockRenderEvent e) {
+    public static void onLiquidBlockRender(@NotNull LiquidBlockRenderEvent e) {
         if (InternalBlueberryMod.liquidMilk && e.getFluidState().getType().isSame(MilkFluid.Source.INSTANCE)) {
             e.setColor(0xFFFFFF);
         }
     }
 
     @EventHandler
-    public void onScreenChanged(ScreenChangedEvent e) {
+    public void onScreenChanged(@NotNull ScreenChangedEvent e) {
         if (Blueberry.getCurrentState() != ModState.AVAILABLE) return;
         this.mod.refreshDiscordStatus(e.getScreen());
     }

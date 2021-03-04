@@ -275,6 +275,7 @@ public class BlueberryModLoader implements ModLoader {
         }
     }
 
+    @NotNull
     @SuppressWarnings("unchecked")
     @Override
     public <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz, boolean useModClassLoader) throws InvalidModException {

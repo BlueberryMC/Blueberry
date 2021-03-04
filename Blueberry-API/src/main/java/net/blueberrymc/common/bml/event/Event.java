@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml.event;
 
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,6 +35,17 @@ public abstract class Event {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Calls the event and returns this.
+     *
+     * @return the event
+     */
+    @Contract("_ -> param1")
+    @NotNull
+    public static <T extends Event> T callEvent(@NotNull T event) {
+        return Blueberry.getEventManager().callEvent(event);
     }
 
     /**

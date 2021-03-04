@@ -7,6 +7,7 @@ import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.common.Blueberry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -63,7 +64,7 @@ public class DiscordRPCTaskExecutor {
         return Thread.currentThread().equals(thread);
     }
 
-    public static void submit(Runnable runnable) {
+    public static void submit(@NotNull Runnable runnable) {
         if (isOnExecutorThread()) {
             runnable.run();
         } else {

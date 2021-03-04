@@ -104,6 +104,7 @@ public class Blueberry {
         return util;
     }
 
+    @NotNull
     public static ModState getCurrentState() {
         ModState state = Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
         if (state == ModState.UNLOADED) return ModState.AVAILABLE; // should not return UNLOADED
@@ -159,18 +160,19 @@ public class Blueberry {
         crash(CrashReport.forThrowable(throwable, message));
     }
 
-    public static <T extends Throwable> T pauseInIde(T throwable) {
+    @Contract("_ -> param1")
+    public static <T extends Throwable> T pauseInIde(@NotNull T throwable) {
         if (SharedConstants.IS_RUNNING_IN_IDE) {
             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", throwable);
             doPause();
         }
-
         return throwable;
     }
 
     private static void doPause() {
-        while(true) {
+        while (true) {
             try {
+                //noinspection BusyWait
                 Thread.sleep(1000L);
                 LOGGER.error("paused");
             } catch (InterruptedException var1) {

@@ -14,11 +14,12 @@ import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class ScrollableContainer<E extends GuiEventListener & Widget> extends AbstractContainerEventHandler implements Widget {
    protected final Minecraft minecraft;
@@ -37,7 +38,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
    private boolean renderBackground = true;
    private boolean renderTopAndBottom = true;
 
-   public ScrollableContainer(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight, int padding) {
+   public ScrollableContainer(@NotNull Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight, int padding) {
       this.minecraft = minecraft;
       this.width = width;
       this.height = height;
@@ -68,6 +69,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       this.renderTopAndBottom = flag;
    }
 
+   @NotNull
    public final List<E> children() {
       return this.children;
    }
@@ -76,16 +78,17 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       this.children.clear();
    }
 
-   protected void replaceEntries(Collection<E> collection) {
+   protected void replaceEntries(@NotNull Collection<E> collection) {
       this.children.clear();
       this.children.addAll(collection);
    }
 
+   @NotNull
    protected E getEntry(int i) {
-      return this.children().get(i);
+      return Objects.requireNonNull(this.children().get(i));
    }
 
-   protected int addEntry(E entry) {
+   protected int addEntry(@NotNull E entry) {
       this.children.add(entry);
       return this.children.size() - 1;
    }
@@ -126,16 +129,16 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
    protected void clickedHeader(int i, int i2) {
    }
 
-   protected void renderHeader(PoseStack poseStack, int i, int i2, Tesselator tesselator) {
+   protected void renderHeader(@NotNull PoseStack poseStack, int i, int i2, @NotNull Tesselator tesselator) {
    }
 
-   protected void renderBackground(PoseStack poseStack) {
+   protected void renderBackground(@NotNull PoseStack poseStack) {
    }
 
-   protected void renderDecorations(PoseStack poseStack, int i, int i2) {
+   protected void renderDecorations(@NotNull PoseStack poseStack, int i, int i2) {
    }
 
-   public void render(PoseStack poseStack, int i, int i2, float f) {
+   public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
       this.renderBackground(poseStack);
       int i3 = this.getScrollbarPosition();
       int i4 = i3 + 6;
@@ -232,11 +235,11 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       RenderSystem.disableBlend();
    }
 
-   protected void centerScrollOn(E entry) {
+   protected void centerScrollOn(@NotNull E entry) {
       this.setScrollAmount(this.children().indexOf(entry) * this.itemHeight + this.itemHeight / 2 - (this.bottom - this.top) / 2);
    }
 
-   protected void ensureVisible(E entry) {
+   protected void ensureVisible(@NotNull E entry) {
       int i = this.getRowTop(this.children().indexOf(entry));
       int i2 = i - this.top - 4 - this.itemHeight;
       if (i2 < 0) {
@@ -359,7 +362,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       return y >= (double)this.top && y <= (double)this.bottom && x >= (double)this.left && x <= (double)this.right;
    }
 
-   protected void renderList(PoseStack poseStack, int i, int i2, int i3, int i4, float f) {
+   protected void renderList(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, float f) {
       int i5 = this.getItemCount();
       for(int i6 = 0; i6 < i5; ++i6) {
          int i7 = this.getRowTop(i6);
@@ -392,6 +395,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
       return false;
    }
 
+   @Nullable
    protected E remove(int i) {
       return this.children.remove(i);
    }

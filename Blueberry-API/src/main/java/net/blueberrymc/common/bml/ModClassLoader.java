@@ -81,21 +81,24 @@ public class ModClassLoader extends URLClassLoader {
 
     @Nullable
     @Override
-    public URL getResource(String name) {
+    public URL getResource(@NotNull String name) {
         return findResource(name);
     }
 
+    @NotNull
     @Override
-    public Enumeration<URL> getResources(String name) throws IOException {
+    public Enumeration<URL> getResources(@NotNull String name) throws IOException {
         return findResources(name);
     }
 
+    @Nullable
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    protected Class<?> findClass(@NotNull String name) throws ClassNotFoundException {
         return findClass(name, true);
     }
 
-    protected Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException {
+    @Nullable
+    protected Class<?> findClass(@NotNull String name, boolean checkGlobal) throws ClassNotFoundException {
         Class<?> result = classes.get(name);
         if (result != null) return result;
         if (checkGlobal) {
@@ -156,7 +159,7 @@ public class ModClassLoader extends URLClassLoader {
     @NotNull
     public Map<String, Class<?>> getClasses() { return classes; }
 
-    protected synchronized void initialize(BlueberryMod mod) {
+    protected synchronized void initialize(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         if (mod.getClass().getClassLoader() != this)
             throw new IllegalArgumentException("Cannot initialize mod outside of this class loader");

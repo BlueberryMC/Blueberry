@@ -24,32 +24,34 @@ public class ModStateList extends ArrayList<ModState> {
     }
 
     @Override
-    public boolean add(ModState modState) {
+    public boolean add(@NotNull ModState modState) {
         synchronized (this) {
             return super.add(modState);
         }
     }
 
+    @NotNull
     @Override
-    public ModState set(int index, ModState element) {
+    public ModState set(int index, @NotNull ModState element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void add(int index, ModState element) {
+    public void add(int index, @NotNull ModState element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(Collection<? extends ModState> c) {
+    public boolean addAll(@NotNull Collection<? extends ModState> c) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends ModState> c) {
+    public boolean addAll(int index, @NotNull Collection<? extends ModState> c) {
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
     @Override
     public ModState remove(int index) {
         throw new UnsupportedOperationException();
@@ -61,17 +63,17 @@ public class ModStateList extends ArrayList<ModState> {
     }
 
     @Override
-    public boolean remove(Object o) {
+    public boolean remove(@NotNull Object o) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(@NotNull Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeIf(Predicate<? super ModState> filter) {
+    public boolean removeIf(@NotNull Predicate<? super ModState> filter) {
         throw new UnsupportedOperationException();
     }
 }

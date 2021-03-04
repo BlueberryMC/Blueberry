@@ -1,26 +1,33 @@
 package net.blueberrymc.common.util;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.AbstractMap;
 import java.util.Map;
 
 public class SimpleEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V> {
-    public SimpleEntry(K key, V value) {
+    public SimpleEntry(@Nullable K key, @Nullable V value) {
         super(key, value);
     }
 
-    public SimpleEntry(Map.Entry<? extends K, ? extends V> entry) {
+    public SimpleEntry(@NotNull Map.@NotNull Entry<? extends K, ? extends V> entry) {
         super(entry);
     }
 
-    public static <K, V> SimpleEntry<K, V> of(K k, V v) {
+    @Contract("_, _ -> new")
+    public static <K, V> @NotNull SimpleEntry<K, V> of(@Nullable K k, @Nullable V v) {
         return new SimpleEntry<>(k, v);
     }
 
-    public static <K, V> SimpleEntry<K, V> key(K k) {
+    @Contract("_ -> new")
+    public static <K, V> @NotNull SimpleEntry<K, V> key(@Nullable K k) {
         return of(k, null);
     }
 
-    public static <K, V> SimpleEntry<K, V> value(V v) {
+    @Contract("_ -> new")
+    public static <K, V> @NotNull SimpleEntry<K, V> value(@Nullable V v) {
         return of(null, v);
     }
 }

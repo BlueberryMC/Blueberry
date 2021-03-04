@@ -49,7 +49,7 @@ public class BlueberryText extends BaseComponent {
     }
 
     @NotNull
-    public Properties getProperties(String code) {
+    public Properties getProperties(@NotNull String code) {
         String filePath = String.format("/assets/%s/lang/%s", this.namespace, code);
         if (!lang.containsKey(filePath)) {
             Properties properties = new Properties();
@@ -84,6 +84,7 @@ public class BlueberryText extends BaseComponent {
         return lang.get(filePath);
     }
 
+    @NotNull
     @Override
     public String getContents() {
         String cachePath = String.format("%s:%s:%s", this.namespace, this.path, getLanguageCode());
@@ -94,6 +95,7 @@ public class BlueberryText extends BaseComponent {
         return cache.get(cachePath);
     }
 
+    @NotNull
     @Override
     public BaseComponent plainCopy() {
         return new BlueberryText(this.namespace, this.path);

@@ -16,25 +16,28 @@ public class CompoundVisualConfig extends VisualConfig<List<VisualConfig<?>>> im
     private CompoundVisualConfig parent;
     public Component title;
 
-    public CompoundVisualConfig(Component component) {
+    public CompoundVisualConfig(@Nullable Component component) {
         this(component, null);
     }
 
-    public CompoundVisualConfig(Component component, CompoundVisualConfig parent) {
+    public CompoundVisualConfig(@Nullable Component component, @Nullable CompoundVisualConfig parent) {
         super(component);
         this.parent = parent;
     }
 
-    public CompoundVisualConfig withTitle(Component title) {
+    @NotNull
+    public CompoundVisualConfig withTitle(@Nullable Component title) {
         this.title = title;
         return this;
     }
 
-    public CompoundVisualConfig withTitle(String title) {
-        this.title = new TextComponent(title);
+    @NotNull
+    public CompoundVisualConfig withTitle(@Nullable String title) {
+        this.title = title == null ? null : new TextComponent(title);
         return this;
     }
 
+    @Nullable
     public Component getTitle() {
         return title;
     }
@@ -59,16 +62,18 @@ public class CompoundVisualConfig extends VisualConfig<List<VisualConfig<?>>> im
         return parent == null ? null : parent.getTitle();
     }
 
+    @NotNull
     @Override
     public List<VisualConfig<?>> get() {
         return children;
     }
 
     @Override
-    public void set(List<VisualConfig<?>> value) {
+    public void set(@Nullable List<VisualConfig<?>> value) {
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
     @Override
     public List<VisualConfig<?>> getDefaultValue() {
         throw new UnsupportedOperationException();
@@ -86,6 +91,7 @@ public class CompoundVisualConfig extends VisualConfig<List<VisualConfig<?>>> im
         return !isEmpty();
     }
 
+    @NotNull
     public CompoundVisualConfig add(@NotNull VisualConfig<?> config) {
         Preconditions.checkNotNull(config, "Cannot add null config");
         if (config instanceof CompoundVisualConfig) {

@@ -4,6 +4,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.client.gui.screens.Overlay;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class OverlayChangedEvent extends Event {
@@ -24,6 +25,7 @@ public class OverlayChangedEvent extends Event {
         return overlay;
     }
 
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlerList;
     }

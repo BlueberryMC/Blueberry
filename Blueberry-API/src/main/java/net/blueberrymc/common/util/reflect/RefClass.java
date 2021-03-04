@@ -55,88 +55,91 @@ public class RefClass<T> {
 
     @Contract(pure = true)
     @NotNull
-    public RefField<T> getDeclaredField(String fieldName) { return Ref.getDeclaredField(this.clazz, fieldName); }
+    public RefField<T> getDeclaredField(@NotNull String fieldName) { return Ref.getDeclaredField(this.clazz, fieldName); }
 
     @Contract(pure = true)
     @NotNull
-    public RefField<T> getField(String fieldName) { return Ref.getField(this.clazz, fieldName); }
+    public RefField<T> getField(@NotNull String fieldName) { return Ref.getField(this.clazz, fieldName); }
 
     @Contract(pure = true)
     @NotNull
-    public RefConstructor<T> getConstructor(Class<?>... classes) { return Ref.getConstructor(this.clazz, classes); }
+    public RefConstructor<T> getConstructor(@NotNull Class<?>@NotNull... classes) { return Ref.getConstructor(this.clazz, classes); }
 
     @Contract(pure = true)
     @NotNull
-    public RefConstructor<T> getDeclaredConstructor(Class<?>... classes) { return Ref.getDeclaredConstructor(this.clazz, classes); }
+    public RefConstructor<T> getDeclaredConstructor(@NotNull Class<?>@NotNull... classes) { return Ref.getDeclaredConstructor(this.clazz, classes); }
 
     @Contract(pure = true)
     @Nullable
-    public RefConstructor<T> getDeclaredConstructorMaybe(Class<?>... classes) {
+    public RefConstructor<T> getDeclaredConstructorMaybe(@NotNull Class<?>@NotNull... classes) {
         return ThrowableActionableResult.of(() -> getDeclaredConstructor(classes)).nullableValue();
     }
 
     @Contract(pure = true)
     @NotNull
-    public RefConstructor<T>[] getConstructors() { return Ref.getConstructors(this.clazz); }
+    public RefConstructor<T>@NotNull[] getConstructors() { return Ref.getConstructors(this.clazz); }
 
     @Contract(pure = true)
     @NotNull
-    public RefConstructor<T>[] getDeclaredConstructors() { return Ref.getDeclaredConstructors(this.clazz); }
+    public RefConstructor<T>@NotNull[] getDeclaredConstructors() { return Ref.getDeclaredConstructors(this.clazz); }
 
     @Contract(pure = true)
     @NotNull
-    public RefMethod<T> getMethod(String methodName, Class<?>... classes) { return Ref.getMethod(this.clazz, methodName, classes); }
+    public RefMethod<T> getMethod(@NotNull String methodName, @NotNull Class<?>@NotNull... classes) { return Ref.getMethod(this.clazz, methodName, classes); }
 
     @Contract(pure = true)
     @NotNull
-    public RefMethod<T> getDeclaredMethod(String methodName, Class<?>... classes) { return Ref.getDeclaredMethod(this.clazz, methodName, classes); }
+    public RefMethod<T> getDeclaredMethod(@NotNull String methodName, @NotNull Class<?>@NotNull... classes) { return Ref.getDeclaredMethod(this.clazz, methodName, classes); }
 
     @Contract(pure = true)
     @NotNull
-    public RefMethod<T>[] getMethods() { return Ref.getMethods(this.clazz); }
+    public RefMethod<T>@NotNull[] getMethods() { return Ref.getMethods(this.clazz); }
 
     @Contract(pure = true)
     @NotNull
-    public RefMethod<T>[] getDeclaredMethods() { return Ref.getDeclaredMethods(this.clazz); }
+    public RefMethod<T>@NotNull[] getDeclaredMethods() { return Ref.getDeclaredMethods(this.clazz); }
 
     @Contract(pure = true)
     @NotNull
-    public RefField<T>[] getFields() { return Ref.getFields(this.clazz); }
+    public RefField<T>@NotNull[] getFields() { return Ref.getFields(this.clazz); }
 
     @Contract(pure = true)
     @NotNull
-    public RefField<T>[] getDeclaredFields() { return Ref.getDeclaredFields(this.clazz); }
+    public RefField<T>@NotNull[] getDeclaredFields() { return Ref.getDeclaredFields(this.clazz); }
 
     @Contract(pure = true)
     @NotNull
-    public <U> RefClass<? extends U> asSubClass(Class<U> clazz) { return new RefClass<>(this.clazz.asSubclass(clazz)); }
+    public <U> RefClass<? extends U> asSubClass(@NotNull Class<U> clazz) { return new RefClass<>(this.clazz.asSubclass(clazz)); }
 
+    @Nullable
     @Contract(pure = true)
-    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) { return this.clazz.getAnnotation(annotationClass); }
+    public <A extends Annotation> A getAnnotation(@NotNull Class<A> annotationClass) { return this.clazz.getAnnotation(annotationClass); }
 
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) { return this.clazz.isAnnotationPresent(annotationClass); }
+    public boolean isAnnotationPresent(@NotNull Class<? extends Annotation> annotationClass) { return this.clazz.isAnnotationPresent(annotationClass); }
 
     @Contract(pure = true)
     @NotNull
-    public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotationClass) { return this.clazz.getAnnotationsByType(annotationClass); }
+    public <A extends Annotation> A@NotNull[] getAnnotationsByType(@NotNull Class<A> annotationClass) { return this.clazz.getAnnotationsByType(annotationClass); }
 
     @NotNull
     public Annotation[] getAnnotations() { return this.clazz.getAnnotations(); }
 
-    public <A extends Annotation> A getDeclaredAnnotation(Class<A> annotationClass) { return this.clazz.getDeclaredAnnotation(annotationClass); }
+    @Nullable
+    public <A extends Annotation> A getDeclaredAnnotation(@NotNull Class<A> annotationClass) { return this.clazz.getDeclaredAnnotation(annotationClass); }
 
     @NotNull
-    public <A extends Annotation> A[] getDeclaredAnnotationsByType(Class<A> annotationClass) { return this.clazz.getDeclaredAnnotationsByType(annotationClass); }
+    public <A extends Annotation> A@NotNull[] getDeclaredAnnotationsByType(@NotNull Class<A> annotationClass) { return this.clazz.getDeclaredAnnotationsByType(annotationClass); }
 
     @NotNull
-    public Annotation[] getDeclaredAnnotations() { return this.clazz.getDeclaredAnnotations(); }
+    public Annotation@NotNull[] getDeclaredAnnotations() { return this.clazz.getDeclaredAnnotations(); }
 
     @Contract(value = "_ -> param1", pure = true)
-    public T cast(Object obj) { return this.clazz.cast(obj); }
+    public T cast(@NotNull Object obj) { return this.clazz.cast(obj); }
 
-    public T[] getEnumConstants() { return this.clazz.getEnumConstants(); }
+    @NotNull
+    public T@NotNull[] getEnumConstants() { return this.clazz.getEnumConstants(); }
 
-    public boolean isExtends(Class<?> clazz) {
+    public boolean isExtends(@NotNull Class<?> clazz) {
         return ReflectionHelper.getSupers(this.clazz).contains(clazz);
     }
 

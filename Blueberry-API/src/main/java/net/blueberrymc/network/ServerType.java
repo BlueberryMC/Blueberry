@@ -2,6 +2,7 @@ package net.blueberrymc.network;
 
 import net.blueberrymc.client.resources.BlueberryCommonComponents;
 import net.blueberrymc.client.resources.BlueberryText;
+import org.jetbrains.annotations.NotNull;
 
 public enum ServerType {
     BLUEBERRY_GOOD(0, BlueberryCommonComponents.MULTIPLAYER_COMPATIBLE),
@@ -12,7 +13,7 @@ public enum ServerType {
     private final int offset;
     private final BlueberryText blueberryText;
 
-    ServerType(int offset, BlueberryText blueberryText) {
+    ServerType(int offset, @NotNull BlueberryText blueberryText) {
         this.offset = offset;
         this.blueberryText = blueberryText;
     }
@@ -21,6 +22,7 @@ public enum ServerType {
         return offset;
     }
 
+    @NotNull
     public BlueberryText getBlueberryText() {
         return blueberryText;
     }

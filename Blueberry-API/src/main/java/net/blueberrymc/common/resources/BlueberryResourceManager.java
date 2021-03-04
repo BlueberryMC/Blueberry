@@ -8,6 +8,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -26,13 +27,15 @@ public class BlueberryResourceManager extends FallbackResourceManager {
         this.mod = mod;
         if (this.mod.getFile().isDirectory()) {
             packResources = new FolderPackResources(this.mod.getFile()) {
+                @NotNull
                 @Override
                 public String getName() {
                     return "Mod Resources for " + mod.getName() + " (Folder)";
                 }
 
+                @Nullable
                 @Override
-                protected InputStream getResource(String s) throws IOException {
+                protected InputStream getResource(@NotNull String s) throws IOException {
                     if (s.equals("pack.mcmeta")) {
                         return createMetadata(mod);
                     }
@@ -54,7 +57,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                 }
 
                 @Override
-                public boolean hasResource(String s) {
+                public boolean hasResource(@NotNull String s) {
                     try {
                         return getResource(s) != null;
                     } catch (IOException exception) {
@@ -64,13 +67,15 @@ public class BlueberryResourceManager extends FallbackResourceManager {
             };
         } else {
             packResources = new FilePackResources(this.mod.getFile()) {
+                @NotNull
                 @Override
                 public String getName() {
                     return "Mod Resources for " + mod.getName() + " (File)";
                 }
 
+                @Nullable
                 @Override
-                protected InputStream getResource(String s) throws IOException {
+                protected InputStream getResource(@NotNull String s) throws IOException {
                     if (s.equals("pack.mcmeta")) {
                         return createMetadata(mod);
                     }
@@ -81,7 +86,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                 }
 
                 @Override
-                public boolean hasResource(String s) {
+                public boolean hasResource(@NotNull String s) {
                     try {
                         return getResource(s) != null;
                     } catch (IOException exception) {
@@ -94,7 +99,8 @@ public class BlueberryResourceManager extends FallbackResourceManager {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    private static InputStream createMetadata(BlueberryMod mod) {
+    @NotNull
+    private static InputStream createMetadata(@NotNull BlueberryMod mod) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
         sb.append("  \"pack\": {\n");

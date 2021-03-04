@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ModManager {
+    @NotNull
     public EventManager getEventManager() {
         return Blueberry.getEventManager();
     }
@@ -52,7 +53,7 @@ public class ModManager {
         return Blueberry.getModLoader().getConfigDir();
     }
 
-    public void loadPacks(Consumer<Pack> consumer, Pack.PackConstructor packConstructor) {
+    public void loadPacks(@NotNull Consumer<Pack> consumer, @NotNull Pack.PackConstructor packConstructor) {
         for (BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
             try {
                 Pack pack = Pack.create(mod.getDescription().getModId(), true, () -> mod.getResourceManager().getPackResources(), packConstructor, Pack.Position.TOP, PackSource.BUILT_IN);

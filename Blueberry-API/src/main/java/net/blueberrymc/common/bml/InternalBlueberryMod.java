@@ -32,6 +32,8 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +68,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean discordRpc = true;
     public static AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
 
-    protected InternalBlueberryMod(BlueberryModLoader modLoader, ModDescriptionFile description, ClassLoader classLoader, File file) {
+    protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         super(modLoader, description, classLoader, file);
     }
 
@@ -220,7 +222,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         if (Blueberry.getSide() == Side.CLIENT) refreshDiscordStatus(Minecraft.getInstance().screen);
     }
 
-    public void refreshDiscordStatus(Screen screen) {
+    public void refreshDiscordStatus(@Nullable Screen screen) {
         if (Objects.equals(lastScreen.get(), screen == null ? null : screen.getClass().getCanonicalName())) return;
         Minecraft minecraft = Minecraft.getInstance();
         ServerData serverData = minecraft.getCurrentServer();

@@ -42,7 +42,8 @@ public class ModIdArgument implements ArgumentType<BlueberryMod> {
         return new ModIdArgument(mode);
     }
 
-    public static <S> BlueberryMod get(CommandContext<S> commandContext, String s) {
+    @NotNull
+    public static <S> BlueberryMod get(@NotNull CommandContext<S> commandContext, @NotNull String s) {
         return commandContext.getArgument(s, BlueberryMod.class);
     }
 
@@ -53,14 +54,15 @@ public class ModIdArgument implements ArgumentType<BlueberryMod> {
 
     @NotNull
     @Override
-    public BlueberryMod parse(StringReader stringReader) throws CommandSyntaxException {
+    public BlueberryMod parse(@NotNull StringReader stringReader) throws CommandSyntaxException {
         BlueberryMod mod = Blueberry.getModLoader().getModById(stringReader.readUnquotedString());
         if (mod == null) throw INVALID_MOD_ID.createWithContext(stringReader);
         return mod;
     }
 
+    @NotNull
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
         List<String> list;
         switch (mode) {
             case ONLY_ACTIVE_MODS: list = Blueberry.getModLoader().mapActiveMods(BlueberryMod::getModId); break;
@@ -70,6 +72,7 @@ public class ModIdArgument implements ArgumentType<BlueberryMod> {
         return SharedSuggestionProvider.suggest(list, builder);
     }
 
+    @NotNull
     @Override
     public Collection<String> getExamples() {
         return EXAMPLES;

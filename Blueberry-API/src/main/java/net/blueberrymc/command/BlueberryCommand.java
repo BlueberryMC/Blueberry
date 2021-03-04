@@ -14,6 +14,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.stream.LongStream;
@@ -23,7 +24,7 @@ import static net.minecraft.commands.Commands.literal;
 
 public class BlueberryCommand {
     private static final SimpleCommandExceptionType UNAVAILABLE_IN_THIS_ENVIRONMENT = new SimpleCommandExceptionType(new TextComponent("This command is not available in this environment.").withStyle(ChatFormatting.RED));
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 literal("blueberry")
                         .requires(source -> source.hasPermission(4))
@@ -40,12 +41,12 @@ public class BlueberryCommand {
         );
     }
 
-    public static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
+    private static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
         source.sendSuccess(new TextComponent("Mod status of '" + mod.getName() + "': " + mod.getStateList().toString() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
         return 1;
     }
 
-    public static int executeTpsCommand(CommandSourceStack source) throws CommandSyntaxException {
+    private static int executeTpsCommand(CommandSourceStack source) throws CommandSyntaxException {
         MinecraftServer server = null;
         BlueberryUtil util = Blueberry.getUtil();
         if (util instanceof BlueberryServer) {

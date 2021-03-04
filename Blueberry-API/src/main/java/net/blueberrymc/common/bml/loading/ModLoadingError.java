@@ -3,6 +3,7 @@ package net.blueberrymc.common.bml.loading;
 import net.blueberrymc.common.bml.ModInfo;
 import net.blueberrymc.common.util.LazyValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ModLoadingError {
     public final ModInfo modInfo;
@@ -20,6 +21,7 @@ public class ModLoadingError {
         this.isWarning = isWarning;
     }
 
+    @Nullable
     private String generateMessage() {
         Throwable cause = throwable;
         String message = cause.getMessage();
@@ -29,6 +31,7 @@ public class ModLoadingError {
         return message;
     }
 
+    @Nullable
     public String getMessage() {
         return message.get();
     }

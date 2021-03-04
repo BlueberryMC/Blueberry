@@ -2,31 +2,35 @@ package net.blueberrymc.common.bml.config;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+// TODO: implement it in ModConfigScreen
 public class SelectableVisualConfig<T> extends VisualConfig<T> {
     private final List<T> list;
     private int index;
 
-    public SelectableVisualConfig(Component component, List<T> values) {
+    public SelectableVisualConfig(@Nullable Component component, @NotNull List<T> values) {
         this(component, values, 0);
     }
 
-    public SelectableVisualConfig(Component component, List<T> values, int index) {
+    public SelectableVisualConfig(@Nullable Component component, @NotNull List<T> values, int index) {
         super(component);
         this.list = values;
         this.index = index;
     }
 
+    @NotNull
     @Override
     public T get() {
         return list.get(index);
     }
 
     @Override
-    public void set(T value) {
+    public void set(@Nullable T value) {
         AtomicInteger current = new AtomicInteger();
         for (T t : list) {
             if (t.equals(value)) {
@@ -37,6 +41,7 @@ public class SelectableVisualConfig<T> extends VisualConfig<T> {
         }
     }
 
+    @NotNull
     public T next() {
         if (++index >= list.size()) {
             index = 0;

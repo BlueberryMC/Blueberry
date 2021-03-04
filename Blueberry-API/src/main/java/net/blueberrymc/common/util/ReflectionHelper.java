@@ -1,7 +1,7 @@
 package net.blueberrymc.common.util;
 
 import net.blueberrymc.common.util.reflect.Ref;
-import net.blueberrymc.common.util.reflect.RefMethod;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +19,6 @@ import java.util.NoSuchElementException;
  */
 public final class ReflectionHelper {
     private ReflectionHelper() {}
-
-    public static final RefMethod<ClassLoader> getPackagesMethod = Ref.getDeclaredMethod(ClassLoader.class, "getPackages").accessible(true);
-    public static final RefMethod<ClassLoader> getPackageMethod = Ref.getDeclaredMethod(ClassLoader.class, "getPackage", String.class).accessible(true);
 
     /**
      * Find method in class.
@@ -52,6 +49,7 @@ public final class ReflectionHelper {
      * @throws IllegalAccessException If invocation isn't allowed
      * @throws NoSuchMethodException If couldn't method find
      */
+    @Contract
     public static <T> Object invokeMethod(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("methodName") String methodName, @NotNull("args") Object... args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<Class<?>> classes = new ArrayList<>();
         for (Object arg : args) classes.add(arg.getClass());
@@ -68,6 +66,7 @@ public final class ReflectionHelper {
      * @param args Arguments
      * @return Result of method, null if invoked method returned null or thrown error
      */
+    @Nullable
     public static <T> Object invokeMethodWithoutException(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("methodName") String methodName, @NotNull("args") Object... args) {
         try {
             return invokeMethod(clazz, instance, methodName, args);
@@ -213,11 +212,6 @@ public final class ReflectionHelper {
 
     public static boolean isValidPackage(@NotNull("packageName") String packageName) {
         return Package.getPackage(packageName) != null;
-    }
-
-    public static boolean isValidPackage(@Nullable ClassLoader cl, @NotNull("packageName") String packageName) {
-        if (cl == null) return isValidPackage(packageName);
-        return getPackageMethod.invoke(cl, packageName) != null;
     }
 
     @NotNull

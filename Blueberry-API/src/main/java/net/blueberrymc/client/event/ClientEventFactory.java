@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public class ClientEventFactory {
+    @NotNull
     public static LiquidBlockRenderEvent callLiquidBlockRenderEvent(@NotNull FluidState fluidState, @NotNull BlockPos blockPos, int color) {
         return Blueberry.getEventManager().callEvent(new LiquidBlockRenderEvent(fluidState, blockPos, color));
     }

@@ -42,6 +42,7 @@ public class DeferredRegister<T> {
 
     private final Set<Map.Entry<ResourceLocation, Supplier<? extends T>>> suppliers = Collections.synchronizedSet(new HashSet<>());
 
+    @NotNull
     public <R extends T> RegistryObject<R> register(@NotNull String name, @NotNull Supplier<R> sup) {
         ResourceLocation location = new ResourceLocation(modId, name);
         RegistryObject<R> object = new RegistryObject<>(sup).setResourceLocation(location);

@@ -11,7 +11,7 @@ import java.lang.reflect.TypeVariable;
 public class RefExecutable implements RefMember {
     private final Executable executable;
 
-    public RefExecutable(Executable executable) {
+    public RefExecutable(@NotNull Executable executable) {
         this.executable = executable;
     }
 
@@ -21,22 +21,29 @@ public class RefExecutable implements RefMember {
     @NotNull
     public Class<?> getDeclaringClass() { return executable.getDeclaringClass(); }
 
+    @NotNull
     public String getName() { return executable.getName(); }
 
     public int getModifiers() { return executable.getModifiers(); }
 
-    public TypeVariable<?>[] getTypeParameters() { return executable.getTypeParameters(); }
+    @NotNull
+    public TypeVariable<?>@NotNull[] getTypeParameters() { return executable.getTypeParameters(); }
 
-    public Class<?>[] getParameterTypes() { return executable.getParameterTypes(); }
+    @NotNull
+    public Class<?>@NotNull[] getParameterTypes() { return executable.getParameterTypes(); }
 
-    public Class<?>[] getExceptionTypes() { return executable.getExceptionTypes(); }
+    @NotNull
+    public Class<?>@NotNull[] getExceptionTypes() { return executable.getExceptionTypes(); }
 
+    @NotNull
     public String toGenericString() { return executable.toGenericString(); }
 
-    public Annotation[][] getParameterAnnotations() {
+    @NotNull
+    public Annotation@NotNull[]@NotNull[] getParameterAnnotations() {
         return executable.getParameterAnnotations();
     }
 
+    @NotNull
     public AnnotatedType getAnnotatedReturnType() {
         return executable.getAnnotatedReturnType();
     }

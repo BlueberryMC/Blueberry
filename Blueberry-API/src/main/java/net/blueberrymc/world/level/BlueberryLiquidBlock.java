@@ -2,9 +2,10 @@ package net.blueberrymc.world.level;
 
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.FlowingFluid;
+import org.jetbrains.annotations.NotNull;
 
 public class BlueberryLiquidBlock extends LiquidBlock {
-    public BlueberryLiquidBlock(FlowingFluid flowingFluid, Properties properties) {
+    public BlueberryLiquidBlock(@NotNull FlowingFluid flowingFluid, @NotNull Properties properties) {
         super(flowingFluid, properties);
     }
 }

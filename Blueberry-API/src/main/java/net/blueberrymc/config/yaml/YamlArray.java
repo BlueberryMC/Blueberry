@@ -1,5 +1,6 @@
 package net.blueberrymc.config.yaml;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
@@ -39,10 +40,12 @@ public class YamlArray extends ArrayList<Object> implements YamlMember {
     @SuppressWarnings("unchecked")
     public YamlArray getArray(int index) { return new YamlArray(yaml, (List<Object>) get(index)); }
 
+    @Contract
     public String getString(int index) { return (String) get(index); }
 
     public boolean getBoolean(int index) { return (boolean) get(index); }
 
+    @Contract
     public Number getNumber(int index) { return (Number) get(index); }
 
     public int getInt(int index) { return getNumber(index).intValue(); }
@@ -58,7 +61,7 @@ public class YamlArray extends ArrayList<Object> implements YamlMember {
     public short getShort(int index) { return getNumber(index).shortValue(); }
 
     @SuppressWarnings("unchecked")
-    public <T> void forEachAsType(Consumer<T> action) { forEach(o -> action.accept((T) o)); }
+    public <T> void forEachAsType(@NotNull Consumer<T> action) { forEach(o -> action.accept((T) o)); }
 
     public void forEachIndexed(@NotNull BiConsumer<Object, Integer> action) {
         AtomicInteger index = new AtomicInteger();

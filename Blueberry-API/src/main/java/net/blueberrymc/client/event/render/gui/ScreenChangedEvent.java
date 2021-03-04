@@ -4,6 +4,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ScreenChangedEvent extends Event {
@@ -24,6 +25,7 @@ public class ScreenChangedEvent extends Event {
         return screen;
     }
 
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlerList;
     }

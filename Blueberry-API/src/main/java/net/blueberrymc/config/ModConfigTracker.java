@@ -2,6 +2,7 @@ package net.blueberrymc.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,13 +17,13 @@ public class ModConfigTracker {
         //
     }
 
-    void register(ModConfig config) {
+    void register(@NotNull ModConfig config) {
         if (fileMap.containsKey(config.getFilename())) {
             throw new IllegalArgumentException("Config file conflict: " + fileMap.get(config.getFilename()).getModId() + " and " + config.getModId());
         }
     }
 
-    void unregister(ModConfig config) {
+    void unregister(@NotNull ModConfig config) {
         fileMap.remove(config.getFilename());
     }
 }

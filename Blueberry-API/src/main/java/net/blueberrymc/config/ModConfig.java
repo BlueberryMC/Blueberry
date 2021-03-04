@@ -5,6 +5,7 @@ import net.blueberrymc.config.yaml.YamlConfiguration;
 import net.blueberrymc.config.yaml.YamlObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,6 +93,7 @@ public class ModConfig {
         }
     }
 
+    @Contract
     @SuppressWarnings("unchecked")
     public <T> T get(@NotNull("path") String path, @Nullable T def) {
         YamlObject object = getConfig();
@@ -123,10 +125,12 @@ public class ModConfig {
         return get(path, def);
     }
 
+    @Contract
     public String getString(@NotNull("path") String path) {
         return getString(path, null);
     }
 
+    @Contract("_, !null -> !null")
     public String getString(@NotNull("path") String path, @Nullable String def) {
         return get(path, def);
     }
@@ -179,6 +183,7 @@ public class ModConfig {
         return (short) getInt(path, def);
     }
 
+    @NotNull
     public YamlObject getOrCreateObject(@NotNull("parent") YamlObject parent, @NotNull("path") String path) {
         YamlObject obj = parent.getObject(path);
         if (obj == null) {

@@ -41,14 +41,14 @@ public class BlueberryMod implements ModInfo {
     }
 
     @SuppressWarnings("unused")
-    protected BlueberryMod(BlueberryModLoader modLoader, ModDescriptionFile description, ClassLoader classLoader, File file) {
+    protected BlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         if (!ClassLoader.getSystemClassLoader().equals(this.getClass().getClassLoader()))
             throw new IllegalStateException("This constructor requires system class loader");
         this.getStateList().add(ModState.LOADED);
         init(modLoader, description, classLoader, file);
     }
 
-    final void init(BlueberryModLoader modLoader, ModDescriptionFile description, ClassLoader classLoader, File file) {
+    final void init(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         if (classLoader == null) {
             throw new IllegalArgumentException("Cannot initialize mods with null classLoader");
         }
@@ -134,10 +134,12 @@ public class BlueberryMod implements ModInfo {
         this.visualConfig = visualConfig;
     }
 
-    public final void setResourceManager(BlueberryResourceManager resourceManager) {
+    public final void setResourceManager(@NotNull BlueberryResourceManager resourceManager) {
+        Preconditions.checkNotNull(resourceManager, "ResourceManager cannot be null");
         this.resourceManager = resourceManager;
     }
 
+    @NotNull
     public final BlueberryResourceManager getResourceManager() {
         if (resourceManager == null) throw new IllegalArgumentException("ResourceManager is not defined (yet)");
         return resourceManager;

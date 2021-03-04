@@ -39,6 +39,7 @@ public class TextureStitchEvent extends Event {
             return this.sprites.add(spriteLocation);
         }
 
+        @NotNull
         public static HandlerList getHandlerList() {
             return handlerList;
         }

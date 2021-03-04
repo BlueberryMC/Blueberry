@@ -37,9 +37,9 @@ public class RefField<T> {
     @Deprecated
     public Object getObj(@Nullable Object t) { try { return this.field.get(t); } catch (IllegalAccessException e) { throw new RuntimeException(e); } }
 
-    public void set(@Nullable T t, Object o) { try { this.field.set(t, o); } catch (ReflectiveOperationException e) { throw new RuntimeException(e); } }
+    public void set(@Nullable T t, @Nullable Object o) { try { this.field.set(t, o); } catch (ReflectiveOperationException e) { throw new RuntimeException(e); } }
 
-    public void setObj(@Nullable Object obj, Object o) { try { this.field.set(obj, o); } catch (ReflectiveOperationException e) { throw new RuntimeException(e); } }
+    public void setObj(@Nullable Object obj, @Nullable Object o) { try { this.field.set(obj, o); } catch (ReflectiveOperationException e) { throw new RuntimeException(e); } }
 
     public void setAccessible(boolean flag) { this.field.setAccessible(flag); }
 
@@ -82,6 +82,7 @@ public class RefField<T> {
     @Contract(pure = true)
     public int getModifiers() { return this.field.getModifiers(); }
 
+    @NotNull
     @SuppressWarnings("unchecked")
     public Class<T> getDeclaringClass() { return (Class<T>) this.field.getDeclaringClass(); }
 
@@ -98,12 +99,13 @@ public class RefField<T> {
     public String toString() { return this.field.toString(); }
 
     @NotNull
-    public Annotation[] getAnnotations() { return this.field.getAnnotations(); }
+    public Annotation@NotNull[] getAnnotations() { return this.field.getAnnotations(); }
 
-    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) { return this.field.getAnnotation(annotationClass); }
+    @Nullable
+    public <A extends Annotation> A getAnnotation(@NotNull Class<A> annotationClass) { return this.field.getAnnotation(annotationClass); }
 
     @NotNull
-    public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotationClass) { return this.field.getAnnotationsByType(annotationClass); }
+    public <A extends Annotation> A@NotNull[] getAnnotationsByType(@NotNull Class<A> annotationClass) { return this.field.getAnnotationsByType(annotationClass); }
 
     @Contract(pure = true)
     @NotNull
