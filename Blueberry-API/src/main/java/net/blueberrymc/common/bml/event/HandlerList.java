@@ -55,7 +55,7 @@ public class HandlerList {
                     try {
                         registeredListener.getExecutor().accept(event);
                     } catch (Throwable e) {
-                        Throwable cause = e.getCause() != null ? e.getCause() : e.getCause();
+                        Throwable cause = e.getCause() != null ? e.getCause() : e;
                         String listenerName = registeredListener.getListener() == null ? null : registeredListener.getListener().getClass().getCanonicalName();
                         new EventException("Could not pass event " + event.getEventName() + " to listener " + listenerName + " of mod " + registeredListener.getMod().getName(), cause).printStackTrace();
                     }
