@@ -123,12 +123,12 @@ public class InternalBlueberryMod extends BlueberryMod {
         registerVisualConfigTest();
         reload();
         Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
+        registerArgumentTypes();
     }
 
     @Override
     public void onPreInit() {
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
-        registerArgumentTypes();
         FLOWING_MILK = MilkFluid.Flowing.INSTANCE;
         MILK = MilkFluid.Source.INSTANCE;
         MILK_BLOCK = new BlueberryLiquidBlock(MILK, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
