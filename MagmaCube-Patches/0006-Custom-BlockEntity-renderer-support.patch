@@ -97,18 +97,6 @@ index 914bb3da9d50eb56744e81d0776f0828ed95d94b..b2ca3b5def26fc7b21eeb978292d39b0
  
        String s = parseArgument(optionset, optionspec6);
        Proxy proxy = Proxy.NO_PROXY;
-diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index e41e191da07716ed0969c4a3922d20a46c0356a2..ba194d16a8c42203a0d2838a0c0aeef853310130 100644
---- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-+++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -895,6 +895,7 @@ public class ClientPacketListener implements ClientGamePacketListener, net.blueb
- 
-    public void handleOpenScreen(ClientboundOpenScreenPacket clientboundOpenScreenPacket) {
-       PacketUtils.ensureRunningOnSameThread(clientboundOpenScreenPacket, this, this.minecraft);
-+      LOGGER.debug("Opening Menu: " + clientboundOpenScreenPacket.getRawType()); // Blueberry
-       MenuScreens.create(clientboundOpenScreenPacket.getType(), this.minecraft, clientboundOpenScreenPacket.getContainerId(), clientboundOpenScreenPacket.getTitle());
-    }
- 
 diff --git a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
 index f879e2d45e836747aa62b85092af6f81a0fee418..8e8fd24c57edb78bad0f112d7a17d55fff7329c1 100644
 --- a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
