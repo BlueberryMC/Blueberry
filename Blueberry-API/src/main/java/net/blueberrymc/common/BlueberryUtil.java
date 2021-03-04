@@ -62,7 +62,7 @@ public interface BlueberryUtil {
         try {
             b = BlueberryEvil.convert(b);
         } catch (Throwable ex) {
-            LOGGER.error("Could not convert " + path);
+            LOGGER.error("Could not convert {}", path, ex);
         }
         return b;
     }

@@ -3,6 +3,7 @@ package net.blueberrymc.common.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -20,7 +21,7 @@ public class BlueberryEvil {
         cr.accept(new ClassVisitor(Opcodes.ASM8, cw) {
             @NotNull
             @Override
-            public FieldVisitor visitField(int access, @NotNull String name, @NotNull String descriptor, @NotNull String signature, @NotNull Object value) {
+            public FieldVisitor visitField(int access, @NotNull String name, @NotNull String descriptor, @Nullable String signature, @Nullable Object value) {
                 // https://bugs.openjdk.java.net/browse/JDK-8145051
                 String newName = name.endsWith("this") ? "_____this_____" : name;
                 return super.visitField(access, newName, descriptor, signature, value);

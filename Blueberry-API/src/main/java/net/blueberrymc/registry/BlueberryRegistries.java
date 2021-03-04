@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +33,12 @@ public final class BlueberryRegistries<T> {
     static { init(); }
 
     public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPES = new BlueberryRegistries<>(Registry.PARTICLE_TYPE);
-    public static final BlueberryRegistries<Block> BLOCK = new BlueberryRegistries<>(Registry.BLOCK);
+    public static final BlueberryRegistries<Block> BLOCK = new BlueberryRegistries<>(Registry.BLOCK, block -> {
+        for (BlockState blockState : block.getStateDefinition().getPossibleStates()) {
+            Block.BLOCK_STATE_REGISTRY.add(blockState);
+        }
+        block.getLootTable(); // initialize loot table key
+    });
     public static final BlueberryRegistries<Item> ITEM = new BlueberryRegistries<>(Registry.ITEM);
     public static final BlueberryRegistries<MenuType<?>> MENU = new BlueberryRegistries<>(Registry.MENU);
     public static final BlueberryRegistries<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new BlueberryRegistries<>(Registry.BLOCK_ENTITY_TYPE);

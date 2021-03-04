@@ -14,8 +14,10 @@ While I try to make this project bigger, there's literally almost no API for now
 It takes a long time to make this project bigger and get good APIs.
 
 ## Known Issues
+<!-- needs testing
 - Synchronization issues with the server and client, with fluids probably.
   - Triggering block update causes nearby fluids to render normally
+-->
 
 ## Todo
 - Provide easy way to create profile or version in launcher for Blueberry
