@@ -1,4 +1,4 @@
-package net.blueberrymc.common.item;
+package net.blueberrymc.world.item;
 
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.network.chat.Component;
