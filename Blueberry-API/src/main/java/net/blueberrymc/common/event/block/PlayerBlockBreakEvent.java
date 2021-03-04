@@ -10,7 +10,7 @@ public class PlayerBlockBreakEvent extends BlockExpEvent implements Cancellable 
     private static final HandlerList handlerList = new HandlerList();
     protected final ServerPlayer player;
     protected boolean cancelled = false;
-    protected boolean dropItems = false;
+    protected boolean dropItems = true;
 
     public PlayerBlockBreakEvent(@NotNull Block block, @NotNull ServerPlayer player) {
         super(block, 0);
