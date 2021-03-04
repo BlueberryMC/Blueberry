@@ -24,7 +24,7 @@ public class EventFactory {
 
     public static void handlePlayerBlockDropItemEvent(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState blockState, @NotNull ServerPlayer player, @NotNull List<ItemEntity> items) {
         PlayerBlockDropItemEvent event = Event.callEvent(new PlayerBlockDropItemEvent(new CapturedBlock(level, pos, blockState), player, items));
-        if (event.isCancelled()) {
+        if (!event.isCancelled()) {
             for (ItemEntity item : event.getItems()) {
                 level.addFreshEntity(item);
             }
