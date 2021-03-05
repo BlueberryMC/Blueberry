@@ -5,7 +5,7 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index cd659dda61fd0e6527b27a32851aaa250ee05c9b..15ff957e9d4219657be6f1ba00901a21a6d2ecb1 100644
+index 8a5bf16e50979c59ac09999d1d232af1745c33bf..7241824fb93719c76eda63c494351340986ba28b 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
 @@ -26,7 +26,7 @@ public class DetectedVersion implements GameVersion {
@@ -25,18 +25,18 @@ index cd659dda61fd0e6527b27a32851aaa250ee05c9b..15ff957e9d4219657be6f1ba00901a21
 +      // this.magmaCubeVersion = "debug"; // MagmaCube // Blueberry
     }
  
-    private DetectedVersion(JsonObject jsonObject) {
+    private DetectedVersion(JsonObject json) {
 @@ -52,7 +52,7 @@ public class DetectedVersion implements GameVersion {
        this.resourcePackVersion = GsonHelper.getAsInt(jsonObject2, "resource");
        this.dataPackVersion = GsonHelper.getAsInt(jsonObject2, "data");
-       this.buildTime = Date.from(ZonedDateTime.parse(GsonHelper.getAsString(jsonObject, "build_time")).toInstant());
--      this.magmaCubeVersion = jsonObject.has("magmacube_version") ? GsonHelper.getAsString(jsonObject, "magmacube_version") : "debug"; // MagmaCube
-+      // this.magmaCubeVersion = jsonObject.has("magmacube_version") ? GsonHelper.getAsString(jsonObject, "magmacube_version") : "debug"; // MagmaCube // Blueberry
+       this.buildTime = Date.from(ZonedDateTime.parse(GsonHelper.getAsString(json, "build_time")).toInstant());
+-      this.magmaCubeVersion = json.has("magmacube_version") ? GsonHelper.getAsString(json, "magmacube_version") : "debug";
++      // this.magmaCubeVersion = json.has("magmacube_version") ? GsonHelper.getAsString(json, "magmacube_version") : "debug"; // Blueberry
     }
  
     public static GameVersion tryDetectVersion() {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 8b2a257c8e71db31767b90ee7d55005110d5899a..5707abb15044b5f43c3d815dde540de450efd8ee 100644
+index 04a9e96b2fad65968ecda49c59bdb27cafd66950..5959e685f8f4f44540776793c80a984fa010d13b 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -667,7 +667,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements

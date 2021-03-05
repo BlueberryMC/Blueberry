@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Fri, 5 Mar 2021 21:37:57 +0900
+Subject: [PATCH] MenuScreens#register PAIL private -> public
+
+
+diff --git a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
+index b4df646a2ddb033e66e74452da353653717a09e9..f3aadbf29e212bb64aa4a41cb85387cf8574c03b 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
++++ b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
+@@ -54,7 +54,8 @@ public class MenuScreens {
+       return (MenuScreens.ScreenConstructor)SCREENS.get(menuType);
+    }
+ 
+-   private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
++   // Blueberry - PAIL private -> public
++   public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
+       MenuScreens.ScreenConstructor<?, ?> screenConstructor2 = (MenuScreens.ScreenConstructor)SCREENS.put(menuType, screenConstructor);
+       if (screenConstructor2 != null) {
+          throw new IllegalStateException("Duplicate registration for " + Registry.MENU.getKey(menuType));

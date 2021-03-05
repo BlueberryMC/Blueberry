@@ -5,7 +5,7 @@ Subject: [PATCH] Mods support
 
 
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index be7b9f64269553712f5f3bef70989b7e08911e0f..45de7323427b147180b94d4268cbf9e0851de3d2 100644
+index f5432c828930a23fbd5657a978c1c5db39a0a4ca..6393b8a2936d4869043eefe882fef1d2f4ee00b7 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
 @@ -56,6 +56,24 @@ public class CrashReport {
@@ -43,7 +43,7 @@ index be7b9f64269553712f5f3bef70989b7e08911e0f..45de7323427b147180b94d4268cbf9e0
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 5707abb15044b5f43c3d815dde540de450efd8ee..bac6905be23e7359a388618ec0a1b109e6178640 100644
+index 5959e685f8f4f44540776793c80a984fa010d13b..dbfac9b4475cdec65ac3f542e58760f210e3f8cf 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -422,6 +422,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -75,9 +75,9 @@ index 5707abb15044b5f43c3d815dde540de450efd8ee..bac6905be23e7359a388618ec0a1b109
     }
  
     public static void crash(CrashReport crashReport) {
--      File file = new File(getInstance().gameDirectory, "crash-reports");
-+      File file = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
-       File file2 = new File(file, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
+-      File crashReportsDir = new File(getInstance().gameDirectory, "crash-reports");
++      File crashReportsDir = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
+       File crashReportFile = new File(crashReportsDir, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
        Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport());
        if (crashReport.getSaveFile() != null) {
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
@@ -412,7 +412,7 @@ index 13602ef3920c0b2521a512ca01769568391b927a..d6958f5ad2032f9344039df13e7cf29f
  
     void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 47662a207b147851fb17c944ce014736e9d73aa5..47f1d39080fb106e7128eeab169b2f59385b0fca 100644
+index 623a111065b651312b6ca06ecd5cefb0f0fa094a..e29a227b023062f2fef71814b90a60d822b0a511 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -79,6 +79,8 @@ public class Main {

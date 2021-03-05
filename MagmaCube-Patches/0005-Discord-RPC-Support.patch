@@ -5,12 +5,12 @@ Subject: [PATCH] Discord RPC Support
 
 
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index bac6905be23e7359a388618ec0a1b109e6178640..317b080ec094f6025fb3439752384cbe450b8890 100644
+index dbfac9b4475cdec65ac3f542e58760f210e3f8cf..9b2facaa50cf1939e3df5d8d84922a79a34aec85 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -684,6 +684,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
-       File file = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
-       File file2 = new File(file, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
+       File crashReportsDir = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
+       File crashReportFile = new File(crashReportsDir, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
        Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport());
 +      net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdownNow(); // Blueberry
        if (crashReport.getSaveFile() != null) {
