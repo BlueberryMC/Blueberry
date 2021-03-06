@@ -373,18 +373,6 @@ index 42f2ae46a5c318178bbb08d7a8fa2c9a35ddd326..a9dd6a83cd9179ad0e98d12e9448c853
  
     }
  
-diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
-index eae3824a0a9af4b5ba2999899afeb691e83a79f7..9e246d2b2f7012d49bb6e3bdec0df061d2942242 100644
---- a/src/main/java/net/minecraft/commands/Commands.java
-+++ b/src/main/java/net/minecraft/commands/Commands.java
-@@ -164,6 +164,7 @@ public class Commands {
-       WeatherCommand.register(this.dispatcher);
-       WorldBorderCommand.register(this.dispatcher);
-       if (SharedConstants.IS_RUNNING_IN_IDE) {
-+         net.blueberrymc.common.commands.BlueberryTestCommand.register(dispatcher); // Blueberry
-          TestCommand.register(this.dispatcher);
-       }
- 
 diff --git a/src/main/java/net/minecraft/network/ConnectionProtocol.java b/src/main/java/net/minecraft/network/ConnectionProtocol.java
 index f28a0bc0ac2d6e5c71c12a2ee4b367b23d1a36f9..1cfda29b98df26b61dcbe96e069ecaa117681524 100644
 --- a/src/main/java/net/minecraft/network/ConnectionProtocol.java

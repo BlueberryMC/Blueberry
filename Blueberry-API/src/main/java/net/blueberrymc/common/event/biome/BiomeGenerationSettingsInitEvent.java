@@ -34,11 +34,12 @@ public class BiomeGenerationSettingsInitEvent extends Event {
      * Gets the biome generation settings being created.
      * @return the biome generation settings
      */
+    @NotNull
     public Supplier<BiomeGenerationSettings> getBiomeGenerationSettings() {
         return biomeGenerationSettings;
     }
 
-    public void setBiomeGenerationSettings(java.util.function.Supplier<BiomeGenerationSettings> biomeGenerationSettings) {
+    public void setBiomeGenerationSettings(@NotNull Supplier<BiomeGenerationSettings> biomeGenerationSettings) {
         Preconditions.checkNotNull(biomeGenerationSettings, "biomeGenerationSettings cannot be null");
         this.biomeGenerationSettings = biomeGenerationSettings;
     }

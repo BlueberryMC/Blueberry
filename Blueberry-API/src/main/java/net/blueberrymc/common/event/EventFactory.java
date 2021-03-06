@@ -7,6 +7,7 @@ import net.blueberrymc.common.event.block.PlayerBlockDropItemEvent;
 import net.blueberrymc.common.event.command.CommandRegistrationEvent;
 import net.blueberrymc.world.level.block.CapturedBlock;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -17,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class EventFactory {
-    public static void callCommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void callCommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull Commands.CommandSelection commandSelection) {
         BlueberryCommand.register(dispatcher);
-        new CommandRegistrationEvent(dispatcher).callEvent();
+        new CommandRegistrationEvent(dispatcher, commandSelection).callEvent();
     }
 
     public static void handlePlayerBlockDropItemEvent(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState blockState, @NotNull ServerPlayer player, @NotNull List<ItemEntity> items) {

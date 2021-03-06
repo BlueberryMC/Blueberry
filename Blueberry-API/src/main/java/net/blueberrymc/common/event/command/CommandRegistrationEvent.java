@@ -5,6 +5,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -12,21 +13,27 @@ import java.util.function.Consumer;
 public class CommandRegistrationEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
 
-    @NotNull
     protected final CommandDispatcher<CommandSourceStack> dispatcher;
+    protected final Commands.CommandSelection commandSelection;
 
-    public CommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
-        this(dispatcher, !Blueberry.getUtil().isOnGameThread());
+    public CommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull Commands.CommandSelection commandSelection) {
+        this(dispatcher, commandSelection, !Blueberry.getUtil().isOnGameThread());
     }
 
-    protected CommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, boolean async) {
+    protected CommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull Commands.CommandSelection commandSelection, boolean async) {
         super(async);
         this.dispatcher = dispatcher;
+        this.commandSelection = commandSelection;
     }
 
     @NotNull
     public CommandDispatcher<CommandSourceStack> getDispatcher() {
         return dispatcher;
+    }
+
+    @NotNull
+    public Commands.CommandSelection getCommandSelection() {
+        return commandSelection;
     }
 
     public void register(@NotNull Consumer<CommandDispatcher<CommandSourceStack>> registerer) {
