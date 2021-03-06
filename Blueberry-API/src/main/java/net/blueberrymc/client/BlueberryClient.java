@@ -57,7 +57,7 @@ public class BlueberryClient implements BlueberryUtil {
 
     @Override
     public boolean isOnGameThread() {
-        return RenderSystem.isOnRenderThread();
+        return RenderSystem.isOnRenderThread() || Thread.currentThread().getName().equals("main");
     }
 
     // Blueberry

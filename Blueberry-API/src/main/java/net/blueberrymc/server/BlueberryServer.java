@@ -72,7 +72,7 @@ public class BlueberryServer implements BlueberryUtil {
 
     @Override
     public boolean isOnGameThread() {
-        return server.isSameThread();
+        return server.isSameThread() || Thread.currentThread().getName().equals("main");
     }
 
     @NotNull

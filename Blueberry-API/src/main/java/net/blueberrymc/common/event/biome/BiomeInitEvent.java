@@ -6,15 +6,17 @@ import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.world.level.biome.Biome;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 /**
  * Called when the biome is being created from the biome builder.
  */
 public class BiomeInitEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     private final Biome.BiomeBuilder builder;
-    private Biome biome;
+    private Supplier<Biome> biome;
 
-    public BiomeInitEvent(@NotNull Biome.BiomeBuilder builder, @NotNull Biome biome) {
+    public BiomeInitEvent(@NotNull Biome.BiomeBuilder builder, @NotNull Supplier<Biome> biome) {
         this.builder = builder;
         this.biome = biome;
     }
@@ -33,11 +35,11 @@ public class BiomeInitEvent extends Event {
      * @return the biome
      */
     @NotNull
-    public Biome getBiome() {
+    public Supplier<Biome> getBiome() {
         return biome;
     }
 
-    public void setBiome(@NotNull Biome biome) {
+    public void setBiome(@NotNull Supplier<Biome> biome) {
         Preconditions.checkNotNull(biome, "biome cannot be null");
         this.biome = biome;
     }
