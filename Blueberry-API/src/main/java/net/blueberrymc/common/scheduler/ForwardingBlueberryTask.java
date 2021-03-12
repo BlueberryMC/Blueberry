@@ -54,4 +54,9 @@ public abstract class ForwardingBlueberryTask implements BlueberryTask {
             }
         };
     }
+
+    @Override
+    public String toString() {
+        return delegate().toString();
+    }
 }

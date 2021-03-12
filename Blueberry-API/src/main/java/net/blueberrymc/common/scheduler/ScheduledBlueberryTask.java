@@ -106,7 +106,7 @@ public class ScheduledBlueberryTask implements BlueberryTask {
 
     @Override
     public String toString() {
-        return "CraftTomeitoTask{" + "taskId=" + taskId +
+        return "ScheduledBlueberryTask{" + "taskId=" + taskId +
                 ", owner=" + owner +
                 ", runnable=" + runnable +
                 ", sync=" + sync +
