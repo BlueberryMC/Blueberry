@@ -42,10 +42,10 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 9b2facaa50cf1939e3df5d8d84922a79a34aec85..a23e287e2d9801007ac48411c30bcc0dee0db76f 100644
+index 398b2aef7cdfab47f60db4095eba07b4553a5f86..553a1535dcdceda7fb98de577eaa0d8e04eef233 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -454,6 +454,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -456,6 +456,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer);
        this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
        BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -144,10 +144,10 @@ index 06f8fadd15da65ebbc246edb41d2685c966bf1f3..ac59622d70338f22f6fb35eb5a28cf0e
     }
  
 diff --git a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
-index 3e499be014e0b5f2064fa15daa92a22b00501cbc..bd26ac05a9c701d0e706adaefc93f61b97607943 100644
+index dcd0521cf248661676f53f16fd93d18afc15777c..c16d41bbb71af50f53d8b96039b5524870a328d8 100644
 --- a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -141,7 +141,7 @@ public class ItemRenderer implements ResourceManagerReloadListener {
+@@ -147,7 +147,7 @@ public class ItemRenderer implements ResourceManagerReloadListener {
  
              this.renderModelLists(bakedModel, itemStack, i, i2, poseStack, vertexConsumer);
           } else {
@@ -217,7 +217,7 @@ index 631631221d5f2b26635da9513564531f8cf90baf..cc57add0223b8a963495e91571e29fd0
        T create(int var1, Inventory var2);
     }
 diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
-index 760c6c7e53b62d3abfdd375f899850cc860169f0..334d4085e358685db169888f34620ae8f9ef3ff8 100644
+index 66db4b1e5a1d5731b8a3ec921ab64de781d6f273..b71f4de2462b931a43ba91e7e4df710de85aee4e 100644
 --- a/src/main/java/net/minecraft/world/item/Item.java
 +++ b/src/main/java/net/minecraft/world/item/Item.java
 @@ -90,6 +90,7 @@ public class Item implements ItemLike {

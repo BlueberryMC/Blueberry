@@ -5,10 +5,10 @@ Subject: [PATCH] Discord RPC Support
 
 
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index dbfac9b4475cdec65ac3f542e58760f210e3f8cf..9b2facaa50cf1939e3df5d8d84922a79a34aec85 100644
+index 02fb7e29be2bde0654f4907d597fae7afd076600..398b2aef7cdfab47f60db4095eba07b4553a5f86 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -684,6 +684,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -687,6 +687,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        File crashReportsDir = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
        File crashReportFile = new File(crashReportsDir, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
        Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport());
@@ -16,15 +16,15 @@ index dbfac9b4475cdec65ac3f542e58760f210e3f8cf..9b2facaa50cf1939e3df5d8d84922a79
        if (crashReport.getSaveFile() != null) {
           Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile());
           System.exit(-1);
-@@ -808,6 +809,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
-       }
+@@ -812,6 +813,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
        this.screen = screen;
+       BufferUploader.reset();
 +      net.blueberrymc.client.event.ClientEventFactory.callScreenChangedEvent(this.screen); // Blueberry
        if (screen != null) {
           this.mouseHandler.releaseMouse();
           KeyMapping.releaseAll();
-@@ -824,9 +826,11 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -828,9 +830,11 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
     public void setOverlay(@Nullable Overlay overlay) {
        this.overlay = overlay;

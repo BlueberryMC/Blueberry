@@ -5,7 +5,7 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index b99be076f9c6528a012f35167327a3dec3741523..746dae883ac192eecda0b336cba0a589fdc29cba 100644
+index d9751b9375a6a6fc111b0fb030d158e09a69a773..060b7cabaf3417dad65ab635542fd0a66f24fb8e 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 @@ -215,9 +215,39 @@ public class ServerPlayerGameMode {
@@ -87,7 +87,7 @@ index b99be076f9c6528a012f35167327a3dec3741523..746dae883ac192eecda0b336cba0a589
        }
     }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index c66c6679776d3ce6cca93ba5c23791e86aae4e21..fe5f5a849800cb69ed7ae40b9b01c25bf29063ea 100644
+index a70236fb62602be2986564b709dafabbc867519b..8fa59f0091ec0b783ad89031263a1624ef6903c3 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -93,6 +93,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
@@ -99,10 +99,10 @@ index c66c6679776d3ce6cca93ba5c23791e86aae4e21..fe5f5a849800cb69ed7ae40b9b01c25b
     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
        this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 282606c296c08f4f9e610fcfef2d091c923abbb7..bd2e460c0ef0fc9d0bcbac3262f45c9ca7060706 100644
+index ee27c786eaec9cb1fb72dc155456d3d11cf04bf7..bb2ebd0553e40664df52132effaa987612110465 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -269,11 +269,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -269,11 +269,13 @@ public class Block extends BlockBehaviour implements ItemLike {
           double d3 = (double)(level.random.nextFloat() * 0.5F) + 0.25D;
           ItemEntity itemEntity = new ItemEntity(level, (double)blockPos.getX() + d, (double)blockPos.getY() + d2, (double)blockPos.getZ() + d3, itemStack);
           itemEntity.setDefaultPickUpDelay();
@@ -111,12 +111,13 @@ index 282606c296c08f4f9e610fcfef2d091c923abbb7..bd2e460c0ef0fc9d0bcbac3262f45c9c
        }
     }
  
--   protected void popExperience(ServerLevel serverLevel, BlockPos blockPos, int i) {
-+   public void popExperience(ServerLevel serverLevel, BlockPos blockPos, int i) { // Blueberry - protected -> public
-       if (serverLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-          ExperienceOrb.award(serverLevel, Vec3.atCenterOf(blockPos), i);
+-   protected void popExperience(ServerLevel level, BlockPos pos, int exp) {
++   // Blueberry - PAIL protected -> public
++   public void popExperience(ServerLevel level, BlockPos pos, int exp) {
+       if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+          ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
        }
-@@ -414,6 +415,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -414,6 +416,12 @@ public class Block extends BlockBehaviour implements ItemLike {
        return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
     }
  

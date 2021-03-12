@@ -10,14 +10,9 @@ Open-source modding API for Minecraft
 
 ## Important Warning
 **Blueberry is a very small project.**
-While I try to make this project bigger, there's literally almost no API for now.
-It takes a long time to make this project bigger and get good APIs.
+Whilst I try not to break API compatibility, but things could change at anytime!
 
 ## Known Issues
-<!-- needs testing
-- Synchronization issues with the server and client, with fluids probably.
-  - Triggering block update causes nearby fluids to render normally
--->
 
 ## Todo
 - Provide easy way to create profile or version in launcher for Blueberry
