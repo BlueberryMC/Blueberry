@@ -2,6 +2,8 @@ package net.blueberrymc.server;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.BlueberryUtil;
+import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
+import net.blueberrymc.server.scheduler.BlueberryServerScheduler;
 import net.minecraft.CrashReport;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -17,6 +19,7 @@ import java.util.Date;
 
 public class BlueberryServer implements BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
+    private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     @Nullable private final BlueberryServer impl;
 
     public BlueberryServer() {
@@ -68,6 +71,16 @@ public class BlueberryServer implements BlueberryUtil {
         }
         this.stopServer();
         System.exit(1);
+    }
+
+    @Override
+    public @NotNull AbstractBlueberryScheduler getClientScheduler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public @NotNull AbstractBlueberryScheduler getServerScheduler() {
+        return serverScheduler;
     }
 
     @Override

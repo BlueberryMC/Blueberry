@@ -34,6 +34,8 @@ public class Blueberry {
     private static BlueberryUtil util;
     private static File gameDir;
 
+    public static boolean stopping = false;
+
     @Contract(pure = true)
     @NotNull
     public static ModLoader getModLoader() {
@@ -135,6 +137,15 @@ public class Blueberry {
         } catch (Throwable throwable) {
             crash(throwable, "Initializing Blueberry");
         }
+    }
+
+    public static void shutdown() {
+        if (stopping) return;
+        stopping = true;
+        LOGGER.info("Shutting down Discord RPC");
+        DiscordRPCTaskExecutor.shutdownNow();
+        LOGGER.info("Disabling mods");
+        modLoader.getLoadedMods().forEach(modLoader::disableMod);
     }
 
     @SuppressWarnings("deprecation")

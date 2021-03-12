@@ -1,7 +1,8 @@
 package net.blueberrymc.common;
 
+import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
+import net.blueberrymc.common.scheduler.NoopBlueberryScheduler;
 import net.minecraft.CrashReport;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,5 +20,15 @@ public class BlueberryNope implements BlueberryUtil {
     @Override
     public void crash(@NotNull CrashReport crashReport) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public @NotNull AbstractBlueberryScheduler getClientScheduler() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public @NotNull AbstractBlueberryScheduler getServerScheduler() {
+        return NoopBlueberryScheduler.INSTANCE;
     }
 }

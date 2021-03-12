@@ -6,6 +6,7 @@ import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
+import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.world.item.SimpleBlueberryItem;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.config.ModDescriptionFile;
@@ -25,6 +26,7 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -37,10 +39,14 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InternalBlueberryMod extends BlueberryMod {
+    private static final Timer clientTimer = new Timer("Async Client Blueberry Scheduler", true);
+    private static final Timer serverTimer = new Timer("Async Server Blueberry Scheduler", true);
     private static final AtomicReference<String> lastScreen = new AtomicReference<>();
     public static MilkFluid FLOWING_MILK;
     public static MilkFluid MILK;
@@ -107,7 +113,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         );
         this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.title"))
-                        //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk")).id("gamePlay.liquidMilk"))
+                //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk")).id("gamePlay.liquidMilk"))
         );
         this.getVisualConfig().add(
                 new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
@@ -123,6 +129,29 @@ public class InternalBlueberryMod extends BlueberryMod {
         reload();
         Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
         registerArgumentTypes();
+        Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
+                clientTimer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        scheduler.tickAsync();
+                    }
+                }, 1, 1)
+        );
+        AbstractBlueberryScheduler serverScheduler = Blueberry.getUtil().getServerScheduler();
+        serverTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                MinecraftServer server;
+                if (Blueberry.getSide() == Side.CLIENT) {
+                    server = Blueberry.getUtil().asClient().getIntegratedServer();
+                } else {
+                    server = Blueberry.getUtil().asServer().getServer();
+                }
+                if (server != null) {
+                    serverScheduler.tickAsync();
+                }
+            }
+        }, 50, 50);
     }
 
     @Override
@@ -164,6 +193,12 @@ public class InternalBlueberryMod extends BlueberryMod {
     @Override
     public void onPostInit() {
         refreshDiscordStatus();
+    }
+
+    @Override
+    public void onUnload() {
+        clientTimer.cancel();
+        serverTimer.cancel();
     }
 
     private void registerBlocks() {

@@ -42,7 +42,7 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 398b2aef7cdfab47f60db4095eba07b4553a5f86..553a1535dcdceda7fb98de577eaa0d8e04eef233 100644
+index 59bd45e965d0e77d74f4bc07788d026c03fe373e..e8c26d404b4e6ddd930196a62a3c8e582ce29d7e 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -456,6 +456,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements

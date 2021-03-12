@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -99,6 +100,12 @@ public class EventManager {
     @NotNull
     public Set<Class<? extends Event>> getKnownEvents() {
         return handlerMap.keySet();
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public static Map<Class<? extends Event>, HandlerList> getHandlerMap() {
+        return handlerMap;
     }
 
     @NotNull

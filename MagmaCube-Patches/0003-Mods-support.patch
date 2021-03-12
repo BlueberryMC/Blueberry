@@ -43,7 +43,7 @@ index f5432c828930a23fbd5657a978c1c5db39a0a4ca..6393b8a2936d4869043eefe882fef1d2
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index c337971897d0c8e70a4f71a7a0a658eb4f72cfe0..02fb7e29be2bde0654f4907d597fae7afd076600 100644
+index c337971897d0c8e70a4f71a7a0a658eb4f72cfe0..59bd45e965d0e77d74f4bc07788d026c03fe373e 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -424,6 +424,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -72,7 +72,7 @@ index c337971897d0c8e70a4f71a7a0a658eb4f72cfe0..02fb7e29be2bde0654f4907d597fae7a
        this.setOverlay(new LoadingOverlay(this, this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
              if (SharedConstants.IS_RUNNING_IN_IDE) {
                 this.selfTest();
-@@ -682,7 +684,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -682,9 +684,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
     }
  
     public static void crash(CrashReport crashReport) {
@@ -80,7 +80,45 @@ index c337971897d0c8e70a4f71a7a0a658eb4f72cfe0..02fb7e29be2bde0654f4907d597fae7a
 +      File crashReportsDir = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
        File crashReportFile = new File(crashReportsDir, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
        Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport());
++      net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdownNow(); // Blueberry
        if (crashReport.getSaveFile() != null) {
+          Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile());
+          System.exit(-1);
+@@ -810,6 +813,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+ 
+       this.screen = screen;
+       BufferUploader.reset();
++      net.blueberrymc.client.event.ClientEventFactory.callScreenChangedEvent(this.screen); // Blueberry
+       if (screen != null) {
+          this.mouseHandler.releaseMouse();
+          KeyMapping.releaseAll();
+@@ -826,6 +830,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+ 
+    public void setOverlay(@Nullable Overlay overlay) {
+       this.overlay = overlay;
++      net.blueberrymc.client.event.ClientEventFactory.callOverlayChangedEvent(overlay); // Blueberry
+    }
+ 
+    public void destroy() {
+@@ -850,6 +855,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+             this.screen.removed();
+          }
+ 
++         net.blueberrymc.common.Blueberry.shutdown();
+          this.close();
+       } finally {
+          Util.timeSource = System::nanoTime;
+@@ -1472,6 +1478,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+          this.pendingConnection.tick();
+       }
+ 
++      // Blueberry start
++      this.profiler.popPush("blueberryClientScheduler");
++      net.blueberrymc.common.Blueberry.getUtil().getClientScheduler().tick();
++      // Blueberry end
+       this.profiler.popPush("keyboard");
+       this.keyboardHandler.tick();
+       this.profiler.pop();
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 index ce58cb3982394a1b0a9d3606aeff09b0c2a9de46..911a6e7cc4d8c106ee3e331d2ed473c996aae4f1 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
@@ -197,10 +235,30 @@ index d327ba59171256ce41a817789e52ce96ddf2e054..5196e4a8b864e8cf54102b1676365990
              this.screen.setToolTip(list2);
           }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..420cb78609ca13b7e6c97edb6ad5f3cfb0543271 100644
+index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..914bb3da9d50eb56744e81d0776f0828ed95d94b 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -73,6 +73,8 @@ public class Main {
+@@ -34,8 +34,18 @@ import org.apache.logging.log4j.Logger;
+ public class Main {
+    private static final Logger LOGGER = LogManager.getLogger();
+ 
+-   // MagmaCube start - decompile error
++   // Blueberry start
+    public static void main(String[] args) {
++      try {
++         main0(args);
++      } finally {
++         net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdown();
++      }
++   }
++   // Blueberry end
++
++   // MagmaCube start - decompile error
++   public static void main0(String[] args) { // Blueberry
+       if (net.minecraft.SharedConstants.IS_RUNNING_IN_IDE) org.lwjgl.glfw.GLFW.glfwInit(); // MagmaCube - lwjgl debug agent causes glGetError to crash when we didn't call glfwInit
+       OptionParser optionparser = new OptionParser();
+       optionparser.allowsUnrecognizedOptions();
+@@ -73,6 +83,8 @@ public class Main {
        if (!list.isEmpty()) {
           System.out.println("Completely ignored arguments: " + list);
        }
@@ -209,7 +267,7 @@ index 70cdc7f9d116e43ad9b0769291401e6ed09314c7..420cb78609ca13b7e6c97edb6ad5f3cf
  
        String s = parseArgument(optionset, optionspec6);
        Proxy proxy = Proxy.NO_PROXY;
-@@ -106,7 +108,7 @@ public class Main {
+@@ -106,7 +118,7 @@ public class Main {
        PropertyMap propertymap = GsonHelper.fromJson(gson, parseArgument(optionset, optionspec18), PropertyMap.class);
        PropertyMap propertymap1 = GsonHelper.fromJson(gson, parseArgument(optionset, optionspec19), PropertyMap.class);
        String s4 = parseArgument(optionset, optionspec22);
@@ -432,7 +490,7 @@ index 623a111065b651312b6ca06ecd5cefb0f0fa094a..e29a227b023062f2fef71814b90a60d8
              dedicatedServerx.setPort(optionSet.valueOf(optionSpec12));
              dedicatedServerx.setDemo(optionSet.has(optionSpec3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 00fb313bd0af3fb820335f538304e4706fae00cd..58a28a807682f23bc62c1eca9e3191482a0aee6c 100644
+index 00fb313bd0af3fb820335f538304e4706fae00cd..be05ca72fd0a12758d676a134ba40752607a9c3a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -238,6 +238,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -459,6 +517,30 @@ index 00fb313bd0af3fb820335f538304e4706fae00cd..58a28a807682f23bc62c1eca9e319148
  
              while(this.running) {
                 long l = Util.getMillis() - this.nextTickTime;
+@@ -791,6 +794,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+       }
+ 
+       this.profiler.pop();
++      // Blueberry start
++      this.profiler.push("blueberryServerScheduler");
++      net.blueberrymc.common.Blueberry.getUtil().getServerScheduler().tick();
++      this.profiler.pop();
++      // Blueberry end
+       this.profiler.push("tallying");
+       long l2 = this.tickTimes[this.tickCount % 100] = Util.getNanos() - l;
+       this.averageTickTime = this.averageTickTime * 0.8F + (float)l2 / 1000000.0F * 0.19999999F;
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index c8f0157dbd04c4a07918a4db4a869c6d567c9dcf..06e0ecd55406dc00558e5dda7cd5f050a53a915f 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -494,6 +494,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+    }
+ 
+    public void stopServer() {
++      net.blueberrymc.common.Blueberry.shutdown(); // Blueberry
+       super.stopServer();
+       Util.shutdownExecutors();
+    }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index 589b3beb057eeba439e5e0ab969f628709d620b8..4bb3294fc89cb56f3b29c205e718c6cb31c82291 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java

@@ -248,7 +248,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void disableMod(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
-        if (!mod.getDescription().isUnloadable()) throw new IllegalArgumentException(mod.getName() + " (" + mod.getModId() + ") cannot be unloaded");
+        if (!Blueberry.stopping && !mod.getDescription().isUnloadable()) throw new IllegalArgumentException(mod.getName() + " (" + mod.getModId() + ") cannot be unloaded");
         try {
             mod.onUnload();
             mod.getStateList().add(ModState.UNLOADED);
@@ -257,7 +257,7 @@ public class BlueberryModLoader implements ModLoader {
         }
         //noinspection SuspiciousMethodCalls
         loaders.remove(mod.getClassLoader());
-        LOGGER.info("Disabled mod " + mod.getDescription().getModId());
+        LOGGER.info("Disabled mod {} ({}) [{}]", mod.getDescription().getModId(), mod.getModId(), mod.getDescription().getVersion());
     }
 
     @Override

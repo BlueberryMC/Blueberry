@@ -2,6 +2,8 @@ package net.blueberrymc.common;
 
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.client.BlueberryClient;
+import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
+import net.blueberrymc.common.util.ActionableResult;
 import net.blueberrymc.common.util.BlueberryEvil;
 import net.blueberrymc.common.util.SimpleEntry;
 import net.blueberrymc.common.util.Versioning;
@@ -26,6 +28,39 @@ public interface BlueberryUtil {
     void reloadResourcePacks();
 
     void crash(@NotNull CrashReport crashReport);
+
+    /**
+     * Gets task scheduler for client.
+     * @return scheduler
+     * @throws UnsupportedOperationException Thrown when the side is not a client
+     */
+    @NotNull
+    AbstractBlueberryScheduler getClientScheduler();
+
+    /**
+     * Gets task scheduler for client, but returns nullable value.
+     * @return (nullable) scheduler
+     */
+    @Nullable
+    default AbstractBlueberryScheduler getClientSchedulerNullable() {
+        try {
+            return getClientScheduler();
+        } catch (UnsupportedOperationException ex) {
+            return null;
+        }
+    }
+
+    @NotNull
+    default ActionableResult<AbstractBlueberryScheduler> getClientSchedulerOptional() {
+        return ActionableResult.ofThrowable(this::getClientScheduler);
+    }
+
+    /**
+     * Gets task scheduler for server. This method should be available from both sides.
+     * @return scheduler
+     */
+    @NotNull
+    AbstractBlueberryScheduler getServerScheduler();
 
     default boolean isOnGameThread() {
         return false;

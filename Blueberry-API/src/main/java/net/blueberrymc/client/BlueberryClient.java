@@ -4,10 +4,13 @@ import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
+import net.blueberrymc.client.scheduler.BlueberryClientScheduler;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
+import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.common.util.SimpleEntry;
+import net.blueberrymc.server.scheduler.BlueberryServerScheduler;
 import net.minecraft.CrashReport;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,6 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @SideOnly(Side.CLIENT)
 public class BlueberryClient implements BlueberryUtil {
+    private final BlueberryClientScheduler clientScheduler = new BlueberryClientScheduler();
+    private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();
     @Nullable private final BlueberryClient impl;
 
@@ -56,8 +61,20 @@ public class BlueberryClient implements BlueberryUtil {
     }
 
     @Override
+    public @NotNull AbstractBlueberryScheduler getClientScheduler() {
+        return clientScheduler;
+    }
+
+    @Override
+    public @NotNull AbstractBlueberryScheduler getServerScheduler() {
+        return serverScheduler;
+    }
+
+    @Override
     public boolean isOnGameThread() {
-        return RenderSystem.isOnRenderThread() || Thread.currentThread().getName().equals("main");
+        return RenderSystem.isOnRenderThread()
+                || Thread.currentThread().getName().equals("main")
+                || Thread.currentThread().getName().equals("Server thread"); // may be called from integrated server
     }
 
     // Blueberry

@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 6c796f4c6dca90025f74eccf02b468cf12eddf51..fdfb014519b2915dd96a4a4742e5faacad3222d7 100644
+index 6c796f4c6dca90025f74eccf02b468cf12eddf51..339c6e5ca6a76fbed7584d3783fa385f0fcc885d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -57,7 +57,7 @@ index 6c796f4c6dca90025f74eccf02b468cf12eddf51..fdfb014519b2915dd96a4a4742e5faac
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.3</version>
++            <version>0.0.4</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
