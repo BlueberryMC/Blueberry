@@ -1,4 +1,4 @@
-[insert your favorite blueberry picture here]
+<img width=25% height=25% src="https://user-images.githubusercontent.com/19150229/111063610-04f4bf00-84f3-11eb-9e39-a37c02dd7cd0.png"></img>
 
 # Blueberry
 
