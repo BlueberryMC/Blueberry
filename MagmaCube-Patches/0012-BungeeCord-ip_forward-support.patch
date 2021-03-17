@@ -1,0 +1,175 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Wed, 17 Mar 2021 21:21:48 +0900
+Subject: [PATCH] BungeeCord ip_forward support
+
+
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index 5061728b79f504846045949a9e9a329257e24616..7ac1576a4440145ffec3d22a809ec217e127ecfd 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -59,7 +59,12 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+    private final PacketFlow receiving;
+    private final Queue<Connection.PacketHolder> queue = Queues.newConcurrentLinkedQueue();
+    private Channel channel;
+-   private SocketAddress address;
++   public SocketAddress address; // PAIL private -> public
++   // Blueberry start
++   public java.util.UUID spoofedUUID;
++   public com.mojang.authlib.properties.Property[] spoofedProfile;
++   public boolean preparing = true;
++   // Blueberry end
+    private PacketListener packetListener;
+    private Component disconnectedReason;
+    private boolean encrypted;
+@@ -79,6 +84,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+       super.channelActive(channelHandlerContext);
+       this.channel = channelHandlerContext.channel();
+       this.address = this.channel.remoteAddress();
++      this.preparing = false; // Blueberry
+ 
+       try {
+          this.setProtocol(ConnectionProtocol.HANDSHAKING);
+@@ -246,6 +252,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+    }
+ 
+    public void disconnect(Component component) {
++      this.preparing = false; // Blueberry
+       if (this.channel.isOpen()) {
+          this.channel.close().awaitUninterruptibly();
+          this.disconnectedReason = component;
+diff --git a/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java b/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
+index a943189aa6f0dbf8a944b19f8f10c90ed3e040b7..e10263cd2f16e0b35e35324ffc192073177acb0c 100644
+--- a/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
++++ b/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
+@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.Packet;
+ 
+ public class ClientIntentionPacket implements Packet<ServerHandshakePacketListener> {
+    private final int protocolVersion;
+-   private final String hostName;
++   public String hostName; // PAIL private+f -> public-f
+    private final int port;
+    private final ConnectionProtocol intention;
+ 
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 06e0ecd55406dc00558e5dda7cd5f050a53a915f..21adf778b400756853614370feef4ead19316cf6 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -146,7 +146,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+       if (!this.usesAuthentication()) {
+          LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+          LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+-         LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
++         // Blueberry start
++         if (net.blueberrymc.common.bml.InternalBlueberryMod.bungee) {
++            LOGGER.warn("Whilst this makes it possible to use BungeeCord, unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
++            LOGGER.warn("Please see http://www.spigotmc.org/wiki/firewall-guide/ for further information.");
++         } else {
++            LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
++         }
++         // BLueberry end
+          LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
+       }
+ 
+diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
+index 78e5c3c55884a9d9413290fa7f7045b2d2aa9bfa..a420fc1790bc011c5ef4643ea00799843cc1c0be 100644
+--- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
++++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
+@@ -139,6 +139,7 @@ public class ServerConnectionListener {
+                      connection.setReadOnly();
+                   }
+                } else {
++                  if (connection.preparing) continue; // Blueberry
+                   iterator.remove();
+                   connection.handleDisconnection();
+                }
+diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
+index 43c098bdbd21d7f8c8c27575c9f0514916ed6e80..c8eb192e580720babff6ac86b5b023c7653f4fa3 100644
+--- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
+@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
+ import net.minecraft.server.MinecraftServer;
+ 
+ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketListener {
++   private static final com.google.gson.Gson gson = new com.google.gson.Gson(); // Blueberry
+    private static final Component IGNORE_STATUS_REASON = new TextComponent("Ignoring status request");
+    private final MinecraftServer server;
+    private final Connection connection;
+@@ -37,6 +38,24 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+             this.connection.disconnect(component);
+          } else {
+             this.connection.setListener(new ServerLoginPacketListenerImpl(this.server, this.connection));
++            // Blueberry start
++            if (net.blueberrymc.common.bml.InternalBlueberryMod.bungee) {
++               String[] split = clientIntentionPacket.hostName.split("\00");
++               if (split.length == 3 || split.length == 4) {
++                  clientIntentionPacket.hostName = split[0];
++                  connection.address = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) connection.getRemoteAddress()).getPort());
++                  connection.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
++               } else {
++                  TextComponent text = new TextComponent("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
++                  connection.send(new ClientboundLoginDisconnectPacket(text));
++                  connection.disconnect(text);
++                  return;
++               }
++               if (split.length == 4) {
++                  connection.spoofedProfile = gson.fromJson(split[3], com.mojang.authlib.properties.Property[].class);
++               }
++            }
++            // Blueberry end
+          }
+          break;
+       case STATUS:
+diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index af261d6d85c1fba64eec3db39235a21776147d58..6776d26327653bcfa46c317553d471c8290c86b9 100644
+--- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -91,7 +91,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+    }
+ 
+    public void handleAcceptedLogin() {
+-      if (!this.gameProfile.isComplete()) {
++      if (false && !this.gameProfile.isComplete()) { // Blueberry - handled in initUUID
+          this.gameProfile = this.createFakeProfile(this.gameProfile);
+       }
+ 
+@@ -128,6 +128,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+       return this.gameProfile != null ? this.gameProfile + " (" + this.connection.getRemoteAddress() + ")" : String.valueOf(this.connection.getRemoteAddress());
+    }
+ 
++   // Blueberry start
++   private void initUUID() {
++      UUID uuid = connection.spoofedUUID != null ? connection.spoofedUUID : Player.createPlayerUUID(this.gameProfile.getName());
++      this.gameProfile = new GameProfile(uuid, this.gameProfile.getName());
++      if (connection.spoofedProfile != null) {
++         for (com.mojang.authlib.properties.Property property : connection.spoofedProfile) {
++            this.gameProfile.getProperties().put(property.getName(), property);
++         }
++      }
++   }
++   // Blueberry end
++
+    public void handleHello(ServerboundHelloPacket serverboundHelloPacket) {
+       Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
+       this.gameProfile = serverboundHelloPacket.getGameProfile();
+@@ -135,6 +147,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+          this.state = ServerLoginPacketListenerImpl.State.KEY;
+          this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
+       } else {
++         initUUID(); // Blueberry
+          this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+       }
+ 
+diff --git a/src/main/java/net/minecraft/server/players/OldUsersConverter.java b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
+index 7b8c1719628993bf1f8181f5328b873e913af127..0311896d41346c49f1782192600ebfa9e745c586 100644
+--- a/src/main/java/net/minecraft/server/players/OldUsersConverter.java
++++ b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
+@@ -49,7 +49,7 @@ public class OldUsersConverter {
+ 
+    private static void lookupPlayers(MinecraftServer minecraftServer, Collection<String> collection, ProfileLookupCallback profileLookupCallback) {
+       String[] strings = (String[])collection.stream().filter((sx) -> !StringUtil.isNullOrEmpty(sx)).toArray((i) -> new String[i]);
+-      if (minecraftServer.usesAuthentication()) {
++      if (minecraftServer.usesAuthentication() || net.blueberrymc.common.bml.InternalBlueberryMod.bungee) { // Blueberry - bungee = online mode, for now
+          minecraftServer.getProfileRepository().findProfilesByNames(strings, Agent.MINECRAFT, profileLookupCallback);
+       } else {
+          for(String s : strings) {

@@ -1,17 +1,17 @@
 package net.blueberrymc.common.bml;
 
 import net.blueberrymc.client.resources.BlueberryText;
+import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
-import net.blueberrymc.world.item.SimpleBlueberryItem;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
-import net.blueberrymc.command.argument.ModIdArgument;
+import net.blueberrymc.world.item.SimpleBlueberryItem;
 import net.blueberrymc.world.level.BlueberryLiquidBlock;
 import net.blueberrymc.world.level.material.MilkFluid;
 import net.minecraft.client.Minecraft;
@@ -72,6 +72,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean item3d = false;
     public static boolean discordRpc = true;
     public static AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
+    public static boolean bungee = false; // server only
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         super(modLoader, description, classLoader, file);
@@ -233,6 +234,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         item3d = getConfig().getBoolean("test.3d", false);
         discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
         discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
+        if (Blueberry.getSide() == Side.SERVER) bungee = getConfig().getBoolean("bungeecord", false); // server only
         if (Blueberry.getSide() == Side.CLIENT) {
             DiscordRPCTaskExecutor.init(discordRpc);
             ModState currentState = getStateList().getCurrentState();
