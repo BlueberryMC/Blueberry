@@ -5,6 +5,7 @@ import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,7 @@ public class DiscordRPCTaskExecutor {
     }
 
     public static void shutdownNow() {
+        if (Blueberry.getSide() != Side.CLIENT) return;
         try {
             DiscordRPC.discordShutdown();
             LOGGER.info("Successfully disconnected from Discord.");
