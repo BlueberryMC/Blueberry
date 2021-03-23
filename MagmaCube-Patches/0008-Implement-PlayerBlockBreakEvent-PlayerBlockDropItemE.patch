@@ -99,10 +99,10 @@ index a70236fb62602be2986564b709dafabbc867519b..8fa59f0091ec0b783ad89031263a1624
     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
        this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index ee27c786eaec9cb1fb72dc155456d3d11cf04bf7..bb2ebd0553e40664df52132effaa987612110465 100644
+index 3a87fbecca2692a88a06090038075f6282ff820f..0e16d958caccba370c0d30d416d9386f535450d6 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -269,11 +269,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -270,11 +270,13 @@ public class Block extends BlockBehaviour implements ItemLike {
           double d3 = (double)(level.random.nextFloat() * 0.5F) + 0.25D;
           ItemEntity itemEntity = new ItemEntity(level, (double)blockPos.getX() + d, (double)blockPos.getY() + d2, (double)blockPos.getZ() + d3, itemStack);
           itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index ee27c786eaec9cb1fb72dc155456d3d11cf04bf7..bb2ebd0553e40664df52132effaa9876
        if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
           ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
        }
-@@ -414,6 +416,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -431,6 +433,12 @@ public class Block extends BlockBehaviour implements ItemLike {
        return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
     }
  

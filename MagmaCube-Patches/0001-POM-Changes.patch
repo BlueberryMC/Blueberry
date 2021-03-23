@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 6c796f4c6dca90025f74eccf02b468cf12eddf51..339c6e5ca6a76fbed7584d3783fa385f0fcc885d 100644
+index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e85e21604 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -14,7 +14,7 @@ index 6c796f4c6dca90025f74eccf02b468cf12eddf51..339c6e5ca6a76fbed7584d3783fa385f
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>21w10a</version>
+-        <version>21w11a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +30,7 @@ index 6c796f4c6dca90025f74eccf02b468cf12eddf51..339c6e5ca6a76fbed7584d3783fa385f
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w10a</version>
++    <version>21w11a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -82,10 +82,10 @@ index 4d80e4054f8436bd8fd1af85a8121a70304a256f..5e2a6841cf2d3827c4b1370a60ab8d52
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5a6ae0a6f437e293b4b42a25946e71485170338d..00fb313bd0af3fb820335f538304e4706fae00cd 100644
+index 871d2ab5d85214541505d7f5713d3573c072c76b..55b1b18c9bfa836085361fd10a09c8eaffae7283 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -897,7 +897,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -898,7 +898,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
     }
  
     public String getServerModName() {

@@ -107,7 +107,7 @@ public class BlueberryClient implements BlueberryUtil {
 
     @Nullable
     public MinecraftServer getIntegratedServer() {
-        return Minecraft.getInstance().getSingleplayerServer();
+        return Minecraft.getInstance() != null ? Minecraft.getInstance().getSingleplayerServer() : null;
     }
 
     @NotNull
