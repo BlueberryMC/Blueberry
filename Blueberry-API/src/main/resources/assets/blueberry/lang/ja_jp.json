@@ -24,5 +24,5 @@
   "multiplayer.compatible": "サーバーと互換性があります (%d 個のModがサーバー側にインストール済み)",
   "multiplayer.incompatible": "サーバーと互換性がありません (%d 個のModがサーバー側にインストール済み)",
   "multiplayer.vanilla": "バニラサーバー",
-  "command.argument.mod_id.invalid_Mod": "不明なMod"
+  "command.argument.mod_id.invalid_mod": "不明なMod"
 }

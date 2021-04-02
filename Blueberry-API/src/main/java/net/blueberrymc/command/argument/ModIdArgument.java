@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModIdArgument implements ArgumentType<BlueberryMod> {
     private static final List<String> EXAMPLES = Collections.singletonList("blueberry");
-    private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_Mod");
+    private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod");
     private static final SimpleCommandExceptionType INVALID_MOD_ID = new SimpleCommandExceptionType(INVALID_MOD_ID_MESSAGE);
 
     @NotNull private final Mode mode;
