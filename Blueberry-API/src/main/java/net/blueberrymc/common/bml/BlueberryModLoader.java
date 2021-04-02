@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,11 +45,12 @@ public class BlueberryModLoader implements ModLoader {
     private final ConcurrentHashMap<String, Map.Entry<ModDescriptionFile, File>> descriptions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Map.Entry<ModDescriptionFile, File>> filePath2descriptionMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, BlueberryMod> id2ModMap = new ConcurrentHashMap<>();
-    private final Set<ModClassLoader> loaders = new HashSet<>();
+    private final Set<ClassLoader> loaders = new HashSet<>();
     private final List<BlueberryMod> registeredMods = new ArrayList<>();
     private final List<String> circularDependency = new ArrayList<>();
     private final File configDir = new File(Blueberry.getGameDir(), "config");
     private final File modsDir = new File(Blueberry.getGameDir(), "mods");
+    private UniversalClassLoader universalClassLoader = null;
 
     public BlueberryModLoader() {
         if (!this.configDir.exists() && !this.configDir.mkdir()) {
@@ -92,11 +94,11 @@ public class BlueberryModLoader implements ModLoader {
                             if (descriptionFile.exists()) {
                                 if (descriptionFile.isDirectory()) {
                                     LOGGER.error(descriptionFile.getAbsolutePath() + " exists but is not a file");
-                                } else {
-                                    dirCount++;
-                                    toLoad.add(f);
+                                    continue;
                                 }
                             }
+                            dirCount++;
+                            toLoad.add(f);
                         } else {
                             if (f.getName().equals(".zip") || f.getName().equals(".jar")) {
                                 fileCount++;
@@ -109,11 +111,11 @@ public class BlueberryModLoader implements ModLoader {
                 if (descriptionFile.exists()) {
                     if (descriptionFile.isDirectory()) {
                         LOGGER.error(descriptionFile.getAbsolutePath() + " exists but is not a file");
-                    } else {
-                        dirCount++;
-                        toLoad.add(file);
+                        continue;
                     }
                 }
+                dirCount++;
+                toLoad.add(file);
             } else {
                 if (file.getName().endsWith(".zip") || file.getName().endsWith(".jar")) {
                     fileCount++;
@@ -122,11 +124,23 @@ public class BlueberryModLoader implements ModLoader {
             }
         }
         LOGGER.info("Found " + toLoad.size() + " mods to load (files: {}, directories: {})", fileCount, dirCount);
+        List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {
             try {
                 preloadMod(file);
+            } catch (ModDescriptionNotFoundException ex) {
+                LOGGER.info("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
+                toAdd.add(file);
             } catch (Throwable throwable) {
                 ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), throwable, false));
+            }
+        });
+        toAdd.forEach(file -> {
+            toLoad.remove(file);
+            try {
+                addToUniversalClassLoader(file.toURI().toURL());
+            } catch (Throwable e) {
+                LOGGER.warn("Could not add into the classpath: {}", file.getAbsolutePath(), e);
             }
         });
         descriptions.forEach((modId, entry) -> {
@@ -238,7 +252,7 @@ public class BlueberryModLoader implements ModLoader {
             mod.getStateList().add(ModState.ERRORED);
         }
         if (mod.getClassLoader() instanceof ModClassLoader) {
-            loaders.add((ModClassLoader) mod.getClassLoader());
+            loaders.add(mod.getClassLoader());
         }
         if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) {
             LOGGER.info("Enabled mod " + mod.getDescription().getModId());
@@ -255,7 +269,6 @@ public class BlueberryModLoader implements ModLoader {
         } catch (Throwable throwable) {
             LOGGER.error("Failed to unload a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
         }
-        //noinspection SuspiciousMethodCalls
         loaders.remove(mod.getClassLoader());
         LOGGER.info("Disabled mod {} ({}) [{}]", mod.getDescription().getModId(), mod.getModId(), mod.getDescription().getVersion());
     }
@@ -267,7 +280,7 @@ public class BlueberryModLoader implements ModLoader {
         try {
             ModFile modFile = new ModFile(file);
             try (InputStream in = modFile.getResourceAsStream("mod.yml")) {
-                if (in == null) throw new InvalidModDescriptionException(file.getName() + " does not contain mod.yml");
+                if (in == null) throw new ModDescriptionNotFoundException(file.getName() + " does not contain mod.yml");
                 return ModDescriptionFile.read(new YamlConfiguration(in).asObject());
             }
         } catch (IOException ex) {
@@ -405,9 +418,14 @@ public class BlueberryModLoader implements ModLoader {
     protected Class<?> findClass(@NotNull String name) {
         Class<?> result = classes.get(name);
         if (result != null) return result;
-        for (ModClassLoader loader : loaders) {
+        for (ClassLoader loader : loaders) {
             try {
-                result = loader.findClass(name, false);
+                if (loader instanceof ModClassLoader) {
+                    ModClassLoader mcl = (ModClassLoader) loader;
+                    result = mcl.findClass(name, false);
+                } else {
+                    result = loader.loadClass(name);
+                }
             } catch (ClassNotFoundException ignore) {}
             if (result != null) {
                 setClass(name, result);
@@ -420,6 +438,15 @@ public class BlueberryModLoader implements ModLoader {
     protected void setClass(@NotNull String name, @NotNull Class<?> clazz) {
         if (!classes.containsKey(name)) {
             classes.put(name, clazz);
+        }
+    }
+
+    private void addToUniversalClassLoader(@NotNull URL url) {
+        if (universalClassLoader == null) {
+            universalClassLoader = new UniversalClassLoader(new URL[]{url});
+            loaders.add(universalClassLoader);
+        } else {
+            universalClassLoader.addURL(url);
         }
     }
 
