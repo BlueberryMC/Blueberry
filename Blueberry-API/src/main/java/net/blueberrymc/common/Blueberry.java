@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.launch.MixinBootstrap;
 
 import java.io.File;
 import java.util.Collections;
@@ -135,6 +136,7 @@ public class Blueberry {
             BlueberryVersion version = getVersion();
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             registerInternalMod();
+            MixinBootstrap.init();
             Blueberry.getModLoader().loadMods();
             LOGGER.info("Loaded " + Blueberry.getModLoader().getLoadedMods().size() + " mods");
         } catch (Throwable throwable) {

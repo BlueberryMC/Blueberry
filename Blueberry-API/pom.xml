@@ -87,7 +87,6 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>mixin</artifactId>
             <version>0.7.11-SNAPSHOT</version>
-            <scope>provided</scope> <!-- do not include in the jar for now -->
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -98,7 +97,6 @@
             <groupId>net.minecraft</groupId>
             <artifactId>launchwrapper</artifactId>
             <version>1.12</version>
-            <scope>provided</scope> <!-- do not include in the jar for now -->
             <exclusions>
                 <exclusion>
                     <groupId>org.lwjgl.lwjgl</groupId>

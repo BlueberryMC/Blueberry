@@ -8,6 +8,7 @@ import net.blueberrymc.common.bml.config.VisualConfig;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.ModDescriptionFile;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.network.chat.TextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,16 +43,13 @@ public class BlueberryMod implements ModInfo {
 
     @SuppressWarnings("unused")
     protected BlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
-        if (!ClassLoader.getSystemClassLoader().equals(this.getClass().getClassLoader()))
-            throw new IllegalStateException("This constructor requires system class loader");
+        if (!ClassLoader.getSystemClassLoader().equals(this.getClass().getClassLoader()) && !(this.getClass().getClassLoader() instanceof LaunchClassLoader))
+            throw new IllegalStateException("This constructor requires system class loader or LaunchClassLoader");
         this.getStateList().add(ModState.LOADED);
         init(modLoader, description, classLoader, file);
     }
 
     final void init(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
-        if (classLoader == null) {
-            throw new IllegalArgumentException("Cannot initialize mods with null classLoader");
-        }
         this.modLoader = modLoader;
         this.description = description;
         this.classLoader = classLoader;
