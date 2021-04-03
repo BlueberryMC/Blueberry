@@ -171,7 +171,7 @@ public abstract class AbstractBlueberryScheduler {
         return asyncTickCount;
     }
 
-    protected static void catchSync(ThrowableRunnable runnable) {
+    protected static void catchSync(@NotNull ThrowableRunnable runnable) {
         try {
             runnable.run();
         } catch (Throwable e) {
@@ -179,7 +179,7 @@ public abstract class AbstractBlueberryScheduler {
         }
     }
 
-    protected static void catchAsync(ThrowableRunnable runnable) {
+    protected static void catchAsync(@NotNull ThrowableRunnable runnable) {
         try {
             runnable.run();
         } catch (Throwable e) {

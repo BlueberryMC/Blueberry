@@ -91,13 +91,13 @@ public class ModClassLoader extends URLClassLoader {
         return findResources(name);
     }
 
-    @Nullable
+    @NotNull
     @Override
     protected Class<?> findClass(@NotNull String name) throws ClassNotFoundException {
         return findClass(name, true);
     }
 
-    @Nullable
+    @NotNull
     protected Class<?> findClass(@NotNull String name, boolean checkGlobal) throws ClassNotFoundException {
         Class<?> result = classes.get(name);
         if (result != null) return result;
@@ -144,6 +144,7 @@ public class ModClassLoader extends URLClassLoader {
             }
             classes.put(name, result);
         }
+        if (result == null) throw new ClassNotFoundException(name);
         return result;
     }
 
