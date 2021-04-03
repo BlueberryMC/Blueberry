@@ -123,7 +123,7 @@ public class BlueberryModLoader implements ModLoader {
                 }
             }
         }
-        LOGGER.info("Found " + toLoad.size() + " mods to load (files: {}, directories: {})", fileCount, dirCount);
+        LOGGER.info("Found " + toLoad.size() + " files to load (files: {}, directories: {})", fileCount, dirCount);
         List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {
             try {
