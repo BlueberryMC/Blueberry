@@ -105,7 +105,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
         sb.append("{\n");
         sb.append("  \"pack\": {\n");
         sb.append("    \"description\": \"Mod Resources for ").append(mod.getDescription().getModId()).append("\",");
-        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion());
+        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion(com.mojang.bridge.game.PackType.RESOURCE));
         sb.append("  }\n");
         sb.append("}\n");
         return new ByteArrayInputStream(sb.toString().getBytes(StandardCharsets.UTF_8));
