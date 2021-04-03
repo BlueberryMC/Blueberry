@@ -34,6 +34,9 @@ public class Blueberry {
     private static BlueberryUtil util;
     private static File gameDir;
 
+    /**
+     * Do not change the value please
+     */
     public static boolean stopping = false;
 
     @Contract(pure = true)

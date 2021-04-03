@@ -184,7 +184,8 @@ public class BlueberryModLoader implements ModLoader {
         return modsDir;
     }
 
-    private void preloadMod(@NotNull File file) throws InvalidModDescriptionException {
+    @Override
+    public void preloadMod(@NotNull File file) throws InvalidModDescriptionException {
         ModDescriptionFile description = getModDescription(file);
         if (description.getDepends().contains(description.getModId())) {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself", true));
@@ -236,6 +237,8 @@ public class BlueberryModLoader implements ModLoader {
 
     @Override
     public void enableMod(@NotNull BlueberryMod mod) {
+        Preconditions.checkNotNull(mod, "mod cannot be null");
+        if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) throw new IllegalArgumentException("The mod is already enabled");
         try {
             mod.getStateList().add(ModState.LOADED);
             mod.setVisualConfig(new RootCompoundVisualConfig(new TextComponent(mod.getName())));

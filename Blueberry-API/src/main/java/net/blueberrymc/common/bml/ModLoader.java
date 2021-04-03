@@ -65,6 +65,15 @@ public interface ModLoader {
     File getModsDir();
 
     /**
+     * Preload a mod from specific file (loads mod.yml).
+     * You have to call this method before {@link #loadMod(File)} or it does not work.
+     * @param file the file
+     * @throws InvalidModDescriptionException if mod.yml contains an error
+     * @throws ModDescriptionNotFoundException if mod.yml could not be found
+     */
+    void preloadMod(@NotNull File file) throws InvalidModDescriptionException;
+
+    /**
      * Load a mod from specific file.
      * @param file the file
      * @return the loaded mod
@@ -74,10 +83,12 @@ public interface ModLoader {
     BlueberryMod loadMod(@NotNull File file) throws InvalidModException;
 
     /**
-     * Try to enable a mod that was been disabled.
+     * Try to enable a mod that was been disabled. This method is typically used to re-enable that was disabled
+     * previously.
      * @param mod the mod to enable
+     * @throws IllegalArgumentException if the mod is already enabled
      */
-    void enableMod(@NotNull BlueberryMod mod);
+    void enableMod(@NotNull BlueberryMod mod) throws IllegalArgumentException;
 
     /**
      * Try to disable a mod.
