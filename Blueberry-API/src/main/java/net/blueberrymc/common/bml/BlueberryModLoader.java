@@ -10,6 +10,7 @@ import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
 import net.blueberrymc.common.util.ListUtils;
+import net.blueberrymc.common.util.UniversalClassLoader;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.config.yaml.YamlConfiguration;

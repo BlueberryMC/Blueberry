@@ -1,4 +1,4 @@
-package net.blueberrymc.common.bml;
+package net.blueberrymc.common.util;
 
 import org.jetbrains.annotations.NotNull;
 
