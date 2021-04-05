@@ -74,7 +74,7 @@ public class BlueberryClient implements BlueberryUtil {
     public boolean isOnGameThread() {
         return RenderSystem.isOnRenderThread()
                 || Thread.currentThread().getName().equals("main")
-                || Thread.currentThread().getName().equals("Server thread"); // may be called from integrated server
+                || Thread.currentThread().getName().equals("Server thread"); // may be called from integrated server (logical server)
     }
 
     // Blueberry

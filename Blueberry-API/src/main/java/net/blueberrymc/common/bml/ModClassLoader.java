@@ -148,6 +148,10 @@ public class ModClassLoader extends URLClassLoader {
         return result;
     }
 
+    public boolean isClosed() {
+        return modFile.isClosed();
+    }
+
     @Override
     public void close() throws IOException {
         try {

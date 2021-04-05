@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <ilyy@outlook.jp>
+Date: Mon, 5 Apr 2021 17:17:17 +0900
+Subject: [PATCH] Add ResourceManager#remove(PackResources)
+
+
+diff --git a/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
+index fbd42d96204741dcd2c824c508c81f959080f72f..f904721593db8c3e3b9eb8d5768ab725ecb346b2 100644
+--- a/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
++++ b/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
+@@ -34,6 +34,7 @@ public class FallbackResourceManager implements ResourceManager {
+    public void add(PackResources packResources) {
+       this.fallbacks.add(packResources);
+    }
++   @Override public boolean remove(PackResources packResources) { return this.fallbacks.remove(packResources); } // Blueberry
+ 
+    public Set<String> getNamespaces() {
+       return ImmutableSet.of(this.namespace);
+diff --git a/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java
+index 573336891247db4b367d7e79add233ad097321ec..740716a81cd883bff1d4b60f5379d1699c43ce21 100644
+--- a/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java
++++ b/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java
+@@ -12,7 +12,7 @@ import java.util.stream.Stream;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.packs.PackResources;
+ 
+-public interface ResourceManager extends ResourceProvider {
++public interface ResourceManager extends ResourceProvider, net.blueberrymc.server.packs.resources.BlueberryResourceProvider { // Blueberry
+    Set<String> getNamespaces();
+ 
+    boolean hasResource(ResourceLocation var1);
+diff --git a/src/main/java/net/minecraft/server/packs/resources/SimpleReloadableResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/SimpleReloadableResourceManager.java
+index 3226c7eab588edf714ea8202151700c375880abe..690367f5ff44ee7335efce8d32e71d70016e074d 100644
+--- a/src/main/java/net/minecraft/server/packs/resources/SimpleReloadableResourceManager.java
++++ b/src/main/java/net/minecraft/server/packs/resources/SimpleReloadableResourceManager.java
+@@ -50,6 +50,7 @@ public class SimpleReloadableResourceManager implements ReloadableResourceManage
+       }
+ 
+    }
++   @Override public boolean remove(PackResources packResources) { return this.packs.remove(packResources); } // Blueberry
+ 
+    public Set<String> getNamespaces() {
+       return this.namespaces;

@@ -17,6 +17,7 @@ import java.util.jar.Manifest;
 public class ModFile implements Closeable, AutoCloseable {
     private final JarFile jar;
     private final File dir;
+    private boolean closed = false;
 
     public ModFile(@NotNull("file") File file) throws IOException {
         Preconditions.checkNotNull(file, "file cannot be null");
@@ -73,8 +74,13 @@ public class ModFile implements Closeable, AutoCloseable {
         throw new AssertionError();
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
+
     @Override
     public void close() throws IOException {
+        closed = true;
         if (jar != null) jar.close();
     }
 }

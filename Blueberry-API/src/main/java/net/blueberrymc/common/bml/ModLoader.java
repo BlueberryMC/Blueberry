@@ -86,15 +86,26 @@ public interface ModLoader {
      * Try to enable a mod that was been disabled. This method is typically used to re-enable that was disabled
      * previously.
      * @param mod the mod to enable
-     * @throws IllegalArgumentException if the mod is already enabled
+     * @throws IllegalArgumentException if the mod is already enabled or classloader is already closed
      */
     void enableMod(@NotNull BlueberryMod mod) throws IllegalArgumentException;
 
     /**
      * Try to disable a mod.
      * @param mod the mod to disable
+     * @throws IllegalArgumentException if mod is null or already disabled
      */
     void disableMod(@NotNull BlueberryMod mod);
+
+    /**
+     * Unregister a mod, and closes classloader if necessary. After classloader is closed, you will not be able to
+     * re-enable the mod again.
+     * @param mod the mod to unregister
+     * @param unregister whether to unregister a mod or not (you will not be able to re-enable the mod again if you do)
+     *                   LoadingOverlay will be triggered when unregistering ResourceManager!
+     * @throws IllegalArgumentException if mod is null or already disabled
+     */
+    void disableMod(@NotNull BlueberryMod mod, boolean unregister);
 
     /**
      * Read mod description file from the file.

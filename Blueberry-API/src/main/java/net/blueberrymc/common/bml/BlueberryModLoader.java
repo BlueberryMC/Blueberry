@@ -14,6 +14,7 @@ import net.blueberrymc.common.util.UniversalClassLoader;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.config.yaml.YamlConfiguration;
+import net.blueberrymc.server.packs.resources.BlueberryResourceProvider;
 import net.minecraft.CrashReport;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
@@ -201,6 +202,7 @@ public class BlueberryModLoader implements ModLoader {
     @NotNull
     public BlueberryMod loadMod(@NotNull File file) throws InvalidModException {
         Preconditions.checkNotNull(file, "file cannot be null");
+        Preconditions.checkArgument(file.exists(), file.getAbsolutePath() + " does not exist");
         Map.Entry<ModDescriptionFile, File> entry = filePath2descriptionMap.get(file.getAbsolutePath());
         ModDescriptionFile description = entry.getKey();
         if (description == null) throw new InvalidModException(new AssertionError("ModDescriptionFile of " + file.getAbsolutePath() + " could not be found"));
@@ -239,6 +241,9 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void enableMod(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
+        if (mod.getClassLoader() instanceof ModClassLoader && ((ModClassLoader) mod.getClassLoader()).isClosed()) {
+            throw new IllegalArgumentException("ClassLoader is already closed (unregistered?)");
+        }
         if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) throw new IllegalArgumentException("The mod is already enabled");
         try {
             mod.getStateList().add(ModState.LOADED);
@@ -255,9 +260,7 @@ public class BlueberryModLoader implements ModLoader {
             LOGGER.error("Failed to enable a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
             mod.getStateList().add(ModState.ERRORED);
         }
-        if (mod.getClassLoader() instanceof ModClassLoader) {
-            loaders.add(mod.getClassLoader());
-        }
+        loaders.add(mod.getClassLoader());
         if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) {
             LOGGER.info("Enabled mod " + mod.getDescription().getModId());
         }
@@ -265,7 +268,13 @@ public class BlueberryModLoader implements ModLoader {
 
     @Override
     public void disableMod(@NotNull BlueberryMod mod) {
+        disableMod(mod, false);
+    }
+
+    @Override
+    public void disableMod(@NotNull BlueberryMod mod, boolean unregister) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
+        Preconditions.checkArgument(mod.getStateList().getCurrentState() != ModState.UNLOADED, "mod already unloaded");
         if (!Blueberry.stopping && !mod.getDescription().isUnloadable()) throw new IllegalArgumentException(mod.getName() + " (" + mod.getModId() + ") cannot be unloaded");
         try {
             mod.onUnload();
@@ -274,6 +283,34 @@ public class BlueberryModLoader implements ModLoader {
             LOGGER.error("Failed to unload a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
         }
         loaders.remove(mod.getClassLoader());
+        if (unregister) {
+            if (mod.getClassLoader() instanceof ModClassLoader) {
+                try {
+                    ((ModClassLoader) mod.getClassLoader()).close();
+                } catch (IOException ex) {
+                    LOGGER.warn("Error during closing {} of mod {} ({}) [{}]", mod.getClassLoader().getClass().getSimpleName(), mod.getName(), mod.getModId(), mod.getDescription().getVersion(), ex);
+                }
+            }
+            try {
+                BlueberryResourceManager blueberryResourceManager = mod.getResourceManager();
+                ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
+                if (resourceManager instanceof BlueberryResourceProvider) {
+                    ((BlueberryResourceProvider) resourceManager).remove(blueberryResourceManager.getPackResources());
+                } else {
+                    if (resourceManager != null) {
+                        LOGGER.warn("Failed to remove PackResources for ResourceManager: " + resourceManager.getClass().getCanonicalName());
+                    } else {
+                        if (Blueberry.isClient()) {
+                            LOGGER.warn("ResourceManager is null!", new NullPointerException());
+                        }
+                    }
+                }
+                blueberryResourceManager.getPackResources().close();
+                Blueberry.getUtil().reloadResourcePacks(); // reload to apply changes
+            } catch (Exception ex) {
+                LOGGER.warn("Error during unregistering ResourceManager", ex);
+            }
+        }
         LOGGER.info("Disabled mod {} ({}) [{}]", mod.getDescription().getModId(), mod.getModId(), mod.getDescription().getVersion());
     }
 

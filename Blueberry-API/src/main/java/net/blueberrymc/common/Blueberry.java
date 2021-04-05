@@ -118,10 +118,10 @@ public class Blueberry {
     }
 
     public static void bootstrap(@NotNull("side") Side side, @NotNull("gameDir") File gameDir, @NotNull BlueberryUtil utilImpl) {
-        Preconditions.checkArgument(Blueberry.side == null, "Blueberry is already initialized!");
+        Preconditions.checkArgument(Blueberry.side == null && util == null, "Blueberry is already initialized!");
         Preconditions.checkArgument(side != Side.BOTH, "Invalid Side: " + side.name());
         Preconditions.checkNotNull(gameDir, "gameDir cannot be null");
-        Runtime.getRuntime().addShutdownHook(new Thread(DiscordRPCTaskExecutor::shutdownNow));
+        Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
         Blueberry.side = side;
         Blueberry.gameDir = gameDir;
         if (isClient()) {
