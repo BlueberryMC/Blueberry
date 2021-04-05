@@ -27,6 +27,7 @@ public class BlueberryMod implements ModInfo {
     private File file;
     private BlueberryResourceManager resourceManager;
     boolean first = true;
+    boolean liveCompilerEnabled = false;
 
     public BlueberryMod() {
         ClassLoader classLoader = this.getClass().getClassLoader();

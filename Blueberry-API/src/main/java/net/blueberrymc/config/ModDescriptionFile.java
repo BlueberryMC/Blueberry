@@ -27,6 +27,9 @@ public class ModDescriptionFile implements ModInfo {
     @Nullable protected final List<String> description;
     protected final boolean unloadable;
     @NotNull protected final Set<String> depends;
+    protected final boolean source;
+    @Nullable protected final String sourceDir;
+    @Nullable protected final String include;
 
     public ModDescriptionFile(@NotNull String modId,
                               @NotNull String version,
@@ -36,7 +39,10 @@ public class ModDescriptionFile implements ModInfo {
                               @Nullable List<String> credits,
                               @Nullable List<String> description,
                               boolean unloadable,
-                              @Nullable List<String> depends) {
+                              @Nullable List<String> depends,
+                              boolean source,
+                              @Nullable String sourceDir,
+                              @Nullable String include) {
         if (!PATTERN.matcher(modId).matches()) throw new IllegalArgumentException("Mod ID must match the pattern: '^[a-zA-Z0-9][a-zA-Z0-9_-]$'");
         this.modId = modId;
         this.version = version;
@@ -47,6 +53,9 @@ public class ModDescriptionFile implements ModInfo {
         this.description = description;
         this.unloadable = unloadable;
         this.depends = depends == null ? new HashSet<>() : new HashSet<>(depends);
+        this.source = source;
+        this.sourceDir = sourceDir;
+        this.include = include;
     }
 
     @Override
@@ -95,6 +104,27 @@ public class ModDescriptionFile implements ModInfo {
         return depends;
     }
 
+    /**
+     * Returns whether the mod needs to be compiled before using it.
+     * @return whether the mod contains source code or not
+     */
+    public boolean isSource() {
+        return source;
+    }
+
+    @Nullable
+    public String getSourceDir() {
+        return sourceDir;
+    }
+
+    /**
+     * @return additional resources directory
+     */
+    @Nullable
+    public String getInclude() {
+        return include;
+    }
+
     @NotNull
     public static ModDescriptionFile read(@NotNull YamlObject yaml) {
         String modId = yaml.getString("id");
@@ -117,6 +147,10 @@ public class ModDescriptionFile implements ModInfo {
         List<String> description = descriptionArray == null ? null : descriptionArray.mapAsType(o -> o instanceof String ? (String) o : o.toString());
         boolean unloadable = yaml.getBoolean("unloadable", false);
         List<String> depends = yaml.getArray("depends") == null ? new ArrayList<>() : yaml.getArray("depends").mapAsType(o -> o instanceof String ? (String) o : o.toString());
+        boolean source = yaml.getBoolean("source", false);
+        String sourceDir = yaml.getString("sourceDir");
+        String include = yaml.getString("include");
+
         Preconditions.checkNotNull(modId, "modId (id) is missing");
         Preconditions.checkNotNull(version, "version (version) is missing");
         Preconditions.checkNotNull(mainClass, "mainClass (main) is missing");
@@ -136,7 +170,10 @@ public class ModDescriptionFile implements ModInfo {
                 creditsArray == null ? null : creditsArray.mapAsType(Object::toString),
                 description,
                 unloadable,
-                depends
+                depends,
+                source,
+                sourceDir,
+                include
         );
     }
 
@@ -151,6 +188,7 @@ public class ModDescriptionFile implements ModInfo {
                 ", description=" + description +
                 ", unloadable=" + unloadable +
                 ", depends=" + depends +
+                ", source=" + source +
                 '}';
     }
 }

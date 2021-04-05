@@ -8,7 +8,11 @@ import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
+import net.blueberrymc.common.bml.tools.JavaTools;
+import net.blueberrymc.common.bml.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
+import net.blueberrymc.common.util.ClasspathUtil;
+import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.common.util.ListUtils;
 import net.blueberrymc.common.util.UniversalClassLoader;
 import net.blueberrymc.common.util.Versioning;
@@ -30,15 +34,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlueberryModLoader implements ModLoader {
@@ -83,7 +88,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void loadMods() {
         LOGGER.info("Looking for mods in " + this.getModsDir().getAbsolutePath());
-        List<File> toLoad = new ArrayList<>();
+        Deque<File> toLoad = new ConcurrentLinkedDeque<>();
         int dirCount = 0;
         int fileCount = 0;
         File[] files = this.getModsDir().listFiles();
@@ -129,12 +134,58 @@ public class BlueberryModLoader implements ModLoader {
         List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {
             try {
-                preloadMod(file);
+                ModDescriptionFile description = preloadMod(file);
+                if (description.isSource()) {
+                    LOGGER.warn("Live Compiler is EXPERIMENTAL! Do not expect it to work.");
+                    if (!file.isDirectory()) {
+                        LOGGER.warn("source is true but the mod file is not a directory: {} ({}) [{}] (loaded from: {})", description.getName(), description.getModId(), description.getVersion(), file.getAbsolutePath());
+                        return;
+                    }
+                    if (!JavaTools.isLoaded()) {
+                        LOGGER.warn(
+                                "Not compiling source code of mod {} ({}) [{}] as live compiler is unavailable ({})",
+                                description.getName(),
+                                description.getModId(),
+                                description.getVersion(),
+                                JavaTools.UNAVAILABLE_REASON.getMessage()
+                        );
+                        ModLoadingErrors.add(new ModLoadingError(description, "Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage(), true));
+                        return;
+                    }
+                    LOGGER.info("Compiling the source code of mod {} ({}) [{}]", description.getName(), description.getModId(), description.getVersion());
+                    File src = description.getSourceDir() != null ? new File(description.getSourceDir()) : file;
+                    if (!src.exists() || !src.isDirectory()) {
+                        src = new File(file, description.getSourceDir());
+                        if (!src.exists() || !src.isDirectory()) {
+                            LOGGER.warn("Source dir does not exist or not a directory, using default one");
+                            src = file;
+                        }
+                    }
+                    File compiled = JavaCompiler.compileAll(src);
+                    if (description.getInclude() != null) {
+                        File include = new File(description.getInclude());
+                        if (!include.exists() || !src.isDirectory()) {
+                            include = new File(file, description.getInclude());
+                            if (!include.exists() || !src.isDirectory()) {
+                                LOGGER.warn("Include dir does not exist or not a directory, skipping");
+                            }
+                        }
+                        if (include.exists()) {
+                            FileUtil.copy(include, compiled);
+                        }
+                    }
+                    LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
+                    toLoad.remove(file);
+                    toLoad.add(compiled);
+                    filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                    descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                }
             } catch (ModDescriptionNotFoundException ex) {
                 LOGGER.info("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
                 toAdd.add(file);
             } catch (Throwable throwable) {
-                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), throwable, false));
+                LOGGER.error("Error during pre-loading {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
+                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during pre-loading: " + throwable.getMessage(), false));
             }
         });
         toAdd.forEach(file -> {
@@ -145,6 +196,7 @@ public class BlueberryModLoader implements ModLoader {
                 LOGGER.warn("Could not add into the classpath: {}", file.getAbsolutePath(), e);
             }
         });
+        // pre-check before loading mods
         descriptions.forEach((modId, entry) -> {
             for (String depend : entry.getKey().getDepends()) {
                 Map.Entry<ModDescriptionFile, File> dependDesc = descriptions.get(depend);
@@ -170,6 +222,7 @@ public class BlueberryModLoader implements ModLoader {
                 this.loadMod(file);
             } catch (InvalidModException ex) {
                 LOGGER.error("Could not load a mod: " + ex);
+                ModLoadingErrors.add(new ModLoadingError(filePath2descriptionMap.get(file.getAbsolutePath()).getKey(), "Could not load a mod: " + ex.getMessage(), false));
             }
         });
     }
@@ -187,7 +240,7 @@ public class BlueberryModLoader implements ModLoader {
     }
 
     @Override
-    public void preloadMod(@NotNull File file) throws InvalidModDescriptionException {
+    public @NotNull ModDescriptionFile preloadMod(@NotNull File file) throws InvalidModDescriptionException {
         ModDescriptionFile description = getModDescription(file);
         if (description.getDepends().contains(description.getModId())) {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself", true));
@@ -196,6 +249,7 @@ public class BlueberryModLoader implements ModLoader {
         Map.Entry<ModDescriptionFile, File> entry = new AbstractMap.SimpleImmutableEntry<>(description, file);
         filePath2descriptionMap.put(file.getAbsolutePath(), entry);
         descriptions.put(description.getModId(), entry);
+        return description;
     }
 
     @Override
@@ -358,15 +412,7 @@ public class BlueberryModLoader implements ModLoader {
             throw new InvalidModException("Following mods has circular dependency, cannot load: " + ListUtils.join(circularDependency, ", "));
         }
         BlueberryMod mod;
-        String path;
-        try {
-            path = clazz.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-        } catch (URISyntaxException e) {
-            throw new InvalidModException(e);
-        }
-        path = path.replace("\\", "/");
-        path = path.replace(clazz.getPackage().getName().replace(".", "/"), "");
-        path = path.replaceAll("(.*)/.*\\.class", "$1");
+        String path = ClasspathUtil.getClasspath(clazz);
         LOGGER.debug("Class Path of " + clazz.getCanonicalName() + ": " + path);
         File file = new File(path);
         if (useModClassLoader) {

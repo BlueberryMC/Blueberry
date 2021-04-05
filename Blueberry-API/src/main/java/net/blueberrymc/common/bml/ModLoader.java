@@ -71,7 +71,8 @@ public interface ModLoader {
      * @throws InvalidModDescriptionException if mod.yml contains an error
      * @throws ModDescriptionNotFoundException if mod.yml could not be found
      */
-    void preloadMod(@NotNull File file) throws InvalidModDescriptionException;
+    @NotNull
+    ModDescriptionFile preloadMod(@NotNull File file) throws InvalidModDescriptionException;
 
     /**
      * Load a mod from specific file.

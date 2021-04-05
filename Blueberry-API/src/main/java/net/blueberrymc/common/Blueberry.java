@@ -164,6 +164,9 @@ public class Blueberry {
                 Collections.singletonList("MagmaCube"),
                 Collections.singletonList("Modding API for Minecraft"),
                 false,
+                null,
+                false,
+                null,
                 null);
         Blueberry.getModLoader().forceRegisterMod(description, InternalBlueberryMod.class, false);
     }
