@@ -31,7 +31,7 @@ public class BlueberryEvil {
             @Override
             public FieldVisitor visitField(int access, @NotNull String name, @NotNull String descriptor, @Nullable String signature, @Nullable Object value) {
                 // https://bugs.openjdk.java.net/browse/JDK-8145051
-                String newName = name.endsWith("this") ? "_____this_____" : name;
+                String newName = name.endsWith("$this") && name.contains(".") ? "_____this_____" : name;
                 return super.visitField(access, newName, descriptor, signature, value);
             }
 
@@ -41,7 +41,7 @@ public class BlueberryEvil {
                     @Override
                     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
                         // https://bugs.openjdk.java.net/browse/JDK-8145051
-                        String newName = !name.equals("this") && name.endsWith("this") ? "_____this_____" : name;
+                        String newName = !name.equals("$this") && name.endsWith("$this") && name.contains(".") ? "_____this_____" : name;
                         super.visitLocalVariable(newName, descriptor, signature, start, end, index);
                     }
                 };
