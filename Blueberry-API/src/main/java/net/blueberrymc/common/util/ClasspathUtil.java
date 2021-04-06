@@ -34,7 +34,6 @@ public class ClasspathUtil {
         if (OSType.detectOS() == OSType.Windows && path.matches("^/[A-Z]:/.*$")) {
             path = path.substring(1).replace("/", "\\");
         }
-        System.out.println(path);
         return path;
     }
 }

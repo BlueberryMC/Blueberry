@@ -3,6 +3,7 @@ package net.blueberrymc.common.util.tools.liveCompiler;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonDeserializer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.bridge.game.GameVersion;
@@ -12,6 +13,8 @@ import com.sun.tools.javac.Main;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
+import net.blueberrymc.util.NoopPrintStream;
+import net.minecraft.SharedConstants;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.LoggedPrintStream;
 import net.minecraft.server.MinecraftServer;
@@ -34,6 +37,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaCompiler {
@@ -84,8 +91,7 @@ public class JavaCompiler {
             args.add(dest.getAbsolutePath());
         }
         args.add(file.getAbsolutePath());
-        LOGGER.info("Args: " + args);
-        Main.compile(args.toArray(new String[0]), new PrintWriter(new LoggedPrintStream("Blueberry Live Compiler", System.err), true));
+        Main.compile(args.toArray(new String[0]), new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true));
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
 
@@ -100,6 +106,10 @@ public class JavaCompiler {
         File tmp = Files.createTempDirectory("blueberry-live-compiler-").toFile();
         tmp.deleteOnExit();
         AtomicReference<Throwable> throwable = new AtomicReference<>();
+        int nThreads = Math.max(4, Runtime.getRuntime().availableProcessors()) * 2;
+        ExecutorService compilerExecutor = Executors.newFixedThreadPool(nThreads, new ThreadFactoryBuilder().setNameFormat("Blueberry Mod Compiler #%d").build());
+        LOGGER.info("Compiling the source code using up to " + nThreads + " threads");
+        AtomicBoolean first = new AtomicBoolean(true);
         Files.walk(file.toPath())
                 .map(Path::toFile)
                 .forEach(f -> {
@@ -115,13 +125,25 @@ public class JavaCompiler {
                     } else {
                         // if file
                         if (f.getName().endsWith(".java")) {
-                            compile(file, f, tmp);
-                            String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
-                            if (!new File(tmp, rel).exists()) {
-                                throwable.set(new RuntimeException("Compilation failed: " + rel));
-                                return;
+                            Runnable doCompile = () -> {
+                                LOGGER.info("Compiling: " + path.relativize(f.toPath()).toString());
+                                compile(file, f, tmp);
+                                String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
+                                if (!new File(tmp, rel).exists()) {
+                                    throwable.set(new RuntimeException("Compilation failed: " + rel));
+                                    return;
+                                }
+                                LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
+                            };
+                            if (first.get()) {
+                                first.set(false);
+                                doCompile.run();
+                            } else {
+                                compilerExecutor.submit(() -> {
+                                    if (throwable.get() != null) return;
+                                    doCompile.run();
+                                });
                             }
-                            LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
                         } else {
                             File dest = new File(tmp, path.relativize(f.toPath()).toString());
                             try {
@@ -133,6 +155,14 @@ public class JavaCompiler {
                         }
                     }
                 });
+        compilerExecutor.shutdown();
+        try {
+            if (!compilerExecutor.awaitTermination(5L, TimeUnit.MINUTES)) {
+                LOGGER.warn("Timed out compilation. Some compiled files may be missing.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         if (throwable.get() != null) {
             if (throwable.get() instanceof RuntimeException) throw (RuntimeException) throwable.get();
             throw new RuntimeException(throwable.get());
