@@ -1,4 +1,4 @@
-package net.blueberrymc.common.bml.tools;
+package net.blueberrymc.common.util.tools;
 
 import com.sun.tools.javac.Main;
 import org.jetbrains.annotations.Nullable;

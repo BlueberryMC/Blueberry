@@ -1,24 +1,70 @@
-package net.blueberrymc.common.bml.tools.liveCompiler;
+package net.blueberrymc.common.util.tools.liveCompiler;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonDeserializer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.bridge.game.GameVersion;
+import com.mojang.brigadier.Message;
+import com.mojang.datafixers.types.Type;
 import com.sun.tools.javac.Main;
+import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.server.LoggedPrintStream;
+import net.minecraft.server.MinecraftServer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+import org.objectweb.asm.ClassVisitor;
+import org.spongepowered.asm.mixin.Mixin;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaCompiler {
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final Set<String> classpath;
+
+    static {
+        Set<String> cp = new HashSet<>();
+        cp.add(ClasspathUtil.getClasspath(Blueberry.class));
+        cp.add(ClasspathUtil.getClasspath(MinecraftServer.class));
+        cp.add(ClasspathUtil.getClasspath(Nonnull.class));
+        cp.add(ClasspathUtil.getClasspath(Launch.class));
+        cp.add(ClasspathUtil.getClasspath(GLFW.class));
+        cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));
+        cp.add(ClasspathUtil.getClasspath(Mixin.class));
+        cp.add(ClasspathUtil.getClasspath(PoseStack.class));
+        cp.add(ClasspathUtil.getClasspath(ImmutableMap.class));
+        cp.add(ClasspathUtil.getClasspath(Float2FloatOpenHashMap.class));
+        cp.add(ClasspathUtil.getClasspath(StringUtils.class));
+        cp.add(ClasspathUtil.getClasspath(JsonDeserializer.class));
+        cp.add(ClasspathUtil.getClasspath(Type.class));
+        cp.add(ClasspathUtil.getClasspath(Message.class));
+        cp.add(ClasspathUtil.getClasspath(GameVersion.class));
+        try {
+            cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // this class is not in classpath of Blueberry-API, so we need to do this
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        classpath = ImmutableSet.copyOf(cp);
+        LOGGER.info("Classpath for compiler: " + Joiner.on(";").join(classpath));
+    }
 
     /**
      * Compiles a single .java file.
@@ -26,17 +72,20 @@ public class JavaCompiler {
      * @return .class file
      */
     @NotNull
-    public static File compile(@NotNull File file, @Nullable File dest) {
+    public static File compile(@NotNull File root, @NotNull File file, @Nullable File dest) {
         if (!file.getName().endsWith(".java")) throw new IllegalArgumentException("Illegal file name (must ends with .java): " + file.getAbsolutePath());
         List<String> args = new ArrayList<>();
-        args.add("-cp");
-        args.add(ClasspathUtil.getClasspath(Blueberry.class));
+        if (!classpath.isEmpty()) {
+            args.add("-cp");
+            args.add(Joiner.on(";").join(classpath) + ";" + root.getAbsolutePath() + (dest != null ? ";" + dest.getAbsolutePath() : ""));
+        }
         if (dest != null) {
             args.add("-d");
             args.add(dest.getAbsolutePath());
         }
         args.add(file.getAbsolutePath());
-        Main.compile(args.toArray(new String[0]), new PrintWriter(System.err, true));
+        LOGGER.info("Args: " + args);
+        Main.compile(args.toArray(new String[0]), new PrintWriter(new LoggedPrintStream("Blueberry Live Compiler", System.err), true));
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
 
@@ -66,9 +115,10 @@ public class JavaCompiler {
                     } else {
                         // if file
                         if (f.getName().endsWith(".java")) {
-                            compile(f, tmp);
-                            if (!new File(tmp, path.relativize(f.toPath()).toString()).exists()) {
-                                throwable.set(new RuntimeException("Compilation failed: " + f.getAbsolutePath()));
+                            compile(file, f, tmp);
+                            String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
+                            if (!new File(tmp, rel).exists()) {
+                                throwable.set(new RuntimeException("Compilation failed: " + rel));
                                 return;
                             }
                             LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
