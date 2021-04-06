@@ -38,13 +38,16 @@ import java.net.URL;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class BlueberryModLoader implements ModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -131,61 +134,22 @@ public class BlueberryModLoader implements ModLoader {
             }
         }
         LOGGER.info("Found " + toLoad.size() + " files to load (files: {}, directories: {})", fileCount, dirCount);
+        Map<String, File> fromSource = new HashMap<>();
         List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {
             try {
-                ModDescriptionFile description = preloadMod(file);
-                if (description.isSource()) {
-                    LOGGER.warn("Live Compiler is EXPERIMENTAL! Do not expect it to work.");
-                    if (!file.isDirectory()) {
-                        LOGGER.warn("source is true but the mod file is not a directory: {} ({}) [{}] (loaded from: {})", description.getName(), description.getModId(), description.getVersion(), file.getAbsolutePath());
-                        return;
-                    }
-                    if (!JavaTools.isLoaded()) {
-                        LOGGER.warn(
-                                "Not compiling source code of mod {} ({}) [{}] as live compiler is unavailable ({})",
-                                description.getName(),
-                                description.getModId(),
-                                description.getVersion(),
-                                JavaTools.UNAVAILABLE_REASON.getMessage()
-                        );
-                        ModLoadingErrors.add(new ModLoadingError(description, "Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage(), true));
-                        return;
-                    }
-                    LOGGER.info("Compiling the source code of mod {} ({}) [{}]", description.getName(), description.getModId(), description.getVersion());
-                    File src = description.getSourceDir() != null ? new File(description.getSourceDir()) : file;
-                    if (!src.exists() || !src.isDirectory()) {
-                        src = new File(file, description.getSourceDir());
-                        if (!src.exists() || !src.isDirectory()) {
-                            LOGGER.warn("Source dir does not exist or not a directory, using default one");
-                            src = file;
-                        }
-                    }
-                    File compiled = JavaCompiler.compileAll(src);
-                    if (description.getInclude() != null) {
-                        File include = new File(description.getInclude());
-                        if (!include.exists() || !src.isDirectory()) {
-                            include = new File(file, description.getInclude());
-                            if (!include.exists() || !src.isDirectory()) {
-                                LOGGER.warn("Include dir does not exist or not a directory, skipping");
-                            }
-                        }
-                        if (include.exists()) {
-                            FileUtil.copy(include, compiled);
-                        }
-                    }
-                    LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
+                Map.Entry<ModDescriptionFile, File> entry = preprocess(file);
+                if (entry.getKey().isSource() && entry.getValue() != null) {
+                    fromSource.put(entry.getKey().getModId(), file);
                     toLoad.remove(file);
-                    toLoad.add(compiled);
-                    filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
-                    descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                    toLoad.add(entry.getValue());
                 }
             } catch (ModDescriptionNotFoundException ex) {
                 LOGGER.info("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
                 toAdd.add(file);
             } catch (Throwable throwable) {
-                LOGGER.error("Error during pre-loading {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
-                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during pre-loading: " + throwable.getMessage(), false));
+                LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
+                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
             }
         });
         toAdd.forEach(file -> {
@@ -219,12 +183,66 @@ public class BlueberryModLoader implements ModLoader {
         }
         toLoad.forEach(file -> {
             try {
-                this.loadMod(file);
+                BlueberryMod mod = this.loadMod(file);
+                if (fromSource.containsKey(mod.getModId())) {
+                    mod.fromSource = true;
+                    mod.sourceDir = fromSource.get(mod.getModId());
+                }
             } catch (InvalidModException ex) {
                 LOGGER.error("Could not load a mod: " + ex);
                 ModLoadingErrors.add(new ModLoadingError(filePath2descriptionMap.get(file.getAbsolutePath()).getKey(), "Could not load a mod: " + ex.getMessage(), false));
             }
         });
+    }
+
+    @NotNull
+    public Map.Entry<@NotNull ModDescriptionFile, @Nullable File> preprocess(File file) throws IOException {
+        ModDescriptionFile description = preloadMod(file);
+        if (description.isSource()) {
+            LOGGER.warn("Live Compiler is EXPERIMENTAL! Do not expect it to work.");
+            if (!file.isDirectory()) {
+                LOGGER.warn("source is true but the mod file is not a directory: {} ({}) [{}] (loaded from: {})", description.getName(), description.getModId(), description.getVersion(), file.getAbsolutePath());
+                return new AbstractMap.SimpleImmutableEntry<>(description, null);
+            }
+            if (!JavaTools.isLoaded()) {
+                LOGGER.warn(
+                        "Not compiling source code of mod {} ({}) [{}] as live compiler is unavailable ({})",
+                        description.getName(),
+                        description.getModId(),
+                        description.getVersion(),
+                        JavaTools.UNAVAILABLE_REASON.getMessage()
+                );
+                ModLoadingErrors.add(new ModLoadingError(description, "Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage(), true));
+                return new AbstractMap.SimpleImmutableEntry<>(description, null);
+            }
+            LOGGER.info("Compiling the source code of mod {} ({}) [{}]", description.getName(), description.getModId(), description.getVersion());
+            File src = description.getSourceDir() != null ? new File(description.getSourceDir()) : file;
+            if (!src.exists() || !src.isDirectory()) {
+                src = new File(file, description.getSourceDir());
+                if (!src.exists() || !src.isDirectory()) {
+                    LOGGER.warn("Source dir does not exist or not a directory, using default one");
+                    src = file;
+                }
+            }
+            File compiled = JavaCompiler.compileAll(src);
+            if (description.getInclude() != null) {
+                File include = new File(description.getInclude());
+                if (!include.exists() || !src.isDirectory()) {
+                    include = new File(file, description.getInclude());
+                    if (!include.exists() || !src.isDirectory()) {
+                        LOGGER.warn("Include dir does not exist or not a directory, skipping");
+                    }
+                }
+                if (include.exists()) {
+                    FileUtil.copy(include, compiled);
+                }
+            }
+            LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
+            filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+            descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+            return new AbstractMap.SimpleImmutableEntry<>(description, compiled);
+        }
+        return new AbstractMap.SimpleImmutableEntry<>(description, null);
     }
 
     @Override
@@ -255,6 +273,11 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     @NotNull
     public BlueberryMod loadMod(@NotNull File file) throws InvalidModException {
+        return this.loadMod(file, null);
+    }
+
+    @NotNull
+    public BlueberryMod loadMod(@NotNull File file, @Nullable File sourceDir) throws InvalidModException {
         Preconditions.checkNotNull(file, "file cannot be null");
         Preconditions.checkArgument(file.exists(), file.getAbsolutePath() + " does not exist");
         Map.Entry<ModDescriptionFile, File> entry = filePath2descriptionMap.get(file.getAbsolutePath());
@@ -285,6 +308,10 @@ public class BlueberryModLoader implements ModLoader {
             BlueberryMod mod = modClassLoader.mod;
             registeredMods.add(mod);
             id2ModMap.put(description.getModId(), mod);
+            if (sourceDir != null) {
+                mod.fromSource = true;
+                mod.sourceDir = sourceDir;
+            }
             LOGGER.info("Loaded mod {} ({}) version {}", description.getName(), description.getModId(), description.getVersion());
             return mod;
         } catch (IOException ex) {
@@ -333,6 +360,7 @@ public class BlueberryModLoader implements ModLoader {
         try {
             mod.onUnload();
             mod.getStateList().add(ModState.UNLOADED);
+            Blueberry.getEventManager().unregisterEvents(mod);
         } catch (Throwable throwable) {
             LOGGER.error("Failed to unload a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
         }
@@ -345,6 +373,21 @@ public class BlueberryModLoader implements ModLoader {
                     LOGGER.warn("Error during closing {} of mod {} ({}) [{}]", mod.getClassLoader().getClass().getSimpleName(), mod.getName(), mod.getModId(), mod.getDescription().getVersion(), ex);
                 }
             }
+            {
+                AtomicReference<String> toRemove = new AtomicReference<>();
+                filePath2descriptionMap.forEach((s, entry) -> {
+                    if (entry.getKey().getModId().equals(mod.getModId())) {
+                        toRemove.set(s);
+                    }
+                });
+                if (toRemove.get() != null) {
+                    filePath2descriptionMap.remove(toRemove.get());
+                }
+            }
+            this.descriptions.remove(mod.getModId());
+            this.id2ModMap.remove(mod.getModId());
+            this.registeredMods.remove(mod);
+            this.loaders.remove(mod.getClassLoader());
             try {
                 BlueberryResourceManager blueberryResourceManager = mod.getResourceManager();
                 ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
@@ -360,9 +403,19 @@ public class BlueberryModLoader implements ModLoader {
                     }
                 }
                 blueberryResourceManager.getPackResources().close();
-                Blueberry.getUtil().reloadResourcePacks(); // reload to apply changes
+                Blueberry.getUtil().reloadResourcePacks().get(5, TimeUnit.SECONDS); // reload to apply changes
             } catch (Exception ex) {
                 LOGGER.warn("Error during unregistering ResourceManager", ex);
+            }
+            {
+                List<String> toRemove = new ArrayList<>();
+                this.classes.forEach((s, c) -> {
+                    ClassLoader cl = c.getClassLoader();
+                    if (cl instanceof ModClassLoader && ((ModClassLoader) cl).mod.getModId().equals(mod.getModId())) {
+                        toRemove.add(s);
+                    }
+                });
+                toRemove.forEach(this.classes::remove);
             }
         }
         LOGGER.info("Disabled mod {} ({}) [{}]", mod.getDescription().getModId(), mod.getModId(), mod.getDescription().getVersion());
@@ -439,27 +492,32 @@ public class BlueberryModLoader implements ModLoader {
     }
 
     @Override
+    public void initModResources(@NotNull BlueberryMod mod) {
+        BlueberryResourceManager blueberryResourceManager = new BlueberryResourceManager(mod);
+        mod.setResourceManager(blueberryResourceManager);
+        ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
+        if (resourceManager instanceof SimpleReloadableResourceManager) {
+            ((SimpleReloadableResourceManager) resourceManager).add(blueberryResourceManager.getPackResources());
+        } else if (resourceManager instanceof FallbackResourceManager) {
+            ((FallbackResourceManager) resourceManager).add(blueberryResourceManager.getPackResources());
+        } else {
+            if (resourceManager != null) {
+                LOGGER.warn("Failed to add PackResources for ResourceManager: " + resourceManager.getClass().getCanonicalName());
+            } else {
+                if (Blueberry.isClient()) {
+                    LOGGER.warn("ResourceManager is null!", new NullPointerException());
+                }
+            }
+        }
+    }
+
+    @Override
     public void callPreInit() {
         LOGGER.info("Entered Pre-init phase");
         getActiveMods().forEach(mod -> {
             try {
                 mod.getStateList().add(ModState.PRE_INIT);
-                BlueberryResourceManager blueberryResourceManager = new BlueberryResourceManager(mod);
-                mod.setResourceManager(blueberryResourceManager);
-                ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
-                if (resourceManager instanceof SimpleReloadableResourceManager) {
-                    ((SimpleReloadableResourceManager) resourceManager).add(blueberryResourceManager.getPackResources());
-                } else if (resourceManager instanceof FallbackResourceManager) {
-                    ((FallbackResourceManager) resourceManager).add(blueberryResourceManager.getPackResources());
-                } else {
-                    if (resourceManager != null) {
-                        LOGGER.warn("Failed to add PackResources for ResourceManager: " + resourceManager.getClass().getCanonicalName());
-                    } else {
-                        if (Blueberry.isClient()) {
-                            LOGGER.warn("ResourceManager is null!", new NullPointerException());
-                        }
-                    }
-                }
+                initModResources(mod);
                 mod.onPreInit();
             } catch (Throwable throwable) {
                 mod.getStateList().add(ModState.ERRORED);

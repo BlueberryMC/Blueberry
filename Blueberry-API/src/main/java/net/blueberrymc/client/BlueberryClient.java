@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SideOnly(Side.CLIENT)
@@ -49,8 +50,8 @@ public class BlueberryClient implements BlueberryUtil {
     }
 
     @Override
-    public void reloadResourcePacks() {
-        Minecraft.getInstance().reloadResourcePacks();
+    public @NotNull CompletableFuture<Void> reloadResourcePacks() {
+        return Minecraft.getInstance().reloadResourcePacks();
     }
 
     @Override

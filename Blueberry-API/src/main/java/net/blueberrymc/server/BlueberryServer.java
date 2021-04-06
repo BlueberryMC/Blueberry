@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 public class BlueberryServer implements BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -56,8 +57,11 @@ public class BlueberryServer implements BlueberryUtil {
         }
     }
 
+    @NotNull
     @Override
-    public void reloadResourcePacks() {}
+    public CompletableFuture<Void> reloadResourcePacks() {
+        return CompletableFuture.completedFuture(null);
+    }
 
     @Override
     public void crash(@NotNull CrashReport crashReport) {

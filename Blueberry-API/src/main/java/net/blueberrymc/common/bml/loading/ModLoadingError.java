@@ -11,11 +11,11 @@ public class ModLoadingError {
     public final boolean isWarning;
     private final LazyValue<String> message = new LazyValue<>(this::generateMessage);
 
-    public ModLoadingError(@NotNull ModInfo modInfo, @NotNull String message, boolean isWarning) {
+    public ModLoadingError(@Nullable ModInfo modInfo, @NotNull String message, boolean isWarning) {
         this(modInfo, new RuntimeException(message), isWarning);
     }
 
-    public ModLoadingError(@NotNull ModInfo modInfo, @NotNull Throwable throwable, boolean isWarning) {
+    public ModLoadingError(@Nullable ModInfo modInfo, @NotNull Throwable throwable, boolean isWarning) {
         this.modInfo = modInfo;
         this.throwable = throwable;
         this.isWarning = isWarning;

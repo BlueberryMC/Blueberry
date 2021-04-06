@@ -5,18 +5,32 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.bml.BlueberryModLoader;
+import net.blueberrymc.common.bml.InvalidModException;
+import net.blueberrymc.common.bml.SimpleModInfo;
+import net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen;
+import net.blueberrymc.common.bml.loading.ModLoadingError;
+import net.blueberrymc.common.bml.loading.ModLoadingErrors;
+import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public class ModListScreen extends Screen {
+    private static final Logger LOGGER = LogManager.getLogger();
     private ModsList modsList;
     private final Screen previousScreen;
+    private Button reloadButton;
     private Button unloadButton;
     private Button configButton;
 
@@ -33,6 +47,59 @@ public class ModListScreen extends Screen {
             this.minecraft.setScreen(new ModListScreen(this.previousScreen));
         }));
         this.addButton(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
+        (this.reloadButton = this.addButton(new Button(10, this.height - 78, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.reload"), button -> {
+            try {
+                ModsList.Entry entry = this.modsList.getSelected();
+                if (entry != null) {
+                    File file = entry.mod.getSourceDir();
+                    if (file == null) throw new AssertionError("Source dir should not be null");
+                    Blueberry.getModLoader().disableMod(entry.mod, true);
+                    ModDescriptionFile description;
+                    File compiled = null;
+                    try {
+                        Map.Entry<ModDescriptionFile, File> e = ((BlueberryModLoader) Blueberry.getModLoader()).preprocess(file);
+                        description = e.getKey();
+                        if (e.getKey().isSource() && e.getValue() != null) {
+                            compiled = e.getValue();
+                        }
+                    } catch (Throwable throwable) {
+                        LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
+                        ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
+                        return;
+                    }
+                    BlueberryMod mod;
+                    try {
+                        mod = ((BlueberryModLoader) Blueberry.getModLoader()).loadMod(compiled != null ? compiled : file, compiled == null ? null : file);
+                    } catch (InvalidModException ex) {
+                        LOGGER.error("Could not load a mod: " + ex);
+                        ModLoadingErrors.add(new ModLoadingError(description, "Could not load a mod: " + ex.getMessage(), false));
+                        return;
+                    }
+                    Blueberry.getModLoader().initModResources(mod);
+                    Blueberry.getModLoader().enableMod(mod);
+                    this.minecraft.reloadResourcePacks().thenAccept(v -> {
+                        this.minecraft.setScreen(this.previousScreen);
+                        this.minecraft.setScreen(new ModListScreen(this.previousScreen));
+                    });
+                }
+            } finally {
+                if (ModLoadingErrors.hasErrors()) {
+                    ModLoadingErrors.add(new ModLoadingError(null, "One or more warning/error was detected. It is recommended to restart your Minecraft to prevent further issues.", true));
+                    this.minecraft.setScreen(new ModLoadingProblemScreen(this));
+                }
+            }
+        }, (button, poseStack, i, i1) -> {
+            ModsList.Entry entry = this.modsList.getSelected();
+            if (entry != null) {
+                if (entry.mod.isFromSource()) {
+                    if (this.minecraft.level != null) {
+                        renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.cannot_reload_level_tooltip"), i, i1);
+                    }
+                } else {
+                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.cannot_reload_tooltip"), i, i1);
+                }
+            }
+        }))).active = false;
         (this.unloadButton = this.addButton(new Button(10, this.height - 56, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.disable"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null) {
@@ -62,6 +129,7 @@ public class ModListScreen extends Screen {
         ModsList.Entry entry = this.modsList.getSelected();
         if (entry != null) {
             BlueberryMod mod = entry.mod;
+            this.reloadButton.active = this.minecraft.level == null && mod.isFromSource();
             this.unloadButton.active = this.minecraft.level == null && mod.getDescription().isUnloadable();
             this.configButton.active = mod.getVisualConfig().isNotEmpty();
             if (mod.isUnloaded()) {
@@ -95,7 +163,7 @@ public class ModListScreen extends Screen {
 
     class ModsList extends ObjectSelectionList<ModsList.Entry> {
         public ModsList(@NotNull Minecraft minecraft) {
-            super(minecraft, ModListScreen.this.width / 5, ModListScreen.this.height, 32, ModListScreen.this.height - 65 + 4, 18);
+            super(minecraft, ModListScreen.this.width / 5, ModListScreen.this.height, 32, ModListScreen.this.height - 87 + 4, 18);
 
             for(BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
                 Entry entry = new Entry(mod);

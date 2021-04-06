@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface BlueberryUtil {
     Logger LOGGER = LogManager.getLogger();
 
@@ -25,7 +27,8 @@ public interface BlueberryUtil {
     @Nullable
     ResourceManager getResourceManager();
 
-    void reloadResourcePacks();
+    @NotNull
+    CompletableFuture<Void> reloadResourcePacks();
 
     void crash(@NotNull CrashReport crashReport);
 

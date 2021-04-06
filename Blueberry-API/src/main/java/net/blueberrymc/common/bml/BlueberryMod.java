@@ -13,6 +13,7 @@ import net.minecraft.network.chat.TextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -27,7 +28,8 @@ public class BlueberryMod implements ModInfo {
     private File file;
     private BlueberryResourceManager resourceManager;
     boolean first = true;
-    boolean liveCompilerEnabled = false;
+    boolean fromSource = false;
+    @Nullable File sourceDir = null;
 
     public BlueberryMod() {
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -158,6 +160,15 @@ public class BlueberryMod implements ModInfo {
                 this.getConfig().set(config.getId(), config.get());
             }
         }
+    }
+
+    public boolean isFromSource() {
+        return fromSource;
+    }
+
+    @Nullable
+    public File getSourceDir() {
+        return sourceDir;
     }
 
     /**

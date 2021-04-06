@@ -44,7 +44,10 @@ public class ModLoadingProblemScreen extends Screen {
         this.problemList = new ProblemList(this.minecraft);
         this.children.add(this.problemList);
         this.addButton(new Button(this.width / 2 - 100, this.height - 38, 98, 20, new BlueberryText("blueberry", "gui.screens.mod_loading_problem.open_log_file"), (button) -> Util.getPlatform().openFile(Blueberry.getLogFile())));
-        this.addButton(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> Objects.requireNonNull(this.minecraft).setScreen(screen)));
+        this.addButton(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> {
+            ModLoadingErrors.clear();
+            Objects.requireNonNull(this.minecraft).setScreen(screen);
+        }));
         super.init();
     }
 
@@ -94,8 +97,8 @@ public class ModLoadingProblemScreen extends Screen {
             }
 
             public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
-                String modName = this.error.modInfo.getName();
-                String s = modName + ": " + this.error.getMessage();
+                String modName = this.error.modInfo != null ? this.error.modInfo.getName() + ": " : null;
+                String s = modName + this.error.getMessage();
                 ModLoadingProblemScreen.this.font.drawShadow(poseStack, s, (float)(ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2), (float)(i2 + 2), this.error.isWarning ? 0xFFFF55 : 0xFF5555, true);
             }
 

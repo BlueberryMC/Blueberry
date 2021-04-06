@@ -6,14 +6,17 @@ import net.minecraft.CrashReport;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 public class BlueberryNope implements BlueberryUtil {
     @Override
     public @NotNull ResourceManager getResourceManager() {
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
     @Override
-    public void reloadResourcePacks() {
+    public CompletableFuture<Void> reloadResourcePacks() {
         throw new UnsupportedOperationException();
     }
 

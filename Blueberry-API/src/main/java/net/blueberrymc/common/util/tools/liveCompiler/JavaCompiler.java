@@ -84,7 +84,7 @@ public class JavaCompiler {
         List<String> args = new ArrayList<>();
         if (!classpath.isEmpty()) {
             args.add("-cp");
-            args.add(Joiner.on(";").join(classpath) + ";" + root.getAbsolutePath() + (dest != null ? ";" + dest.getAbsolutePath() : ""));
+            args.add(Joiner.on(";").join(classpath) + ";" + root.getAbsolutePath());
         }
         if (dest != null) {
             args.add("-d");
@@ -135,7 +135,7 @@ public class JavaCompiler {
                                 }
                                 LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
                             };
-                            if (first.get()) {
+                            if (first.get()) { // to prevent race condition
                                 first.set(false);
                                 doCompile.run();
                             } else {
