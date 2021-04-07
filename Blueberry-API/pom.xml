@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>blueberry-api</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
     <name>Blueberry-API</name>
 
     <properties>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>xyz.acrylicstyle.minecraft</groupId>
             <artifactId>minecraft</artifactId>
-            <version>21w11a</version>
+            <version>21w13a</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

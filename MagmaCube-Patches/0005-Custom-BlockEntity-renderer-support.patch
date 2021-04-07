@@ -42,10 +42,10 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index b0e39a12662148d051900a627b8259adae2e6aaf..f1b696aa43463ed10f04c71b39612d265016caf2 100644
+index aef319b440a4b30e50d71023ec187f383f13faf1..cea4150e862cf92430ca3f42d1787152c4757808 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -463,6 +463,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -470,6 +470,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer);
        this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
        BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -54,26 +54,17 @@ index b0e39a12662148d051900a627b8259adae2e6aaf..f1b696aa43463ed10f04c71b39612d26
        this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 914bb3da9d50eb56744e81d0776f0828ed95d94b..b2ca3b5def26fc7b21eeb978292d39b055988638 100644
+index 7e7acca21793bedd2ff24c6762caf3d38492e432..00264e25903f995600f8118ed1aa5ec2d6fc5698 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -39,7 +39,7 @@ public class Main {
-       try {
-          main0(args);
-       } finally {
--         net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdown();
-+         net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdownNow();
-       }
-    }
-    // Blueberry end
-@@ -84,7 +84,7 @@ public class Main {
+@@ -79,7 +79,7 @@ public class Main {
           System.out.println("Completely ignored arguments: " + list);
        }
-       File file1 = parseArgument(optionset, optionspec2); // Blueberry - moved from below
--      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1); // Blueberry
-+      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file1, new net.blueberrymc.client.BlueberryClientImpl()); // Blueberry
+       File file = parseArgument(optionSet, optionSpec3); // Blueberry - moved from below
+-      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file); // Blueberry
++      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file, new net.blueberrymc.client.BlueberryClientImpl()); // Blueberry
  
-       String s = parseArgument(optionset, optionspec6);
+       String s = parseArgument(optionSet, optionSpec7);
        Proxy proxy = Proxy.NO_PROXY;
 diff --git a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
 index f879e2d45e836747aa62b85092af6f81a0fee418..8e8fd24c57edb78bad0f112d7a17d55fff7329c1 100644
@@ -144,10 +135,10 @@ index 06f8fadd15da65ebbc246edb41d2685c966bf1f3..ac59622d70338f22f6fb35eb5a28cf0e
     }
  
 diff --git a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
-index dcd0521cf248661676f53f16fd93d18afc15777c..c16d41bbb71af50f53d8b96039b5524870a328d8 100644
+index 2a2750f4107fa71029eb029b1dec703cc528735e..436f9e82a2791250248614daa89fe5b15ee399fb 100644
 --- a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -147,7 +147,7 @@ public class ItemRenderer implements ResourceManagerReloadListener {
+@@ -152,7 +152,7 @@ public class ItemRenderer implements ResourceManagerReloadListener {
  
              this.renderModelLists(bakedModel, itemStack, i, i2, poseStack, vertexConsumer);
           } else {
@@ -157,10 +148,10 @@ index dcd0521cf248661676f53f16fd93d18afc15777c..c16d41bbb71af50f53d8b96039b55248
  
           poseStack.popPose();
 diff --git a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-index a85dccd3e08385a90044386e44ac2897e35c56b8..f540b981ce2766e702605da917c6bb645eab0225 100644
+index a516b95224a661875d2ed13fb796e0a554fa4acf..31b60b44531a40cf131082e5a627a11b356a0cf8 100644
 --- a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -93,6 +93,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
+@@ -94,6 +94,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
        int i3 = Integer.MAX_VALUE;
        int i4 = 1 << i;
        profilerFiller.popPush("extracting_frames");
@@ -182,10 +173,10 @@ index e771cba46855f40b9ccdee0d9669e2d10f3e6347..c1f8118b36630699ff59adbbe302dc86
        return this.title;
     }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index dc5e760a9df4c51d4a584116cccd1305abba7cb5..790df721cef4ac53c6150f76eca45651c4c4ee68 100644
+index bdd3a4e5610c52ec9fec45b7f27f927313f75738..436b35c8b5fc9d3ddfeefb5064f79894b52e4177 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -80,7 +80,7 @@ public class Main {
+@@ -82,7 +82,7 @@ public class Main {
              return;
           }
           File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved from below
@@ -217,10 +208,10 @@ index 631631221d5f2b26635da9513564531f8cf90baf..cc57add0223b8a963495e91571e29fd0
        T create(int var1, Inventory var2);
     }
 diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
-index 66db4b1e5a1d5731b8a3ec921ab64de781d6f273..b71f4de2462b931a43ba91e7e4df710de85aee4e 100644
+index a0ebe94a8ffdb14f339f0a09fdf5e6a148cae359..486158c72e554ee08895a91561674b941e6cbddc 100644
 --- a/src/main/java/net/minecraft/world/item/Item.java
 +++ b/src/main/java/net/minecraft/world/item/Item.java
-@@ -90,6 +90,7 @@ public class Item implements ItemLike {
+@@ -93,6 +93,7 @@ public class Item implements ItemLike {
           }
        }
  
@@ -228,7 +219,7 @@ index 66db4b1e5a1d5731b8a3ec921ab64de781d6f273..b71f4de2462b931a43ba91e7e4df710d
     }
  
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int i) {
-@@ -369,6 +370,15 @@ public class Item implements ItemLike {
+@@ -372,6 +373,15 @@ public class Item implements ItemLike {
        return true;
     }
  
@@ -244,7 +235,7 @@ index 66db4b1e5a1d5731b8a3ec921ab64de781d6f273..b71f4de2462b931a43ba91e7e4df710d
     public static class Properties {
        private int maxStackSize = 64;
        private int maxDamage;
-@@ -377,6 +387,7 @@ public class Item implements ItemLike {
+@@ -380,6 +390,7 @@ public class Item implements ItemLike {
        private Rarity rarity = Rarity.COMMON;
        private FoodProperties foodProperties;
        private boolean isFireResistant;
@@ -252,7 +243,7 @@ index 66db4b1e5a1d5731b8a3ec921ab64de781d6f273..b71f4de2462b931a43ba91e7e4df710d
  
        public Item.Properties food(FoodProperties foodProperties) {
           this.foodProperties = foodProperties;
-@@ -421,5 +432,12 @@ public class Item implements ItemLike {
+@@ -424,5 +435,12 @@ public class Item implements ItemLike {
           this.isFireResistant = true;
           return this;
        }

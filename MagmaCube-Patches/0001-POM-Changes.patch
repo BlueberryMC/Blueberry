@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e85e21604 100644
+index 41a4387b5d0aa39bec5174472a267dfc1f02e5c6..c97552e64a3ab470a927f648254d9a814bbdcdcc 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -14,7 +14,7 @@ index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>21w11a</version>
+-        <version>21w13a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +30,7 @@ index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w11a</version>
++    <version>21w13a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -39,17 +39,19 @@ index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -39,6 +44,9 @@
+@@ -39,6 +44,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
++                                <!-- Blueberry start -->
 +                                <exclude>META-INF/*.SF</exclude>
 +                                <exclude>META-INF/*.DSA</exclude>
 +                                <exclude>META-INF/*.RSA</exclude>
++                                <!-- Blueberry end -->
                              </excludes>
                          </filter>
                      </filters>
-@@ -59,6 +67,18 @@
+@@ -59,6 +69,18 @@
      </repositories>
  
      <dependencies>
@@ -57,7 +59,7 @@ index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.4</version>
++            <version>0.0.5</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
@@ -69,12 +71,12 @@ index d91e7d92cf3b52d96454f278c7c024d33ec91546..d8d0efb88d32b7c711998b3104ee2a7e
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
 diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-index 4d80e4054f8436bd8fd1af85a8121a70304a256f..5e2a6841cf2d3827c4b1370a60ab8d52c853c652 100644
+index 3dfa9e25c0ab623f4e6ba69e5036b834e77d2b06..47c2cda2d180edf7965ced35eca7205b8edb4352 100644
 --- a/src/main/java/net/minecraft/client/ClientBrandRetriever.java
 +++ b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-@@ -2,6 +2,6 @@ package net.minecraft.client;
+@@ -7,6 +7,6 @@ public class ClientBrandRetriever {
  
- public class ClientBrandRetriever {
+    @DontObfuscate
     public static String getClientModName() {
 -      return "magmacube"; // MagmaCube > vanilla!
 +      return "blueberry"; // Blueberry > // MagmaCube > vanilla!
@@ -82,12 +84,12 @@ index 4d80e4054f8436bd8fd1af85a8121a70304a256f..5e2a6841cf2d3827c4b1370a60ab8d52
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 871d2ab5d85214541505d7f5713d3573c072c76b..55b1b18c9bfa836085361fd10a09c8eaffae7283 100644
+index a5aad8dee0fbe0b701a1ff5c82005a35c5c5be2b..4521e1ba4bdbe74892ff0f7a209e90cc0dfc25fc 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -898,7 +898,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-    }
+@@ -918,7 +918,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
+    @DontObfuscate
     public String getServerModName() {
 -      return "vanilla";
 +      return "blueberry"; // Blueberry > vanilla

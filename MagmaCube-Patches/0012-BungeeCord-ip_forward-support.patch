@@ -5,15 +5,13 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 5061728b79f504846045949a9e9a329257e24616..7ac1576a4440145ffec3d22a809ec217e127ecfd 100644
+index 30ce67778f066cd2cd3e1c2589d3960443572c17..142b9afa06518780feebdbc201d4c1625f445fd5 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -59,7 +59,12 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-    private final PacketFlow receiving;
+@@ -61,6 +61,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
     private final Queue<Connection.PacketHolder> queue = Queues.newConcurrentLinkedQueue();
     private Channel channel;
--   private SocketAddress address;
-+   public SocketAddress address; // PAIL private -> public
+    public SocketAddress address;
 +   // Blueberry start
 +   public java.util.UUID spoofedUUID;
 +   public com.mojang.authlib.properties.Property[] spoofedProfile;
@@ -22,7 +20,7 @@ index 5061728b79f504846045949a9e9a329257e24616..7ac1576a4440145ffec3d22a809ec217
     private PacketListener packetListener;
     private Component disconnectedReason;
     private boolean encrypted;
-@@ -79,6 +84,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -80,6 +85,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
        super.channelActive(channelHandlerContext);
        this.channel = channelHandlerContext.channel();
        this.address = this.channel.remoteAddress();
@@ -30,7 +28,7 @@ index 5061728b79f504846045949a9e9a329257e24616..7ac1576a4440145ffec3d22a809ec217
  
        try {
           this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -246,6 +252,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -247,6 +253,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
     }
  
     public void disconnect(Component component) {
@@ -38,24 +36,11 @@ index 5061728b79f504846045949a9e9a329257e24616..7ac1576a4440145ffec3d22a809ec217
        if (this.channel.isOpen()) {
           this.channel.close().awaitUninterruptibly();
           this.disconnectedReason = component;
-diff --git a/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java b/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-index a943189aa6f0dbf8a944b19f8f10c90ed3e040b7..e10263cd2f16e0b35e35324ffc192073177acb0c 100644
---- a/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-+++ b/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.Packet;
- 
- public class ClientIntentionPacket implements Packet<ServerHandshakePacketListener> {
-    private final int protocolVersion;
--   private final String hostName;
-+   public String hostName; // PAIL private+f -> public-f
-    private final int port;
-    private final ConnectionProtocol intention;
- 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 06e0ecd55406dc00558e5dda7cd5f050a53a915f..21adf778b400756853614370feef4ead19316cf6 100644
+index 4966fea4a8005ddfeec386310a516f89af5cdf93..c01a3499a945fb4d1e9b6cb1c442d5a590e6e573 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -146,7 +146,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -148,7 +148,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
        if (!this.usesAuthentication()) {
           LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
           LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
@@ -72,10 +57,10 @@ index 06e0ecd55406dc00558e5dda7cd5f050a53a915f..21adf778b400756853614370feef4ead
        }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-index 78e5c3c55884a9d9413290fa7f7045b2d2aa9bfa..a420fc1790bc011c5ef4643ea00799843cc1c0be 100644
+index 8ca5c21af6363596469b54df0ddbaae002689899..baeeefc224099de753bfe38f92ee369a861a7226 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-@@ -139,6 +139,7 @@ public class ServerConnectionListener {
+@@ -145,6 +145,7 @@ public class ServerConnectionListener {
                       connection.setReadOnly();
                    }
                 } else {
@@ -121,10 +106,10 @@ index 43c098bdbd21d7f8c8c27575c9f0514916ed6e80..c8eb192e580720babff6ac86b5b023c7
           break;
        case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index af261d6d85c1fba64eec3db39235a21776147d58..6776d26327653bcfa46c317553d471c8290c86b9 100644
+index 1a57f78a124de97b55312318c182e6f4ac106808..971db17c342f88d3c36b0a49e04a4ae5eb60dd31 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -91,7 +91,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -92,7 +92,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
     }
  
     public void handleAcceptedLogin() {
@@ -133,7 +118,7 @@ index af261d6d85c1fba64eec3db39235a21776147d58..6776d26327653bcfa46c317553d471c8
           this.gameProfile = this.createFakeProfile(this.gameProfile);
        }
  
-@@ -128,6 +128,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -129,6 +129,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
        return this.gameProfile != null ? this.gameProfile + " (" + this.connection.getRemoteAddress() + ")" : String.valueOf(this.connection.getRemoteAddress());
     }
  
@@ -152,7 +137,7 @@ index af261d6d85c1fba64eec3db39235a21776147d58..6776d26327653bcfa46c317553d471c8
     public void handleHello(ServerboundHelloPacket serverboundHelloPacket) {
        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
        this.gameProfile = serverboundHelloPacket.getGameProfile();
-@@ -135,6 +147,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -136,6 +148,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
           this.state = ServerLoginPacketListenerImpl.State.KEY;
           this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
        } else {

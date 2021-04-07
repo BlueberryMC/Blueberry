@@ -87,10 +87,10 @@ index d9751b9375a6a6fc111b0fb030d158e09a69a773..060b7cabaf3417dad65ab635542fd0a6
        }
     }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index a70236fb62602be2986564b709dafabbc867519b..8fa59f0091ec0b783ad89031263a1624ef6903c3 100644
+index 550e60e343709a12dc79deb66485b3804d670de8..6905fff24bba65fa05975ec37c16cab72593d9be 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -93,6 +93,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
+@@ -100,6 +100,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
     private final WorldBorder worldBorder;
     private final BiomeManager biomeManager;
     private final ResourceKey<Level> dimension;
@@ -99,10 +99,10 @@ index a70236fb62602be2986564b709dafabbc867519b..8fa59f0091ec0b783ad89031263a1624
     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
        this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 3a87fbecca2692a88a06090038075f6282ff820f..0e16d958caccba370c0d30d416d9386f535450d6 100644
+index edb2cf51453771e74c34beadb244b20d4a51f3a8..2dea7dbb6546b7c3270459e3f5e7aac73092320e 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -270,11 +270,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -292,11 +292,13 @@ public class Block extends BlockBehaviour implements ItemLike {
           double d3 = (double)(level.random.nextFloat() * 0.5F) + 0.25D;
           ItemEntity itemEntity = new ItemEntity(level, (double)blockPos.getX() + d, (double)blockPos.getY() + d2, (double)blockPos.getZ() + d3, itemStack);
           itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index 3a87fbecca2692a88a06090038075f6282ff820f..0e16d958caccba370c0d30d416d9386f
        if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
           ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
        }
-@@ -431,6 +433,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -453,6 +455,12 @@ public class Block extends BlockBehaviour implements ItemLike {
        return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
     }
  
@@ -131,7 +131,7 @@ index 3a87fbecca2692a88a06090038075f6282ff820f..0e16d958caccba370c0d30d416d9386f
        private final BlockState first;
        private final BlockState second;
 diff --git a/src/main/java/net/minecraft/world/level/block/OreBlock.java b/src/main/java/net/minecraft/world/level/block/OreBlock.java
-index a39c53969fde5361fe4cafc0c7aef831aa65998c..79ea4141dddcc866cc9bbd612a7570b68ef15d53 100644
+index 653c6d86a397d40ae76d21db989209a29fd6db05..71e715a45298f6ff3476f70842f3b58c9f4a434b 100644
 --- a/src/main/java/net/minecraft/world/level/block/OreBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/OreBlock.java
 @@ -23,7 +23,7 @@ public class OreBlock extends Block {
@@ -140,7 +140,7 @@ index a39c53969fde5361fe4cafc0c7aef831aa65998c..79ea4141dddcc866cc9bbd612a7570b6
        super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
 -      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 +      if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
-          int i = this.xpRange.randomValue(serverLevel.random);
+          int i = this.xpRange.sample(serverLevel.random);
           if (i > 0) {
              this.popExperience(serverLevel, blockPos, i);
 @@ -31,4 +31,17 @@ public class OreBlock extends Block {
@@ -152,7 +152,7 @@ index a39c53969fde5361fe4cafc0c7aef831aa65998c..79ea4141dddcc866cc9bbd612a7570b6
 +   @Override
 +   public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
 +      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-+         int i = this.xpRange.randomValue(serverLevel.random);
++         int i = this.xpRange.sample(serverLevel.random);
 +         if (i > 0) {
 +            return i;
 +         }

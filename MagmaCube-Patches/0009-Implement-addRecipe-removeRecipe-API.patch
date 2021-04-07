@@ -5,7 +5,7 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index fd8c4d1db390f21a48f02a6b313be919c2036151..280174dc1df7014508692c98c52e94fce62d3c35 100644
+index a18d0623a9d3e41354f83123c150af34d2c0a048..c5dfe68610bd0cffe74469202a2ec55c4fc29824 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 @@ -12,6 +12,7 @@ import com.google.gson.JsonSyntaxException;
@@ -39,7 +39,7 @@ index fd8c4d1db390f21a48f02a6b313be919c2036151..280174dc1df7014508692c98c52e94fc
        LOGGER.info("Loaded {} recipes", map2.size());
     }
  
-@@ -122,4 +124,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -126,4 +128,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
        });
        this.recipes = ImmutableMap.copyOf(map);
     }
