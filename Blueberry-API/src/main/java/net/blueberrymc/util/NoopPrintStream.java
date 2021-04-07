@@ -1,6 +1,7 @@
 package net.blueberrymc.util;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.PrintStream;
 
 public class NoopPrintStream extends PrintStream {

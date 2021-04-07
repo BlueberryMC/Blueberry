@@ -196,7 +196,7 @@ public class BlueberryModLoader implements ModLoader {
     }
 
     @NotNull
-    public Map.Entry<@NotNull ModDescriptionFile, @Nullable File> preprocess(File file) throws IOException {
+    public Map.Entry<@NotNull ModDescriptionFile, @Nullable File> preprocess(@NotNull File file) throws IOException {
         ModDescriptionFile description = preloadMod(file);
         if (description.isSource()) {
             LOGGER.warn("Live Compiler is EXPERIMENTAL! Do not expect it to work.");

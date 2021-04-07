@@ -21,6 +21,8 @@ public class Block {
     private final BlockPos pos;
 
     public Block(@NotNull Level level, @NotNull BlockPos pos) {
+        Preconditions.checkNotNull(level, "level cannot be null");
+        Preconditions.checkNotNull(pos, "pos cannot be null");
         this.level = level;
         this.pos = pos;
     }
@@ -164,6 +166,7 @@ public class Block {
 
     @NotNull
     public Block getRelative(@NotNull BlockFace face, int distance) {
+        Preconditions.checkNotNull(face, "face cannot be null");
         return getRelative(face.getModX() * distance, face.getModY() * distance, face.getModZ() * distance);
     }
 

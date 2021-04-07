@@ -40,6 +40,10 @@ public class AnnotationTest {
             "net/blueberrymc/client/gui/screens/ModListScreen$ModsList$Entry",
             "net/blueberrymc/common/bml/client/gui/screens/ModLoadingProblemScreen$ProblemList",
             "net/blueberrymc/common/bml/client/gui/screens/ModLoadingProblemScreen$ProblemList$Entry",
+
+            // internals
+            "net/blueberrymc/common/util/BlueberryEvil$1",
+            "net/blueberrymc/common/util/BlueberryEvil$1$1",
     };
 
     @Test

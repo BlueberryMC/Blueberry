@@ -3,6 +3,7 @@ package net.blueberrymc.client.main;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.launch.MixinBootstrap;
 
 import java.io.File;
@@ -14,11 +15,11 @@ public class BlueberryClientTweaker implements ITweaker {
     public static String[] args = null;
 
     @Override
-    public void acceptOptions(List<String> list, File file, File file1, String s) {
+    public void acceptOptions(@Nullable List<String> list, @Nullable File file, @Nullable File file1, @Nullable String s) {
     }
 
     @Override
-    public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
+    public void injectIntoClassLoader(@NotNull LaunchClassLoader launchClassLoader) {
         MixinBootstrap.init();
         launchClassLoader.registerTransformer("org.spongepowered.asm.mixin.transformer.Proxy");
         launchClassLoader.registerTransformer("net.blueberrymc.common.util.BlueberryClassTransformer");
