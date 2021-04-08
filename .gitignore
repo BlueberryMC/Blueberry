@@ -10,6 +10,9 @@ target/
 /work/testClient/
 /work/testServer/
 /work/mcdev/
+/work/jbsdiff/
+/work/jbsdiffPatcher/
 /logs/
 /Blueberry-Client
 *.release[bB]ackup
+/blueberry-*.jar

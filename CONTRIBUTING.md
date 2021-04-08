@@ -21,6 +21,7 @@ While `Blueberry-API` and `MinecraftForge-API` are *not* based on patches, but `
 Assuming you have already forked the repository:
 1. Clone your fork to your local machine
 2. Type `./blueberry patch` in a terminal to apply the changes from upstream (It takes some time!)
+   - Alternatively, you can also do `./scripts/applyPatches.sh` to just apply patches from MagmaCube-Patches. It can be useful when there are no upstream (MagmaCube) changes, and you don't want to waste time.
 3. cd into `Blueberry-Client` for client changes.
 
 - Every single commit in `Blueberry-Client` is a patch
@@ -39,7 +40,7 @@ Assuming you have already forked the repository:
 
 You can modify patches in some ways, they are complicated though.
 
-Editing the patch files by hand should be avoided, as they will most likely cause problems.
+Editing the patch files by hand should be avoided, as they will most likely cause problems. (Greatest care should be taken if you do so, and make sure the patches applies without ANY problems.)
 
 ### Method 1
 This method works by temporarily resetting your `HEAD` to the desired commit to edit it using `git rebase`.

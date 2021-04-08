@@ -235,15 +235,13 @@ index 79ddf231b1c480f353607e90123c8564a4786e8e..5ed1f54ca25b166fae8a54fd25c5ca3b
              this.screen.setToolTip(list2);
           }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index c1be4778bd43babb4126870ffa764e003a2d6143..7e7acca21793bedd2ff24c6762caf3d38492e432 100644
+index c1be4778bd43babb4126870ffa764e003a2d6143..51e7187806e203047092d2b961d766da9d7ca63b 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -40,7 +40,8 @@ public class Main {
-    private static final Logger LOGGER = LogManager.getLogger();
+@@ -41,6 +41,7 @@ public class Main {
  
     @DontObfuscate
--   public static void main(String[] args) {
-+   public static void main0(String[] args) {
+    public static void main(String[] args) {
 +      if (net.minecraft.SharedConstants.IS_RUNNING_IN_IDE) org.lwjgl.glfw.GLFW.glfwInit(); // MagmaCube - lwjgl debug agent causes glGetError to crash when we didn't call glfwInit
        OptionParser optionParser = new OptionParser();
        optionParser.allowsUnrecognizedOptions();

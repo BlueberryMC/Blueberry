@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 41a4387b5d0aa39bec5174472a267dfc1f02e5c6..c97552e64a3ab470a927f648254d9a814bbdcdcc 100644
+index 41a4387b5d0aa39bec5174472a267dfc1f02e5c6..5b18472701b5491e6061c070fcb3bed872055d05 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -23,7 +23,7 @@ index 41a4387b5d0aa39bec5174472a267dfc1f02e5c6..c97552e64a3ab470a927f648254d9a81
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -14,10 +16,13 @@
+@@ -14,11 +16,29 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
@@ -37,9 +37,25 @@ index 41a4387b5d0aa39bec5174472a267dfc1f02e5c6..c97552e64a3ab470a927f648254d9a81
      <build>
 -        <finalName>Minecraft</finalName>
          <plugins>
++            <!-- Blueberry start -->
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-jar-plugin</artifactId>
++                <version>3.2.0</version>
++                <configuration>
++                    <archive>
++                        <index>true</index>
++                        <manifestEntries>
++                            <Main-Class>net.blueberrymc.client.main.ClientMain</Main-Class>
++                        </manifestEntries>
++                    </archive>
++                </configuration>
++            </plugin>
++            <!-- Blueberry end -->
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -39,6 +44,11 @@
+                 <artifactId>maven-shade-plugin</artifactId>
+@@ -39,6 +59,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
@@ -51,7 +67,7 @@ index 41a4387b5d0aa39bec5174472a267dfc1f02e5c6..c97552e64a3ab470a927f648254d9a81
                              </excludes>
                          </filter>
                      </filters>
-@@ -59,6 +69,18 @@
+@@ -59,6 +84,18 @@
      </repositories>
  
      <dependencies>
