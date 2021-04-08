@@ -13,7 +13,6 @@ import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
-import net.minecraft.util.FloatProviderType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -143,7 +142,6 @@ public final class BlueberryRegistries<T> {
     public static final BlueberryRegistries<StructureProcessorType<?>> STRUCTURE_PROCESSOR = new BlueberryRegistries<>(Registry.STRUCTURE_PROCESSOR);
     public static final BlueberryRegistries<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = new BlueberryRegistries<>(Registry.STRUCTURE_POOL_ELEMENT);
     public static final BlueberryRegistries<SurfaceBuilder<?>> SURFACE_BUILDER = new BlueberryRegistries<>(Registry.SURFACE_BUILDER);
-    public static final BlueberryRegistries<FloatProviderType<?>> FLOAT_PROVIDER_TYPES = new BlueberryRegistries<>(Registry.FLOAT_PROVIDER_TYPES);
     public static final BlueberryRegistries<WorldCarver<?>> CARVER = new BlueberryRegistries<>(Registry.CARVER);
     public static final BlueberryRegistries<Feature<?>> FEATURE = new BlueberryRegistries<>(Registry.FEATURE);
     public static final BlueberryRegistries<StructureFeature<?>> STRUCTURE_FEATURE = new BlueberryRegistries<>(Registry.STRUCTURE_FEATURE);
