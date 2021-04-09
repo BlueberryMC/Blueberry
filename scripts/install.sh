@@ -27,6 +27,7 @@ cp "$basedir/Blueberry-Client/target/blueberry-$version.jar" "$VERSIONS/$name/$n
 cp "$basedir/scripts/files/version.json" "$VERSIONS/$name/$name.json"
 echo "  \"releaseTime\": \"$datetime\"," >> "$VERSIONS/$name/$name.json"
 echo "  \"time\": \"$datetime\"," >> "$VERSIONS/$name/$name.json"
+echo "  \"mainClass\": \"net.minecraft.client.main.Main\"," >> "$VERSIONS/$name/$name.json"
 echo "  \"id\": \"$name\"" >> "$VERSIONS/$name/$name.json"
 echo "}" >> "$VERSIONS/$name/$name.json"
 echo "Done. Please restart the Minecraft Launcher to make sure you see blueberry."

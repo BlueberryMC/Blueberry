@@ -38,11 +38,32 @@ case "$1" in
     scripts/init.sh || exit 1
   )
   ;;
+  "i" | "installer")
+  (
+    set -e
+    cd "$basedir"
+    scripts/build.sh || exit 1
+    scripts/createPatchFile.sh || exit 1
+    scripts/createInstaller.sh || exit 1
+  )
+  ;;
+  "b" | "build")
+  (
+    set -e
+    cd "$basedir"
+    scripts/init.sh || exit 1
+    scripts/build.sh || exit 1
+    scripts/createPatchFile.sh || exit 1
+    scripts/createInstaller.sh || exit 1
+  )
+  ;;
   *)
     echo "Blueberry build tool command. This provides a easy way to build, and manage Blueberry Project."
     echo ""
     echo " Commands:"
     echo "  * rb, rebuild            | Rebuild patches, can be called from anywhere."
     echo "  * p, patch               | Apply all patches to the project without building it."
+    echo "  * i, installer           | Creates installer. The project must be patched before doing this."
+    echo "  * b, build               | Builds the project and creates installer."
   ;;
 esac

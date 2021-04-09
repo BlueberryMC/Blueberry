@@ -22,4 +22,4 @@ echo "Creating patch"
 java -jar "$basedir/work/jbsdiff/target/jbsdiff-1.0.jar" diff "$basedir/MagmaCube/work/Minecraft/$version/client.jar" "$basedir/Blueberry-Client/target/blueberry-$version.jar" "$patchFile" || exit 1
 cd "$basedir/work/jbsdiffPatcher" || exit 1
 mvn clean package || exit 1
-cp "$basedir/work/jbsdiffPatcher/target/jbsdiffPatcher.jar" "$basedir/blueberry-$version.jar"
+echo "Done. Patcher is located at: $basedir/work/jbsdiffPatcher/target/jbsdiffPatcher.jar"

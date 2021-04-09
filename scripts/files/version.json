@@ -125,6 +125,5 @@
       "type": "log4j2-xml"
     }
   },
-  "mainClass": "net.minecraft.client.main.Main",
   "minimumLauncherVersion": 21,
   "type": "snapshot",

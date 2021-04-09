@@ -12,7 +12,9 @@ target/
 /work/mcdev/
 /work/jbsdiff/
 /work/jbsdiffPatcher/
+/work/Installer/
 /logs/
 /Blueberry-Client
 *.release[bB]ackup
 /blueberry-*.jar
+/*-installer.jar
