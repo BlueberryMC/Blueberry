@@ -107,10 +107,10 @@
   },
   "assetIndex": {
     "id": "1.17",
-    "sha1": "0305fa3b64cb3e7c32cab0d3458eb4d948ebf18f",
-    "size": 337572,
-    "totalSize": 341866312,
-    "url": "https://launchermeta.mojang.com/v1/packages/0305fa3b64cb3e7c32cab0d3458eb4d948ebf18f/1.17.json"
+    "sha1": "d68c9fb7046a75a85eeea3c881bc358f2c55c6c4",
+    "size": 342045,
+    "totalSize": 343745526,
+    "url": "https://launchermeta.mojang.com/v1/packages/d68c9fb7046a75a85eeea3c881bc358f2c55c6c4/1.17.json"
   },
   "assets": "1.17",
   "logging": {

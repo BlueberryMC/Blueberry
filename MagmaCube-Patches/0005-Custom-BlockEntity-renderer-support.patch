@@ -54,17 +54,17 @@ index aef319b440a4b30e50d71023ec187f383f13faf1..cea4150e862cf92430ca3f42d1787152
        this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 7e7acca21793bedd2ff24c6762caf3d38492e432..00264e25903f995600f8118ed1aa5ec2d6fc5698 100644
+index 2f45dcb412be3ecca0462404d64da53465c16707..31ce8f054b686929c1999bec5bc0da1b7d1e7134 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -79,7 +79,7 @@ public class Main {
+@@ -80,7 +80,7 @@ public class Main {
           System.out.println("Completely ignored arguments: " + list);
        }
        File file = parseArgument(optionSet, optionSpec3); // Blueberry - moved from below
 -      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file); // Blueberry
 +      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file, new net.blueberrymc.client.BlueberryClientImpl()); // Blueberry
  
-       String s = parseArgument(optionSet, optionSpec7);
+       String s = parseArgument(optionSet, optionSpec6);
        Proxy proxy = Proxy.NO_PROXY;
 diff --git a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
 index f879e2d45e836747aa62b85092af6f81a0fee418..8e8fd24c57edb78bad0f112d7a17d55fff7329c1 100644
@@ -173,10 +173,10 @@ index e771cba46855f40b9ccdee0d9669e2d10f3e6347..c1f8118b36630699ff59adbbe302dc86
        return this.title;
     }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index bdd3a4e5610c52ec9fec45b7f27f927313f75738..436b35c8b5fc9d3ddfeefb5064f79894b52e4177 100644
+index b592e8a1f804524ff51e0310076d9e87323e0a14..f26c59dff13507c783b18ef3ea316b191321965d 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -82,7 +82,7 @@ public class Main {
+@@ -84,7 +84,7 @@ public class Main {
              return;
           }
           File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved from below

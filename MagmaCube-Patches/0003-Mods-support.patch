@@ -235,40 +235,40 @@ index 79ddf231b1c480f353607e90123c8564a4786e8e..5ed1f54ca25b166fae8a54fd25c5ca3b
              this.screen.setToolTip(list2);
           }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index c1be4778bd43babb4126870ffa764e003a2d6143..51e7187806e203047092d2b961d766da9d7ca63b 100644
+index bd344b0f7ceae2bc464facb2802b000c1d0e14c2..2f45dcb412be3ecca0462404d64da53465c16707 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -41,6 +41,7 @@ public class Main {
- 
+@@ -43,6 +43,7 @@ public class Main {
     @DontObfuscate
     public static void main(String[] args) {
+       SharedConstants.tryDetectVersion();
 +      if (net.minecraft.SharedConstants.IS_RUNNING_IN_IDE) org.lwjgl.glfw.GLFW.glfwInit(); // MagmaCube - lwjgl debug agent causes glGetError to crash when we didn't call glfwInit
        OptionParser optionParser = new OptionParser();
        optionParser.allowsUnrecognizedOptions();
        optionParser.accepts("demo");
-@@ -77,6 +78,8 @@ public class Main {
+@@ -78,6 +79,8 @@ public class Main {
        if (!list.isEmpty()) {
           System.out.println("Completely ignored arguments: " + list);
        }
 +      File file = parseArgument(optionSet, optionSpec3); // Blueberry - moved from below
 +      net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file); // Blueberry
  
-       String s = parseArgument(optionSet, optionSpec7);
+       String s = parseArgument(optionSet, optionSpec6);
        Proxy proxy = Proxy.NO_PROXY;
-@@ -110,7 +113,7 @@ public class Main {
-       PropertyMap propertyMap = GsonHelper.fromJson(gson, parseArgument(optionSet, optionSpec19), PropertyMap.class);
-       PropertyMap propertyMap2 = GsonHelper.fromJson(gson, parseArgument(optionSet, optionSpec20), PropertyMap.class);
-       String s5 = parseArgument(optionSet, optionSpec23);
+@@ -111,7 +114,7 @@ public class Main {
+       PropertyMap propertyMap = GsonHelper.fromJson(gson, parseArgument(optionSet, optionSpec18), PropertyMap.class);
+       PropertyMap propertyMap2 = GsonHelper.fromJson(gson, parseArgument(optionSet, optionSpec19), PropertyMap.class);
+       String s5 = parseArgument(optionSet, optionSpec22);
 -      File file = parseArgument(optionSet, optionSpec3);
 +      // File file = parseArgument(optionSet, optionSpec3); // Blueberry - moved up
        File file2 = optionSet.has(optionSpec4) ? parseArgument(optionSet, optionSpec4) : new File(file, "assets/");
        File file3 = optionSet.has(optionSpec5) ? parseArgument(optionSet, optionSpec5) : new File(file, "resourcepacks/");
-       String s6 = optionSet.has(optionSpec12) ? (String)optionSpec12.value(optionSet) : Player.createPlayerUUID((String)optionSpec11.value(optionSet)).toString();
+       String s6 = optionSet.has(optionSpec11) ? (String)optionSpec11.value(optionSet) : Player.createPlayerUUID((String)optionSpec10.value(optionSet)).toString();
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index 2f5c574ad0a1a6b086917c06b50356771ba59e5b..227327602e9337b21b30541d6f394ab0e3a41095 100644
+index 677d2e4e5bc4413a96f463286981b076b7e93e1c..a3360e5b0315c8f96be5a6100a7f0d80b7f1116e 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -282,7 +282,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+@@ -283,7 +283,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -277,7 +277,7 @@ index 2f5c574ad0a1a6b086917c06b50356771ba59e5b..227327602e9337b21b30541d6f394ab0
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Component GENERIC_DISCONNECT_MESSAGE = new TranslatableComponent("disconnect.lost");
     private final Connection connection;
-@@ -1548,6 +1548,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
+@@ -1549,6 +1549,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
  
        try {
           friendlyByteBuf = clientboundCustomPayloadPacket.getData();
@@ -448,10 +448,10 @@ index 13602ef3920c0b2521a512ca01769568391b927a..d6958f5ad2032f9344039df13e7cf29f
  
     void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 4c2ff07c8b28a01ce8dba9cf274af2a1758dbaf7..bdd3a4e5610c52ec9fec45b7f27f927313f75738 100644
+index 7a02e697f901c2477b76c579a0cf50a05a3fbd46..b592e8a1f804524ff51e0310076d9e87323e0a14 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -81,6 +81,8 @@ public class Main {
+@@ -83,6 +83,8 @@ public class Main {
              optionParser.printHelpOn(System.err);
              return;
           }
@@ -460,7 +460,7 @@ index 4c2ff07c8b28a01ce8dba9cf274af2a1758dbaf7..bdd3a4e5610c52ec9fec45b7f27f9273
  
           CrashReport.preload();
           Bootstrap.bootStrap();
-@@ -102,7 +104,7 @@ public class Main {
+@@ -104,7 +106,7 @@ public class Main {
              return;
           }
  
@@ -469,7 +469,7 @@ index 4c2ff07c8b28a01ce8dba9cf274af2a1758dbaf7..bdd3a4e5610c52ec9fec45b7f27f9273
           YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
           MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
           GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-@@ -163,6 +165,7 @@ public class Main {
+@@ -165,6 +167,7 @@ public class Main {
           final DedicatedServer dedicatedServer = MinecraftServer.spin((threadx) -> {
              // MagmaCube start - decompile error
              DedicatedServer dedicatedServerx = new DedicatedServer(threadx, registryHolder, levelStorageAccess, packRepository, serverResources, worldData2, dedicatedServerSettings, DataFixers.getDataFixer(), minecraftSessionService, gameProfileRepository, gameProfileCache, LoggerChunkProgressListener::new);
