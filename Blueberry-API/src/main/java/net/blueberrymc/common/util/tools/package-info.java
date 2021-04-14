@@ -1,4 +1,4 @@
 /**
- * ALL classes uses tools.jar should be located under here.
+ * ALL classes uses tools.jar *must* be located under here.
  */
 package net.blueberrymc.common.util.tools;
