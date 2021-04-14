@@ -7,7 +7,7 @@ quickunzip="$basedir/MagmaCube/work/quickunzip/quickunzip.jar"
 mkdir -p "$mcdev" || exit 1
 mkdir -p "$mcdev/brigadier" || exit 1
 cd "$mcdev" || exit 1
-brigadier="https://libraries.minecraft.net/com/mojang/brigadier/1.0.17/brigadier-1.0.17-sources.jar"
+brigadier="https://libraries.minecraft.net/com/mojang/brigadier/1.0.18/brigadier-1.0.18-sources.jar"
 echo "Downloading brigadier"
 curl "$brigadier" --output "$mcdev/brigadier.zip"
 if [ $? != 0 ]; then

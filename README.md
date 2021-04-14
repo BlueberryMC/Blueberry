@@ -18,6 +18,8 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 - Can't join using BungeeCord/Waterfall? (needs testing)
 
 ## Todo
-- Provide easy way to create profile or version in launcher for Blueberry
-  - probably with bsdiff
 - multiplayer support
+  - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
+
+## Links
+- [Changelogs](https://cl-b.acrylicstyle.xyz/)
