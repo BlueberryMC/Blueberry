@@ -265,7 +265,7 @@ index bd344b0f7ceae2bc464facb2802b000c1d0e14c2..2f45dcb412be3ecca0462404d64da534
        File file3 = optionSet.has(optionSpec5) ? parseArgument(optionSet, optionSpec5) : new File(file, "resourcepacks/");
        String s6 = optionSet.has(optionSpec11) ? (String)optionSpec11.value(optionSet) : Player.createPlayerUUID((String)optionSpec10.value(optionSet)).toString();
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index 677d2e4e5bc4413a96f463286981b076b7e93e1c..a3360e5b0315c8f96be5a6100a7f0d80b7f1116e 100644
+index 7b13121bf0ecaebeaced468e4f7b97e6bb10d5f9..579b987e11ec8c3b1e56c51f4362728d7f072fbb 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 @@ -283,7 +283,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
@@ -277,7 +277,7 @@ index 677d2e4e5bc4413a96f463286981b076b7e93e1c..a3360e5b0315c8f96be5a6100a7f0d80
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Component GENERIC_DISCONNECT_MESSAGE = new TranslatableComponent("disconnect.lost");
     private final Connection connection;
-@@ -1549,6 +1549,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
+@@ -1553,6 +1553,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
  
        try {
           friendlyByteBuf = clientboundCustomPayloadPacket.getData();
@@ -410,10 +410,10 @@ index ce7b7a5d049efb50acab06106446ca2191d61c49..ea9ea20456d8efd6a5bdac528d3f7c13
  
        this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
 diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-index 9f27688e0dc6cbe20b173d1187dfa58477bda419..4a17b83c46e0abe2803ad4fb3b8b096096b53092 100644
+index 8b70faddabf36256482d120b16c75dafb0cb7be4..0f4478e4545964f6bb6640f70cf4e81998a55f87 100644
 --- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 +++ b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-@@ -79,6 +79,7 @@ public class ClientPackSource implements RepositorySource {
+@@ -83,6 +83,7 @@ public class ClientPackSource implements RepositorySource {
        if (pack2 != null) {
           consumer.accept(pack2);
        }
@@ -448,7 +448,7 @@ index 13602ef3920c0b2521a512ca01769568391b927a..d6958f5ad2032f9344039df13e7cf29f
  
     void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 7a02e697f901c2477b76c579a0cf50a05a3fbd46..b592e8a1f804524ff51e0310076d9e87323e0a14 100644
+index d7e51db719161c9ee1aa67bd42449284f7d69604..1be854c4d92ec9923f7a1d04a008d634fef734df 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -83,6 +83,8 @@ public class Main {
@@ -478,7 +478,7 @@ index 7a02e697f901c2477b76c579a0cf50a05a3fbd46..b592e8a1f804524ff51e0310076d9e87
              dedicatedServerx.setPort(optionSet.valueOf(optionSpec12));
              dedicatedServerx.setDemo(optionSet.has(optionSpec3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 4521e1ba4bdbe74892ff0f7a209e90cc0dfc25fc..1af029227a49453ec3e67a731670526a6839e181 100644
+index 0ab25f313b1f6a8c32a985e3afd786ab0b5795e7..56ccbc11653711a5ac5531accdd1e2adb9d074af 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -258,6 +258,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -518,10 +518,10 @@ index 4521e1ba4bdbe74892ff0f7a209e90cc0dfc25fc..1af029227a49453ec3e67a731670526a
        long l2 = this.tickTimes[this.tickCount % 100] = Util.getNanos() - l;
        this.averageTickTime = this.averageTickTime * 0.8F + (float)l2 / 1000000.0F * 0.19999999F;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 2e23a668e3406584b09a71de017380c1e075ee09..4966fea4a8005ddfeec386310a516f89af5cdf93 100644
+index 7804a24aafb2c6ff1b76cbf0ac0e0f30ec9ecb7e..3a96942edf09d76b5fb6642111d4b3f2f3d657aa 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -500,6 +500,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -504,6 +504,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
     }
  
     public void stopServer() {
@@ -530,7 +530,7 @@ index 2e23a668e3406584b09a71de017380c1e075ee09..4966fea4a8005ddfeec386310a516f89
        Util.shutdownExecutors();
     }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 934b7be987852989e2bfabddfbded87c165f30ac..0bdf8ea895d91c22395d6471ff63419e8ec17866 100644
+index 6ac6941737ea39f04ff7aa8446f134b52e5d2ce7..77db7c34c12004f36c59e42770db95bf0f193e70 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -152,7 +152,7 @@ import org.apache.commons.lang3.StringUtils;

@@ -37,10 +37,10 @@ index 30ce67778f066cd2cd3e1c2589d3960443572c17..142b9afa06518780feebdbc201d4c162
           this.channel.close().awaitUninterruptibly();
           this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 4966fea4a8005ddfeec386310a516f89af5cdf93..c01a3499a945fb4d1e9b6cb1c442d5a590e6e573 100644
+index 3a96942edf09d76b5fb6642111d4b3f2f3d657aa..fec499caf2b42f668b68812a18a538b106a3d10e 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -148,7 +148,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -152,7 +152,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
        if (!this.usesAuthentication()) {
           LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
           LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");

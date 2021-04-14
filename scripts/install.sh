@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+echo "=================================================="
+echo "WARNING! This script is deprecated and not recommended! (and does not work)"
+echo "Please run ./blueberry installer and use the installer."
+echo "This script will run in 20 seconds, so you can CTRL+C now to interrupt this script."
+echo "=================================================="
+echo ""
+sleep 20s
 echo "Building Blueberry-Client"
 nobuild=false
 if [ "$1" == "--nobuild" ]; then

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-export version=21w14a
+export version=21w15a
 export basedir="$(pwd -P)"
-export clientJarUrl="https://launcher.mojang.com/v1/objects/4af7eb4770d3e708d287db3bf023d4bbc60465b0/client.jar"
+export clientJarUrl="https://launcher.mojang.com/v1/objects/749805abb797f201a76e2c6ad2e7ff6f790bb53c/client.jar"
