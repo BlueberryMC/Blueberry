@@ -14,7 +14,6 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 
 ## Known Issues
 - Cannot stop debug profiler using `/debug stop` after using `/debug start`
-- Debug pie is completely black, and blinks when the chat screen is open
 - Can't join using BungeeCord/Waterfall? (needs testing)
 
 ## Todo
