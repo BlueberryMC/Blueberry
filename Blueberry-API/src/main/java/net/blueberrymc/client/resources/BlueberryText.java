@@ -5,10 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,10 +20,12 @@ public class BlueberryText extends BaseComponent {
     private static final ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<>();
     private final String namespace;
     private final String path;
+    private final List<Object> args;
 
-    public BlueberryText(@NotNull String namespace, @NotNull String path) {
+    public BlueberryText(@NotNull String namespace, @NotNull String path, @Nullable Object@Nullable... arguments) {
         this.namespace = namespace;
         this.path = path;
+        this.args = arguments != null ? Arrays.asList(arguments) : null;
     }
 
     @NotNull
@@ -90,6 +95,9 @@ public class BlueberryText extends BaseComponent {
         String cachePath = String.format("%s:%s:%s", this.namespace, this.path, getLanguageCode());
         if (!cache.containsKey(cachePath)) {
             String text = getProperties(getLanguageCode()).getProperty(path, getProperties("en_us").getProperty(path, path));
+            if (args != null) {
+                text = String.format(text, args.toArray());
+            }
             cache.put(cachePath, text);
         }
         return cache.get(cachePath);
