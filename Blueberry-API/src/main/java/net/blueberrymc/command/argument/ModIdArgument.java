@@ -4,7 +4,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.blueberrymc.client.resources.BlueberryText;
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class ModIdArgument implements ArgumentType<BlueberryMod> {
     private static final List<String> EXAMPLES = Collections.singletonList("blueberry");
     private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod");
-    private static final SimpleCommandExceptionType INVALID_MOD_ID = new SimpleCommandExceptionType(INVALID_MOD_ID_MESSAGE);
+    private static final DynamicCommandExceptionType INVALID_MOD_ID = new DynamicCommandExceptionType(o -> new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod", o));
 
     @NotNull private final Mode mode;
 
@@ -55,8 +55,9 @@ public class ModIdArgument implements ArgumentType<BlueberryMod> {
     @NotNull
     @Override
     public BlueberryMod parse(@NotNull StringReader stringReader) throws CommandSyntaxException {
-        BlueberryMod mod = Blueberry.getModLoader().getModById(stringReader.readUnquotedString());
-        if (mod == null) throw INVALID_MOD_ID.createWithContext(stringReader);
+        String smod = stringReader.readUnquotedString();
+        BlueberryMod mod = Blueberry.getModLoader().getModById(smod);
+        if (mod == null) throw INVALID_MOD_ID.createWithContext(stringReader, smod);
         return mod;
     }
 

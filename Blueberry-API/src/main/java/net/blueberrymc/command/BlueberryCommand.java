@@ -42,7 +42,7 @@ public class BlueberryCommand {
     }
 
     private static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
-        source.sendSuccess(new TextComponent("Mod status of '" + mod.getName() + "': " + mod.getStateList().toString() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
+        source.sendSuccess(new TextComponent("Mod status of '" + mod.getName() + "': " + mod.getStateList() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
         return 1;
     }
 

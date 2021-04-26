@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -95,10 +96,10 @@ public class BlueberryModLoader implements ModLoader {
         int dirCount = 0;
         int fileCount = 0;
         File[] files = this.getModsDir().listFiles();
-        for (File file : files) {
+        for (File file : Objects.requireNonNull(files)) {
             if (file.isDirectory()) {
                 if (file.getName().equals(Versioning.getVersion().getGameVersion())) {
-                    for (File f : file.listFiles()) {
+                    for (File f : Objects.requireNonNull(file.listFiles())) {
                         if (f.isDirectory()) {
                             File descriptionFile = new File(f, "mod.yml");
                             if (descriptionFile.exists()) {
@@ -418,7 +419,7 @@ public class BlueberryModLoader implements ModLoader {
                 toRemove.forEach(this.classes::remove);
             }
         }
-        LOGGER.info("Disabled mod {} ({}) [{}]", mod.getDescription().getModId(), mod.getModId(), mod.getDescription().getVersion());
+        LOGGER.info("Disabled mod {} ({}) [{}]", mod.getName(), mod.getModId(), mod.getDescription().getVersion());
     }
 
     @Override
@@ -536,7 +537,7 @@ public class BlueberryModLoader implements ModLoader {
             } catch (Throwable throwable) {
                 mod.getStateList().add(ModState.ERRORED);
                 CrashReport crashReport = CrashReport.forThrowable(throwable, "Initialization of " + mod.getName() + " (" + mod.getDescription().getModId() + ")");
-                Minecraft.fillReport(null, null, null, crashReport);
+                Minecraft.fillReport(null, "unknown", null, crashReport);
                 Minecraft.crash(crashReport);
             }
         });
