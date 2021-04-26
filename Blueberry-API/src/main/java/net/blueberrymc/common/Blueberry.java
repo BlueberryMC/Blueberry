@@ -2,6 +2,7 @@ package net.blueberrymc.common;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.client.BlueberryClient;
+import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
 import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.ModLoader;
@@ -22,7 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.launch.MixinBootstrap;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Blueberry {
@@ -150,7 +153,9 @@ public class Blueberry {
         LOGGER.info("Shutting down Discord RPC");
         DiscordRPCTaskExecutor.shutdownNow();
         LOGGER.info("Disabling mods");
-        modLoader.getLoadedMods().forEach(modLoader::disableMod);
+        List<BlueberryMod> mods = new ArrayList<>(modLoader.getLoadedMods());
+        Collections.reverse(mods);
+        mods.forEach(modLoader::disableMod);
     }
 
     @SuppressWarnings("deprecation")

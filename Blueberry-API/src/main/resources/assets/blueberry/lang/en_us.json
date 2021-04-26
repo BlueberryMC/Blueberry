@@ -27,5 +27,5 @@
   "multiplayer.compatible": "Compatible with server (%d mods present)",
   "multiplayer.incompatible": "Incompatible with server (%d mods present)",
   "multiplayer.vanilla": "Vanilla server",
-  "command.argument.mod_id.invalid_mod": "Unknown mod"
+  "command.argument.mod_id.invalid_mod": "Unknown mod '%s'"
 }

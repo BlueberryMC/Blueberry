@@ -57,7 +57,7 @@ public class BlueberryClient implements BlueberryUtil {
     @Override
     public void crash(@NotNull CrashReport crashReport) {
         Preconditions.checkNotNull(crashReport, "crashReport cannot be null");
-        Minecraft.fillReport(null, null, null, crashReport);
+        Minecraft.fillReport(null, "unknown", null, crashReport);
         Minecraft.crash(crashReport);
     }
 
@@ -106,6 +106,7 @@ public class BlueberryClient implements BlueberryUtil {
         discordRichPresenceQueue.set(discordRichPresence);
     }
 
+    @SuppressWarnings("ConstantConditions") // if mc was initialized before this method, then yes it is non-null
     @Nullable
     public MinecraftServer getIntegratedServer() {
         return Minecraft.getInstance() != null ? Minecraft.getInstance().getSingleplayerServer() : null;
