@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusPacketListener> {
-    private List<ModInfo> modInfos;
-
-    public ClientboundBlueberryHandshakePacket() {}
+    private final List<ModInfo> modInfos;
 
     public ClientboundBlueberryHandshakePacket(@NotNull List<ModInfo> modInfos) {
         this.modInfos = modInfos;
