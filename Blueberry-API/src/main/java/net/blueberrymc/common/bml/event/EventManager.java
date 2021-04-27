@@ -1,6 +1,7 @@
 package net.blueberrymc.common.bml.event;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.util.ThrowableConsumer;
@@ -115,6 +116,7 @@ public class EventManager {
         try {
             Method method = event.getMethod("getHandlerList");
             if (!method.getReturnType().equals(HandlerList.class)) throw throwNoHandlerListError(event);
+            if (!Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " is not static method");
             HandlerList handlerList = (HandlerList) method.invoke(null);
             if (handlerList == null) throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " returned null");
             handlerMap.put(event, handlerList);
@@ -122,13 +124,13 @@ public class EventManager {
         } catch (NoSuchMethodException ex) {
             throw throwNoHandlerListError(event);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " is not accessible");
+            throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " is not accessible (make sure your method has 'public' modifier");
         } catch (InvocationTargetException e) {
             throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " threw exception", e);
         }
     }
 
     private static RuntimeException throwNoHandlerListError(Class<? extends Event> event) {
-        return new IllegalArgumentException(event.getCanonicalName() + " does not implement a static getHandlerList() method that returns HandlerList as a result");
+        return new IllegalArgumentException(event.getCanonicalName() + " does not implement a static getHandlerList() method that does not have any parameters and returns HandlerList as a result");
     }
 }
