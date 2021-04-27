@@ -20,5 +20,14 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
 
+## Translations
+All translation PRs are welcome!
+
+To start the translation of the project, please follow these steps:
+- Fork the project
+- Clone the project with VSCode or anything you can browse files and edit them
+- Go to `Blueberry-API/src/main/resources/assets/blueberry/lang`, create or modify the translation file! (Do not edit `en_us.json` unless they are misspelled)
+- Create a PR with your changes.
+
 ## Links
 - [Changelogs](https://cl-b.acrylicstyle.xyz/)
