@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Called if the player breaks the block then drops the items.
+ * Called if the player breaks the block then drops the items. If the event was cancelled, the items will not be
+ * dropped. This event cannot cancel the block break. Please use {@link PlayerBlockBreakEvent} for that. Clearing the
+ * list of items will also prevent from dropping items.
  */
 public class PlayerBlockDropItemEvent extends BlockEvent implements Cancellable {
     private static final HandlerList handlerList = new HandlerList();

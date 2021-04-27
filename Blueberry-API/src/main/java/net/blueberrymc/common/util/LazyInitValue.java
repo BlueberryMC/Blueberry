@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * Similar to LazyValue, but this one just stores value without WeakRef.
+ */
 public class LazyInitValue<T> implements Supplier<T> {
     private final Supplier<T> supplier;
     private T value = null;
