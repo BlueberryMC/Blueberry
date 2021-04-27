@@ -106,7 +106,7 @@ public class EventManager {
     @Contract(pure = true)
     @NotNull
     public static Map<Class<? extends Event>, HandlerList> getHandlerMap() {
-        return handlerMap;
+        return ImmutableMap.copyOf(handlerMap);
     }
 
     @NotNull
