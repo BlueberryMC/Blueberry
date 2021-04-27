@@ -6,6 +6,9 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * Similar to LazyInitValue, but this one uses WeakReference to store a value.
+ */
 public class LazyValue<T> implements Supplier<T> {
     private final Supplier<T> supplier;
     private WeakReference<T> ref = null;
