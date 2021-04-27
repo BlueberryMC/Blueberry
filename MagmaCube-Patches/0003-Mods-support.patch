@@ -43,7 +43,7 @@ index 438e17a37dd26a5c70f455e03953edf499fec5be..abf4a91e3ffcbb718b0dc8bb64f269d4
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 60d1d248cbf49dd734da3dffc63ced8ce06e4731..aef319b440a4b30e50d71023ec187f383f13faf1 100644
+index 2bf9c88bd76ff9e3d8f56e3dfd628e6b74b8877e..e37257705122d4fff550ad73454ea4b3a4c98aec 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -438,6 +438,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -265,7 +265,7 @@ index bd344b0f7ceae2bc464facb2802b000c1d0e14c2..2f45dcb412be3ecca0462404d64da534
        File file3 = optionSet.has(optionSpec5) ? parseArgument(optionSet, optionSpec5) : new File(file, "resourcepacks/");
        String s6 = optionSet.has(optionSpec11) ? (String)optionSpec11.value(optionSet) : Player.createPlayerUUID((String)optionSpec10.value(optionSet)).toString();
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index 7b13121bf0ecaebeaced468e4f7b97e6bb10d5f9..579b987e11ec8c3b1e56c51f4362728d7f072fbb 100644
+index de13e69c530c95cad4e8579339709c01fa0c87e7..0f8e9f8b04f2794dbff1805175c46ae64ec98a74 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 @@ -283,7 +283,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
@@ -410,10 +410,10 @@ index ce7b7a5d049efb50acab06106446ca2191d61c49..ea9ea20456d8efd6a5bdac528d3f7c13
  
        this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
 diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-index 8b70faddabf36256482d120b16c75dafb0cb7be4..0f4478e4545964f6bb6640f70cf4e81998a55f87 100644
+index 7db2fd49c1f0ac4d8b2233d026f5bfb0852729e7..5a818e4252f071833100a659685b36f3f3a362d6 100644
 --- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 +++ b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-@@ -83,6 +83,7 @@ public class ClientPackSource implements RepositorySource {
+@@ -86,6 +86,7 @@ public class ClientPackSource implements RepositorySource {
        if (pack2 != null) {
           consumer.accept(pack2);
        }

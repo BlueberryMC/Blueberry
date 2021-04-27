@@ -51,4 +51,4 @@ import brigadier CommandDispatcher
 
 cd "$basedir/MagmaCube/Minecraft" || exit 1
 $git add src/main/java/com/mojang/ -A >/dev/null 2>&1
-echo -e "mc-dev Imports\n\n$MODLOG" | $git commit . -F -
+echo -e "mc-dev Imports\n\n$MODLOG" | $git commit -n . -F - # -n bypasses pre-commit hook in case you (and I) have banned master/main branch
