@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index ba202ea0baf9a4bc26682d71b8d17c130dd54b9d..fe72841f5837821f52019cf74c34684482c5ed5a 100644
+index 22b4e07ebde68478537a244c0202e3ae96f58f27..f02562fbdd90bccbb4a7723246d01020b618ef92 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -14,7 +14,7 @@ index ba202ea0baf9a4bc26682d71b8d17c130dd54b9d..fe72841f5837821f52019cf74c346844
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>21w15a</version>
+-        <version>21w16a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +30,7 @@ index ba202ea0baf9a4bc26682d71b8d17c130dd54b9d..fe72841f5837821f52019cf74c346844
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w15a</version>
++    <version>21w16a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -75,7 +75,7 @@ index ba202ea0baf9a4bc26682d71b8d17c130dd54b9d..fe72841f5837821f52019cf74c346844
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.7</version>
++            <version>0.0.9</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
