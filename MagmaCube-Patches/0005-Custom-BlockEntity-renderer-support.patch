@@ -42,10 +42,10 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index aef319b440a4b30e50d71023ec187f383f13faf1..cea4150e862cf92430ca3f42d1787152c4757808 100644
+index fffe19cca86be5623083816352371c7f46bcd120..cecf070cbf5e2ac3a3e6099e4eaa07ab7f947e98 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -470,6 +470,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -472,6 +472,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer);
        this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
        BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -54,7 +54,7 @@ index aef319b440a4b30e50d71023ec187f383f13faf1..cea4150e862cf92430ca3f42d1787152
        this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 2f45dcb412be3ecca0462404d64da53465c16707..31ce8f054b686929c1999bec5bc0da1b7d1e7134 100644
+index 02fc5e7e3b475becc8a1c033156a70f6bd371f4c..755f548a2fea0d68ccf73f8b2814bc80d2261904 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
 @@ -80,7 +80,7 @@ public class Main {
@@ -135,7 +135,7 @@ index 06f8fadd15da65ebbc246edb41d2685c966bf1f3..ac59622d70338f22f6fb35eb5a28cf0e
     }
  
 diff --git a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
-index 2a2750f4107fa71029eb029b1dec703cc528735e..436f9e82a2791250248614daa89fe5b15ee399fb 100644
+index 82a2dfad4f0547da9992ce8c04d5af9710b8ff43..7ecac52ef0f618f9fb46418e9997776d64ddbfbe 100644
 --- a/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/entity/ItemRenderer.java
 @@ -152,7 +152,7 @@ public class ItemRenderer implements ResourceManagerReloadListener {
@@ -173,7 +173,7 @@ index e771cba46855f40b9ccdee0d9669e2d10f3e6347..c1f8118b36630699ff59adbbe302dc86
        return this.title;
     }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index b592e8a1f804524ff51e0310076d9e87323e0a14..f26c59dff13507c783b18ef3ea316b191321965d 100644
+index 6a2f1358e1aa44477222e4e6588094f0504a7930..99c68ecbef28ce60bf5878de0faba17ac7054693 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -84,7 +84,7 @@ public class Main {
@@ -208,7 +208,7 @@ index 631631221d5f2b26635da9513564531f8cf90baf..cc57add0223b8a963495e91571e29fd0
        T create(int var1, Inventory var2);
     }
 diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
-index a0ebe94a8ffdb14f339f0a09fdf5e6a148cae359..486158c72e554ee08895a91561674b941e6cbddc 100644
+index 248e5596da0eede0b6e32bd96819af33821315a2..bfb6477d47f3170c01b80bc3c7d91c14fe6d8051 100644
 --- a/src/main/java/net/minecraft/world/item/Item.java
 +++ b/src/main/java/net/minecraft/world/item/Item.java
 @@ -93,6 +93,7 @@ public class Item implements ItemLike {

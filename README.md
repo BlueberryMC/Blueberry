@@ -17,6 +17,7 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 - Can't join using BungeeCord/Waterfall? (needs testing)
 
 ## Todo
+- Apply bspatch at installer, not at runtime.
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
 

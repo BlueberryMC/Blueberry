@@ -5,7 +5,7 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index 5c5c4905d5b4ba3bab763dfe3aeb35a87e19ec4a..f4f2548e316920eb0360d3dd7ca2d59196f855a5 100644
+index 7aff0d1f8b6e1335711de5a7c9c31481252c5d1a..7e16263868f665b6f9f1db4484c382a9e85a0b5f 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
 @@ -26,7 +26,7 @@ public class DetectedVersion implements GameVersion {
@@ -36,10 +36,10 @@ index 5c5c4905d5b4ba3bab763dfe3aeb35a87e19ec4a..f4f2548e316920eb0360d3dd7ca2d591
  
     public static GameVersion tryDetectVersion() {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 8de9e84ae7ea8af1a5746df169dd409f07730b09..60d1d248cbf49dd734da3dffc63ced8ce06e4731 100644
+index 997a39b0768e92858fd19a938e2cc670bd2a0f68..57aa259dc751e86f036b572f5eb83297623f9a1b 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -686,7 +686,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -691,7 +691,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
     }
  
     public String getLaunchedVersion() {
