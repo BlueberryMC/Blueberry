@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 22b4e07ebde68478537a244c0202e3ae96f58f27..f02562fbdd90bccbb4a7723246d01020b618ef92 100644
+index 0045738f3f9699d7f30d79fc61556ccd2babf2de..a66ea00d7c61664f49ddb570756354b727813a42 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -14,7 +14,7 @@ index 22b4e07ebde68478537a244c0202e3ae96f58f27..f02562fbdd90bccbb4a7723246d01020
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>21w16a</version>
+-        <version>21w18a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +30,7 @@ index 22b4e07ebde68478537a244c0202e3ae96f58f27..f02562fbdd90bccbb4a7723246d01020
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w16a</version>
++    <version>21w18a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -75,7 +75,7 @@ index 22b4e07ebde68478537a244c0202e3ae96f58f27..f02562fbdd90bccbb4a7723246d01020
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.9</version>
++            <version>0.0.10</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
@@ -100,10 +100,10 @@ index 3dfa9e25c0ab623f4e6ba69e5036b834e77d2b06..47c2cda2d180edf7965ced35eca7205b
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f69284dea5a2ae9d68b14cbb631e74f3e81e995b..0ab25f313b1f6a8c32a985e3afd786ab0b5795e7 100644
+index 384e3f60db7bdb8d53516a754f2a7150525b8aca..7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -918,7 +918,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -920,7 +920,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
     @DontObfuscate
     public String getServerModName() {
@@ -111,4 +111,4 @@ index f69284dea5a2ae9d68b14cbb631e74f3e81e995b..0ab25f313b1f6a8c32a985e3afd786ab
 +      return "blueberry"; // Blueberry > vanilla
     }
  
-    public CrashReport fillReport(CrashReport crashReport) {
+    public void fillReport(CrashReportCategory crashReportCategory) {

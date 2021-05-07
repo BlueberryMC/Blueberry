@@ -5,7 +5,7 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 30ce67778f066cd2cd3e1c2589d3960443572c17..142b9afa06518780feebdbc201d4c1625f445fd5 100644
+index 906399d8b60ab15e966aa0b816d5601267d6581d..4e3a9958c785d3b3381c5d497e8f1618d016e74a 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -61,6 +61,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -28,7 +28,7 @@ index 30ce67778f066cd2cd3e1c2589d3960443572c17..142b9afa06518780feebdbc201d4c162
  
        try {
           this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -247,6 +253,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -254,6 +260,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
     }
  
     public void disconnect(Component component) {
@@ -37,7 +37,7 @@ index 30ce67778f066cd2cd3e1c2589d3960443572c17..142b9afa06518780feebdbc201d4c162
           this.channel.close().awaitUninterruptibly();
           this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 3a96942edf09d76b5fb6642111d4b3f2f3d657aa..fec499caf2b42f668b68812a18a538b106a3d10e 100644
+index c4d585cf77ee4032ffe0478599b49c1fedea6971..b3fa66b3d85de03487bbf3786b29f6a3fbb69e3f 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -152,7 +152,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -106,10 +106,10 @@ index 43c098bdbd21d7f8c8c27575c9f0514916ed6e80..c8eb192e580720babff6ac86b5b023c7
           break;
        case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 1a57f78a124de97b55312318c182e6f4ac106808..971db17c342f88d3c36b0a49e04a4ae5eb60dd31 100644
+index ef67f68820413086108b62ef1e8a5d916c5c01b9..e110e2c1d574980a0de17206270ee1dca8504c74 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -92,7 +92,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -93,7 +93,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
     }
  
     public void handleAcceptedLogin() {
@@ -118,7 +118,7 @@ index 1a57f78a124de97b55312318c182e6f4ac106808..971db17c342f88d3c36b0a49e04a4ae5
           this.gameProfile = this.createFakeProfile(this.gameProfile);
        }
  
-@@ -129,6 +129,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -138,6 +138,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
        return this.gameProfile != null ? this.gameProfile + " (" + this.connection.getRemoteAddress() + ")" : String.valueOf(this.connection.getRemoteAddress());
     }
  
@@ -137,7 +137,7 @@ index 1a57f78a124de97b55312318c182e6f4ac106808..971db17c342f88d3c36b0a49e04a4ae5
     public void handleHello(ServerboundHelloPacket serverboundHelloPacket) {
        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
        this.gameProfile = serverboundHelloPacket.getGameProfile();
-@@ -136,6 +148,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -145,6 +157,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
           this.state = ServerLoginPacketListenerImpl.State.KEY;
           this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
        } else {
