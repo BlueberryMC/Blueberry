@@ -8,19 +8,17 @@ import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
-import net.blueberrymc.common.util.tools.JavaTools;
-import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
 import net.blueberrymc.common.util.ClasspathUtil;
 import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.common.util.ListUtils;
 import net.blueberrymc.common.util.UniversalClassLoader;
 import net.blueberrymc.common.util.Versioning;
+import net.blueberrymc.common.util.tools.JavaTools;
+import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.config.yaml.YamlConfiguration;
 import net.blueberrymc.server.packs.resources.BlueberryResourceProvider;
-import net.minecraft.CrashReport;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -536,9 +534,7 @@ public class BlueberryModLoader implements ModLoader {
                 mod.onInit();
             } catch (Throwable throwable) {
                 mod.getStateList().add(ModState.ERRORED);
-                CrashReport crashReport = CrashReport.forThrowable(throwable, "Initialization of " + mod.getName() + " (" + mod.getDescription().getModId() + ")");
-                Minecraft.fillReport(null, "unknown", null, crashReport);
-                Minecraft.crash(crashReport);
+                Blueberry.crash(throwable, "Initialization of " + mod.getName() + " (" + mod.getDescription().getModId() + ")");
             }
         });
     }

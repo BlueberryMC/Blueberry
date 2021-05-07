@@ -57,7 +57,7 @@ public class BlueberryClient implements BlueberryUtil {
     @Override
     public void crash(@NotNull CrashReport crashReport) {
         Preconditions.checkNotNull(crashReport, "crashReport cannot be null");
-        Minecraft.fillReport(null, "unknown", null, crashReport);
+        Minecraft.fillReport(Minecraft.getInstance(), null, "unknown", null, crashReport);
         Minecraft.crash(crashReport);
     }
 
