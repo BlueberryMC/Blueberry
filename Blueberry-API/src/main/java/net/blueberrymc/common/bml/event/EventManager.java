@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.bml.loading.ModLoadingError;
+import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.blueberrymc.common.util.ThrowableConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,8 +23,9 @@ public class EventManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ConcurrentHashMap<Class<? extends Event>, HandlerList> handlerMap = new ConcurrentHashMap<>();
 
-    private void logInvalidHandler(Method method, String message, String mod) {
-        LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod);
+    private void logInvalidHandler(Method method, String message, BlueberryMod mod) {
+        LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod.getModId());
+        ModLoadingErrors.add(new ModLoadingError(mod, String.format("Invalid EventHandler: %s at %s in mod %s", message, method.toGenericString(), mod.getModId()), true));
     }
 
     public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
@@ -33,12 +36,11 @@ public class EventManager {
             if (!method.isAnnotationPresent(EventHandler.class)) continue;
             EventHandler eventHandler = method.getAnnotation(EventHandler.class);
             if (method.getParameterCount() != 1) {
-                logInvalidHandler(method, "parameter count is not 1", mod.getModId());
+                logInvalidHandler(method, "parameter count is not 1", mod);
                 continue;
             }
             if (!method.getReturnType().equals(void.class)) {
-                logInvalidHandler(method, "return type must be void", mod.getModId());
-                continue;
+                logInvalidHandler(method, "Warning: return type/value is not used", mod);
             }
             /* // TODO: do we need this check?
             if (Modifier.isAbstract(method.getModifiers())) {
@@ -48,11 +50,7 @@ public class EventManager {
             */
             Class<?> clazz = method.getParameters()[0].getType();
             if (!Event.class.isAssignableFrom(clazz)) {
-                logInvalidHandler(method, "parameter type is not assignable from " + Event.class.getCanonicalName(), mod.getModId());
-                continue;
-            }
-            if (Modifier.isAbstract(clazz.getModifiers())) {
-                logInvalidHandler(method, clazz.getCanonicalName() + " is abstract; cannot register listener", mod.getModId());
+                logInvalidHandler(method, "parameter type is not assignable from " + Event.class.getCanonicalName(), mod);
                 continue;
             }
             Class<? extends Event> eventClass = clazz.asSubclass(Event.class);

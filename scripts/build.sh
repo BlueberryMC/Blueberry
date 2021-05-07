@@ -18,6 +18,6 @@ echo "builtAt=$datetime" >> "$version_prop"
 echo "" >> "$version_prop"
 echo "api-version.properties:"
 cat "$version_prop"
-mvn clean install
+mvn clean install || exit 1
 cp -f "$version_prop_bak" "$version_prop" || exit 1
 rm -f "$version_prop_bak"
