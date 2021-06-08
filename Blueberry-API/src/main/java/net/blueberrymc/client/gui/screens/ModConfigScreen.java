@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ModConfigScreen extends Screen {
+public class ModConfigScreen extends BlueberryScreen {
     private static final Component BOOLEAN_TRUE = new TextComponent("true").withStyle(ChatFormatting.GREEN);
     private static final Component BOOLEAN_FALSE = new TextComponent("false").withStyle(ChatFormatting.RED);
     private final CompoundVisualConfig compoundVisualConfig;
@@ -38,12 +38,12 @@ public class ModConfigScreen extends Screen {
     @Override
     public void mouseMoved(double d, double d2) {
         super.mouseMoved(d, d2);
-        this.children.forEach(listener -> listener.mouseMoved(d, d2));
+        this.children().forEach(listener -> listener.mouseMoved(d, d2));
     }
 
     protected void init() {
         ScrollableContainer<Button> container = new ScrollableContainer<>(this.minecraft, this.width, this.height, 58, this.height - 50, 20, 2);
-        this.addButton(new Button(this.width / 2 - 77, this.height - 38, 154, 20, CommonComponents.GUI_BACK, (button) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 77, this.height - 38, 154, 20, CommonComponents.GUI_BACK, (button) -> {
             this.minecraft.setScreen(this.previousScreen);
             if (compoundVisualConfig instanceof RootCompoundVisualConfig) {
                 ((RootCompoundVisualConfig) compoundVisualConfig).onChanged();
@@ -67,9 +67,9 @@ public class ModConfigScreen extends Screen {
                 } else {
                     component = new TextComponent("<unknown>");
                 }
-                container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, component, button -> {
-                    this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this));
-                }, onTooltip));
+                container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, component, button ->
+                        this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this)), onTooltip)
+                );
             } else if (config instanceof BooleanVisualConfig) {
                 BooleanVisualConfig booleanVisualConfig = (BooleanVisualConfig) config;
                 container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, getButtonMessage(booleanVisualConfig), (button) -> {
@@ -79,7 +79,7 @@ public class ModConfigScreen extends Screen {
                 }, onTooltip));
             }
         }
-        this.children.add(container);
+        this.children().add(container);
         super.init();
     }
 
@@ -102,7 +102,7 @@ public class ModConfigScreen extends Screen {
 
     public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
         this.renderBackground(poseStack);
-        this.children.forEach(e -> {
+        this.children().forEach(e -> {
             if (e instanceof ScrollableContainer) {
                 ((ScrollableContainer<?>) e).render(poseStack, i, i2, f);
             }

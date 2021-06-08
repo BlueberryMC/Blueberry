@@ -87,7 +87,7 @@ index d9751b9375a6a6fc111b0fb030d158e09a69a773..060b7cabaf3417dad65ab635542fd0a6
        }
     }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 550e60e343709a12dc79deb66485b3804d670de8..6905fff24bba65fa05975ec37c16cab72593d9be 100644
+index 67c42adf6af5ac33b0278a3c7c5413131d00f11f..6dfce4b2b6ad487e2e2feb98bf38a94faff8c361 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -100,6 +100,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
@@ -99,12 +99,12 @@ index 550e60e343709a12dc79deb66485b3804d670de8..6905fff24bba65fa05975ec37c16cab7
     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
        this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index edb2cf51453771e74c34beadb244b20d4a51f3a8..2dea7dbb6546b7c3270459e3f5e7aac73092320e 100644
+index 81e8f3b6b51326c3ef05c7266bd0631f97e8df6e..09a62f258746749e5b2f754323605bbbccfb87e4 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -292,11 +292,13 @@ public class Block extends BlockBehaviour implements ItemLike {
-          double d3 = (double)(level.random.nextFloat() * 0.5F) + 0.25D;
-          ItemEntity itemEntity = new ItemEntity(level, (double)blockPos.getX() + d, (double)blockPos.getY() + d2, (double)blockPos.getZ() + d3, itemStack);
+@@ -314,11 +314,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+       if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+          ItemEntity itemEntity = (ItemEntity)supplier.get();
           itemEntity.setDefaultPickUpDelay();
 +         List<ItemEntity> drops = level.captureDrops.get(); if (drops != null) { drops.add(itemEntity); return; } // Blueberry
           level.addFreshEntity(itemEntity);
@@ -117,7 +117,7 @@ index edb2cf51453771e74c34beadb244b20d4a51f3a8..2dea7dbb6546b7c3270459e3f5e7aac7
        if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
           ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
        }
-@@ -453,6 +455,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -475,6 +477,12 @@ public class Block extends BlockBehaviour implements ItemLike {
        return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
     }
  
@@ -163,7 +163,7 @@ index 653c6d86a397d40ae76d21db989209a29fd6db05..71e715a45298f6ff3476f70842f3b58c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java b/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
-index a012667f8aa8e8c30d58fc15a74906718b3d97ae..d640a848c764511006439ae08d497a6c8da1f50d 100644
+index d1bef15d897ad0d880c53ba31cca7ccc1aa85981..fbc79c78d93f5190b24d297b96b1557a24c3316a 100644
 --- a/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
 @@ -71,13 +71,23 @@ public class RedStoneOreBlock extends Block {

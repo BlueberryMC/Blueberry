@@ -4,8 +4,16 @@ Date: Wed, 13 Jan 2021 03:54:01 +0900
 Subject: [PATCH] POM Changes
 
 
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176ce2d81bb
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++target/
++*.iml
 diff --git a/pom.xml b/pom.xml
-index 0045738f3f9699d7f30d79fc61556ccd2babf2de..a66ea00d7c61664f49ddb570756354b727813a42 100644
+index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1e724e343 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -14,7 +22,7 @@ index 0045738f3f9699d7f30d79fc61556ccd2babf2de..a66ea00d7c61664f49ddb570756354b7
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>21w18a</version>
+-        <version>1.17-rc1</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -30,7 +38,7 @@ index 0045738f3f9699d7f30d79fc61556ccd2babf2de..a66ea00d7c61664f49ddb570756354b7
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w18a</version>
++    <version>1.17-rc1</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -75,7 +83,7 @@ index 0045738f3f9699d7f30d79fc61556ccd2babf2de..a66ea00d7c61664f49ddb570756354b7
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.10</version>
++            <version>0.0.11</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
@@ -87,28 +95,28 @@ index 0045738f3f9699d7f30d79fc61556ccd2babf2de..a66ea00d7c61664f49ddb570756354b7
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
 diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-index 3dfa9e25c0ab623f4e6ba69e5036b834e77d2b06..47c2cda2d180edf7965ced35eca7205b8edb4352 100644
+index 030a319914b452420c253febd0457b2627a9fe0f..3912742ce8208f1c6dc30193a344d72d4ada2a48 100644
 --- a/src/main/java/net/minecraft/client/ClientBrandRetriever.java
 +++ b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-@@ -7,6 +7,6 @@ public class ClientBrandRetriever {
+@@ -3,7 +3,7 @@ package net.minecraft.client;
+ import net.minecraft.obfuscate.DontObfuscate;
+ 
+ public class ClientBrandRetriever {
+-   public static final String VANILLA_NAME = "magmacube"; // MagmaCube > vanilla!;
++   public static final String VANILLA_NAME = "blueberry"; // Blueberry > // MagmaCube > vanilla!;
  
     @DontObfuscate
     public static String getClientModName() {
--      return "magmacube"; // MagmaCube > vanilla!
-+      return "blueberry"; // Blueberry > // MagmaCube > vanilla!
-    }
- }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 384e3f60db7bdb8d53516a754f2a7150525b8aca..7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3 100644
+index 83bd21784b8c993684510ad2911ed3b4035848e7..5eba8e04dffbb484cea93af35bb72f271650c7a9 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -920,7 +920,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -940,7 +940,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
     @DontObfuscate
     public String getServerModName() {
--      return "vanilla";
-+      return "blueberry"; // Blueberry > vanilla
+-      return "magmacube"; // MagmaCube > vanilla!
++      return "blueberry"; // Blueberry > // MagmaCube > vanilla!
     }
  
-    public void fillReport(CrashReportCategory crashReportCategory) {
+    public SystemReport fillSystemReport(SystemReport systemReport) {

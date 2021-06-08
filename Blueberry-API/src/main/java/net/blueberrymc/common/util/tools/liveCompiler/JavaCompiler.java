@@ -49,23 +49,24 @@ public class JavaCompiler {
 
     static {
         Set<String> cp = new HashSet<>();
-        cp.add(ClasspathUtil.getClasspath(Blueberry.class));
-        cp.add(ClasspathUtil.getClasspath(MinecraftServer.class));
-        cp.add(ClasspathUtil.getClasspath(Nonnull.class));
-        cp.add(ClasspathUtil.getClasspath(Launch.class));
-        cp.add(ClasspathUtil.getClasspath(GLFW.class));
-        cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));
-        cp.add(ClasspathUtil.getClasspath(Mixin.class));
-        cp.add(ClasspathUtil.getClasspath(PoseStack.class));
-        cp.add(ClasspathUtil.getClasspath(ImmutableMap.class));
-        cp.add(ClasspathUtil.getClasspath(Float2FloatOpenHashMap.class));
-        cp.add(ClasspathUtil.getClasspath(StringUtils.class));
-        cp.add(ClasspathUtil.getClasspath(JsonDeserializer.class));
-        cp.add(ClasspathUtil.getClasspath(Type.class));
-        cp.add(ClasspathUtil.getClasspath(Message.class));
-        cp.add(ClasspathUtil.getClasspath(GameVersion.class));
+        cp.add(ClasspathUtil.getClasspath(Blueberry.class)); // Blueberry-API
+        cp.add(ClasspathUtil.getClasspath(MinecraftServer.class)); // Minecraft
+        cp.add(ClasspathUtil.getClasspath(Nonnull.class)); // javax
+        cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper
+        cp.add(ClasspathUtil.getClasspath(GLFW.class)); // OpenGL
+        cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));// ASM
+        cp.add(ClasspathUtil.getClasspath(Mixin.class)); // Mixin
+        cp.add(ClasspathUtil.getClasspath(PoseStack.class)); // Blaze3d
+        cp.add(ClasspathUtil.getClasspath(ImmutableMap.class)); // Guava
+        cp.add(ClasspathUtil.getClasspath(Float2FloatOpenHashMap.class)); // fastutil
+        cp.add(ClasspathUtil.getClasspath(StringUtils.class)); // commons-lang3
+        cp.add(ClasspathUtil.getClasspath(JsonDeserializer.class)); // Gson
+        cp.add(ClasspathUtil.getClasspath(Type.class)); // DataFixerUpper
+        cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
+        cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         try {
-            cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // this class is not in classpath of Blueberry-API, so we need to do this
+            // these class is not in classpath of Blueberry-API, so we need to do this
+            cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -126,7 +127,7 @@ public class JavaCompiler {
                         // if file
                         if (f.getName().endsWith(".java")) {
                             Runnable doCompile = () -> {
-                                LOGGER.info("Compiling: " + path.relativize(f.toPath()).toString());
+                                LOGGER.info("Compiling: " + path.relativize(f.toPath()));
                                 compile(file, f, tmp);
                                 String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
                                 if (!new File(tmp, rel).exists()) {

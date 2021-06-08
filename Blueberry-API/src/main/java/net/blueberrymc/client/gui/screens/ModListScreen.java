@@ -17,6 +17,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +28,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class ModListScreen extends Screen {
+public class ModListScreen extends BlueberryScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private ModsList modsList;
     private final Screen previousScreen;
@@ -34,20 +36,20 @@ public class ModListScreen extends Screen {
     private Button unloadButton;
     private Button configButton;
 
-    public ModListScreen(@NotNull Screen screen) {
+    public ModListScreen(@Nullable Screen screen) {
         super(new BlueberryText("blueberry", "gui.screens.mods"));
         this.previousScreen = screen;
     }
 
     protected void init() {
         this.modsList = new ModsList(this.minecraft);
-        this.children.add(this.modsList);
-        this.addButton(new Button(this.width / 2 - 100, this.height - 38, 98, 20, new BlueberryText("blueberry", "gui.screens.mods.refresh"), (button) -> {
+        this.children().add(this.modsList);
+        this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 38, 98, 20, new BlueberryText("blueberry", "gui.screens.mods.refresh"), (button) -> {
             this.minecraft.setScreen(this.previousScreen);
             this.minecraft.setScreen(new ModListScreen(this.previousScreen));
         }));
-        this.addButton(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
-        (this.reloadButton = this.addButton(new Button(10, this.height - 78, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.reload"), button -> {
+        this.addRenderableWidget(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
+        (this.reloadButton = this.addRenderableWidget(new Button(10, this.height - 78, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.reload"), button -> {
             try {
                 ModsList.Entry entry = this.modsList.getSelected();
                 if (entry != null) {
@@ -100,7 +102,7 @@ public class ModListScreen extends Screen {
                 }
             }
         }))).active = false;
-        (this.unloadButton = this.addButton(new Button(10, this.height - 56, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.disable"), button -> {
+        (this.unloadButton = this.addRenderableWidget(new Button(10, this.height - 56, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.disable"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null) {
                 if (entry.mod.isUnloaded()) {
@@ -112,7 +114,7 @@ public class ModListScreen extends Screen {
                 }
             }
         }))).active = false;
-        (this.configButton = this.addButton(new Button(10, this.height - 34, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.config"), button -> {
+        (this.configButton = this.addRenderableWidget(new Button(10, this.height - 34, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.config"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null && entry.mod.getVisualConfig().isNotEmpty()) {
                 this.minecraft.setScreen(new ModConfigScreen(entry.mod.getVisualConfig(), this));
@@ -217,6 +219,11 @@ public class ModListScreen extends Screen {
 
             private void select() {
                 ModsList.this.setSelected(this);
+            }
+
+            @Override
+            public @NotNull Component getNarration() {
+                return new TranslatableComponent("narrator.select", this.mod.getName());
             }
         }
     }

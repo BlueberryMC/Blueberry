@@ -5,16 +5,30 @@ Subject: [PATCH] Mods support
 
 
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index 438e17a37dd26a5c70f455e03953edf499fec5be..abf4a91e3ffcbb718b0dc8bb64f269d4824c1a85 100644
+index 282c4e6a35f20c189c24fcc3e43e6ad98fb719ef..5ff122b277eb6f9fa592fb35bffa6fc7cef4c7bb 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
-@@ -56,6 +56,24 @@ public class CrashReport {
+@@ -226,6 +226,6 @@ public class CrashReport {
+    }
+ 
+    public static void preload() {
+-      (new CrashReport("Don't panic!", new Throwable())).getFriendlyReport();
++      LOGGER.info((new CrashReport("Don't panic!", new Throwable())).getFriendlyReport()); // Blueberry
+    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/SystemReport.java b/src/main/java/net/minecraft/SystemReport.java
+index 1ae1f0f2f24ef55f467e43138bacdb9c1f7c6aa9..a962f0d392f0083db14d41b566705a5d1db1a2c3 100644
+--- a/src/main/java/net/minecraft/SystemReport.java
++++ b/src/main/java/net/minecraft/SystemReport.java
+@@ -48,6 +48,25 @@ public class SystemReport {
           List<String> list = (List)Util.getVmArguments().collect(Collectors.toList());
-          return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));
+          return String.format("%d total; %s", list.size(), String.join(" ", list));
        }));
 +      // Blueberry start
-+      this.systemDetails.setDetail("Blueberry Version", net.blueberrymc.common.util.Versioning.getVersion().getFullyQualifiedVersion());
-+      this.systemDetails.setDetail("Mods", () -> {
++      // TODO: we need better layout
++      this.setDetail("Blueberry Version", net.blueberrymc.common.util.Versioning.getVersion().getFullyQualifiedVersion());
++      this.setDetail("Mods", () -> {
 +         StringBuilder sb = new StringBuilder("\n");
 +         sb.append("      Status:\n");
 +         sb.append("        L = Loaded\n");
@@ -32,34 +46,25 @@ index 438e17a37dd26a5c70f455e03953edf499fec5be..abf4a91e3ffcbb718b0dc8bb64f269d4
 +      // Blueberry end
     }
  
-    public String getTitle() {
-@@ -252,6 +270,6 @@ public class CrashReport {
-    }
- 
-    public static void preload() {
--      (new CrashReport("Don't panic!", new Throwable())).getFriendlyReport();
-+      LOGGER.info((new CrashReport("Don't panic!", new Throwable())).getFriendlyReport()); // Blueberry
-    }
- }
-\ No newline at end of file
+    public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f46bcd120 100644
+index 991661394ec103cbfa72841040b7f50502fc1f16..239ebaa88fbb6127019a2d13b5e487630a0dac70 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -440,6 +440,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
-       this.mainRenderTarget = new RenderTarget(this.window.getWidth(), this.window.getHeight(), true, ON_OSX);
+@@ -454,6 +454,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+       this.mainRenderTarget.clear(ON_OSX);
        this.resourceManager = new SimpleReloadableResourceManager(PackType.CLIENT_RESOURCES);
 +      net.blueberrymc.common.Blueberry.getModLoader().callPreInit(); // Blueberry
        this.resourcePackRepository.reload();
        this.options.loadSelectedResourcePacks(this.resourcePackRepository);
        this.languageManager = new LanguageManager(this.options.languageCode);
-@@ -508,14 +509,15 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -532,14 +533,15 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        this.window.setDefaultErrorCallback();
        this.resizeDisplay();
        if (s != null) {
--         this.setScreen(new ConnectScreen(new TitleScreen(), this, s, i));
-+         this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(new ConnectScreen(new TitleScreen(), this, s, i))); // Blueberry
+-         ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null);
++         this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(() -> ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null))); // Blueberry
        } else {
 -         this.setScreen(new TitleScreen(true));
 +         this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(new TitleScreen())); // Blueberry
@@ -72,7 +77,7 @@ index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f
        this.reloadStateTracker.startReload(ResourceLoadStateTracker.ReloadReason.INITIAL, list);
        this.setOverlay(new LoadingOverlay(this, this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
              if (SharedConstants.IS_RUNNING_IN_IDE) {
-@@ -703,9 +705,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -727,9 +729,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
     }
  
     public static void crash(CrashReport crashReport) {
@@ -84,7 +89,7 @@ index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f
        if (crashReport.getSaveFile() != null) {
           Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile());
           System.exit(-1);
-@@ -840,6 +843,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -868,6 +871,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
        this.screen = screen;
        BufferUploader.reset();
@@ -92,7 +97,7 @@ index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f
        if (screen != null) {
           this.mouseHandler.releaseMouse();
           KeyMapping.releaseAll();
-@@ -856,6 +860,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -883,6 +887,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
     public void setOverlay(@Nullable Overlay overlay) {
        this.overlay = overlay;
@@ -100,7 +105,7 @@ index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f
     }
  
     public void destroy() {
-@@ -880,6 +885,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -907,6 +912,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
              this.screen.removed();
           }
  
@@ -108,7 +113,7 @@ index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f
           this.close();
        } finally {
           Util.timeSource = System::nanoTime;
-@@ -1515,6 +1521,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -1629,6 +1635,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
           this.pendingConnection.tick();
        }
  
@@ -120,7 +125,7 @@ index 57aa259dc751e86f036b572f5eb83297623f9a1b..fffe19cca86be5623083816352371c7f
        this.keyboardHandler.tick();
        this.profiler.pop();
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index cccdecdd0b1ae6adac4d932a8ca6572394dac0f5..71519b7098e62bb871593b0935db8cb177a59428 100644
+index c37fb15e5fdb8f94129f2214d434ec1a0342e377..44eed40b797f81668da9e5f1ea56c61387c00eff 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
@@ -145,10 +150,10 @@ index cccdecdd0b1ae6adac4d932a8ca6572394dac0f5..71519b7098e62bb871593b0935db8cb1
           return list;
        } else {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
-index 11c281c120aa505a1e90b4c05b506df062cf33a0..ad6503b6a8c1570a03ea9c62e7a6fc791a316c10 100644
+index c3e96ed4b2f7c6dd6ad3681a2f9297098589f04b..df0d0dc109214971aca4fee009f3ef70f3c1687a 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -113,6 +113,7 @@ public class LoadingOverlay extends Overlay {
+@@ -119,6 +119,7 @@ public class LoadingOverlay extends Overlay {
        }
  
        if (f2 >= 2.0F) {
@@ -156,7 +161,7 @@ index 11c281c120aa505a1e90b4c05b506df062cf33a0..ad6503b6a8c1570a03ea9c62e7a6fc79
           this.minecraft.setOverlay((Overlay)null);
        }
  
-@@ -126,6 +127,7 @@ public class LoadingOverlay extends Overlay {
+@@ -132,6 +133,7 @@ public class LoadingOverlay extends Overlay {
  
           this.fadeOutStart = Util.getMillis();
           if (this.minecraft.screen != null) {
@@ -165,32 +170,32 @@ index 11c281c120aa505a1e90b4c05b506df062cf33a0..ad6503b6a8c1570a03ea9c62e7a6fc79
           }
        }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
-index 015626ba3f85c23a69f9abbcc44781e5a0011543..d5d9b13e3242a094ba158290d03d292e71b5ff35 100644
+index 44040df6e44735de6754c98f1fc4c7d121a9e76a..3e2680977a69e44b29ae8a8905bb34c94133a72d 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 @@ -78,6 +78,7 @@ public class PauseScreen extends Screen {
           }
  
        }));
-+      this.addButton(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
++      this.addRenderableWidget(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
     }
  
     public void tick() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-index 020c21e26be3ee0a4092c11f6b76d61daa599a54..bd8877a1b4662f5cb371b081f8673332bb7d0830 100644
+index 2c887b454a1f4052cc58577c18a57f86d2d8cbc2..4afeb9c286300986ed15ef159e7f7bffda01626c 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -136,7 +136,8 @@ public class TitleScreen extends Screen {
+@@ -145,7 +145,8 @@ public class TitleScreen extends Screen {
           Screen screen = (Screen)(this.minecraft.options.skipMultiplayerWarning ? new JoinMultiplayerScreen(this) : new SafetyScreen(this));
           this.minecraft.setScreen(screen);
        }, onTooltip))).active = flag;
--      (this.addButton(new Button(this.width / 2 - 100, i + i2 * 2, 200, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
-+      (this.addButton(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
-+      (this.addButton(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
+-      (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 200, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
++      (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
++      (this.addRenderableWidget(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
     }
  
     private void createDemoMenuOptions(int i, int i2) {
-@@ -243,8 +244,10 @@ public class TitleScreen extends Screen {
+@@ -290,8 +291,10 @@ public class TitleScreen extends Screen {
              s = s + I18n.get("menu.modded");
           }
  
@@ -200,14 +205,14 @@ index 020c21e26be3ee0a4092c11f6b76d61daa599a54..bd8877a1b4662f5cb371b081f8673332
 +         drawString(poseStack, this.font, "MagmaCube " + ((net.minecraft.DetectedVersion) SharedConstants.getCurrentVersion()).magmaCubeVersion, 2, this.height - 30, 0xFFFFFF | i6); // MagmaCube // Blueberry - offset 20 -> 30
 +         drawString(poseStack, this.font, s, 2, this.height - 20, 16777215 | i6); // Blueberry - offset 10 -> 20
 +         drawString(poseStack, this.font, net.blueberrymc.common.Blueberry.getModLoader().getLoadedMods().size() + " mods loaded, " + net.blueberrymc.common.Blueberry.getModLoader().getActiveMods().size() + " mods active", 2, this.height - 10, 0xFFFFFF | i6); // Blueberry
-          drawString(poseStack, this.font, "Copyright Mojang AB. Do not distribute!", this.copyrightX, this.height - 10, 16777215 | i6);
+          drawString(poseStack, this.font, COPYRIGHT_TEXT, this.copyrightX, this.height - 10, 16777215 | i6);
           if (i > this.copyrightX && i < this.copyrightX + this.copyrightWidth && i2 > this.height - 10 && i2 < this.height) {
              fill(poseStack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | i6);
 diff --git a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-index 79ddf231b1c480f353607e90123c8564a4786e8e..5ed1f54ca25b166fae8a54fd25c5ca3b8b96042a 100644
+index 456e2e9378c9fa8fac45eddc959b0350816ad6c1..c316addad6c837d8c6f703d0194413758ab39b81 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-@@ -291,6 +291,13 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
+@@ -294,6 +294,13 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
           RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
           RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
           GuiComponent.blit(poseStack, i3 + i4 - 15, i2, (float)(i10 * 10), (float)(176 + i11 * 8), 10, 8, 256, 256);
@@ -221,7 +226,7 @@ index 79ddf231b1c480f353607e90123c8564a4786e8e..5ed1f54ca25b166fae8a54fd25c5ca3b
           String s = this.serverData.getIconB64();
           if (!Objects.equals(s, this.lastIconB64)) {
              if (this.uploadServerIcon(s)) {
-@@ -311,6 +318,12 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
+@@ -314,6 +321,12 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
           int i20 = i7 - i2;
           if (i19 >= i4 - 15 && i19 <= i4 - 5 && i20 >= 0 && i20 <= 8) {
              this.screen.setToolTip(Collections.singletonList(component2));
@@ -235,7 +240,7 @@ index 79ddf231b1c480f353607e90123c8564a4786e8e..5ed1f54ca25b166fae8a54fd25c5ca3b
              this.screen.setToolTip(list2);
           }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index dbe03735c4542efab0263e0b60b1c27029379be7..02fc5e7e3b475becc8a1c033156a70f6bd371f4c 100644
+index 87c42f3b8d44075f88757be616c78180a1235c67..5dd946e517f4a60427b343e5e508c66932dcb156 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
 @@ -43,6 +43,7 @@ public class Main {
@@ -265,10 +270,10 @@ index dbe03735c4542efab0263e0b60b1c27029379be7..02fc5e7e3b475becc8a1c033156a70f6
        File file3 = optionSet.has(optionSpec5) ? parseArgument(optionSet, optionSpec5) : new File(file, "resourcepacks/");
        String s6 = optionSet.has(optionSpec11) ? (String)optionSpec11.value(optionSet) : Player.createPlayerUUID((String)optionSpec10.value(optionSet)).toString();
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index cdf04d7e0245e0d8adbd78338314c84ae9dd1ee9..66afe97c1c630473d11a742082dca66c7296abf8 100644
+index cc2b6bc04414f2193d759952ff19fbbd03b4a8f0..bdd4184156434a8f7f3f93678d59f76c7ce374e6 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -283,7 +283,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+@@ -285,7 +285,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -277,7 +282,7 @@ index cdf04d7e0245e0d8adbd78338314c84ae9dd1ee9..66afe97c1c630473d11a742082dca66c
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Component GENERIC_DISCONNECT_MESSAGE = new TranslatableComponent("disconnect.lost");
     private final Connection connection;
-@@ -1554,6 +1554,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
+@@ -1562,6 +1562,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
  
        try {
           friendlyByteBuf = clientboundCustomPayloadPacket.getData();
@@ -299,39 +304,40 @@ index 35658fbbbcf466e1cebdd151d0c3ed998ada23d6..e9be21ae9197a9bb0514aa823fd4be6c
     public ServerData(String s, String s2, boolean flag) {
        this.name = s;
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java b/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java
-index 528c53de5fcc3f2c2e8dc780e1af81f8cb695c1c..f94fbfda504b762d5eb0af54c2dd026238459829 100644
+index 4aefd6a09cda6da701180a225c2241aadbb70608..0f5c5d0c6aaaf6c9e37a525ffc062409584f770b 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ServerStatusPinger.java
-@@ -65,6 +65,7 @@ public class ServerStatusPinger {
-                connection.disconnect(new TranslatableComponent("multiplayer.status.unrequested"));
-             } else {
-                this.receivedPing = true;
-+               serverData.serverType = net.blueberrymc.network.ServerType.VANILLA; // Blueberry
-                ServerStatus serverStatus = clientboundStatusResponsePacket.getStatus();
-                if (serverStatus.getDescription() != null) {
-                   serverData.motd = serverStatus.getDescription();
-@@ -126,6 +127,19 @@ public class ServerStatusPinger {
-             connection.disconnect(new TranslatableComponent("multiplayer.status.finished"));
-          }
- 
-+         // Blueberry start
-+         @Override
-+         public void handleBlueberryHandshakeResponse(net.blueberrymc.network.client.handshake.ClientboundBlueberryHandshakePacket packet) {
-+            boolean compatible = net.blueberrymc.common.util.ListUtils.isCompatible(packet.getModInfos(), net.blueberrymc.common.Blueberry.getModManager().getModInfos());
-+            if (compatible) {
-+               serverData.serverType = net.blueberrymc.network.ServerType.BLUEBERRY_GOOD;
-+            } else {
-+               serverData.serverType = net.blueberrymc.network.ServerType.BLUEBERRY_BAD;
+@@ -76,6 +76,7 @@ public class ServerStatusPinger {
+                   connection.disconnect(new TranslatableComponent("multiplayer.status.unrequested"));
+                } else {
+                   this.receivedPing = true;
++                  serverData.serverType = net.blueberrymc.network.ServerType.VANILLA; // Blueberry
+                   ServerStatus serverStatus = clientboundStatusResponsePacket.getStatus();
+                   if (serverStatus.getDescription() != null) {
+                      serverData.motd = serverStatus.getDescription();
+@@ -142,8 +143,20 @@ public class ServerStatusPinger {
+                   ServerStatusPinger.this.onPingFailed(component, serverData);
+                   ServerStatusPinger.this.pingLegacyServer(inetSocketAddress, serverData);
+                }
 +            }
-+            serverData.modsCount = packet.getModInfos().size();
-+         }
-+         // Blueberry end
-+
-          public void onDisconnect(Component component) {
-             if (!this.success) {
-                ServerStatusPinger.LOGGER.error("Can't ping {}: {}", serverData.ip, component.getString());
+ 
++            // Blueberry start
++            @Override
++            public void handleBlueberryHandshakeResponse(net.blueberrymc.network.client.handshake.ClientboundBlueberryHandshakePacket packet) {
++               boolean compatible = net.blueberrymc.common.util.ListUtils.isCompatible(packet.getModInfos(), net.blueberrymc.common.Blueberry.getModManager().getModInfos());
++               if (compatible) {
++                  serverData.serverType = net.blueberrymc.network.ServerType.BLUEBERRY_GOOD;
++               } else {
++                  serverData.serverType = net.blueberrymc.network.ServerType.BLUEBERRY_BAD;
++               }
++               serverData.modsCount = packet.getModInfos().size();
+             }
++            // Blueberry end
+ 
+             public Connection getConnection() {
+                return connection;
 diff --git a/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java b/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
-index 4b004b01c797e34d99108a3b1a4c70b5ea96a534..b12d6c063e273229e6a5fdfb78b20742bd3c13fd 100644
+index 4b9d9613d20c182564a245e5cd828abc968f7552..95a4ac3ef29fc24347e3ba1c3bbb753a86929b77 100644
 --- a/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 @@ -69,9 +69,13 @@ public class LiquidBlockRenderer {
@@ -410,7 +416,7 @@ index ce7b7a5d049efb50acab06106446ca2191d61c49..ea9ea20456d8efd6a5bdac528d3f7c13
  
        this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
 diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-index 7db2fd49c1f0ac4d8b2233d026f5bfb0852729e7..5a818e4252f071833100a659685b36f3f3a362d6 100644
+index edccb5713177835fb5965082c7f6304e406bf7cb..4b703a14cdcf07c09048b40a3923726389da010e 100644
 --- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 +++ b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 @@ -86,6 +86,7 @@ public class ClientPackSource implements RepositorySource {
@@ -435,7 +441,7 @@ index 13602ef3920c0b2521a512ca01769568391b927a..d6958f5ad2032f9344039df13e7cf29f
  
     void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 34d213c8e30b81434d322f82ec25c1470332a6dc..6a2f1358e1aa44477222e4e6588094f0504a7930 100644
+index 4fe4d19727a6aef988cf280e98626831efe9f174..c0245f424ee52aeadf4a59aa034748a55dd042e6 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -83,6 +83,8 @@ public class Main {
@@ -456,7 +462,7 @@ index 34d213c8e30b81434d322f82ec25c1470332a6dc..6a2f1358e1aa44477222e4e6588094f0
           YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
           MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
           GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-@@ -165,6 +167,7 @@ public class Main {
+@@ -166,6 +168,7 @@ public class Main {
           final DedicatedServer dedicatedServer = MinecraftServer.spin((threadx) -> {
              // MagmaCube start - decompile error
              DedicatedServer dedicatedServerx = new DedicatedServer(threadx, registryHolder, levelStorageAccess, packRepository, serverResources, worldData2, dedicatedServerSettings, DataFixers.getDataFixer(), minecraftSessionService, gameProfileRepository, gameProfileCache, LoggerChunkProgressListener::new);
@@ -465,10 +471,10 @@ index 34d213c8e30b81434d322f82ec25c1470332a6dc..6a2f1358e1aa44477222e4e6588094f0
              dedicatedServerx.setPort(optionSet.valueOf(optionSpec12));
              dedicatedServerx.setDemo(optionSet.has(optionSpec3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3..10daa3776003c1d60220c495d169347d087d0ee2 100644
+index 5eba8e04dffbb484cea93af35bb72f271650c7a9..21515aca55e4e8b55beddf41649f7c2526b95ad9 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -259,6 +259,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -272,6 +272,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
        this.proxy = proxy;
        this.packRepository = packRepository;
        this.resources = serverResources;
@@ -476,7 +482,7 @@ index 7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3..10daa3776003c1d60220c495d169347d
        this.sessionService = minecraftSessionService;
        this.profileRepository = gameProfileRepository;
        this.profileCache = gameProfileCache;
-@@ -271,6 +272,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -288,6 +289,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
        this.structureManager = new StructureManager(serverResources.getResourceManager(), levelStorageAccess, dataFixer);
        this.serverThread = thread;
        this.executor = Util.backgroundExecutor();
@@ -484,7 +490,7 @@ index 7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3..10daa3776003c1d60220c495d169347d
     }
  
     private void readScoreboard(DimensionDataStorage dimensionDataStorage) {
-@@ -628,6 +630,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -645,6 +647,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              this.status.setDescription(new TextComponent(this.motd));
              this.status.setVersion(new ServerStatus.Version(SharedConstants.getCurrentVersion().getName(), SharedConstants.getCurrentVersion().getProtocolVersion()));
              this.updateStatusIcon(this.status);
@@ -492,7 +498,7 @@ index 7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3..10daa3776003c1d60220c495d169347d
  
              while(this.running) {
                 long l = Util.getMillis() - this.nextTickTime;
-@@ -813,6 +816,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -833,6 +836,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
        }
  
        this.profiler.pop();
@@ -505,10 +511,10 @@ index 7bbf86c1e7393ac35d7f2f1b0cec882cb20e5cf3..10daa3776003c1d60220c495d169347d
        long l2 = this.tickTimes[this.tickCount % 100] = Util.getNanos() - l;
        this.averageTickTime = this.averageTickTime * 0.8F + (float)l2 / 1000000.0F * 0.19999999F;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index f1992af0ec6be025cb3fbc405c7ef04a937f4296..c4d585cf77ee4032ffe0478599b49c1fedea6971 100644
+index 095859559fbff23b8da21ac6f7619d0cfe9fb763..d162542bd593661f36f6ffe52132d520321f22b1 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -503,6 +503,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -540,6 +540,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
     }
  
     public void stopServer() {
@@ -517,19 +523,19 @@ index f1992af0ec6be025cb3fbc405c7ef04a937f4296..c4d585cf77ee4032ffe0478599b49c1f
        Util.shutdownExecutors();
     }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 657b07d9bf231fa913fea2a739ed159cc804b8d0..0f5796a590f46ba7ac621ac97a20d4b033b3485a 100644
+index 5c49376baa1e7282a1a8ac17170da687b6fb862d..7018a36438052ffd776b3348ffccecc1b208c2a0 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -152,7 +152,7 @@ import org.apache.commons.lang3.StringUtils;
+@@ -153,7 +153,7 @@ import org.apache.commons.lang3.StringUtils;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
 -public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener {
 +public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener, net.blueberrymc.network.server.ServerBlueberryPacketListener { // Blueberry
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     private static final int LATENCY_CHECK_INTERVAL = 15000;
     public final Connection connection;
-@@ -1389,6 +1389,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1393,6 +1393,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
     }
  
     public void handleCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket) {
