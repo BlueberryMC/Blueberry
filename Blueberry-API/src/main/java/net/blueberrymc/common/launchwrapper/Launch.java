@@ -18,6 +18,7 @@ import joptsimple.OptionSpec;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LogWrapper;
 import org.apache.logging.log4j.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class Launch {
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
@@ -26,7 +27,7 @@ public class Launch {
     public static final Map<String, Object> blackboard = new HashMap<>();
     public static LaunchClassLoader classLoader;
 
-    public static void main(String[] args) {
+    public static void main(@NotNull String@NotNull[] args) {
         (new Launch()).launch(args);
     }
 

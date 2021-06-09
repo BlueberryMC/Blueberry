@@ -56,7 +56,7 @@ public class ModManager {
     public void loadPacks(@NotNull Consumer<Pack> consumer, @NotNull Pack.PackConstructor packConstructor) {
         for (BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
             try {
-                Pack pack = Pack.create(mod.getDescription().getModId(), true, () -> mod.getResourceManager().getPackResources(), packConstructor, Pack.Position.TOP, PackSource.BUILT_IN);
+                Pack pack = Pack.create(mod.getDescription().getModId(), true, () -> mod.getResourceManager().getPackResources(), packConstructor, Pack.Position.BOTTOM, PackSource.BUILT_IN);
                 if (pack != null) consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
                 break; // assume we're not finished resource manager load yet

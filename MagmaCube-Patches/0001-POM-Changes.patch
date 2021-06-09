@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1e724e343 100644
+index 65c8fedb7af037edb9b9c9afe555cae2ca529679..c68597fb7d6d59dd218c87bbc4baaf266db1fee4 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -22,7 +22,7 @@ index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>1.17-rc1</version>
+-        <version>1.17</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -31,14 +31,14 @@ index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -14,11 +16,29 @@
+@@ -14,11 +16,30 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.17-rc1</version>
++    <version>1.17</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -55,6 +55,7 @@ index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1
 +                        <index>true</index>
 +                        <manifestEntries>
 +                            <Main-Class>net.blueberrymc.client.main.ClientMain</Main-Class>
++                            <Multi-Release>true</Multi-Release>
 +                        </manifestEntries>
 +                    </archive>
 +                </configuration>
@@ -63,7 +64,7 @@ index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -39,6 +59,11 @@
+@@ -39,6 +60,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
@@ -75,7 +76,7 @@ index 3fea67fd62a4cfc34f96e89d56f9f9fa154341c0..c669f7cde717502f08a57dd7f2747da1
                              </excludes>
                          </filter>
                      </filters>
-@@ -59,6 +84,18 @@
+@@ -59,6 +85,18 @@
      </repositories>
  
      <dependencies>

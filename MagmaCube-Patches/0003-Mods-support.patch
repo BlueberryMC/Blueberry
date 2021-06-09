@@ -336,6 +336,18 @@ index 4aefd6a09cda6da701180a225c2241aadbb70608..0f5c5d0c6aaaf6c9e37a525ffc062409
  
              public Connection getConnection() {
                 return connection;
+diff --git a/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java b/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
+index cbbbc0012c12debd2a32806d19dad11ce5d98c12..6208266abdff187b9f2ac1bbbc9e39f184e9a6c9 100644
+--- a/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
++++ b/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
+@@ -102,5 +102,6 @@ public class BlockRenderDispatcher implements ResourceManagerReloadListener {
+ 
+    public void onResourceManagerReload(ResourceManager resourceManager) {
+       this.liquidBlockRenderer.setupSprites();
++      net.blueberrymc.client.world.level.fluid.FluidSpriteManager.setupSprites(); // Blueberry
+    }
+ }
+\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java b/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 index 4b9d9613d20c182564a245e5cd828abc968f7552..95a4ac3ef29fc24347e3ba1c3bbb753a86929b77 100644
 --- a/src/main/java/net/minecraft/client/renderer/block/LiquidBlockRenderer.java

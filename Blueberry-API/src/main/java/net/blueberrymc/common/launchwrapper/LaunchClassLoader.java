@@ -85,7 +85,7 @@ public class LaunchClassLoader extends URLClassLoader {
         }
     }
 
-    public void registerTransformer(String transformerClassName) {
+    public void registerTransformer(@NotNull String transformerClassName) {
         try {
             IClassTransformer transformer = (IClassTransformer) loadClass(transformerClassName).newInstance();
             transformers.add(transformer);
@@ -98,7 +98,8 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     @Override
-    public Class<?> findClass(final String name) throws ClassNotFoundException {
+    @NotNull
+    public Class<?> findClass(@NotNull final String name) throws ClassNotFoundException {
         if (invalidClasses.contains(name)) {
             throw new ClassNotFoundException(name);
         }
@@ -193,7 +194,7 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void saveTransformedClass(final byte[] data, final String transformedName) {
+    private void saveTransformedClass(@NotNull final byte@NotNull[] data, @NotNull final String transformedName) {
         if (tempFolder == null) {
             return;
         }
@@ -220,7 +221,7 @@ public class LaunchClassLoader extends URLClassLoader {
         }
     }
 
-    private String untransformName(final String name) {
+    private String untransformName(@NotNull final String name) {
         if (renameTransformer != null) {
             return renameTransformer.unmapClassName(name);
         }
@@ -228,7 +229,7 @@ public class LaunchClassLoader extends URLClassLoader {
         return name;
     }
 
-    private String transformName(final String name) {
+    private String transformName(@NotNull final String name) {
         if (renameTransformer != null) {
             return renameTransformer.remapClassName(name);
         }
@@ -236,7 +237,7 @@ public class LaunchClassLoader extends URLClassLoader {
         return name;
     }
 
-    private boolean isSealed(final String path, final Manifest manifest) {
+    private boolean isSealed(@NotNull final String path, @NotNull final Manifest manifest) {
         Attributes attributes = manifest.getAttributes(path);
         String sealed = null;
         if (attributes != null) {
@@ -252,7 +253,8 @@ public class LaunchClassLoader extends URLClassLoader {
         return "true".equalsIgnoreCase(sealed);
     }
 
-    private URLConnection findCodeSourceConnectionFor(final String name) {
+    @Nullable
+    private URLConnection findCodeSourceConnectionFor(@NotNull final String name) {
         final URL resource = findResource(name);
         if (resource != null) {
             try {
@@ -284,11 +286,12 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     @Override
-    public void addURL(final URL url) {
+    public void addURL(@NotNull final URL url) {
         super.addURL(url);
         sources.add(url);
     }
 
+    @NotNull
     public List<URL> getSources() {
         return sources;
     }
@@ -328,19 +331,21 @@ public class LaunchClassLoader extends URLClassLoader {
         return buffer;
     }
 
+    @NotNull
     public List<IClassTransformer> getTransformers() {
         return Collections.unmodifiableList(transformers);
     }
 
-    public void addClassLoaderExclusion(String toExclude) {
+    public void addClassLoaderExclusion(@NotNull String toExclude) {
         classLoaderExceptions.add(toExclude);
     }
 
-    public void addTransformerExclusion(String toExclude) {
+    public void addTransformerExclusion(@NotNull String toExclude) {
         transformerExceptions.add(toExclude);
     }
 
-    public byte[] getClassBytes(String name) throws IOException {
+    @NotNull
+    public byte@NotNull[] getClassBytes(@NotNull String name) throws IOException {
         if (negativeResourceCache.contains(name)) {
             return null;
         } else if (resourceCache.containsKey(name)) {
@@ -388,7 +393,7 @@ public class LaunchClassLoader extends URLClassLoader {
         }
     }
 
-    public void clearNegativeEntries(Set<String> entriesToClear) {
+    public void clearNegativeEntries(@NotNull Set<String> entriesToClear) {
         negativeResourceCache.removeAll(entriesToClear);
     }
 }

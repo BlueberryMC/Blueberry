@@ -69,7 +69,7 @@ public interface BlueberryUtil {
         return false;
     }
 
-    SimpleEntry<String, String> BLUEBERRY_ICON = SimpleEntry.of("blueberry",Versioning.getVersion().getFullyQualifiedVersion());
+    SimpleEntry<String, String> BLUEBERRY_ICON = SimpleEntry.of("blueberry", Versioning.getVersion().getFullyQualifiedVersion());
 
     default void updateDiscordStatus(@Nullable String details) {
         updateDiscordStatus(details, null);

@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
-import com.sun.tools.javac.Main;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
@@ -18,6 +17,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.LoggedPrintStream;
 import net.minecraft.server.MinecraftServer;
+import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +28,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.spongepowered.asm.mixin.Mixin;
 
 import javax.annotation.Nonnull;
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -92,7 +94,8 @@ public class JavaCompiler {
             args.add(dest.getAbsolutePath());
         }
         args.add(file.getAbsolutePath());
-        Main.compile(args.toArray(new String[0]), new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true));
+        PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true)));
+        ToolProvider.getSystemJavaCompiler().run(System.in, ps, ps, args.toArray(new String[0]));
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
 
