@@ -26,7 +26,7 @@ public class BlueberryEvil {
     public static byte@NotNull[] convert(@Nullable String className, @NotNull byte@NotNull [] b) {
         ClassReader cr = new ClassReader(b);
         ClassWriter cw = new ClassWriter(cr, 0);
-        cr.accept(new ClassVisitor(Opcodes.ASM8, cw) {
+        cr.accept(new ClassVisitor(Opcodes.ASM9, cw) {
             @NotNull
             @Override
             public FieldVisitor visitField(int access, @NotNull String name, @NotNull String descriptor, @Nullable String signature, @Nullable Object value) {
@@ -37,7 +37,7 @@ public class BlueberryEvil {
 
             @Override
             public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-                return new MethodVisitor(Opcodes.ASM8, super.visitMethod(access, name, descriptor, signature, exceptions)) {
+                return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
                     @Override
                     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
                         // https://bugs.openjdk.java.net/browse/JDK-8145051

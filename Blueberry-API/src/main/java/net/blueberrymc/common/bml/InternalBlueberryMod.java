@@ -293,7 +293,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                     lastScreen.set(null);
                     return;
                 } else {
-                    Blueberry.getUtil().updateDiscordStatus("Playing on third-party server", discordRpcShowServerIp.get() ? serverData.ip : null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    Blueberry.getUtil().updateDiscordStatus("Playing on 3rd-party server", discordRpcShowServerIp.get() ? serverData.ip : null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                     lastScreen.set(null);
                     return;
                 }

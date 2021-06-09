@@ -42,10 +42,10 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index fffe19cca86be5623083816352371c7f46bcd120..cecf070cbf5e2ac3a3e6099e4eaa07ab7f947e98 100644
+index 239ebaa88fbb6127019a2d13b5e487630a0dac70..475824516bf73b49686cf22407a70dc62b529059 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -472,6 +472,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -486,6 +486,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
        this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer);
        this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
        BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -54,7 +54,7 @@ index fffe19cca86be5623083816352371c7f46bcd120..cecf070cbf5e2ac3a3e6099e4eaa07ab
        this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 02fc5e7e3b475becc8a1c033156a70f6bd371f4c..755f548a2fea0d68ccf73f8b2814bc80d2261904 100644
+index 5dd946e517f4a60427b343e5e508c66932dcb156..c66869ef25646ecd424c41703bd6f753a013dc0a 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
 @@ -80,7 +80,7 @@ public class Main {
@@ -67,7 +67,7 @@ index 02fc5e7e3b475becc8a1c033156a70f6bd371f4c..755f548a2fea0d68ccf73f8b2814bc80
        String s = parseArgument(optionSet, optionSpec6);
        Proxy proxy = Proxy.NO_PROXY;
 diff --git a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
-index f879e2d45e836747aa62b85092af6f81a0fee418..8e8fd24c57edb78bad0f112d7a17d55fff7329c1 100644
+index 8f4a3327ce0e953dd5666c1fc781b9071f71924c..b53f8d0b6875dab6746bcaf18806a990f41ee892 100644
 --- a/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/BlockEntityWithoutLevelRenderer.java
 @@ -56,6 +56,7 @@ import org.apache.commons.lang3.StringUtils;
@@ -148,7 +148,7 @@ index 82a2dfad4f0547da9992ce8c04d5af9710b8ff43..7ecac52ef0f618f9fb46418e9997776d
  
           poseStack.popPose();
 diff --git a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-index a516b95224a661875d2ed13fb796e0a554fa4acf..31b60b44531a40cf131082e5a627a11b356a0cf8 100644
+index 7d9ab3bfcccb9466e4d59bebdd723a6bc33eddc9..a57ea0bd17d9e3dd5366ccc0860950dac9e44c93 100644
 --- a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 @@ -94,6 +94,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
@@ -173,7 +173,7 @@ index e771cba46855f40b9ccdee0d9669e2d10f3e6347..c1f8118b36630699ff59adbbe302dc86
        return this.title;
     }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 6a2f1358e1aa44477222e4e6588094f0504a7930..99c68ecbef28ce60bf5878de0faba17ac7054693 100644
+index c0245f424ee52aeadf4a59aa034748a55dd042e6..4aafda540a07ef42ab4603c70f491b772e6f2073 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -84,7 +84,7 @@ public class Main {
@@ -208,7 +208,7 @@ index 631631221d5f2b26635da9513564531f8cf90baf..cc57add0223b8a963495e91571e29fd0
        T create(int var1, Inventory var2);
     }
 diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
-index 248e5596da0eede0b6e32bd96819af33821315a2..bfb6477d47f3170c01b80bc3c7d91c14fe6d8051 100644
+index db99fc9f78dbaeac7caee38311f897e296fc2de2..b14a6e08d8f74e9e3d4c7a3e7f12378326f8ae98 100644
 --- a/src/main/java/net/minecraft/world/item/Item.java
 +++ b/src/main/java/net/minecraft/world/item/Item.java
 @@ -93,6 +93,7 @@ public class Item implements ItemLike {
@@ -219,7 +219,7 @@ index 248e5596da0eede0b6e32bd96819af33821315a2..bfb6477d47f3170c01b80bc3c7d91c14
     }
  
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int i) {
-@@ -372,6 +373,15 @@ public class Item implements ItemLike {
+@@ -371,6 +372,15 @@ public class Item implements ItemLike {
        return true;
     }
  
@@ -233,17 +233,17 @@ index 248e5596da0eede0b6e32bd96819af33821315a2..bfb6477d47f3170c01b80bc3c7d91c14
 +   // Blueberry end
 +
     public static class Properties {
-       private int maxStackSize = 64;
-       private int maxDamage;
-@@ -380,6 +390,7 @@ public class Item implements ItemLike {
-       private Rarity rarity = Rarity.COMMON;
-       private FoodProperties foodProperties;
-       private boolean isFireResistant;
-+      private java.util.function.Supplier<net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer> renderer; // Blueberry
+       int maxStackSize = 64;
+       int maxDamage;
+@@ -379,6 +389,7 @@ public class Item implements ItemLike {
+       Rarity rarity = Rarity.COMMON;
+       FoodProperties foodProperties;
+       boolean isFireResistant;
++      java.util.function.Supplier<net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer> renderer; // Blueberry
  
        public Item.Properties food(FoodProperties foodProperties) {
           this.foodProperties = foodProperties;
-@@ -424,5 +435,12 @@ public class Item implements ItemLike {
+@@ -423,5 +434,12 @@ public class Item implements ItemLike {
           this.isFireResistant = true;
           return this;
        }
@@ -258,7 +258,7 @@ index 248e5596da0eede0b6e32bd96819af33821315a2..bfb6477d47f3170c01b80bc3c7d91c14
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java b/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java
-index 87343e6da0effc7738019e56480aab430254ab02..23f986e14be7b14568740f83d1b7f3fbfec843c9 100644
+index 2d03555e92cb4cf9f958ff44e1f76a023d4af5cd..2058f0c3ee10930a8ac33c2fce6ba2725c8d6647 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/BlockEntityType.java
 @@ -93,6 +93,7 @@ public class BlockEntityType<T extends BlockEntity> {

@@ -8,7 +8,7 @@ import net.blueberrymc.common.bml.config.VisualConfig;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.ModDescriptionFile;
-import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.blueberrymc.common.launchwrapper.LaunchClassLoader;
 import net.minecraft.network.chat.TextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

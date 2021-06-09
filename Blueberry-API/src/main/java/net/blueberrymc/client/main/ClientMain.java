@@ -1,7 +1,7 @@
 package net.blueberrymc.client.main;
 
+import net.blueberrymc.common.launchwrapper.Launch;
 import net.minecraft.SharedConstants;
-import net.minecraft.launchwrapper.Launch;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

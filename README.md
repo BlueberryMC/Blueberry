@@ -6,6 +6,7 @@ Open-source modding API for Minecraft
 
 ## Why?
 - Faster update (since it uses mojang mapping, no need to make our mapping)
+  - it does not mean "fast update", because sometimes i don't have enough time to work on this project :(
 - Deobfuscated code (classes, fields, methods)
 
 ## Important Warning
@@ -15,6 +16,8 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 ## Known Issues
 - Cannot stop debug profiler using `/debug stop` after using `/debug start`
 - Can't join using BungeeCord/Waterfall? (needs testing)
+- `CPU: <unknown>`
+  - Does not happen on MagmaCube, so it is specific to Blueberry
 
 ## Todo
 - Apply bspatch at installer, not at runtime.

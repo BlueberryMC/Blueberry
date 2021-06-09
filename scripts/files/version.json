@@ -107,10 +107,10 @@
   },
   "assetIndex": {
     "id": "1.17",
-    "sha1": "7ccefbf653a0f407c655522dab844e29baa0cefb",
+    "sha1": "15809afbdc4489abd52a3d6c3fda0124f8f3404b",
     "size": 346007,
-    "totalSize": 344729165,
-    "url": "https://launchermeta.mojang.com/v1/packages/7ccefbf653a0f407c655522dab844e29baa0cefb/1.17.json"
+    "totalSize": 345285192,
+    "url": "https://launchermeta.mojang.com/v1/packages/15809afbdc4489abd52a3d6c3fda0124f8f3404b/1.17.json"
   },
   "assets": "1.17",
   "logging": {
@@ -125,5 +125,9 @@
       "type": "log4j2-xml"
     }
   },
+  "javaVersion": {
+    "component": "java-runtime-alpha",
+    "majorVersion": 16
+  },
   "minimumLauncherVersion": 21,
-  "type": "snapshot",
+  "type": "release",

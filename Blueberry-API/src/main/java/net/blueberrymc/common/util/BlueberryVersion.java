@@ -48,7 +48,7 @@ public class BlueberryVersion {
     @NotNull
     public String getGameVersion() {
         if (gameVersion != null) return gameVersion;
-        return gameVersion = DetectedVersion.tryDetectVersion().getName();
+        return gameVersion = DetectedVersion.tryDetectVersion().getId();
     }
 
     private String fqv = null;

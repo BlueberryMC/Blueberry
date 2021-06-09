@@ -5,7 +5,7 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index 7aff0d1f8b6e1335711de5a7c9c31481252c5d1a..7e16263868f665b6f9f1db4484c382a9e85a0b5f 100644
+index ac28e1f8c34275b8f562bb6e6213436728fed2ed..b08788a52c51f47de2945aa46a2bddb7197a93bd 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
 @@ -26,7 +26,7 @@ public class DetectedVersion implements GameVersion {
@@ -30,16 +30,16 @@ index 7aff0d1f8b6e1335711de5a7c9c31481252c5d1a..7e16263868f665b6f9f1db4484c382a9
        this.resourcePackVersion = GsonHelper.getAsInt(jsonObject2, "resource");
        this.dataPackVersion = GsonHelper.getAsInt(jsonObject2, "data");
        this.buildTime = Date.from(ZonedDateTime.parse(GsonHelper.getAsString(json, "build_time")).toInstant());
--      this.magmaCubeVersion = json.has("magmacube_version") ? GsonHelper.getAsString(json, "magmacube_version") : "debug";
-+      // this.magmaCubeVersion = json.has("magmacube_version") ? GsonHelper.getAsString(json, "magmacube_version") : "debug"; // Blueberry
+-      this.magmaCubeVersion = json.has("magmacube_version") ? GsonHelper.getAsString(json, "magmacube_version") : "debug"; // MagmaCube
++      // this.magmaCubeVersion = json.has("magmacube_version") ? GsonHelper.getAsString(json, "magmacube_version") : "debug"; // MagmaCube // Blueberry
     }
  
     public static GameVersion tryDetectVersion() {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 997a39b0768e92858fd19a938e2cc670bd2a0f68..57aa259dc751e86f036b572f5eb83297623f9a1b 100644
+index 588e70f50737d384c3106baf8bc3036f88350d48..991661394ec103cbfa72841040b7f50502fc1f16 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -691,7 +691,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -715,7 +715,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
     }
  
     public String getLaunchedVersion() {

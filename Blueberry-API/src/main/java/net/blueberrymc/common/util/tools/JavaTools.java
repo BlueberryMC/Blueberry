@@ -1,8 +1,8 @@
 package net.blueberrymc.common.util.tools;
 
-import com.sun.tools.javac.Main;
 import org.jetbrains.annotations.Nullable;
 
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -33,7 +33,7 @@ public final class JavaTools {
     public static boolean isLoaded() {
         if (UNAVAILABLE_REASON != null) return false;
         try {
-            Main.class.getClassLoader();
+            ToolProvider.class.getClassLoader();
             return true;
         } catch (NoClassDefFoundError ex) {
             return false;
@@ -46,7 +46,7 @@ public final class JavaTools {
         if (!file.exists()) return new UnsupportedOperationException("tools.jar is not available");
         try {
             URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()});
-            classLoader.loadClass("com.sun.tools.javac.Main");
+            classLoader.loadClass("javax.tools.ToolProvider");
             if (!isLoaded()) return new UnsupportedOperationException("Loaded tools.jar but could not load classes");
             return null;
         } catch (Throwable e) {

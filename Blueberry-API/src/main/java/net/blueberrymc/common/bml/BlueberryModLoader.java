@@ -205,7 +205,7 @@ public class BlueberryModLoader implements ModLoader {
             }
             if (!JavaTools.isLoaded()) {
                 LOGGER.warn(
-                        "Not compiling source code of mod {} ({}) [{}] as live compiler is unavailable ({})",
+                        "Not compiling source code of mod {} ({}) [{}] because live compiler is unavailable ({})",
                         description.getName(),
                         description.getModId(),
                         description.getVersion(),

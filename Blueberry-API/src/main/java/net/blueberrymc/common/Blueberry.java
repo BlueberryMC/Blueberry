@@ -139,7 +139,7 @@ public class Blueberry {
             BlueberryVersion version = getVersion();
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             registerInternalMod();
-            MixinBootstrap.init();
+            //MixinBootstrap.init();
             Blueberry.getModLoader().loadMods();
             LOGGER.info("Loaded " + Blueberry.getModLoader().getLoadedMods().size() + " mods");
         } catch (Throwable throwable) {
