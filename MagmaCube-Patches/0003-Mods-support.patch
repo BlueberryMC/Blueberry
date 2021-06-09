@@ -439,6 +439,20 @@ index edccb5713177835fb5965082c7f6304e406bf7cb..4b703a14cdcf07c09048b40a39237263
  
     }
  
+diff --git a/src/main/java/net/minecraft/network/PacketDecoder.java b/src/main/java/net/minecraft/network/PacketDecoder.java
+index 440668db94d7043c23c75536861294081b9b76f9..3053e83a2c95200de7951ebb5dbc4d578e7585f9 100644
+--- a/src/main/java/net/minecraft/network/PacketDecoder.java
++++ b/src/main/java/net/minecraft/network/PacketDecoder.java
+@@ -16,7 +16,8 @@ public class PacketDecoder extends ByteToMessageDecoder {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", Connection.PACKET_MARKER);
+    private final PacketFlow flow;
+-   private final boolean ignoreError = Boolean.parseBoolean(System.getProperty("magmacube.ignorePacketError", System.getenv("magmacubeIgnorePacketError"))); // MagmaCube
++   // Blueberry -> private final -> public static
++   public static boolean ignoreError = Boolean.parseBoolean(System.getProperty("magmacube.ignorePacketError", System.getenv("magmacubeIgnorePacketError"))); // MagmaCube
+ 
+    public PacketDecoder(PacketFlow packetFlow) {
+       this.flow = packetFlow;
 diff --git a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java b/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
 index 13602ef3920c0b2521a512ca01769568391b927a..d6958f5ad2032f9344039df13e7cf29f17f1438c 100644
 --- a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java

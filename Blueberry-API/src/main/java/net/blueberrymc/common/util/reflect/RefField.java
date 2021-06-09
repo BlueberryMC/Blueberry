@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 
 public class RefField<T> {
@@ -118,4 +117,15 @@ public class RefField<T> {
     @NotNull
     @Contract(pure = true)
     public Type getGenericType() { return this.field.getGenericType(); }
+
+    @NotNull
+    public <R> RefInstanceAwareField<T, R> as(@Nullable T instance) {
+        return new RefInstanceAwareField<>(this, instance);
+    }
+
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public <R> RefInstanceAwareField<T, R> asObj(@Nullable Object instance) {
+        return this.as((T) instance);
+    }
 }

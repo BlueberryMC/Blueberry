@@ -40,7 +40,11 @@ public class BlueberryText extends BaseComponent {
 
     @NotNull
     public static String getLanguageCode() {
-        return Blueberry.isServer() ? "en_us" : Minecraft.getInstance().options.languageCode;
+        Minecraft mc = Minecraft.getInstance();
+        if (Blueberry.isServer()) return "en_us";
+        //noinspection ConstantConditions // IT IS NULLABLE GOD DAMN MOJANG
+        if (mc == null) return "en_us";
+        return mc.options.languageCode;
     }
 
     @NotNull
@@ -95,12 +99,13 @@ public class BlueberryText extends BaseComponent {
         String cachePath = String.format("%s:%s:%s", this.namespace, this.path, getLanguageCode());
         if (!cache.containsKey(cachePath)) {
             String text = getProperties(getLanguageCode()).getProperty(path, getProperties("en_us").getProperty(path, path));
-            if (args != null) {
-                text = String.format(text, args.toArray());
-            }
             cache.put(cachePath, text);
         }
-        return cache.get(cachePath);
+        String text = cache.get(cachePath);
+        if (args != null) {
+            text = String.format(text, args.toArray());
+        }
+        return text;
     }
 
     @NotNull
