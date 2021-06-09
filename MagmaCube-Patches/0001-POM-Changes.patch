@@ -84,7 +84,7 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..c68597fb7d6d59dd218c87bbc4baaf26
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.11</version>
++            <version>0.0.12</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>

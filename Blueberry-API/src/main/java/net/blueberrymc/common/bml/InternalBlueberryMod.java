@@ -6,14 +6,24 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
+import net.blueberrymc.common.bml.config.ClassVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
+import net.blueberrymc.common.bml.config.CycleVisualConfig;
+import net.blueberrymc.common.bml.config.DoubleVisualConfig;
+import net.blueberrymc.common.bml.config.IntegerVisualConfig;
+import net.blueberrymc.common.bml.config.LongVisualConfig;
+import net.blueberrymc.common.bml.config.StringVisualConfig;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
+import net.blueberrymc.common.util.reflect.Ref;
+import net.blueberrymc.common.util.reflect.RefInstanceAwareField;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
+import net.blueberrymc.util.NameGetter;
 import net.blueberrymc.world.item.SimpleBlueberryItem;
 import net.blueberrymc.world.level.BlueberryLiquidBlock;
 import net.blueberrymc.world.level.material.MilkFluid;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,6 +35,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.network.PacketDecoder;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
@@ -72,6 +83,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean item3d = false;
     public static boolean discordRpc = true;
     public static AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
+    public static RefInstanceAwareField<PacketDecoder, Boolean> ignoreLargePackets = Ref.getClass(PacketDecoder.class).getField("ignoreError").as(null);
     public static boolean bungee = false; // server only
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
@@ -92,40 +104,47 @@ public class InternalBlueberryMod extends BlueberryMod {
                 this.getLogger().error("Could not save configuration", ex);
             }
         };
-        this.getVisualConfig().add(
-                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.debugRenderer.title"))
-                        .add(new BooleanVisualConfig(new TextComponent("Pathfinding Renderer"), this.getConfig().getBoolean("debugRenderer.pathfinding", false)).id("debugRenderer.pathfinding"))
-                        .add(new BooleanVisualConfig(new TextComponent("Water Debug Renderer"), this.getConfig().getBoolean("debugRenderer.waterDebug", false)).id("debugRenderer.waterDebug"))
-                        .add(new BooleanVisualConfig(new TextComponent("Chunk Border Renderer"), this.getConfig().getBoolean("debugRenderer.chunkBorder", false)).id("debugRenderer.chunkBorder"))
-                        .add(new BooleanVisualConfig(new TextComponent("Height Map Renderer"), this.getConfig().getBoolean("debugRenderer.heightMap", false)).id("debugRenderer.heightMap"))
-                        .add(new BooleanVisualConfig(new TextComponent("Collision Box Renderer"), this.getConfig().getBoolean("debugRenderer.collisionBox", false)).id("debugRenderer.collisionBox"))
-                        .add(new BooleanVisualConfig(new TextComponent("Neighbors Update Renderer"), this.getConfig().getBoolean("debugRenderer.neighborsUpdate", false)).id("debugRenderer.neighborsUpdate"))
-                        .add(new BooleanVisualConfig(new TextComponent("Structure Renderer"), this.getConfig().getBoolean("debugRenderer.structure", false)).id("debugRenderer.structure"))
-                        .add(new BooleanVisualConfig(new TextComponent("Light Debug Renderer"), this.getConfig().getBoolean("debugRenderer.lightDebug", false)).id("debugRenderer.lightDebug"))
-                        .add(new BooleanVisualConfig(new TextComponent("World Gen Attempt Renderer"), this.getConfig().getBoolean("debugRenderer.worldGenAttempt", false)).id("debugRenderer.worldGenAttempt"))
-                        .add(new BooleanVisualConfig(new TextComponent("Solid Face Renderer"), this.getConfig().getBoolean("debugRenderer.solidFace", false)).id("debugRenderer.solidFace"))
-                        .add(new BooleanVisualConfig(new TextComponent("Chunk Renderer"), this.getConfig().getBoolean("debugRenderer.chunk", false)).id("debugRenderer.chunk"))
-                        .add(new BooleanVisualConfig(new TextComponent("Brain Debug Renderer"), this.getConfig().getBoolean("debugRenderer.brainDebug", false)).id("debugRenderer.brainDebug"))
-                        .add(new BooleanVisualConfig(new TextComponent("Village Sections Debug Renderer"), this.getConfig().getBoolean("debugRenderer.villageSectionsDebug", false)).id("debugRenderer.villageSectionsDebug"))
-                        .add(new BooleanVisualConfig(new TextComponent("Bee Debug Renderer"), this.getConfig().getBoolean("debugRenderer.beeDebug", false)).id("debugRenderer.beeDebug"))
-                        .add(new BooleanVisualConfig(new TextComponent("Raid Debug Renderer"), this.getConfig().getBoolean("debugRenderer.raidDebug", false)).id("debugRenderer.raidDebug"))
-                        .add(new BooleanVisualConfig(new TextComponent("Goal Selector Renderer"), this.getConfig().getBoolean("debugRenderer.goalSelector", false)).id("debugRenderer.goalSelector"))
-                        .add(new BooleanVisualConfig(new TextComponent("Game Test Debug Renderer"), this.getConfig().getBoolean("debugRenderer.gameTestDebug", false)).id("debugRenderer.gameTestDebug"))
-        );
-        this.getVisualConfig().add(
-                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.title"))
-                //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk")).id("gamePlay.liquidMilk"))
-        );
-        this.getVisualConfig().add(
-                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
-                        .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
-                                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enabled"), this.getConfig().getBoolean("misc.discordRpc.enabled")).id("misc.discordRpc.enabled"))
-                                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp")).id("misc.discordRpc.showServerIp")))
-        );
-        this.getVisualConfig().add(
-                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.title"))
-                        .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d")).id("test.3d").description(new TextComponent("Yes!")))
-        );
+        this.getVisualConfig()
+                .add(
+                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.debugRenderer.title"))
+                                .add(new BooleanVisualConfig(new TextComponent("Pathfinding Renderer"), this.getConfig().getBoolean("debugRenderer.pathfinding", false), false).id("debugRenderer.pathfinding"))
+                                .add(new BooleanVisualConfig(new TextComponent("Water Debug Renderer"), this.getConfig().getBoolean("debugRenderer.waterDebug", false), false).id("debugRenderer.waterDebug"))
+                                .add(new BooleanVisualConfig(new TextComponent("Chunk Border Renderer"), this.getConfig().getBoolean("debugRenderer.chunkBorder", true), true).id("debugRenderer.chunkBorder"))
+                                .add(new BooleanVisualConfig(new TextComponent("Height Map Renderer"), this.getConfig().getBoolean("debugRenderer.heightMap", false), false).id("debugRenderer.heightMap"))
+                                .add(new BooleanVisualConfig(new TextComponent("Collision Box Renderer"), this.getConfig().getBoolean("debugRenderer.collisionBox", false), false).id("debugRenderer.collisionBox"))
+                                .add(new BooleanVisualConfig(new TextComponent("Neighbors Update Renderer"), this.getConfig().getBoolean("debugRenderer.neighborsUpdate", false), false).id("debugRenderer.neighborsUpdate"))
+                                .add(new BooleanVisualConfig(new TextComponent("Structure Renderer"), this.getConfig().getBoolean("debugRenderer.structure", false), false).id("debugRenderer.structure"))
+                                .add(new BooleanVisualConfig(new TextComponent("Light Debug Renderer"), this.getConfig().getBoolean("debugRenderer.lightDebug", false), false).id("debugRenderer.lightDebug"))
+                                .add(new BooleanVisualConfig(new TextComponent("World Gen Attempt Renderer"), this.getConfig().getBoolean("debugRenderer.worldGenAttempt", false), false).id("debugRenderer.worldGenAttempt"))
+                                .add(new BooleanVisualConfig(new TextComponent("Solid Face Renderer"), this.getConfig().getBoolean("debugRenderer.solidFace", false), false).id("debugRenderer.solidFace"))
+                                .add(new BooleanVisualConfig(new TextComponent("Chunk Renderer"), this.getConfig().getBoolean("debugRenderer.chunk", false), false).id("debugRenderer.chunk"))
+                                .add(new BooleanVisualConfig(new TextComponent("Brain Debug Renderer"), this.getConfig().getBoolean("debugRenderer.brainDebug", false), false).id("debugRenderer.brainDebug"))
+                                .add(new BooleanVisualConfig(new TextComponent("Village Sections Debug Renderer"), this.getConfig().getBoolean("debugRenderer.villageSectionsDebug", false), false).id("debugRenderer.villageSectionsDebug"))
+                                .add(new BooleanVisualConfig(new TextComponent("Bee Debug Renderer"), this.getConfig().getBoolean("debugRenderer.beeDebug", false), false).id("debugRenderer.beeDebug"))
+                                .add(new BooleanVisualConfig(new TextComponent("Raid Debug Renderer"), this.getConfig().getBoolean("debugRenderer.raidDebug", false), false).id("debugRenderer.raidDebug"))
+                                .add(new BooleanVisualConfig(new TextComponent("Goal Selector Renderer"), this.getConfig().getBoolean("debugRenderer.goalSelector", false), false).id("debugRenderer.goalSelector"))
+                                .add(new BooleanVisualConfig(new TextComponent("Game Test Debug Renderer"), this.getConfig().getBoolean("debugRenderer.gameTestDebug", false), false).id("debugRenderer.gameTestDebug"))
+                )
+                .add(
+                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.title"))
+                                //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk", false), false).id("gamePlay.liquidMilk"))
+                )
+                .add(
+                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
+                                .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
+                                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enabled"), this.getConfig().getBoolean("misc.discordRpc.enabled", true), true).id("misc.discordRpc.enabled").requiresRestart())
+                                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp", true), true).id("misc.discordRpc.showServerIp").requiresRestart())
+                                )
+                                .add(
+                                        new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets"), ignoreLargePackets.get(), false)
+                                                .id("misc.ignoreLargePackets")
+                                                .description(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets.tooltip"))
+                                )
+                )
+                .add(
+                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.title"))
+                                .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d"), false).id("test.3d").description(new TextComponent("Yes!")))
+                );
         registerVisualConfigTest();
         reload();
         Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
@@ -174,13 +193,22 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     private void registerVisualConfigTest() {
-        CompoundVisualConfig config = new CompoundVisualConfig(new BlueberryText("blueberry", "gui.screens.mod_config.test.description"));
+        CompoundVisualConfig config = new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.description"));
         config.add(
-                new CompoundVisualConfig(new BlueberryText("blueberry", "gui.screens.mod_config.test.nest1"))
-                        .add(new CompoundVisualConfig(new BlueberryText("blueberry", "gui.screens.mod_config.test.nest2")))
+                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.nest1"))
+                        .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.nest2")))
         );
         config.add(
-                new BooleanVisualConfig(new BlueberryText("blueberry", "gui.screens.mod_config.test.boolean"))
+                new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.types"))
+                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.boolean")))
+                        .add(new IntegerVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.integer_with_default"), -500, -500, -1, 10000000))
+                        .add(new IntegerVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.integer"), -10000, 10000))
+                        .add(new LongVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.long"), Long.MIN_VALUE, Long.MAX_VALUE))
+                        .add(new DoubleVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.double"), -1000.1, 9999.9))
+                        .add(new StringVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.string"), null, "I am string"))
+                        .add(new StringVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.validated_string"), "I am invalid string :(", "I am validated string").pattern("I am validated[\\s_]string(!)?"))
+                        .add(new ClassVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.class_name"), null, "java.lang.Object"))
+                        .add(CycleVisualConfig.fromEnum(new BlueberryText("blueberry", "blueberry.mod.config.test.colors"), ChatColorExample.class, ChatColorExample.LIGHT_PURPLE))
         );
         getVisualConfig().add(config);
     }
@@ -234,6 +262,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         item3d = getConfig().getBoolean("test.3d", false);
         discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
         discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
+        ignoreLargePackets.set(getConfig().getBoolean("misc.ignoreLargePackets", false));
         if (Blueberry.getSide() == Side.SERVER) bungee = getConfig().getBoolean("bungeecord", false); // server only
         if (Blueberry.getSide() == Side.CLIENT) {
             DiscordRPCTaskExecutor.init(discordRpc);
@@ -245,11 +274,16 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     public void refreshDiscordStatus() {
-        if (Blueberry.getSide() == Side.CLIENT) refreshDiscordStatus(Minecraft.getInstance().screen);
+        refreshDiscordStatus(Minecraft.getInstance().screen);
     }
 
     public void refreshDiscordStatus(@Nullable Screen screen) {
-        if (Objects.equals(lastScreen.get(), screen == null ? null : screen.getClass().getCanonicalName())) return;
+        refreshDiscordStatus(screen, false);
+    }
+
+    public void refreshDiscordStatus(@Nullable Screen screen, boolean force) {
+        if (Blueberry.getSide() != Side.CLIENT) return;
+        if (!force && Objects.equals(lastScreen.get(), screen == null ? null : screen.getClass().getCanonicalName())) return;
         Minecraft minecraft = Minecraft.getInstance();
         ServerData serverData = minecraft.getCurrentServer();
         if (screen instanceof JoinMultiplayerScreen) {
@@ -298,6 +332,42 @@ public class InternalBlueberryMod extends BlueberryMod {
                     return;
                 }
             }
+        }
+    }
+
+    private enum ChatColorExample implements NameGetter {
+        BLACK(ChatFormatting.BLACK + "BLACK"),
+        DARK_BLUE(ChatFormatting.DARK_BLUE + "DARK_BLUE"),
+        DARK_GREEN(ChatFormatting.DARK_GREEN + "DARK_GREEN"),
+        DARK_AQUA(ChatFormatting.DARK_AQUA + "DARK_AQUA"),
+        DARK_RED(ChatFormatting.DARK_RED + "DARK_RED"),
+        DARK_PURPLE(ChatFormatting.DARK_PURPLE + "DARK_PURPLE"),
+        GOLD(ChatFormatting.GOLD + "GOLD"),
+        GRAY(ChatFormatting.GRAY + "GRAY"),
+        DARK_GRAY(ChatFormatting.DARK_GRAY + "DARK_GRAY"),
+        BLUE(ChatFormatting.BLUE + "BLUE"),
+        GREEN(ChatFormatting.GREEN + "GREEN"),
+        AQUA(ChatFormatting.AQUA + "AQUA"),
+        RED(ChatFormatting.RED + "RED"),
+        LIGHT_PURPLE(ChatFormatting.LIGHT_PURPLE + "LIGHT_PURPLE"),
+        YELLOW(ChatFormatting.YELLOW + "YELLOW"),
+        WHITE(ChatFormatting.WHITE + "WHITE"),
+        OBFUSCATED(ChatFormatting.OBFUSCATED + "OBFUSCATED"),
+        BOLD(ChatFormatting.BOLD + "BOLD"),
+        STRIKETHROUGH(ChatFormatting.STRIKETHROUGH + "STRIKETHROUGH"),
+        UNDERLINE(ChatFormatting.UNDERLINE + "UNDERLINE"),
+        ITALIC(ChatFormatting.ITALIC + "ITALIC"),
+        ;
+
+        private final String name;
+
+        ChatColorExample(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public @NotNull String getName() {
+            return this.name;
         }
     }
 }

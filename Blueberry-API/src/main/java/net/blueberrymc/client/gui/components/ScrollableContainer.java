@@ -102,13 +102,8 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
 
     @Nullable
     protected final E getEntryAtPosition(double x, double y) {
-        int rowRadius = this.getRowWidth() / 6; // 2 -> 6
-        int renderRange = this.left + this.width / 2;
-        double left = renderRange - rowRadius;
-        double right = renderRange + rowRadius;
-        int height = Mth.floor(y - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
-        int entryHeight = height / this.itemHeight;
-        return x < (double) this.getScrollbarPosition() && x >= left && x <= right && entryHeight >= 0 && height >= 0 && entryHeight < this.getItemCount() ? this.children().get(entryHeight) : null;
+        for (E e : this.children()) if (e.isMouseOver(x, y)) return e;
+        return null;
     }
 
     public void updateSize(int width, int height, int top, int bottom) {
@@ -365,14 +360,19 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         return y >= (double)this.top && y <= (double)this.bottom && x >= (double)this.left && x <= (double)this.right;
     }
 
-    protected void renderList(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, float f) {
-        int i5 = this.getItemCount();
-        for(int i6 = 0; i6 < i5; ++i6) {
-            int i7 = this.getRowTop(i6);
-            int i8 = this.getRowBottom(i6);
-            if (i8 >= this.top && i7 <= this.bottom) {
-                E entry = this.getEntry(i6);
+    protected void renderList(@NotNull PoseStack poseStack, int rowLeft, int adjustedScrollAmount, int i3, int i4, float f) {
+        int itemCount = this.getItemCount();
+        int offset = 38;
+        for (int i = 0; i < itemCount; ++i) {
+            offset += 22;
+            int rowTop = this.getRowTop(i);
+            int rowBottom = this.getRowBottom(i);
+            if (rowBottom >= this.top && rowTop <= this.bottom) {
+                E entry = this.getEntry(i);
                 entry.render(poseStack, this.width, this.height, f);
+                if (entry instanceof AbstractWidget) {
+                    ((AbstractWidget) entry).y = (int) (offset - getScrollAmount());
+                }
             }
         }
 

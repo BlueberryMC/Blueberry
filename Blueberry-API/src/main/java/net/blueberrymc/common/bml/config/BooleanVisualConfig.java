@@ -5,10 +5,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class BooleanVisualConfig extends VisualConfig<Boolean> {
     public BooleanVisualConfig(@Nullable Component component) {
-        this(component, false);
+        this(component, null, null);
     }
 
-    public BooleanVisualConfig(@Nullable Component component, boolean initialValue) {
-        super(component, initialValue);
+    public BooleanVisualConfig(@Nullable Component component, @Nullable Boolean initialValue, @Nullable Boolean defaultValue) {
+        super(component, initialValue, defaultValue);
     }
 }
