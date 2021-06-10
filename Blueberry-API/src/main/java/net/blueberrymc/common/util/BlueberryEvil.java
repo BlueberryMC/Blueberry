@@ -15,15 +15,11 @@ import org.objectweb.asm.Opcodes;
 public class BlueberryEvil {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    @SuppressWarnings("NullableProblems")
-    @NotNull
-    public static byte@NotNull[] convert(@NotNull byte@NotNull [] b) {
+    public static byte@NotNull[] convert(byte@NotNull [] b) {
         return convert(null, b);
     }
 
-    @SuppressWarnings("NullableProblems")
-    @NotNull
-    public static byte@NotNull[] convert(@Nullable String className, @NotNull byte@NotNull [] b) {
+    public static byte@NotNull[] convert(@Nullable String className, byte@NotNull [] b) {
         ClassReader cr = new ClassReader(b);
         ClassWriter cw = new ClassWriter(cr, 0);
         cr.accept(new ClassVisitor(Opcodes.ASM9, cw) {

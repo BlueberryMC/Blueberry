@@ -94,9 +94,7 @@ public interface BlueberryUtil {
 
     default void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {}
 
-    @SuppressWarnings("NullableProblems")
-    @NotNull // hmm... AnnotationTest fails without this
-    default byte@NotNull[] processClass(@NotNull String path, @NotNull byte@NotNull[] b) {
+    default byte@NotNull[] processClass(@NotNull String path, byte@NotNull[] b) {
         try {
             b = BlueberryEvil.convert(b);
         } catch (Throwable ex) {
