@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 65c8fedb7af037edb9b9c9afe555cae2ca529679..c68597fb7d6d59dd218c87bbc4baaf266db1fee4 100644
+index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93b29eef99 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -84,7 +84,7 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..c68597fb7d6d59dd218c87bbc4baaf26
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.12</version>
++            <version>0.0.13</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>

@@ -1,4 +1,4 @@
-package net.blueberrymc.common.launchwrapper;
+package net.minecraft.launchwrapper;
 
 import java.io.*;
 import java.net.JarURLConnection;
@@ -15,9 +15,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import net.minecraft.launchwrapper.IClassNameTransformer;
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.LogWrapper;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;

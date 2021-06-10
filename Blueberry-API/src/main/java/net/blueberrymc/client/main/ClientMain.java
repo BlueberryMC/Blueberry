@@ -1,6 +1,6 @@
 package net.blueberrymc.client.main;
 
-import net.blueberrymc.common.launchwrapper.Launch;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.SharedConstants;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package net.blueberrymc.common.launchwrapper;
+package net.minecraft.launchwrapper;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -15,8 +15,6 @@ import java.util.Set;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import net.minecraft.launchwrapper.ITweaker;
-import net.minecraft.launchwrapper.LogWrapper;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +70,7 @@ public class Launch {
                     allTweakerNames.add(tweakName);
                     LogWrapper.log(Level.INFO, "Loading tweak class name %s", tweakName);
                     classLoader.addClassLoaderExclusion(tweakName.substring(0, tweakName.lastIndexOf(46)));
-                    ITweaker tweaker = (ITweaker)Class.forName(tweakName, true, classLoader).newInstance();
+                    ITweaker tweaker = (ITweaker)Class.forName(tweakName, true, classLoader).getDeclaredConstructor().newInstance();
                     tweakers.add(tweaker);
                     if (primaryTweaker == null) {
                         LogWrapper.log(Level.INFO, "Using primary tweak class name %s", tweakName);
@@ -84,8 +82,7 @@ public class Launch {
             tweakers.forEach(tweaker -> {
                 LogWrapper.log(Level.INFO, "Calling tweak class %s", tweaker.getClass().getName());
                 tweaker.acceptOptions(options.valuesOf(nonOption), minecraftHome, assetsDir, profileName);
-                // TODO
-                //tweaker.injectIntoClassLoader(classLoader);
+                tweaker.injectIntoClassLoader(classLoader);
                 allTweakers.add(tweaker);
             });
 
