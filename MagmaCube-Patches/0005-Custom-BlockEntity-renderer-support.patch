@@ -42,7 +42,7 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 239ebaa88fbb6127019a2d13b5e487630a0dac70..475824516bf73b49686cf22407a70dc62b529059 100644
+index bd36a2f9b32bafd613596ca48a465e923950aca1..22bb94c2701e41749db15b52bf17eaa79ae02161 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -486,6 +486,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -79,7 +79,7 @@ index 8f4a3327ce0e953dd5666c1fc781b9071f71924c..b53f8d0b6875dab6746bcaf18806a990
     private final ChestBlockEntity trappedChest = new TrappedChestBlockEntity(BlockPos.ZERO, Blocks.TRAPPED_CHEST.defaultBlockState());
     private final EnderChestBlockEntity enderChest = new EnderChestBlockEntity(BlockPos.ZERO, Blocks.ENDER_CHEST.defaultBlockState());
 diff --git a/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java b/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-index cbbbc0012c12debd2a32806d19dad11ce5d98c12..c0e5c21da70fd7959e15c8429041bacecbe84671 100644
+index 6208266abdff187b9f2ac1bbbc9e39f184e9a6c9..3d8fa8b73db19809d19aa60a555e3b366f9a8a13 100644
 --- a/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/src/main/java/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 @@ -94,7 +94,10 @@ public class BlockRenderDispatcher implements ResourceManagerReloadListener {
@@ -95,19 +95,19 @@ index cbbbc0012c12debd2a32806d19dad11ce5d98c12..c0e5c21da70fd7959e15c8429041bace
  
        }
 diff --git a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-index afa38c8380f4d3749683497a0f113c09b2ed7690..d89135b31903098950524b65f64218398010e61d 100644
+index 157bfb2c03e2ca08abdd5975803513a1d472b251..c3ba50a3ad852bb0871755626fedd09e93446e76 100644
 --- a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
+@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.BlockEntityType;
  import net.minecraft.world.phys.HitResult;
  
 -public class BlockEntityRenderDispatcher implements ResourceManagerReloadListener {
 +public class BlockEntityRenderDispatcher implements ResourceManagerReloadListener, net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher { // Blueberry - implement MinecraftBlockEntityRenderDispatcher
     private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
-    private final BufferBuilder singleRenderBuffer = new BufferBuilder(256);
     private final Font font;
-@@ -109,4 +109,11 @@ public class BlockEntityRenderDispatcher implements ResourceManagerReloadListene
+    private final EntityModelSet entityModelSet;
+@@ -107,4 +107,11 @@ public class BlockEntityRenderDispatcher implements ResourceManagerReloadListene
        BlockEntityRendererProvider.Context context = new BlockEntityRendererProvider.Context(this, (BlockRenderDispatcher)this.blockRenderDispatcher.get(), this.entityModelSet, this.font);
        this.renderers = BlockEntityRenderers.createEntityRenderers(context);
     }
@@ -148,7 +148,7 @@ index 82a2dfad4f0547da9992ce8c04d5af9710b8ff43..7ecac52ef0f618f9fb46418e9997776d
  
           poseStack.popPose();
 diff --git a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-index 7d9ab3bfcccb9466e4d59bebdd723a6bc33eddc9..a57ea0bd17d9e3dd5366ccc0860950dac9e44c93 100644
+index f2c650ccbb517e6b0890acec0d6c6d3c22c985ab..cbe66f2c685c6ff0786ab1392b8f6e4885fda0c5 100644
 --- a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 @@ -94,6 +94,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {

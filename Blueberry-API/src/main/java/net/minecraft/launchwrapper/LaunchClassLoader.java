@@ -84,7 +84,7 @@ public class LaunchClassLoader extends URLClassLoader {
 
     public void registerTransformer(@NotNull String transformerClassName) {
         try {
-            IClassTransformer transformer = (IClassTransformer) loadClass(transformerClassName).newInstance();
+            IClassTransformer transformer = (IClassTransformer) loadClass(transformerClassName).getDeclaredConstructor().newInstance();
             transformers.add(transformer);
             if (transformer instanceof IClassNameTransformer && renameTransformer == null) {
                 renameTransformer = (IClassNameTransformer) transformer;

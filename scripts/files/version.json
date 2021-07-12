@@ -107,10 +107,10 @@
   },
   "assetIndex": {
     "id": "1.17",
-    "sha1": "15809afbdc4489abd52a3d6c3fda0124f8f3404b",
-    "size": 346007,
-    "totalSize": 345285192,
-    "url": "https://launchermeta.mojang.com/v1/packages/15809afbdc4489abd52a3d6c3fda0124f8f3404b/1.17.json"
+    "sha1": "e5af543d9b3ce1c063a97842c38e50e29f961f00",
+    "size": 345623,
+    "totalSize": 345028703,
+    "url": "https://launchermeta.mojang.com/v1/packages/e5af543d9b3ce1c063a97842c38e50e29f961f00/1.17.json"
   },
   "assets": "1.17",
   "logging": {
@@ -129,5 +129,105 @@
     "component": "java-runtime-alpha",
     "majorVersion": 16
   },
+  "libraries": [
+    {
+      "downloads": {
+        "artifact": {
+          "path": "com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar",
+          "sha1": "f378f889797edd7df8d32272c06ca80a1b6b0f58",
+          "size": 13164,
+          "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar"
+        }
+      },
+      "name": "com.mojang:text2speech:1.11.3"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar",
+          "sha1": "f378f889797edd7df8d32272c06ca80a1b6b0f58",
+          "size": 13164,
+          "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar"
+        },
+        "classifiers": {
+          "natives-linux": {
+            "path": "com/mojang/text2speech/1.11.3/text2speech-1.11.3-natives-linux.jar",
+            "sha1": "ac641755a2a841d1fca9e660194f42523ee5cfe0",
+            "size": 7833,
+            "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3-natives-linux.jar"
+          },
+          "natives-windows": {
+            "path": "com/mojang/text2speech/1.11.3/text2speech-1.11.3-natives-windows.jar",
+            "sha1": "c0b242c0091be5acbf303263c7eeeaedd70544c7",
+            "size": 81379,
+            "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3-natives-windows.jar"
+          },
+          "sources": {
+            "path": "com/mojang/text2speech/1.11.3/text2speech-1.11.3-sources.jar",
+            "sha1": "772a37dd77417571e6f119a8d306f0c14c2ee410",
+            "size": 5332,
+            "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3-sources.jar"
+          }
+        }
+      },
+      "extract": {
+        "exclude": [
+          "META-INF/"
+        ]
+      },
+      "name": "com.mojang:text2speech:1.11.3",
+      "natives": {
+        "linux": "natives-linux",
+        "windows": "natives-windows"
+      }
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0.jar",
+          "sha1": "6ef160c3133a78de015830860197602ca1c855d3",
+          "size": 40502,
+          "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0.jar"
+        },
+        "classifiers": {
+          "javadoc": {
+            "path": "ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-javadoc.jar",
+            "sha1": "fb0092f22cb4fe8e631452f577b7a238778abf2a",
+            "size": 174060,
+            "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-javadoc.jar"
+          },
+          "natives-osx": {
+            "path": "ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-natives-osx.jar",
+            "sha1": "08befab4894d55875f33c3d300f4f71e6e828f64",
+            "size": 5629,
+            "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-natives-osx.jar"
+          },
+          "sources": {
+            "path": "ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-sources.jar",
+            "sha1": "865837a198189aee737019561ece842827f24278",
+            "size": 43283,
+            "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-sources.jar"
+          }
+        }
+      },
+      "extract": {
+        "exclude": [
+          "META-INF/"
+        ]
+      },
+      "name": "ca.weblite:java-objc-bridge:1.0.0",
+      "natives": {
+        "osx": "natives-osx"
+      },
+      "rules": [
+        {
+          "action": "allow",
+          "os": {
+            "name": "osx"
+          }
+        }
+      ]
+    }
+  ],
   "minimumLauncherVersion": 21,
   "type": "release",

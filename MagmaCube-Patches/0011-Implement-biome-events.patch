@@ -5,7 +5,7 @@ Subject: [PATCH] Implement biome events
 
 
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index cf4e0e4c6dd40e027e214d139978d7e5928b7929..b39db029172407a5d10ad13921e72fb0c40dea0d 100644
+index 78fa449992f772d8060c93099083a5aba723e32a..dcbafc4e3e4eeb235d031d646d43df037e88b95e 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
 @@ -397,7 +397,8 @@ public final class Biome {
@@ -19,16 +19,16 @@ index cf4e0e4c6dd40e027e214d139978d7e5928b7929..b39db029172407a5d10ad13921e72fb0
              throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
           }
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index fd60744ca7c6ccade77812f0182a438653836ea9..df659ee4f9930ecdeadb33dab56c95f8fc361df8 100644
+index 4ad09089d83f54eaf9d6fa2007e4ebefb6d4d157..fe9afb8ad0a6bef4f074887a8b20a336a8829cda 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 @@ -123,7 +123,8 @@ public class BiomeGenerationSettings {
        }
  
        public BiomeGenerationSettings build() {
--         return new BiomeGenerationSettings((Supplier)this.surfaceBuilder.orElseThrow(() -> new IllegalStateException("Missing surface builder")), (Map)this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ImmutableList.copyOf((Collection)entry.getValue()))), (List)this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()), ImmutableList.copyOf(this.structureStarts));
+-         return new BiomeGenerationSettings(this.surfaceBuilder.orElseThrow(() -> new IllegalStateException("Missing surface builder")), (Map)this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ImmutableList.copyOf(entry.getValue()))), this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()), ImmutableList.copyOf(this.structureStarts));
 +         // Blueberry - call BiomeGenerationSettingsInitEvent
-+         return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeGenerationSettingsInitEvent(this, () -> new BiomeGenerationSettings((Supplier)this.surfaceBuilder.orElseThrow(() -> new IllegalStateException("Missing surface builder")), (Map)this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ImmutableList.copyOf((Collection)entry.getValue()))), (List)this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()), ImmutableList.copyOf(this.structureStarts)))).getBiomeGenerationSettings().get();
++         return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeGenerationSettingsInitEvent(this, () -> new BiomeGenerationSettings(this.surfaceBuilder.orElseThrow(() -> new IllegalStateException("Missing surface builder")), (Map)this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ImmutableList.copyOf(entry.getValue()))), this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()), ImmutableList.copyOf(this.structureStarts)))).getBiomeGenerationSettings().get();
        }
     }
  }
