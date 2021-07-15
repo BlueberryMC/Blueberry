@@ -145,10 +145,6 @@ public class RefClass<T> {
 
     @NotNull
     public T newInstance() {
-        try {
-            return this.clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return this.getDeclaredConstructor().newInstance();
     }
 }

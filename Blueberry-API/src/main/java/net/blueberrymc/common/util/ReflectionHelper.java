@@ -210,10 +210,6 @@ public final class ReflectionHelper {
         }
     }
 
-    public static boolean isValidPackage(@NotNull("packageName") String packageName) {
-        return Package.getPackage(packageName) != null;
-    }
-
     @NotNull
     public static Class<?> getCallerClass() { return getCallerClass(3); } // 2 + this method
 

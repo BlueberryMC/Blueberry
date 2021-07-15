@@ -82,8 +82,8 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean liquidMilk = false;
     public static boolean item3d = false;
     public static boolean discordRpc = true;
-    public static AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
-    public static RefInstanceAwareField<PacketDecoder, Boolean> ignoreLargePackets = Ref.getClass(PacketDecoder.class).getField("ignoreError").as(null);
+    public static final AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
+    public static final RefInstanceAwareField<PacketDecoder, Boolean> ignoreLargePackets = Ref.getClass(PacketDecoder.class).getField("ignoreError").as(null);
     public static boolean bungee = false; // server only
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
@@ -126,8 +126,8 @@ public class InternalBlueberryMod extends BlueberryMod {
                                 .add(new BooleanVisualConfig(new TextComponent("Game Test Debug Renderer"), this.getConfig().getBoolean("debugRenderer.gameTestDebug", false), false).id("debugRenderer.gameTestDebug"))
                 )
                 .add(
-                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.title"))
-                                //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.gamePlay.liquidMilk"), this.getConfig().getBoolean("gamePlay.liquidMilk", false), false).id("gamePlay.liquidMilk"))
+                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.game_play.title"))
+                                //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.game_play.liquid_milk"), this.getConfig().getBoolean("gamePlay.liquidMilk", false), false).id("gamePlay.liquidMilk"))
                 )
                 .add(
                         new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
@@ -136,7 +136,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                                         .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp", true), true).id("misc.discordRpc.showServerIp").requiresRestart())
                                 )
                                 .add(
-                                        new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets"), ignoreLargePackets.get(), false)
+                                        new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets"), this.getConfig().getBoolean("misc.ignoreLargePackets", false), false)
                                                 .id("misc.ignoreLargePackets")
                                                 .description(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets.tooltip"))
                                 )
@@ -274,6 +274,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     public void refreshDiscordStatus() {
+        if (Blueberry.getSide() != Side.CLIENT) return;
         refreshDiscordStatus(Minecraft.getInstance().screen);
     }
 

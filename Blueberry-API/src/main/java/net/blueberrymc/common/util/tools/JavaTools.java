@@ -33,8 +33,7 @@ public final class JavaTools {
     public static boolean isLoaded() {
         if (UNAVAILABLE_REASON != null) return false;
         try {
-            ToolProvider.class.getClassLoader();
-            return true;
+            return ToolProvider.getSystemJavaCompiler() != null;
         } catch (NoClassDefFoundError ex) {
             return false;
         }
@@ -42,7 +41,7 @@ public final class JavaTools {
 
     @Nullable
     private static Throwable load(File file) {
-        if (isLoaded()) return null; // it could happen, by running from an IDE.
+        if (isLoaded()) return null;
         if (!file.exists()) return new UnsupportedOperationException("tools.jar is not available");
         try {
             URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()});

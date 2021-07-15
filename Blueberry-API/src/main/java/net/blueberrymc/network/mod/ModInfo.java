@@ -35,4 +35,9 @@ public class ModInfo {
                 ", version='" + version + '\'' +
                 '}';
     }
+
+    @NotNull
+    public String getDisplayString() {
+        return modId + "@" + version;
+    }
 }

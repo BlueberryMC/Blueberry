@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSigner;
@@ -56,11 +57,13 @@ public class ModClassLoader extends URLClassLoader {
             } catch (ClassCastException ex) {
                 throw new InvalidModException("Main class '" + description.getMainClass() + "' of mod '" + description.getModId() + "' does not extend BlueberryMod");
             }
-            mod = modClass.newInstance();
-        } catch (IllegalAccessException ex) {
+            mod = modClass.getDeclaredConstructor().newInstance();
+        } catch (IllegalAccessException | NoSuchMethodException ex) {
             throw new InvalidModException("No public constructor", ex);
         } catch (InstantiationException ex) {
             throw new InvalidModException("Illegal main class type", ex);
+        } catch (InvocationTargetException ex) {
+            throw new InvalidModException("Constructor threw exception", ex.getCause());
         }
     }
 

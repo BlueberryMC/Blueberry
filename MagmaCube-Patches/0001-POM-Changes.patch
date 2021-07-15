@@ -13,16 +13,16 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93b29eef99 100644
+index 7a67810a7b28de0de7f1d7459c27c58ba6a44ab9..1d9436cf2481b7910b196d6971532a4da0869c8c 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -3,9 +3,11 @@
+@@ -3,22 +3,44 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>1.17</version>
+-        <version>1.17.1</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -31,14 +31,17 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -14,11 +16,30 @@
+     <properties>
+-        <log4j.version>2.14.1</log4j.version>
++        <log4j.version>2.11.2</log4j.version>
          <lwjgl.version>3.2.2</lwjgl.version>
++        <text2speech.version>1.11.3</text2speech.version>
      </properties>
  
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.17</version>
++    <version>1.17.1</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -64,7 +67,7 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -39,6 +60,11 @@
+@@ -39,6 +61,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
@@ -76,7 +79,13 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93
                              </excludes>
                          </filter>
                      </filters>
-@@ -59,6 +85,18 @@
+@@ -54,11 +81,23 @@
+         </repository>
+         <repository>
+             <id>indexdata</id>
+-            <url>http://maven.indexdata.com/</url>
++            <url>https://maven.indexdata.com/</url>
+         </repository>
      </repositories>
  
      <dependencies>
@@ -84,7 +93,7 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.13</version>
++            <version>0.0.14</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
@@ -95,6 +104,56 @@ index 65c8fedb7af037edb9b9c9afe555cae2ca529679..f8e5606668c32bb2b7b91d1218921e93
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
+@@ -310,6 +349,16 @@
+             <artifactId>oshi-core</artifactId>
+             <version>5.7.5</version>
+         </dependency>
++        <dependency>
++            <groupId>net.java.dev.jna</groupId>
++            <artifactId>jna</artifactId>
++            <version>5.8.0</version>
++        </dependency>
++        <dependency>
++            <groupId>net.java.dev.jna</groupId>
++            <artifactId>jna-platform</artifactId>
++            <version>5.8.0</version>
++        </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>blocklist</artifactId>
+@@ -318,7 +367,19 @@
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>text2speech</artifactId>
+-            <version>1.11.3</version>
++            <version>${text2speech.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>com.mojang</groupId>
++            <artifactId>text2speech</artifactId>
++            <version>${text2speech.version}</version>
++            <classifier>natives-linux</classifier>
++        </dependency>
++        <dependency>
++            <groupId>com.mojang</groupId>
++            <artifactId>text2speech</artifactId>
++            <version>${text2speech.version}</version>
++            <classifier>natives-windows</classifier>
+         </dependency>
+         <dependency>
+             <groupId>net.java.jutils</groupId>
+@@ -327,6 +388,11 @@
+         </dependency>
+ 
+         <!-- Logger -->
++        <dependency>
++            <groupId>commons-logging</groupId>
++            <artifactId>commons-logging</artifactId>
++            <version>1.1.3</version>
++        </dependency>
+         <dependency>
+             <groupId>org.apache.logging.log4j</groupId>
+             <artifactId>log4j-api</artifactId>
 diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
 index 030a319914b452420c253febd0457b2627a9fe0f..3912742ce8208f1c6dc30193a344d72d4ada2a48 100644
 --- a/src/main/java/net/minecraft/client/ClientBrandRetriever.java
@@ -109,10 +168,10 @@ index 030a319914b452420c253febd0457b2627a9fe0f..3912742ce8208f1c6dc30193a344d72d
     @DontObfuscate
     public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 83bd21784b8c993684510ad2911ed3b4035848e7..5eba8e04dffbb484cea93af35bb72f271650c7a9 100644
+index 9fede4ff5c691b5f98b034bb5623119eead265b4..0ecb8d096b576df46d9740dbc01504b9d347dfc1 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -940,7 +940,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -936,7 +936,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
     @DontObfuscate
     public String getServerModName() {

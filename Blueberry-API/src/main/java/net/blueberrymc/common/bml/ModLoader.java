@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public interface ModLoader {
@@ -18,6 +19,12 @@ public interface ModLoader {
      */
     @NotNull
     List<BlueberryMod> getLoadedMods();
+
+    @SuppressWarnings("unchecked")
+    @NotNull
+    default <T extends BlueberryMod> Optional<T> getModByClass(@NotNull Class<T> clazz) {
+        return (Optional<T>) getLoadedMods().stream().filter(clazz::isInstance).findFirst();
+    }
 
     @Nullable
     BlueberryMod getModById(@NotNull String modId);

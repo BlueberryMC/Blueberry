@@ -14,7 +14,7 @@ class BlueberryShutdownHookThread extends Thread {
 
     @Override
     public void run() {
-        if (executed) return; // Don't execute more than 1 times
+        if (executed) return; // Don't execute more than once
         executed = true;
         DiscordRPCTaskExecutor.shutdownNow();
     }

@@ -16,6 +16,19 @@ public class ClientMain {
         if (arguments.contains("--debug")) SharedConstants.IS_RUNNING_IN_IDE = true;
         String[] newArgs = arguments.toArray(new String[0]);
         BlueberryClientTweaker.args = newArgs;
+        preloadClasses();
         Launch.main(newArgs);
+    }
+
+    private static void preloadClasses() {
+        preloadClass("com.sun.jna.Structure");
+        preloadClass("com.sun.jna.platform.win32.WinNT$OSVERSIONINFOEX");
+        preloadClass("com.sun.jna.platform.win32.VersionHelpers");
+    }
+
+    private static void preloadClass(String clazz) {
+        try {
+            Class.forName(clazz);
+        } catch (ClassNotFoundException ignore) {}
     }
 }
