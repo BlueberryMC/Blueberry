@@ -274,6 +274,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     public void refreshDiscordStatus() {
+        if (Blueberry.getSide() != Side.CLIENT) return;
         refreshDiscordStatus(Minecraft.getInstance().screen);
     }
 
