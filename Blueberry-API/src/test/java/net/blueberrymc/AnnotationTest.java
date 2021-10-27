@@ -121,7 +121,7 @@ public class AnnotationTest {
         try (FileInputStream in = new FileInputStream(from)) {
             final ClassReader cr = new ClassReader(in);
 
-            final ClassNode node = new ClassNode();
+            final ClassNode node = new ClassNode(Opcodes.ASM9);
             cr.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
             to.put(node.name, node);

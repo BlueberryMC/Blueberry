@@ -15,8 +15,6 @@ import net.blueberrymc.common.bml.config.LongVisualConfig;
 import net.blueberrymc.common.bml.config.StringVisualConfig;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
-import net.blueberrymc.common.util.reflect.Ref;
-import net.blueberrymc.common.util.reflect.RefInstanceAwareField;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.util.NameGetter;
@@ -35,7 +33,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
-import net.minecraft.network.PacketDecoder;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
@@ -83,7 +80,6 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean item3d = false;
     public static boolean discordRpc = true;
     public static final AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
-    public static final RefInstanceAwareField<PacketDecoder, Boolean> ignoreLargePackets = Ref.getClass(PacketDecoder.class).getField("ignoreError").as(null);
     public static boolean bungee = false; // server only
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
@@ -134,11 +130,6 @@ public class InternalBlueberryMod extends BlueberryMod {
                                 .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
                                         .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enabled"), this.getConfig().getBoolean("misc.discordRpc.enabled", true), true).id("misc.discordRpc.enabled").requiresRestart())
                                         .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp", true), true).id("misc.discordRpc.showServerIp").requiresRestart())
-                                )
-                                .add(
-                                        new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets"), this.getConfig().getBoolean("misc.ignoreLargePackets", false), false)
-                                                .id("misc.ignoreLargePackets")
-                                                .description(new BlueberryText("blueberry", "blueberry.mod.config.misc.ignore_large_packets.tooltip"))
                                 )
                 )
                 .add(
@@ -262,7 +253,6 @@ public class InternalBlueberryMod extends BlueberryMod {
         item3d = getConfig().getBoolean("test.3d", false);
         discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
         discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
-        ignoreLargePackets.set(getConfig().getBoolean("misc.ignoreLargePackets", false));
         if (Blueberry.getSide() == Side.SERVER) bungee = getConfig().getBoolean("bungeecord", false); // server only
         if (Blueberry.getSide() == Side.CLIENT) {
             DiscordRPCTaskExecutor.init(discordRpc);

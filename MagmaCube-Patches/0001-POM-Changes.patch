@@ -13,16 +13,16 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 7a67810a7b28de0de7f1d7459c27c58ba6a44ab9..1d9436cf2481b7910b196d6971532a4da0869c8c 100644
+index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f44752a6e8 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -3,22 +3,44 @@
+@@ -3,32 +3,48 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
--        <groupId>xyz.acrylicstyle.minecraft</groupId>
--        <version>1.17.1</version>
+-        <groupId>net.blueberrymc.minecraft</groupId>
+-        <version>21w42a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -32,16 +32,19 @@ index 7a67810a7b28de0de7f1d7459c27c58ba6a44ab9..1d9436cf2481b7910b196d6971532a4d
      <modelVersion>4.0.0</modelVersion>
      
      <properties>
--        <log4j.version>2.14.1</log4j.version>
-+        <log4j.version>2.11.2</log4j.version>
-         <lwjgl.version>3.2.2</lwjgl.version>
++        <!-- Blueberry start -->
+         <log4j.version>2.14.1</log4j.version>
 +        <text2speech.version>1.11.3</text2speech.version>
++        <maven.compiler.source>16</maven.compiler.source>
++        <maven.compiler.target>16</maven.compiler.target>
++        <!-- Blueberry end -->
+         <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.17.1</version>
++    <version>21w42a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -49,25 +52,27 @@ index 7a67810a7b28de0de7f1d7459c27c58ba6a44ab9..1d9436cf2481b7910b196d6971532a4d
 -        <finalName>Minecraft</finalName>
          <plugins>
 +            <!-- Blueberry start -->
-+            <plugin>
-+                <groupId>org.apache.maven.plugins</groupId>
-+                <artifactId>maven-jar-plugin</artifactId>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-jar-plugin</artifactId>
+-                <version>3.1.1</version>
 +                <version>3.2.0</version>
-+                <configuration>
-+                    <archive>
+                 <configuration>
+                     <archive>
+-                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
 +                        <index>true</index>
 +                        <manifestEntries>
 +                            <Main-Class>net.blueberrymc.client.main.ClientMain</Main-Class>
 +                            <Multi-Release>true</Multi-Release>
 +                        </manifestEntries>
-+                    </archive>
-+                </configuration>
-+            </plugin>
+                     </archive>
+                 </configuration>
+             </plugin>
 +            <!-- Blueberry end -->
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -39,6 +61,11 @@
+@@ -49,6 +65,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
@@ -79,13 +84,7 @@ index 7a67810a7b28de0de7f1d7459c27c58ba6a44ab9..1d9436cf2481b7910b196d6971532a4d
                              </excludes>
                          </filter>
                      </filters>
-@@ -54,11 +81,23 @@
-         </repository>
-         <repository>
-             <id>indexdata</id>
--            <url>http://maven.indexdata.com/</url>
-+            <url>https://maven.indexdata.com/</url>
-         </repository>
+@@ -69,6 +90,30 @@
      </repositories>
  
      <dependencies>
@@ -93,90 +92,427 @@ index 7a67810a7b28de0de7f1d7459c27c58ba6a44ab9..1d9436cf2481b7910b196d6971532a4d
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
-+            <version>0.0.14</version>
++            <version>0.0.15</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>minecraftforge-api</artifactId>
 +            <version>dev-SNAPSHOT</version>
 +        </dependency>
-+        <!-- Blueberry end -->
-         <dependency>
-             <groupId>com.google.code.findbugs</groupId>
-             <artifactId>jsr305</artifactId>
-@@ -310,6 +349,16 @@
-             <artifactId>oshi-core</artifactId>
-             <version>5.7.5</version>
-         </dependency>
 +        <dependency>
 +            <groupId>net.java.dev.jna</groupId>
 +            <artifactId>jna</artifactId>
-+            <version>5.8.0</version>
++            <version>5.9.0</version>
++            <scope>provided</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.java.dev.jna</groupId>
 +            <artifactId>jna-platform</artifactId>
-+            <version>5.8.0</version>
++            <version>5.9.0</version>
++            <scope>provided</scope>
 +        </dependency>
++        <!-- Blueberry end -->
+         <dependency>
+             <groupId>com.google.code.findbugs</groupId>
+             <artifactId>jsr305</artifactId>
+@@ -78,16 +123,19 @@
+             <groupId>net.sf.jopt-simple</groupId>
+             <artifactId>jopt-simple</artifactId>
+             <version>5.0.4</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.google.code.gson</groupId>
+             <artifactId>gson</artifactId>
+-            <version>2.8.0</version>
++            <version>2.8.8</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>authlib</artifactId>
+             <version>3.1.36</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>net.minecrell</groupId>
+@@ -102,238 +150,303 @@
+         <dependency>
+             <groupId>io.netty</groupId>
+             <artifactId>netty-all</artifactId>
+-            <version>4.1.50.Final</version>
++            <version>4.1.68.Final</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.google.guava</groupId>
+             <artifactId>guava</artifactId>
+-            <version>28.2-jre</version>
++            <version>31.0.1-jre</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>datafixerupper</artifactId>
+             <version>4.0.26</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>brigadier</artifactId>
+             <version>1.0.18</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>javabridge</artifactId>
+             <version>1.2.24</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-openal</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-opengl</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-jemalloc</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-jemalloc</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-jemalloc</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-jemalloc</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-openal</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-openal</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-openal</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-opengl</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-opengl</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-opengl</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-glfw</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-glfw</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-glfw</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-glfw</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-stb</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-stb</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-stb</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-stb</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-tinyfd</artifactId>
+             <version>${lwjgl.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-tinyfd</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-tinyfd</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-macos</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.lwjgl</groupId>
+             <artifactId>lwjgl-tinyfd</artifactId>
+             <version>${lwjgl.version}</version>
+             <classifier>natives-windows</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>it.unimi.dsi</groupId>
+             <artifactId>fastutil</artifactId>
+-            <version>8.3.1</version>
++            <version>8.5.6</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.apache.commons</groupId>
+             <artifactId>commons-lang3</artifactId>
+-            <version>3.7</version>
++            <version>3.12.0</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>commons-io</groupId>
+             <artifactId>commons-io</artifactId>
+-            <version>2.6</version>
++            <version>2.11.0</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+             <artifactId>httpclient</artifactId>
+-            <version>4.5.12</version>
++            <version>4.5.13</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+             <artifactId>httpcore</artifactId>
+-            <version>4.3.2</version>
++            <version>4.4.14</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
++            <groupId>commons-codec</groupId>
++            <artifactId>commons-codec</artifactId>
++            <version>1.15</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.apache.commons</groupId>
+             <artifactId>commons-compress</artifactId>
+-            <version>1.19</version>
++            <version>1.21</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.ibm.icu</groupId>
+             <artifactId>icu4j</artifactId>
+-            <version>67.1</version>
++            <version>69.1</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.github.oshi</groupId>
+             <artifactId>oshi-core</artifactId>
+-            <version>5.7.5</version>
++            <version>5.8.2</version>
++            <scope>provided</scope>
+         </dependency>
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>blocklist</artifactId>
-@@ -318,7 +367,19 @@
+-            <version>1.0.5</version>
++            <version>1.0.6</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
++            <groupId>com.mojang</groupId>
++            <artifactId>text2speech</artifactId>
++            <!-- Blueberry start -->
++            <version>${text2speech.version}</version>
++            <scope>provided</scope>
+         </dependency>
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>text2speech</artifactId>
 -            <version>1.11.3</version>
 +            <version>${text2speech.version}</version>
-+        </dependency>
-+        <dependency>
-+            <groupId>com.mojang</groupId>
-+            <artifactId>text2speech</artifactId>
-+            <version>${text2speech.version}</version>
 +            <classifier>natives-linux</classifier>
++            <scope>provided</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>com.mojang</groupId>
 +            <artifactId>text2speech</artifactId>
 +            <version>${text2speech.version}</version>
 +            <classifier>natives-windows</classifier>
++            <scope>provided</scope>
++            <!-- Blueberry end -->
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -327,6 +388,11 @@
+@@ -342,25 +455,37 @@
          </dependency>
  
          <!-- Logger -->
++        <!-- Blueberry start -->
 +        <dependency>
 +            <groupId>commons-logging</groupId>
 +            <artifactId>commons-logging</artifactId>
-+            <version>1.1.3</version>
++            <version>1.2</version>
++            <scope>provided</scope>
 +        </dependency>
++        <!-- Blueberry end -->
          <dependency>
              <groupId>org.apache.logging.log4j</groupId>
              <artifactId>log4j-api</artifactId>
+             <version>${log4j.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.apache.logging.log4j</groupId>
+             <artifactId>log4j-core</artifactId>
+             <version>${log4j.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.apache.logging.log4j</groupId>
+             <artifactId>log4j-slf4j18-impl</artifactId>
+             <version>${log4j.version}</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>org.slf4j</groupId>
+             <artifactId>slf4j-api</artifactId>
+             <version>1.8.0-beta4</version>
++            <scope>provided</scope>
+         </dependency>
+     </dependencies>
+ </project>
 diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-index 030a319914b452420c253febd0457b2627a9fe0f..3912742ce8208f1c6dc30193a344d72d4ada2a48 100644
+index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f34f3bef7 100644
 --- a/src/main/java/net/minecraft/client/ClientBrandRetriever.java
 +++ b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
 @@ -3,7 +3,7 @@ package net.minecraft.client;
  import net.minecraft.obfuscate.DontObfuscate;
  
  public class ClientBrandRetriever {
--   public static final String VANILLA_NAME = "magmacube"; // MagmaCube > vanilla!;
-+   public static final String VANILLA_NAME = "blueberry"; // Blueberry > // MagmaCube > vanilla!;
+-    public static final String VANILLA_NAME = "magmacube"; // MagmaCube > vanilla!
++    public static final String VANILLA_NAME = "blueberry"; // Blueberry > // MagmaCube > vanilla!;
  
-    @DontObfuscate
-    public static String getClientModName() {
+     @DontObfuscate
+     public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9fede4ff5c691b5f98b034bb5623119eead265b4..0ecb8d096b576df46d9740dbc01504b9d347dfc1 100644
+index c7a7406ee1ede47720a3b5bf85ad90ebfd43bc1d..bb7c295ac4aa0104941882c8b143f4f213c412e9 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -936,7 +936,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -929,7 +929,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
-    @DontObfuscate
-    public String getServerModName() {
--      return "magmacube"; // MagmaCube > vanilla!
-+      return "blueberry"; // Blueberry > // MagmaCube > vanilla!
-    }
+     @DontObfuscate
+     public String getServerModName() {
+-        return "magmacube"; // MagmaCube > vanilla!
++        return "blueberry"; // Blueberry > // MagmaCube > vanilla!
+     }
  
-    public SystemReport fillSystemReport(SystemReport systemReport) {
+     public SystemReport fillSystemReport(SystemReport systemReport) {

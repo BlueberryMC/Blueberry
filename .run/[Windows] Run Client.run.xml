@@ -1,9 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="[Windows] Run Client" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="net.blueberrymc.client.main.ClientMain" />
     <module name="blueberry" />
-    <option name="PROGRAM_PARAMETERS" value="--version=debug --assetIndex=1.16 --versionType=debug --username=&quot;Dev&quot; --uuid=&quot;abc&quot; --accessToken=&quot;abc&quot; --assetsDir=&quot;${APPDATA}\.minecraft\assets&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="--version=debug --assetIndex=1.18 --versionType=debug --username=&quot;Dev&quot; --uuid=&quot;abc&quot; --accessToken=&quot;abc&quot; --assetsDir=&quot;${APPDATA}\.minecraft\assets&quot;" />
     <option name="VM_PARAMETERS" value="-Dlog4j2.configuration=&quot;$ProjectFileDir$/Blueberry-Client/src/main/resources/log4j2.xml&quot; -Xmx8G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M" />
     <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/work/testClient" />
     <extension name="coverage">

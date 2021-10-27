@@ -5,189 +5,189 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index d9751b9375a6a6fc111b0fb030d158e09a69a773..060b7cabaf3417dad65ab635542fd0a66f24fb8e 100644
+index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0e78337cf 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 @@ -215,9 +215,39 @@ public class ServerPlayerGameMode {
  
-    public boolean destroyBlock(BlockPos blockPos) {
-       BlockState blockState = this.level.getBlockState(blockPos);
--      if (!this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, blockPos, this.player)) {
-+      // Blueberry start
-+      boolean isSwordNoBreak = !this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, blockPos, this.player);
-+      if (this.level.getBlockEntity(blockPos) == null && !isSwordNoBreak) {
-+         this.player.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(blockPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()));
-+      }
-+      net.blueberrymc.common.event.block.PlayerBlockBreakEvent event = new net.blueberrymc.common.event.block.PlayerBlockBreakEvent(new net.blueberrymc.world.level.block.Block(level, blockPos), player);
-+      event.setCancelled(isSwordNoBreak);
-+      Block blk = blockState.getBlock();
-+      ItemStack item = this.player.getMainHandItem();
-+      if (blk != null && !event.isCancelled() && !this.isCreative() && this.player.hasCorrectToolForDrops(blk.defaultBlockState())) {
-+         event.setExp(blk.getExpDrop(blockState, level, blockPos, item));
-+      }
-+      event.callEvent();
-+      if (event.isCancelled()) {
-+         if (isSwordNoBreak) {
+     public boolean destroyBlock(BlockPos blockPos) {
+         BlockState blockState = this.level.getBlockState(blockPos);
+-        if (!this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, blockPos, this.player)) {
++        // Blueberry start
++        boolean isSwordNoBreak = !this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, blockPos, this.player);
++        if (this.level.getBlockEntity(blockPos) == null && !isSwordNoBreak) {
++            this.player.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(blockPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()));
++        }
++        net.blueberrymc.common.event.block.PlayerBlockBreakEvent event = new net.blueberrymc.common.event.block.PlayerBlockBreakEvent(new net.blueberrymc.world.level.block.Block(level, blockPos), player);
++        event.setCancelled(isSwordNoBreak);
++        Block blk = blockState.getBlock();
++        ItemStack item = this.player.getMainHandItem();
++        if (blk != null && !event.isCancelled() && !this.isCreative() && this.player.hasCorrectToolForDrops(blk.defaultBlockState())) {
++            event.setExp(blk.getExpDrop(blockState, level, blockPos, item));
++        }
++        event.callEvent();
++        if (event.isCancelled()) {
++            if (isSwordNoBreak) {
++                return false;
++            }
++            this.player.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(level, blockPos));
++            for (Direction value : Direction.values()) {
++                this.player.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(level, blockPos.relative(value)));
++            }
++            BlockEntity entity = this.level.getBlockEntity(blockPos);
++            if (entity != null) {
++                this.player.connection.send(entity.getUpdatePacket());
++            }
 +            return false;
-+         }
-+         this.player.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(level, blockPos));
-+         for (Direction value : Direction.values()) {
-+            this.player.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(level, blockPos.relative(value)));
-+         }
-+         BlockEntity entity = this.level.getBlockEntity(blockPos);
-+         if (entity != null) {
-+            this.player.connection.send(entity.getUpdatePacket());
-+         }
-+         return false;
-+      }
-+      // Blueberry end
-+      if (false && !this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, blockPos, this.player)) { // Blueberry - handled above
-          return false;
-       } else {
-+         blockState = this.level.getBlockState(blockPos); // Blueberry - update state, mods might be updated the block
-+         if (blockState.isAir()) return false; // Blueberry - a mod set block to air without cancelling
-          BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
-          Block block = blockState.getBlock();
-          if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks()) {
-@@ -226,6 +256,7 @@ public class ServerPlayerGameMode {
-          } else if (this.player.blockActionRestricted(this.level, blockPos, this.gameModeForPlayer)) {
++        }
++        // Blueberry end
++        if (false && !this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, blockPos, this.player)) { // Blueberry - handled above
              return false;
-          } else {
-+            level.captureDrops.set(new java.util.ArrayList<>()); // Blueberry
-             block.playerWillDestroy(this.level, blockPos, blockState, this.player);
-             boolean flag = this.level.removeBlock(blockPos, false);
-             if (flag) {
-@@ -233,7 +264,7 @@ public class ServerPlayerGameMode {
-             }
- 
-             if (this.isCreative()) {
--               return true;
-+               //return true; // Blueberry
+         } else {
++            blockState = this.level.getBlockState(blockPos); // Blueberry - update state, mods might be updated the block
++            if (blockState.isAir()) return false; // Blueberry - a mod set block to air without cancelling
+             BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
+             Block block = blockState.getBlock();
+             if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks()) {
+@@ -226,6 +256,7 @@ public class ServerPlayerGameMode {
+             } else if (this.player.blockActionRestricted(this.level, blockPos, this.gameModeForPlayer)) {
+                 return false;
              } else {
-                ItemStack itemStack = this.player.getMainHandItem();
-                ItemStack itemStack2 = itemStack.copy();
-@@ -243,8 +274,18 @@ public class ServerPlayerGameMode {
-                   block.playerDestroy(this.level, this.player, blockPos, blockState, blockEntity, itemStack2);
-                }
++                level.captureDrops.set(new java.util.ArrayList<>()); // Blueberry
+                 block.playerWillDestroy(this.level, blockPos, blockState, this.player);
+                 boolean flag = this.level.removeBlock(blockPos, false);
+                 if (flag) {
+@@ -233,7 +264,7 @@ public class ServerPlayerGameMode {
+                 }
  
--               return true;
-+               //return true; // Blueberry
-+            }
-+            // Blueberry start
-+            if (event.isDropItems()) {
-+               net.blueberrymc.common.event.EventFactory.handlePlayerBlockDropItemEvent(level, blockPos, blockState, this.player, level.captureDrops.get());
-+            }
-+            level.captureDrops.set(null);
-+            if (flag) {
-+               blockState.getBlock().popExperience(level, blockPos, event.getExp());
+                 if (this.isCreative()) {
+-                    return true;
++                    //return true; // Blueberry
+                 } else {
+                     ItemStack itemStack = this.player.getMainHandItem();
+                     ItemStack itemStack2 = itemStack.copy();
+@@ -243,8 +274,18 @@ public class ServerPlayerGameMode {
+                         block.playerDestroy(this.level, this.player, blockPos, blockState, blockEntity, itemStack2);
+                     }
+ 
+-                    return true;
++                    //return true; // Blueberry
++                }
++                // Blueberry start
++                if (event.isDropItems()) {
++                    net.blueberrymc.common.event.EventFactory.handlePlayerBlockDropItemEvent(level, blockPos, blockState, this.player, level.captureDrops.get());
++                }
++                level.captureDrops.set(null);
++                if (flag) {
++                    blockState.getBlock().popExperience(level, blockPos, event.getExp());
+                 }
++                return true;
++                // Blueberry end
              }
-+            return true;
-+            // Blueberry end
-          }
-       }
-    }
+         }
+     }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 67c42adf6af5ac33b0278a3c7c5413131d00f11f..6dfce4b2b6ad487e2e2feb98bf38a94faff8c361 100644
+index 3a679742eb4c7b7394a9762b585377e884224411..88f8612a5c3cf2d3c2dcb5f41359b056759d5438 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -100,6 +100,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
-    private final WorldBorder worldBorder;
-    private final BiomeManager biomeManager;
-    private final ResourceKey<Level> dimension;
-+   public final ThreadLocal<List<net.minecraft.world.entity.item.ItemEntity>> captureDrops = new ThreadLocal<>(); // Blueberry
+     private final WorldBorder worldBorder;
+     private final BiomeManager biomeManager;
+     private final ResourceKey<Level> dimension;
++    public final ThreadLocal<List<net.minecraft.world.entity.item.ItemEntity>> captureDrops = new ThreadLocal<>(); // Blueberry
  
-    protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
-       this.profiler = supplier;
+     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
+         this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 81e8f3b6b51326c3ef05c7266bd0631f97e8df6e..09a62f258746749e5b2f754323605bbbccfb87e4 100644
+index 6010d41f9e534ecf98cd03447409b823ca896f6a..79c8b1ffd52fa70e8156bf4b73664aed111a8b92 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
 @@ -314,11 +314,13 @@ public class Block extends BlockBehaviour implements ItemLike {
-       if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-          ItemEntity itemEntity = (ItemEntity)supplier.get();
-          itemEntity.setDefaultPickUpDelay();
-+         List<ItemEntity> drops = level.captureDrops.get(); if (drops != null) { drops.add(itemEntity); return; } // Blueberry
-          level.addFreshEntity(itemEntity);
-       }
-    }
+         if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+             ItemEntity itemEntity = (ItemEntity)supplier.get();
+             itemEntity.setDefaultPickUpDelay();
++            List<ItemEntity> drops = level.captureDrops.get(); if (drops != null) { drops.add(itemEntity); return; } // Blueberry
+             level.addFreshEntity(itemEntity);
+         }
+     }
  
--   protected void popExperience(ServerLevel level, BlockPos pos, int exp) {
-+   // Blueberry - PAIL protected -> public
-+   public void popExperience(ServerLevel level, BlockPos pos, int exp) {
-       if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-          ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
-       }
+-    protected void popExperience(ServerLevel level, BlockPos pos, int exp) {
++    // Blueberry - PAIL protected -> public
++    public void popExperience(ServerLevel level, BlockPos pos, int exp) {
+         if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+             ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
+         }
 @@ -475,6 +477,12 @@ public class Block extends BlockBehaviour implements ItemLike {
-       return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
-    }
+         return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
+     }
  
-+   // Blueberry start
-+   public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-+      return 0;
-+   }
-+   // Blueberry end
++    // Blueberry start
++    public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
++       return 0;
++    }
++    // Blueberry end
 +
-    public static final class BlockStatePairKey {
-       private final BlockState first;
-       private final BlockState second;
+     public static final class BlockStatePairKey {
+         private final BlockState first;
+         private final BlockState second;
 diff --git a/src/main/java/net/minecraft/world/level/block/OreBlock.java b/src/main/java/net/minecraft/world/level/block/OreBlock.java
-index 653c6d86a397d40ae76d21db989209a29fd6db05..71e715a45298f6ff3476f70842f3b58c9f4a434b 100644
+index 8725b4c26dc024512a14e007e2062397f5debfc3..da9b20f91a34270fcd96a31d3e10847377dcc970 100644
 --- a/src/main/java/net/minecraft/world/level/block/OreBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/OreBlock.java
 @@ -23,7 +23,7 @@ public class OreBlock extends Block {
  
-    public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-       super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
--      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-+      if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
-          int i = this.xpRange.sample(serverLevel.random);
-          if (i > 0) {
-             this.popExperience(serverLevel, blockPos, i);
+     public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
+         super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
+-        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
++        if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
+             int i = this.xpRange.sample(serverLevel.random);
+             if (i > 0) {
+                 this.popExperience(serverLevel, blockPos, i);
 @@ -31,4 +31,17 @@ public class OreBlock extends Block {
-       }
+         }
  
-    }
+     }
 +
-+   // Blueberry start
-+   @Override
-+   public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-+      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-+         int i = this.xpRange.sample(serverLevel.random);
-+         if (i > 0) {
-+            return i;
-+         }
-+      }
-+      return super.getExpDrop(blockState, serverLevel, blockPos, itemStack);
-+   }
-+   // Blueberry end
++    // Blueberry start
++    @Override
++    public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
++        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
++            int i = this.xpRange.sample(serverLevel.random);
++            if (i > 0) {
++                return i;
++            }
++        }
++        return super.getExpDrop(blockState, serverLevel, blockPos, itemStack);
++    }
++    // Blueberry end
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java b/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
-index d1bef15d897ad0d880c53ba31cca7ccc1aa85981..fbc79c78d93f5190b24d297b96b1557a24c3316a 100644
+index 80937715069abccca42763ea2785c0a95017847e..6b57b42f15b641ce64190a9b0471062e052139f6 100644
 --- a/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
 @@ -71,13 +71,23 @@ public class RedStoneOreBlock extends Block {
  
-    public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-       super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
--      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-+      if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
-          int i = 1 + serverLevel.random.nextInt(5);
-          this.popExperience(serverLevel, blockPos, i);
-       }
+     public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
+         super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
+-        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
++        if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
+             int i = 1 + serverLevel.random.nextInt(5);
+             this.popExperience(serverLevel, blockPos, i);
+         }
  
-    }
+     }
  
-+   // Blueberry start
-+   @Override
-+   public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-+      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-+         return 1 + serverLevel.random.nextInt(5);
-+      }
-+      return super.getExpDrop(blockState, serverLevel, blockPos, itemStack);
-+   }
-+   // Blueberry end
++    // Blueberry start
++    @Override
++    public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
++        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
++            return 1 + serverLevel.random.nextInt(5);
++        }
++        return super.getExpDrop(blockState, serverLevel, blockPos, itemStack);
++    }
++    // Blueberry end
 +
-    public void animateTick(BlockState blockState, Level level, BlockPos blockPos, Random random) {
-       if (blockState.getValue(LIT)) {
-          spawnParticles(level, blockPos);
+     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, Random random) {
+         if (blockState.getValue(LIT)) {
+             spawnParticles(level, blockPos);

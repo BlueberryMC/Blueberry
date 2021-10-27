@@ -5,7 +5,7 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index a04acf12ba50a32e97ade13ddbb85f771775a90b..a70236fb62602be2986564b709dafabbc867519b 100644
+index 0fc6b79fee397bc32bfef76211a6ce3ef013d939..3a679742eb4c7b7394a9762b585377e884224411 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -66,7 +66,7 @@ import net.minecraft.world.scores.Scoreboard;
@@ -14,6 +14,6 @@ index a04acf12ba50a32e97ade13ddbb85f771775a90b..a70236fb62602be2986564b709dafabb
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
 +public abstract class Level implements LevelAccessor, AutoCloseable, net.blueberrymc.world.level.BlueberryLevelAccessor { // Blueberry - implement BlueberryLevelAccessor
-    protected static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey.elementKey(Registry.DIMENSION_REGISTRY), ResourceKey::location);
-    public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("overworld"));
+     protected static final Logger LOGGER = LogManager.getLogger();
+     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey.elementKey(Registry.DIMENSION_REGISTRY), ResourceKey::location);
+     public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("overworld"));

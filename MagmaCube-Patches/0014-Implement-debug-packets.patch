@@ -5,7 +5,7 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index 6e910c9e2f81ca6767a20cc3ea0dff0b4f0eab42..c62fea82f84de40d37ed05ac6f4af9a3f10dfc40 100644
+index 323c53b0ed729a83047bc5c3840766b7fae78320..67ed0e28dcbc3dda016203d0fe34a458635c3489 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 @@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -17,100 +17,100 @@ index 6e910c9e2f81ca6767a20cc3ea0dff0b4f0eab42..c62fea82f84de40d37ed05ac6f4af9a3
  import net.minecraft.world.entity.ai.memory.ExpirableValue;
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 @@ -90,8 +91,18 @@ public class DebugPackets {
-    private static void sendVillageSectionsPacket(ServerLevel serverLevel, BlockPos blockPos) {
-    }
+     private static void sendVillageSectionsPacket(ServerLevel serverLevel, BlockPos blockPos) {
+     }
  
--   public static void sendPathFindingPacket(Level level, Mob mob, @Nullable Path path, float f) {
-+   // Blueberry start - implement debug packets
-+   public static void sendPathFindingPacket(Level level, Mob mob, @Nullable Path path, float pathMaxDist) {
-+      if (!(level instanceof ServerLevel) || path == null) return;
-+      FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
-+      friendlyByteBuf.writeInt(mob.getId());
-+      friendlyByteBuf.writeFloat(pathMaxDist);
-+      int before = friendlyByteBuf.readableBytes();
-+      path.writeToStream(friendlyByteBuf);
-+      if (before == friendlyByteBuf.readableBytes()) return;
-+      sendPacketToAllPlayers((ServerLevel) level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_PATHFINDING_PACKET);
-    }
-+   // Blueberry end - implement debug packets
+-    public static void sendPathFindingPacket(Level level, Mob mob, @Nullable Path path, float f) {
++    // Blueberry start - implement debug packets
++    public static void sendPathFindingPacket(Level level, Mob mob, @Nullable Path path, float pathMaxDist) {
++        if (!(level instanceof ServerLevel) || path == null) return;
++        FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
++        friendlyByteBuf.writeInt(mob.getId());
++        friendlyByteBuf.writeFloat(pathMaxDist);
++        int before = friendlyByteBuf.readableBytes();
++        path.writeToStream(friendlyByteBuf);
++        if (before == friendlyByteBuf.readableBytes()) return;
++        sendPacketToAllPlayers((ServerLevel) level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_PATHFINDING_PACKET);
+     }
++    // Blueberry end - implement debug packets
  
-    public static void sendNeighborsUpdatePacket(Level level, BlockPos blockPos) {
-    }
+     public static void sendNeighborsUpdatePacket(Level level, BlockPos blockPos) {
+     }
 @@ -99,11 +110,22 @@ public class DebugPackets {
-    public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart<?> structureStart) {
-    }
+     public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart<?> structureStart) {
+     }
  
-+   // Blueberry start - implement debug packets
-    public static void sendGoalSelector(Level level, Mob mob, GoalSelector goalSelector) {
-       if (level instanceof ServerLevel) {
--         ;
-+         FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
-+         friendlyByteBuf.writeBlockPos(mob.blockPosition());
-+         friendlyByteBuf.writeInt(mob.getId());
-+         friendlyByteBuf.writeInt(goalSelector.getAvailableGoals().size());
-+         for (WrappedGoal goal : goalSelector.getAvailableGoals()) {
-+            friendlyByteBuf.writeInt(goal.getPriority());
-+            friendlyByteBuf.writeBoolean(goal.isRunning());
-+            friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName(), 255);
-+         }
-+         sendPacketToAllPlayers((ServerLevel) level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_GOAL_SELECTOR);
-       }
-    }
-+   // Blueberry end - implement debug packets
++    // Blueberry start - implement debug packets
+     public static void sendGoalSelector(Level level, Mob mob, GoalSelector goalSelector) {
+         if (level instanceof ServerLevel) {
+-            ;
++            FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
++            friendlyByteBuf.writeBlockPos(mob.blockPosition());
++            friendlyByteBuf.writeInt(mob.getId());
++            friendlyByteBuf.writeInt(goalSelector.getAvailableGoals().size());
++            for (WrappedGoal goal : goalSelector.getAvailableGoals()) {
++                friendlyByteBuf.writeInt(goal.getPriority());
++                friendlyByteBuf.writeBoolean(goal.isRunning());
++                friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName(), 255);
++            }
++            sendPacketToAllPlayers((ServerLevel) level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_GOAL_SELECTOR);
+         }
+     }
++    // Blueberry end - implement debug packets
  
-    public static void sendRaids(ServerLevel serverLevel, Collection<Raid> collection) {
-    }
+     public static void sendRaids(ServerLevel serverLevel, Collection<Raid> collection) {
+     }
 @@ -111,8 +133,35 @@ public class DebugPackets {
-    public static void sendEntityBrain(LivingEntity livingEntity) {
-    }
+     public static void sendEntityBrain(LivingEntity livingEntity) {
+     }
  
-+   // Blueberry start - implement debug packets
-    public static void sendBeeInfo(Bee bee) {
-+      if (bee.level instanceof ServerLevel) {
-+         FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
-+         friendlyByteBuf.writeDouble(bee.getX());
-+         friendlyByteBuf.writeDouble(bee.getY());
-+         friendlyByteBuf.writeDouble(bee.getZ());
-+         friendlyByteBuf.writeUUID(bee.getUUID());
-+         friendlyByteBuf.writeInt(bee.getId());
-+         BlockPos hivePos = bee.getHivePos();
-+         friendlyByteBuf.writeBoolean(hivePos != null);
-+         if (hivePos != null) friendlyByteBuf.writeBlockPos(hivePos);
-+         BlockPos flowerPos = bee.getSavedFlowerPos();
-+         friendlyByteBuf.writeBoolean(flowerPos != null);
-+         if (flowerPos != null) friendlyByteBuf.writeBlockPos(flowerPos);
-+         friendlyByteBuf.writeInt(bee.getTravellingTicks());
-+         Path path = bee.getNavigation().getPath();
-+         friendlyByteBuf.writeBoolean(path != null);
-+         if (path != null) path.writeToStream(friendlyByteBuf);
-+         List<WrappedGoal> runningGoals = bee.getGoalSelector().getRunningGoals().collect(Collectors.toList());
-+         friendlyByteBuf.writeInt(runningGoals.size());
-+         for (WrappedGoal goal : runningGoals) friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName());
-+         List<BlockPos> blacklistedHives = bee.getBlacklistedHives();
-+         friendlyByteBuf.writeInt(blacklistedHives.size());
-+         for (BlockPos hive : blacklistedHives) friendlyByteBuf.writeBlockPos(hive);
-+         sendPacketToAllPlayers((ServerLevel) bee.level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_BEE);
-+      }
-    }
-+   // Blueberry end - implement debug packets
++    // Blueberry start - implement debug packets
+     public static void sendBeeInfo(Bee bee) {
++        if (bee.level instanceof ServerLevel) {
++            FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
++            friendlyByteBuf.writeDouble(bee.getX());
++            friendlyByteBuf.writeDouble(bee.getY());
++            friendlyByteBuf.writeDouble(bee.getZ());
++            friendlyByteBuf.writeUUID(bee.getUUID());
++            friendlyByteBuf.writeInt(bee.getId());
++            BlockPos hivePos = bee.getHivePos();
++            friendlyByteBuf.writeBoolean(hivePos != null);
++            if (hivePos != null) friendlyByteBuf.writeBlockPos(hivePos);
++            BlockPos flowerPos = bee.getSavedFlowerPos();
++            friendlyByteBuf.writeBoolean(flowerPos != null);
++            if (flowerPos != null) friendlyByteBuf.writeBlockPos(flowerPos);
++            friendlyByteBuf.writeInt(bee.getTravellingTicks());
++            Path path = bee.getNavigation().getPath();
++            friendlyByteBuf.writeBoolean(path != null);
++            if (path != null) path.writeToStream(friendlyByteBuf);
++            List<WrappedGoal> runningGoals = bee.getGoalSelector().getRunningGoals().collect(Collectors.toList());
++            friendlyByteBuf.writeInt(runningGoals.size());
++            for (WrappedGoal goal : runningGoals) friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName());
++            List<BlockPos> blacklistedHives = bee.getBlacklistedHives();
++            friendlyByteBuf.writeInt(blacklistedHives.size());
++            for (BlockPos hive : blacklistedHives) friendlyByteBuf.writeBlockPos(hive);
++            sendPacketToAllPlayers((ServerLevel) bee.level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_BEE);
++        }
+     }
++    // Blueberry end - implement debug packets
  
-    public static void sendGameEventInfo(Level level, GameEvent gameEvent, BlockPos blockPos) {
-    }
+     public static void sendGameEventInfo(Level level, GameEvent gameEvent, BlockPos blockPos) {
+     }
 diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
-index b8e5ab09575d412d001ef275f0cc7ce75eaa64e4..1fab1e59e5309e61760d1151c2c10d282524c55d 100644
+index 46916fe456d5d078f952cc5c320c98b7885d0e77..4a6a61bc4c35acf004bd64dad8becf24e4dc0b69 100644
 --- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -101,7 +101,12 @@ public class PathFinder {
  
-       Optional<Path> optional = !set3.isEmpty() ? set3.stream().map((target) -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), true)).min(Comparator.comparingInt(Path::getNodeCount)) : set.stream().map((target) -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
-       profilerFiller.pop();
--      return !optional.isPresent() ? null : (Path)optional.get();
-+      // Blueberry start - implement debug packets
-+      if (!optional.isPresent()) return null;
-+      Path path = optional.get();
-+      path.setDebug(openSet.getHeap(), set2.toArray(new Node[0]), set3);
-+      return path;
-+      // Blueberry end - implement debug packets
-    }
+         Optional<Path> optional = !set3.isEmpty() ? set3.stream().map((target) -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), true)).min(Comparator.comparingInt(Path::getNodeCount)) : set.stream().map((target) -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
+         profilerFiller.pop();
+-        return !optional.isPresent() ? null : (Path)optional.get();
++        // Blueberry start - implement debug packets
++        if (!optional.isPresent()) return null;
++        Path path = optional.get();
++        path.setDebug(openSet.getHeap(), set2.toArray(new Node[0]), set3);
++        return path;
++        // Blueberry end - implement debug packets
+     }
  
-    private float getBestH(Node node, Set<Target> set) {
+     private float getBestH(Node node, Set<Target> set) {

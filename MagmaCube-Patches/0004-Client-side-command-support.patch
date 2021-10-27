@@ -5,14 +5,14 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index 50028bfdd2a4342d3f2643275bf17298ad389fb5..22169423745c6ea9b48d9b02adf689c394b1e524 100644
+index 6abfcdf84755ac840b03ae359a3bb80fae3a5daf..ae086aba5c7eb2f2331463432fe21dbe7bc48615 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -269,6 +269,7 @@ public class LocalPlayer extends AbstractClientPlayer {
-    }
+@@ -270,6 +270,7 @@ public class LocalPlayer extends AbstractClientPlayer {
+     }
  
-    public void chat(String s) {
-+      if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.createCommandSourceStack(), s); // Blueberry
-       this.connection.send(new ServerboundChatPacket(s));
-    }
+     public void chat(String s) {
++        if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.createCommandSourceStack(), s); // Blueberry
+         this.connection.send(new ServerboundChatPacket(s));
+     }
  

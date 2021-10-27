@@ -2,6 +2,7 @@
 basedir="$(pwd -P)"
 git submodule update --init
 cd "$basedir/MagmaCube" || exit 1
+git submodule update --init
 echo "Checked out: $(git log --oneline HEAD -1)"
 echo "MagmaCube Version: $(head -2 $basedir/MagmaCube/scripts/functions.sh | tail -1 | cut -c9-)"
 $basedir/MagmaCube/scripts/init.sh || exit 1

@@ -4,8 +4,14 @@ source "$basedir/scripts/functions.sh" || exit 1
 git="git -c commit.gpgsign=false"
 apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
 datetime=$(date +%Y-%m-%dT%T%:z)
-rm -rf "$basedir/work/Installer"
-$git clone https://github.com/BlueberryMC/Installer "$basedir/work/Installer" || exit 1
+if [ ! -e "$basedir/work/Installer" ]; then
+  $git clone https://github.com/BlueberryMC/Installer "$basedir/work/Installer" || exit 1
+else
+  cd "$basedir/work/Installer" || exit 1
+  $git fetch || exit 1
+  $git checkout origin/main || exit 1
+  cd "$basedir" || exit 1
+fi
 name="$version-blueberry-$apiversion"
 res="$basedir/work/Installer/src/main/resources"
 prop="$res/profile.properties"
