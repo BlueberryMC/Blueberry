@@ -13,14 +13,8 @@ Open-source modding API for Minecraft
 **Blueberry is a very small project.**
 Whilst I try not to break API compatibility, but things could change at anytime!
 
-## Known Issues
-- Cannot stop debug profiler using `/debug stop` after using `/debug start`
-- Can't join using BungeeCord/Waterfall? (needs testing)
-- `CPU: <unknown>`
-  - Does not happen on MagmaCube, so it is specific to Blueberry
-
 ## Todo
-- Apply bspatch at installer, not at runtime.
+- ~~Apply bspatch at installer, not at runtime.~~ partially implemented
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
 
