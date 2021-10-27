@@ -5,7 +5,7 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index 323c53b0ed729a83047bc5c3840766b7fae78320..67ed0e28dcbc3dda016203d0fe34a458635c3489 100644
+index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a4c1ee0ba 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 @@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -60,12 +60,13 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..67ed0e28dcbc3dda016203d0fe34a458
  
      public static void sendRaids(ServerLevel serverLevel, Collection<Raid> collection) {
      }
-@@ -111,8 +133,35 @@ public class DebugPackets {
+@@ -111,8 +133,37 @@ public class DebugPackets {
      public static void sendEntityBrain(LivingEntity livingEntity) {
      }
  
 +    // Blueberry start - implement debug packets
      public static void sendBeeInfo(Bee bee) {
++        /*
 +        if (bee.level instanceof ServerLevel) {
 +            FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
 +            friendlyByteBuf.writeDouble(bee.getX());
@@ -91,13 +92,14 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..67ed0e28dcbc3dda016203d0fe34a458
 +            for (BlockPos hive : blacklistedHives) friendlyByteBuf.writeBlockPos(hive);
 +            sendPacketToAllPlayers((ServerLevel) bee.level, friendlyByteBuf, ClientboundCustomPayloadPacket.DEBUG_BEE);
 +        }
++        */
      }
 +    // Blueberry end - implement debug packets
  
      public static void sendGameEventInfo(Level level, GameEvent gameEvent, BlockPos blockPos) {
      }
 diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
-index 46916fe456d5d078f952cc5c320c98b7885d0e77..4a6a61bc4c35acf004bd64dad8becf24e4dc0b69 100644
+index 46916fe456d5d078f952cc5c320c98b7885d0e77..2cad48f25601edecdc965da5ed9ce32dcc331497 100644
 --- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -101,7 +101,12 @@ public class PathFinder {
@@ -106,7 +108,7 @@ index 46916fe456d5d078f952cc5c320c98b7885d0e77..4a6a61bc4c35acf004bd64dad8becf24
          profilerFiller.pop();
 -        return !optional.isPresent() ? null : (Path)optional.get();
 +        // Blueberry start - implement debug packets
-+        if (!optional.isPresent()) return null;
++        if (optional.isEmpty()) return null;
 +        Path path = optional.get();
 +        path.setDebug(openSet.getHeap(), set2.toArray(new Node[0]), set3);
 +        return path;
