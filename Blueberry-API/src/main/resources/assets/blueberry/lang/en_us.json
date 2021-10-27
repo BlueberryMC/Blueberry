@@ -6,7 +6,7 @@
   "gui.screens.mods.disable": "Disable",
   "gui.screens.mods.config": "Config",
   "gui.screens.mods.cannot_reload_tooltip": "This mod cannot be reloaded",
-  "gui.screens.mods.cannot_reload_level_tooltip": "This mod can reload only when on the title screen",
+  "gui.screens.mods.cannot_reload_level_tooltip": "This mod can only be reloaded when on the title screen",
   "gui.screens.mod_config.default": "[Default: %s]",
   "gui.screens.mod_config.number_min_max": "[Minimum: %s, Maximum: %s]",
   "gui.screens.mod_config.requires_restart": "[Requires MC restart]",
