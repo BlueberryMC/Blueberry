@@ -62,10 +62,19 @@ public class BlueberryCommand {
         double l20t = round(getLowestTPS(Arrays.stream(tickTimes).limit(20)));
         double last10t = round(getAverageTPS(Arrays.stream(tickTimes).limit(10)));
         double l10t = round(getLowestTPS(Arrays.stream(tickTimes).limit(10)));
-        source.sendSuccess(new TextComponent("Average TPS in last 100 ticks: " + last100t + " (Lowest: " + l100t + ")"), false);
-        source.sendSuccess(new TextComponent("Average TPS in last 20 ticks: " + last20t + " (Lowest: " + l20t + ")"), false);
-        source.sendSuccess(new TextComponent("Average TPS in last 10 ticks: " + last10t + " (Lowest: " + l10t + ")"), false);
+        source.sendSuccess(new TextComponent("Average TPS in last 100 ticks: ").append(new TextComponent(Double.toString(last100t)).withStyle(getTPSColor(last100t))).append(" (Lowest: ").append(new TextComponent(Double.toString(l100t)).withStyle(getTPSColor(l100t))).append(")"), false);
+        source.sendSuccess(new TextComponent("Average TPS in last 20 ticks: ").append(new TextComponent(Double.toString(last20t)).withStyle(getTPSColor(last20t))).append(" (Lowest: ").append(new TextComponent(Double.toString(l20t)).withStyle(getTPSColor(l20t))).append(")"), false);
+        source.sendSuccess(new TextComponent("Average TPS in last 10 ticks: ").append(new TextComponent(Double.toString(last10t)).withStyle(getTPSColor(last10t))).append(" (Lowest: ").append(new TextComponent(Double.toString(l10t)).withStyle(getTPSColor(l10t))).append(")"), false);
         return 1;
+    }
+
+    @NotNull
+    private static ChatFormatting getTPSColor(double tps) {
+        if (tps > 20) return ChatFormatting.AQUA;
+        if (tps > 19) return ChatFormatting.GREEN;
+        if (tps > 17.5) return ChatFormatting.YELLOW;
+        if (tps > 14) return ChatFormatting.RED;
+        return ChatFormatting.DARK_RED;
     }
 
     private static double getAverageTPS(long[] longs) {
