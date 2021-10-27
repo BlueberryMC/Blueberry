@@ -15,7 +15,7 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 
 ## ✨ Key features
 - Live Compiler (Automatically compiles the mod from .java files)
-  - Reload (You can recompile the mod in-game using "Reload" button on the mod list menu, if the mod was compiled by live compiler)
+  - Reload (You can recompile the mod in-game using "Reload" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
 
 ## 📝 Todo
 - ~~Apply bspatch at installer, not at runtime.~~ partially implemented
