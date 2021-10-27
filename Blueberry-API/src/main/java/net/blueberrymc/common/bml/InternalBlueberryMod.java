@@ -134,7 +134,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                 )
                 .add(
                         new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.title"))
-                                .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d"), false).id("test.3d").description(new TextComponent("Yes!")))
+                                .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d"), false).id("test.3d").description(new TextComponent("Yes!")).requiresRestart())
                 );
         registerVisualConfigTest();
         reload();
