@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -93,8 +94,10 @@ public class JavaCompiler {
             args.add("-d");
             args.add(dest.getAbsolutePath());
         }
+        args.add("-source");
+        args.add("16");
         args.add(file.getAbsolutePath());
-        PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true)));
+        PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true), StandardCharsets.UTF_8));
         ToolProvider.getSystemJavaCompiler().run(System.in, ps, ps, args.toArray(new String[0]));
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
