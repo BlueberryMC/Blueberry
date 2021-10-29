@@ -8,7 +8,7 @@
     <option name="MAIN_CLASS_NAME" value="net.blueberrymc.client.main.ClientMain" />
     <module name="blueberry" />
     <option name="PROGRAM_PARAMETERS" value="--debug --version=debug --assetIndex=1.18 --versionType=debug --username=&quot;Dev&quot; --userType=mojang --uuid=&quot;dev&quot; --accessToken=abc --assetsDir=&quot;${APPDATA}\.minecraft\assets&quot;" />
-    <option name="VM_PARAMETERS" value="-Dlog4j.configuration=&quot;$ProjectFileDir$/Blueberry-Client/src/main/resources/log4j2-debug.xml&quot; -Xmx8G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M" />
+    <option name="VM_PARAMETERS" value="-Xmx8G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M" />
     <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/work/testClient" />
     <extension name="coverage">
       <pattern>

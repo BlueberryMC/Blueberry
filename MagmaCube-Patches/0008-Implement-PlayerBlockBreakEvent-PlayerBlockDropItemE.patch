@@ -87,13 +87,13 @@ index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 3a679742eb4c7b7394a9762b585377e884224411..88f8612a5c3cf2d3c2dcb5f41359b056759d5438 100644
+index 88533189778ba73d04fa96a46c9fd14974e62168..b217d1f7fc1a48402fbc22d3cee90db43b06ac70 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -100,6 +100,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
-     private final WorldBorder worldBorder;
+@@ -101,6 +101,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
      private final BiomeManager biomeManager;
      private final ResourceKey<Level> dimension;
+     private long subTickCount;
 +    public final ThreadLocal<List<net.minecraft.world.entity.item.ItemEntity>> captureDrops = new ThreadLocal<>(); // Blueberry
  
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {

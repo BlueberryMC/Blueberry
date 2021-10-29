@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f44752a6e8 100644
+index dc93da6736de0aff51295a52787784044045b734..3750a366c482904c2a012fe09ddbf0cf4ed5f0c4 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,32 +3,48 @@
@@ -22,7 +22,7 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>21w42a</version>
+-        <version>21w43a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -44,7 +44,7 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w42a</version>
++    <version>21w43a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -84,7 +84,7 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
                              </excludes>
                          </filter>
                      </filters>
-@@ -69,6 +90,30 @@
+@@ -69,6 +90,29 @@
      </repositories>
  
      <dependencies>
@@ -111,11 +111,10 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
 +            <version>5.9.0</version>
 +            <scope>provided</scope>
 +        </dependency>
-+        <!-- Blueberry end -->
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
-@@ -78,16 +123,19 @@
+@@ -78,16 +122,19 @@
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
              <version>5.0.4</version>
@@ -136,7 +135,7 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -102,238 +150,303 @@
+@@ -102,238 +149,303 @@
          <dependency>
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
@@ -452,7 +451,7 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -342,25 +455,37 @@
+@@ -342,25 +454,38 @@
          </dependency>
  
          <!-- Logger -->
@@ -488,6 +487,7 @@ index 49279e9ab5465f1498196ab06fb9f59d1dd351bb..c23e186d355adce46c44e2e82cdd39f4
              <version>1.8.0-beta4</version>
 +            <scope>provided</scope>
          </dependency>
++        <!-- Blueberry end -->
      </dependencies>
  </project>
 diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
@@ -504,10 +504,10 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index c7a7406ee1ede47720a3b5bf85ad90ebfd43bc1d..bb7c295ac4aa0104941882c8b143f4f213c412e9 100644
+index f49aaec1067962af76d43824c0d56042fe0d4e96..4088692e4fa600bdc9aeca8b3f65ec9325024260 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -929,7 +929,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -910,7 +910,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

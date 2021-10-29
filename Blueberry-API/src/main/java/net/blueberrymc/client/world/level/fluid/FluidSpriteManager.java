@@ -22,14 +22,14 @@ public class FluidSpriteManager {
     private static final TextureAtlasSprite[] waterIcons = new TextureAtlasSprite[2];
     private static final Map<Fluid, Material> map = new HashMap<>();
 
-    public static void add(@NotNull("fluid") Fluid fluid, @NotNull String namespace, @NotNull String path) {
+    public static void add(@NotNull Fluid fluid, @NotNull String namespace, @NotNull String path) {
         ResourceLocation resourceLocation = new ResourceLocation(namespace, path);
         Material material = new Material(InventoryMenu.BLOCK_ATLAS, resourceLocation); // TextureAtlas.LOCATION_BLOCKS
         map.put(fluid, material);
     }
 
     @Nullable
-    public static Material get(@NotNull("fluid") Fluid fluid) {
+    public static Material get(@NotNull Fluid fluid) {
         return map.get(fluid);
     }
 

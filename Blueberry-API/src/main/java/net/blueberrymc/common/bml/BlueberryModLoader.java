@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
@@ -19,6 +20,7 @@ import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.config.yaml.YamlConfiguration;
 import net.blueberrymc.server.packs.resources.BlueberryResourceProvider;
+import net.blueberrymc.util.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -90,6 +92,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void loadMods() {
         LOGGER.info("Looking for mods in " + this.getModsDir().getAbsolutePath());
+        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Looking for mods in " + this.getModsDir().getAbsolutePath()));
         Deque<File> toLoad = new ConcurrentLinkedDeque<>();
         int dirCount = 0;
         int fileCount = 0;
@@ -132,7 +135,10 @@ public class BlueberryModLoader implements ModLoader {
                 }
             }
         }
-        LOGGER.info("Found " + toLoad.size() + " files to load (files: {}, directories: {})", fileCount, dirCount);
+        LOGGER.info("Found {} files to load (files: {}, directories: {})", toLoad.size(), fileCount, dirCount);
+        int finalFileCount = fileCount;
+        int finalDirCount = dirCount;
+        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Found " + toLoad.size() + " files to load (files: " + finalFileCount + ", directories: " + finalDirCount + ")"));
         Map<String, File> fromSource = new HashMap<>();
         List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {
@@ -144,11 +150,13 @@ public class BlueberryModLoader implements ModLoader {
                     toLoad.add(entry.getValue());
                 }
             } catch (ModDescriptionNotFoundException ex) {
-                LOGGER.info("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
+                LOGGER.warn("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
                 toAdd.add(file);
             } catch (Throwable throwable) {
                 LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
                 ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
+                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Error during preprocessing " + file.getName() + " (loaded from: " + file.getAbsolutePath() + ")"));
+                toLoad.remove(file);
             }
         });
         toAdd.forEach(file -> {
@@ -168,6 +176,7 @@ public class BlueberryModLoader implements ModLoader {
                     String message = "Required dependency \"" + depend + "\" is missing";
                     LOGGER.error(modId + ": " + message);
                     ModLoadingErrors.add(new ModLoadingError(entry.getKey(), new UnknownModDependencyException(message), false));
+                    Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError(modId + ": " + message));
                     continue;
                 }
                 if (!entry.getKey().getDepends().contains(dependDesc.getKey().getModId())) continue;
@@ -175,10 +184,13 @@ public class BlueberryModLoader implements ModLoader {
                 circularDependency.add(modId);
                 toLoad.remove(entry.getValue());
                 ModLoadingErrors.add(new ModLoadingError(entry.getKey(), new InvalidModException("Circular dependency detected with " + depend), false));
+                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Circular dependency detected with " + depend));
             }
         });
         if (!circularDependency.isEmpty()) {
-            LOGGER.error("Following mods has circular dependency, cannot load: {}", ListUtils.join(circularDependency, ", "));
+            String deps = ListUtils.join(circularDependency, ", ");
+            LOGGER.error("Following mods has circular dependency, cannot load: {}", deps);
+            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Following mods has circular dependency, cannot load: " + deps));
         }
         toLoad.forEach(file -> {
             try {
@@ -188,8 +200,10 @@ public class BlueberryModLoader implements ModLoader {
                     mod.sourceDir = fromSource.get(mod.getModId());
                 }
             } catch (InvalidModException ex) {
-                LOGGER.error("Could not load a mod: " + ex);
-                ModLoadingErrors.add(new ModLoadingError(filePath2descriptionMap.get(file.getAbsolutePath()).getKey(), "Could not load a mod: " + ex.getMessage(), false));
+                ModDescriptionFile desc = filePath2descriptionMap.get(file.getAbsolutePath()).getKey();
+                LOGGER.error("Could not load a mod (" + desc.getModId() + "): " + ex);
+                ModLoadingErrors.add(new ModLoadingError(desc, "Could not load a mod: " + ex.getMessage(), false));
+                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Could not load a mod (" + desc.getModId() + "): " + ex.getMessage()));
             }
         });
     }
@@ -212,9 +226,11 @@ public class BlueberryModLoader implements ModLoader {
                         JavaTools.UNAVAILABLE_REASON.getMessage()
                 );
                 ModLoadingErrors.add(new ModLoadingError(description, "Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage(), true));
+                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logWarning("Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage()));
                 return new AbstractMap.SimpleImmutableEntry<>(description, null);
             }
             LOGGER.info("Compiling the source code of mod {} ({}) [{}]", description.getName(), description.getModId(), description.getVersion());
+            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader(String.format("Compiling the source code of mod %s (%s) [%s]", description.getName(), description.getModId(), description.getVersion())));
             File src = description.getSourceDir() != null ? new File(description.getSourceDir()) : file;
             if (!src.exists() || !src.isDirectory()) {
                 src = new File(file, description.getSourceDir());
@@ -223,23 +239,38 @@ public class BlueberryModLoader implements ModLoader {
                     src = file;
                 }
             }
-            File compiled = JavaCompiler.compileAll(src);
-            if (description.getInclude() != null) {
-                File include = new File(description.getInclude());
-                if (!include.exists() || !src.isDirectory()) {
-                    include = new File(file, description.getInclude());
+            File finalSrc = src;
+            try {
+                File compiled = Util.waitUntilReturns("Blueberry Compiler Boss Thread", true, () -> {
+                    try {
+                        return JavaCompiler.compileAll(finalSrc);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                if (description.getInclude() != null) {
+                    File include = new File(description.getInclude());
                     if (!include.exists() || !src.isDirectory()) {
-                        LOGGER.warn("Include dir does not exist or not a directory, skipping");
+                        include = new File(file, description.getInclude());
+                        if (!include.exists() || !src.isDirectory()) {
+                            LOGGER.warn("Include dir does not exist or not a directory, skipping");
+                            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logWarning("Include directory is missing or not a directory"));
+                        }
+                    }
+                    if (include.exists()) {
+                        FileUtil.copy(include, compiled);
                     }
                 }
-                if (include.exists()) {
-                    FileUtil.copy(include, compiled);
-                }
+                LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
+                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModCompiler("Successfully compiled the source of mod " + description.getName() + " (" + description.getModId() + ")"));
+                filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                return new AbstractMap.SimpleImmutableEntry<>(description, compiled);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Failed to compile the source code of mod {} ({})", description.getName(), description.getModId());
+                ModLoadingErrors.add(new ModLoadingError(description, "Failed to compile the source code", false));
+                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Failed to compile the source code of mod " + description.getName() + " (" + description.getModId() + ")"));
             }
-            LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
-            filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
-            descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
-            return new AbstractMap.SimpleImmutableEntry<>(description, compiled);
         }
         return new AbstractMap.SimpleImmutableEntry<>(description, null);
     }
@@ -302,6 +333,7 @@ public class BlueberryModLoader implements ModLoader {
         }
         try {
             LOGGER.info("Loading mod {} ({}) version {}", description.getName(), description.getModId(), description.getVersion());
+            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader(String.format("Loading mod %s (%s) version %s", description.getName(), description.getModId(), description.getVersion())));
             ModClassLoader modClassLoader = new ModClassLoader(this, this.getClass().getClassLoader(), description, file);
             loaders.add(modClassLoader);
             BlueberryMod mod = modClassLoader.mod;
@@ -312,6 +344,7 @@ public class BlueberryModLoader implements ModLoader {
                 mod.sourceDir = sourceDir;
             }
             LOGGER.info("Loaded mod {} ({}) version {}", description.getName(), description.getModId(), description.getVersion());
+            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader(String.format("Loaded mod %s (%s) version %s", description.getName(), description.getModId(), description.getVersion())));
             return mod;
         } catch (IOException ex) {
             throw new InvalidModException(ex);
@@ -478,7 +511,9 @@ public class BlueberryModLoader implements ModLoader {
             mod = modClassLoader.mod;
         } else {
             try {
-                mod = clazz.getDeclaredConstructor(BlueberryModLoader.class, ModDescriptionFile.class, ClassLoader.class, File.class).newInstance(this, description, this.getClass().getClassLoader(), file);
+                mod = clazz
+                        .getDeclaredConstructor(BlueberryModLoader.class, ModDescriptionFile.class, ClassLoader.class, File.class)
+                        .newInstance(this, description, this.getClass().getClassLoader(), file);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 throw new InvalidModException(e);
             }
@@ -513,6 +548,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void callPreInit() {
         LOGGER.info("Entered Pre-init phase");
+        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("# Pre-init"));
         getActiveMods().forEach(mod -> {
             try {
                 mod.getStateList().add(ModState.PRE_INIT);
@@ -528,6 +564,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void callInit() {
         LOGGER.info("Entered Init phase");
+        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("# Init"));
         getActiveMods().forEach(mod -> {
             try {
                 mod.getStateList().add(ModState.INIT);
@@ -542,6 +579,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void callPostInit() {
         LOGGER.info("Entered Post-init phase");
+        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("# Post-init"));
         getActiveMods().forEach(mod -> {
             if (mod.getStateList().contains(ModState.AVAILABLE)) return;
             try {
@@ -562,8 +600,7 @@ public class BlueberryModLoader implements ModLoader {
         if (result != null) return result;
         for (ClassLoader loader : loaders) {
             try {
-                if (loader instanceof ModClassLoader) {
-                    ModClassLoader mcl = (ModClassLoader) loader;
+                if (loader instanceof ModClassLoader mcl) {
                     result = mcl.findClass(name, false);
                 } else {
                     result = loader.loadClass(name);

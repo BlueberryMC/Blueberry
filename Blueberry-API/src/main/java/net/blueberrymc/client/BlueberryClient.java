@@ -126,6 +126,7 @@ public class BlueberryClient implements BlueberryUtil {
         getImpl().registerMenuScreensFactory(menuType, screenConstructor);
     }
 
+    @FunctionalInterface
     public interface ScreenConstructor<T extends AbstractContainerMenu, U extends Screen & MenuAccess<T>> {
         @NotNull
         U create(@NotNull T menu, @NotNull Inventory inventory, @NotNull Component component);

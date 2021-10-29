@@ -24,6 +24,7 @@ public class ClientMain {
         preloadClass("com.sun.jna.Structure");
         preloadClass("com.sun.jna.platform.win32.WinNT$OSVERSIONINFOEX");
         preloadClass("com.sun.jna.platform.win32.VersionHelpers");
+        //preloadClass("net.blueberrymc.client.world.level.fluid.FluidSpriteManager");
     }
 
     private static void preloadClass(String clazz) {

@@ -37,10 +37,10 @@ index 16665847a565356d875b507aecfd01760a82dfb8..81a4871125570d8fe1fb2bc9b8280604
              this.channel.close().awaitUninterruptibly();
              this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 4943553c656953fc19bb0a70f569ff3131dd8400..a4dd1f9a6fdf2afa812638cdc96c9c9fbc818538 100644
+index b3542b19c4d1013e5855a568e58fec2544c2f6e9..d5196c0628331c192cfc5b529fbde5bf449b92fd 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -157,6 +157,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -156,6 +156,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
              LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");

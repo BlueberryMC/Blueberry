@@ -2,6 +2,7 @@ package net.blueberrymc.common;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.client.BlueberryClient;
+import net.blueberrymc.client.EarlyLoadingScreen;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
 import net.blueberrymc.common.bml.event.EventManager;
@@ -20,13 +21,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.launch.MixinBootstrap;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class Blueberry {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -107,6 +109,26 @@ public class Blueberry {
         return side == Side.SERVER;
     }
 
+    @Nullable
+    public static <T> T getOnClient(@NotNull Supplier<T> supplier) {
+        if (side == Side.CLIENT) return supplier.get();
+        return null;
+    }
+
+    @Nullable
+    public static <T> T getOnServer(@NotNull Supplier<T> supplier) {
+        if (side == Side.SERVER) return supplier.get();
+        return null;
+    }
+
+    public static void runOnClient(@NotNull Runnable runnable) {
+        if (side == Side.CLIENT) runnable.run();
+    }
+
+    public static void runOnServer(@NotNull Runnable runnable) {
+        if (side == Side.SERVER) runnable.run();
+    }
+
     @Contract(pure = true)
     @NotNull
     public static BlueberryUtil getUtil() {
@@ -115,9 +137,7 @@ public class Blueberry {
 
     @NotNull
     public static ModState getCurrentState() {
-        ModState state = Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
-        if (state == ModState.UNLOADED) return ModState.AVAILABLE; // should not return UNLOADED
-        return state;
+        return Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
     }
 
     public static void bootstrap(@NotNull("side") Side side, @NotNull("gameDir") File gameDir, @NotNull BlueberryUtil utilImpl) {
@@ -139,6 +159,7 @@ public class Blueberry {
             BlueberryVersion version = getVersion();
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             registerInternalMod();
+            if (isClient()) new EarlyLoadingScreen().startRender(true);
             //MixinBootstrap.init();
             Blueberry.getModLoader().loadMods();
             LOGGER.info("Loaded " + Blueberry.getModLoader().getLoadedMods().size() + " mods");

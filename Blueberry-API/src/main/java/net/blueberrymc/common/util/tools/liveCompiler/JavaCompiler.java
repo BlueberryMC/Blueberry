@@ -10,6 +10,7 @@ import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
+import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
 import net.blueberrymc.util.NoopPrintStream;
@@ -68,7 +69,7 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
         cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         try {
-            // these class is not in classpath of Blueberry-API, so we need to do this
+            // these class are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -98,7 +99,9 @@ public class JavaCompiler {
         args.add("16");
         args.add(file.getAbsolutePath());
         PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true), StandardCharsets.UTF_8));
-        ToolProvider.getSystemJavaCompiler().run(System.in, ps, ps, args.toArray(new String[0]));
+        javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (compiler == null) throw new RuntimeException("JavaCompiler is not available");
+        compiler.run(System.in, ps, ps, args.toArray(new String[0]));
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
 
@@ -113,9 +116,10 @@ public class JavaCompiler {
         File tmp = Files.createTempDirectory("blueberry-live-compiler-").toFile();
         tmp.deleteOnExit();
         AtomicReference<Throwable> throwable = new AtomicReference<>();
-        int nThreads = Math.max(4, Runtime.getRuntime().availableProcessors()) * 2;
+        int nThreads = Math.max(4, Runtime.getRuntime().availableProcessors());
         ExecutorService compilerExecutor = Executors.newFixedThreadPool(nThreads, new ThreadFactoryBuilder().setNameFormat("Blueberry Mod Compiler #%d").build());
         LOGGER.info("Compiling the source code using up to " + nThreads + " threads");
+        EarlyLoadingMessageManager.logModCompiler("Compiling the source code using up to " + nThreads + " threads");
         AtomicBoolean first = new AtomicBoolean(true);
         Files.walk(file.toPath())
                 .map(Path::toFile)
@@ -124,7 +128,7 @@ public class JavaCompiler {
                     if (f.isDirectory()) {
                         // if dir
                         File target = new File(tmp, path.relativize(f.toPath()).toString());
-                        if (!target.mkdirs()) {
+                        if (!target.mkdirs() && !target.getAbsolutePath().equals(tmp.getAbsolutePath())) {
                             LOGGER.warn("Failed to create directory {} -> {}", f.getAbsolutePath(), target.getAbsolutePath());
                         } else {
                             LOGGER.debug("Created directory {} -> {}", f.getAbsolutePath(), target.getAbsolutePath());
@@ -133,14 +137,17 @@ public class JavaCompiler {
                         // if file
                         if (f.getName().endsWith(".java")) {
                             Runnable doCompile = () -> {
-                                LOGGER.info("Compiling: " + path.relativize(f.toPath()));
-                                compile(file, f, tmp);
                                 String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
+                                LOGGER.info("Compiling: " + rel);
+                                EarlyLoadingMessageManager.logModCompiler("Compiling: " + rel);
+                                compile(file, f, tmp);
                                 if (!new File(tmp, rel).exists()) {
                                     throwable.set(new RuntimeException("Compilation failed: " + rel));
+                                    EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
                                     return;
                                 }
                                 LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
+                                EarlyLoadingMessageManager.logModCompiler("Compiled: " + rel);
                             };
                             if (first.get()) { // to prevent race condition
                                 first.set(false);
@@ -148,7 +155,13 @@ public class JavaCompiler {
                             } else {
                                 compilerExecutor.submit(() -> {
                                     if (throwable.get() != null) return;
-                                    doCompile.run();
+                                    try {
+                                        doCompile.run();
+                                    } catch (Exception throwable1) {
+                                        String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
+                                        throwable.set(new RuntimeException("Compilation failed: " + rel, throwable1));
+                                        EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                    }
                                 });
                             }
                         } else {
@@ -165,7 +178,8 @@ public class JavaCompiler {
         compilerExecutor.shutdown();
         try {
             if (!compilerExecutor.awaitTermination(5L, TimeUnit.MINUTES)) {
-                LOGGER.warn("Timed out compilation. Some compiled files may be missing.");
+                LOGGER.warn("Timed out compilation. Some files may be missing.");
+                EarlyLoadingMessageManager.logModCompiler("Timed out compilation. Some files may be missing.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
