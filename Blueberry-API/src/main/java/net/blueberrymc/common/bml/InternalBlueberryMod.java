@@ -80,6 +80,8 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean item3d = false;
     public static boolean discordRpc = true;
     public static final AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
+    public static boolean extendedWidth = false;
+    public static boolean extendedHeight = false;
     public static boolean bungee = false; // server only
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
@@ -130,6 +132,22 @@ public class InternalBlueberryMod extends BlueberryMod {
                                 .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
                                         .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enable"), this.getConfig().getBoolean("misc.discordRpc.enabled", true), true).id("misc.discordRpc.enabled").requiresRestart())
                                         .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp", true), true).id("misc.discordRpc.showServerIp").requiresRestart())
+                                )
+                                .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.title"))
+                                        .add(
+                                                new BooleanVisualConfig(
+                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_width"),
+                                                        this.getConfig().getBoolean("misc.chatSettings.extendedWidth", false),
+                                                        false
+                                                ).id("misc.chatSettings.extendedWidth").description(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_width.description"))
+                                        )
+                                        .add(
+                                                new BooleanVisualConfig(
+                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_height"),
+                                                        this.getConfig().getBoolean("misc.chatSettings.extendedHeight", false),
+                                                        false
+                                                ).id("misc.chatSettings.extendedHeight").description(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_height.description"))
+                                        )
                                 )
                 )
                 .add(
@@ -253,9 +271,16 @@ public class InternalBlueberryMod extends BlueberryMod {
         item3d = getConfig().getBoolean("test.3d", false);
         discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
         discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
+        extendedWidth = getConfig().getBoolean("misc.chatSettings.extendedWidth", false);
+        extendedHeight = getConfig().getBoolean("misc.chatSettings.extendedHeight", false);
         if (Blueberry.getSide() == Side.SERVER) bungee = getConfig().getBoolean("bungeecord", false); // server only
         if (Blueberry.getSide() == Side.CLIENT) {
             DiscordRPCTaskExecutor.init(discordRpc);
+            Minecraft mc = Minecraft.getInstance();
+            //noinspection ConstantConditions
+            if (mc != null) {
+                mc.gui.getChat().rescaleChat();
+            }
             ModState currentState = getStateList().getCurrentState();
             if (currentState == ModState.AVAILABLE || currentState == ModState.UNLOADED) {
                 refreshDiscordStatus(Minecraft.getInstance().screen);

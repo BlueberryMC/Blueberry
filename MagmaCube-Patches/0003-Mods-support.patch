@@ -159,6 +159,40 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          this.profiler.popPush("keyboard");
          this.keyboardHandler.tick();
          this.profiler.pop();
+diff --git a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
+index 06c779ab7324f52380d4b3af451888e7d640e3e3..23cac512d17a6615adb545e1984814b1b262f2dc 100644
+--- a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
++++ b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
+@@ -284,15 +284,27 @@ public class ChatComponent extends GuiComponent {
+     }
+ 
+     public static int getWidth(double d) {
++        // Blueberry start
++        int width = 320;
++        if (net.blueberrymc.common.bml.InternalBlueberryMod.extendedWidth) {
++            width = Minecraft.getInstance().getWindow().getWidth() / 2 - 8;
++        }
++        // Blueberry end
+         int i = 320;
+         int i2 = 40;
+-        return Mth.floor(d * 280.0D + 40.0D);
++        return Mth.floor(d * width); // Blueberry
+     }
+ 
+     public static int getHeight(double d) {
++        // Blueberry start
++        int height = 180;
++        if (net.blueberrymc.common.bml.InternalBlueberryMod.extendedWidth) {
++            height = Minecraft.getInstance().getWindow().getHeight() / 2 - 40;
++        }
++        // Blueberry end
+         int i = 180;
+         int i2 = 20;
+-        return Mth.floor(d * 160.0D + 20.0D);
++        return Mth.floor(d * height); // Blueberry
+     }
+ 
+     public int getLinesPerPage() {
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 index 47c955961f3166ce741773660c509b4154063c9e..83877228d193f30ed98b20761623b058fab0f316 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
