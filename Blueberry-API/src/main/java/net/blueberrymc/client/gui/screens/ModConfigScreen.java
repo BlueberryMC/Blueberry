@@ -102,6 +102,7 @@ public class ModConfigScreen extends BlueberryScreen {
                     s = ((NameGetter) def).getName();
                 }
                 // if (def instanceof Enum<?>) s = ((Enum<?>) def).name();
+                if (def instanceof Class<?> cl) s = cl.getTypeName();
                 tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
             if (config instanceof IntegerVisualConfig) {
@@ -263,7 +264,7 @@ public class ModConfigScreen extends BlueberryScreen {
                         block(editBox);
                     }
                 });
-                editBox.setValue(defValue != null ? defValue.getCanonicalName() : "");
+                editBox.setValue(defValue != null ? defValue.getTypeName() : "");
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof DoubleVisualConfig) {

@@ -195,4 +195,12 @@ public class BlueberryMod implements ModInfo {
      * Called when the mod is being unloaded.
      */
     public void onUnload() {}
+
+    /**
+     * Called when the mod is being reloaded via mod list screen or via command.
+     * @return Set to true if you want to reload resources, false otherwise.
+     */
+    public boolean onReload() {
+        return false;
+    }
 }

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * Represents an event.
  * All events require a static method named getHandlerList() which returns the {@link HandlerList}.
  * @see EventManager#callEvent(Event)
+ * @see Event#callEvent()
  * @see EventManager#registerEvents(BlueberryMod,Listener)
  */
 public abstract class Event {
@@ -26,7 +27,7 @@ public abstract class Event {
     /**
      * Calls the event and tests if cancelled.
      *
-     * @return false if event was cancelled, if cancellable. otherwise true.
+     * @return false if event was cancelled, if cancellable. true otherwise.
      */
     public boolean callEvent() {
         Blueberry.getEventManager().callEvent(this);
@@ -49,10 +50,10 @@ public abstract class Event {
     }
 
     /**
-     * Checks if this event is asynchronous. The event call will fail on these cases:
+     * Checks if this event is asynchronous (not on main thread). The event call will fail on these cases:
      * <ul>
      *     <li>the event is <b>asynchronous</b> but the event is fired synchronously.</li>
-     *     <li>the event is <b>synchronous</b> (not asynchronous) but the event is fired asynchronously.</li>
+     *     <li>the event is <b>synchronous</b> but the event is fired asynchronously.</li>
      * </ul>
      * @return whether the event is asynchronous
      */

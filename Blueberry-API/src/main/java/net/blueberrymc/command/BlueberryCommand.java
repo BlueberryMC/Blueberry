@@ -5,15 +5,21 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.blueberrymc.client.BlueberryClient;
+import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.event.mod.ModReloadEvent;
 import net.blueberrymc.server.BlueberryServer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -24,15 +30,15 @@ import static net.minecraft.commands.Commands.literal;
 
 public class BlueberryCommand {
     private static final SimpleCommandExceptionType UNAVAILABLE_IN_THIS_ENVIRONMENT = new SimpleCommandExceptionType(new TextComponent("This command is not available in this environment.").withStyle(ChatFormatting.RED));
+    private static final Logger LOGGER = LogManager.getLogger();
     public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 literal("blueberry")
                         .requires(source -> source.hasPermission(4))
                         .then(literal("mod")
                                 .then(argument("mod", ModIdArgument.modId())
-                                        .then(literal("status")
-                                                .executes(context -> executeModStatusCommand(context.getSource(), ModIdArgument.get(context, "mod")))
-                                        )
+                                        .then(literal("status").executes(context -> executeModStatusCommand(context.getSource(), ModIdArgument.get(context, "mod"))))
+                                        .then(literal("reload").executes(context -> executeModReloadCommand(context.getSource(), ModIdArgument.get(context, "mod"))))
                                 )
                         )
                         .then(literal("tps")
@@ -43,6 +49,29 @@ public class BlueberryCommand {
 
     private static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
         source.sendSuccess(new TextComponent("Mod status of '" + mod.getName() + "': " + mod.getStateList() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
+        return 1;
+    }
+
+    private static int executeModReloadCommand(CommandSourceStack source, BlueberryMod mod) {
+        ServerPlayer player = null;
+        try {
+            player = source.getPlayerOrException();
+        } catch (CommandSyntaxException ignore) {}
+        if (new ModReloadEvent(player, mod).callEvent()) {
+            source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.reloading", mod.getName()), true);
+            try {
+                if (mod.onReload()) {
+                    Minecraft.getInstance().reloadResourcePacks().thenAccept(v -> source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true));
+                } else {
+                    source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true);
+                }
+            } catch (RuntimeException ex) {
+                source.sendFailure(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.failure.error", mod.getName(), ex.getMessage()));
+                LOGGER.warn("Failed to reload mod {}", mod.getName(), ex);
+            }
+        } else {
+            source.sendFailure(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.failure.cancelled", mod.getName()));
+        }
         return 1;
     }
 
