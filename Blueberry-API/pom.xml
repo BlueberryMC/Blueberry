@@ -68,7 +68,7 @@
         <dependency>
             <groupId>net.blueberrymc.minecraft</groupId>
             <artifactId>minecraft</artifactId>
-            <version>21w42a</version>
+            <version>21w43a</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
