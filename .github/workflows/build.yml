@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v2.3.1
         with:
           java-version: ${{ matrix.java }}
-          distribution: temirin
+          distribution: temurin
           cache: 'maven'
       - name: Apply patches
         run: './blueberry p'
