@@ -30,11 +30,6 @@ jobs:
         run: './blueberry p'
       - name: Bake installer
         run: './blueberry i'
-      - name: Cache
-        uses: actions/cache@v2.1.6
-        with:
-          path: '~/.m2'
-          key: maven
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
