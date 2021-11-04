@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.function.Function;
 
 public class BlueberryMod implements ModInfo {
     private Logger logger = LogManager.getLogger();
@@ -113,7 +114,9 @@ public class BlueberryMod implements ModInfo {
     }
 
     @NotNull
-    public final ModStateList getStateList() { return stateList; }
+    public final ModStateList getStateList() {
+        return stateList;
+    }
 
     @NotNull
     public final ModConfig getConfig() {
@@ -150,14 +153,18 @@ public class BlueberryMod implements ModInfo {
      * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
      * @param compoundVisualConfig the visual config
      */
-    public void save(@NotNull("compoundVisualConfig") CompoundVisualConfig compoundVisualConfig) {
+    public void save(@NotNull CompoundVisualConfig compoundVisualConfig) {
+        save(compoundVisualConfig, Function.identity());
+    }
+
+    public void save(@NotNull CompoundVisualConfig compoundVisualConfig, @NotNull Function<Object, Object> valueMapper) {
         for (VisualConfig<?> config : compoundVisualConfig) {
             if (config instanceof CompoundVisualConfig) {
                 save((CompoundVisualConfig) config);
                 continue;
             }
             if (config.getId() != null) {
-                this.getConfig().set(config.getId(), config.get());
+                this.getConfig().set(config.getId(), valueMapper.apply(config.get()));
             }
         }
     }
@@ -172,7 +179,7 @@ public class BlueberryMod implements ModInfo {
     }
 
     /**
-     * Called at very early stage of the mod loading, so you cannot use most minecraft classes here.
+     * Called at very early stage of the mod loading, you cannot use most minecraft classes here.
      */
     public void onLoad() {}
 
@@ -192,7 +199,7 @@ public class BlueberryMod implements ModInfo {
     public void onPostInit() {}
 
     /**
-     * Called when the mod is being unloaded.
+     * Called when the mod is being unloaded. Use {@link Blueberry#stopping} to distinguish between reloading and shutdown.
      */
     public void onUnload() {}
 
