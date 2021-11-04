@@ -8,8 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * VisualConfig that can be clicked to cycle through the options.
+ */
 public class CycleVisualConfig<T> extends VisualConfig<T> {
     private final List<T> list;
     private int index;
@@ -19,11 +21,11 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     }
 
     public CycleVisualConfig(@Nullable Component component, @NotNull List<T> values, int index) {
-        this(component, values, index, values.get(index));
+        this(component, values, index, null, values.get(index));
     }
 
-    public CycleVisualConfig(@Nullable Component component, @NotNull List<T> values, int index, @Nullable T defaultValue) {
-        super(component, null, defaultValue);
+    private CycleVisualConfig(@Nullable Component component, @NotNull List<T> values, int index, @Nullable T initialValue, @Nullable T defaultValue) {
+        super(component, initialValue, defaultValue);
         this.list = values;
         this.index = index;
     }
@@ -38,13 +40,20 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     @NotNull
     public static <E extends Enum<E>> CycleVisualConfig<E> fromEnum(@Nullable Component component, @NotNull Class<E> clazz, @Nullable E defaultValue) {
         List<E> list = Arrays.asList(clazz.getEnumConstants());
-        return new CycleVisualConfig<>(component, list, Math.max(0, list.indexOf(defaultValue)), defaultValue);
+        return new CycleVisualConfig<>(component, list, Math.max(0, list.indexOf(defaultValue)));
+    }
+
+    @Contract("_, _, _, _ -> new")
+    @NotNull
+    public static <E extends Enum<E>> CycleVisualConfig<E> fromEnum(@Nullable Component component, @NotNull Class<E> clazz, @Nullable E initialValue, @Nullable E defaultValue) {
+        List<E> list = Arrays.asList(clazz.getEnumConstants());
+        return new CycleVisualConfig<>(component, list, Math.max(0, list.indexOf(initialValue)), initialValue, defaultValue);
     }
 
     @NotNull
     @Override
     public T get() {
-        return list.get(index);
+        return list.get(index % list.size());
     }
 
     @NotNull
@@ -55,6 +64,11 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     @NotNull
     public String getNextName() {
         return getName(next());
+    }
+
+    @NotNull
+    public String getPreviousName() {
+        return getName(previous());
     }
 
     @NotNull
@@ -71,24 +85,23 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
 
     @Override
     public void set(@Nullable T value) {
-        AtomicInteger current = new AtomicInteger();
-        for (T t : list) {
-            if (t.equals(value)) {
-                index = current.get();
-                break;
-            }
-            current.getAndIncrement();
-        }
+        index = list.indexOf(value);
     }
 
     @NotNull
     public T next() {
         if (++index >= list.size()) {
             index = 0;
-            return list.get(0);
-        } else {
-            return list.get(index);
         }
+        return list.get(index);
+    }
+
+    @NotNull
+    public T previous() {
+        if (--index < 0) {
+            index = list.size() - 1;
+        }
+        return list.get(index);
     }
 
     public void setIndex(int value) {

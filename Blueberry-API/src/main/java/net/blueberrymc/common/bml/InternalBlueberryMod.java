@@ -41,11 +41,13 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -78,7 +80,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean showDRGameTestDebug = false;
     public static boolean liquidMilk = false;
     public static boolean item3d = false;
-    public static boolean discordRpc = true;
+    public static volatile DiscordRPCStatus discordRpc = DiscordRPCStatus.ENABLED;
     public static final AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
     public static boolean extendedWidth = false;
     public static boolean extendedHeight = false;
@@ -92,16 +94,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     public void onLoad() {
         getLogger().debug("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getCanonicalName());
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
-        this.getVisualConfig().onSave = config -> {
-            this.save(config);
-            reload();
-            try {
-                getConfig().saveConfig();
-                this.getLogger().info("Saved configuration");
-            } catch (IOException ex) {
-                this.getLogger().error("Could not save configuration", ex);
-            }
-        };
+        this.getVisualConfig().onSave(this::saveConfig);
         this.getVisualConfig()
                 .add(
                         new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.debugRenderer.title"))
@@ -130,8 +123,19 @@ public class InternalBlueberryMod extends BlueberryMod {
                 .add(
                         new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
                                 .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
-                                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enable"), this.getConfig().getBoolean("misc.discordRpc.enabled", true), true).id("misc.discordRpc.enabled").requiresRestart())
-                                        .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp", true), true).id("misc.discordRpc.showServerIp").requiresRestart())
+                                        .add(
+                                                CycleVisualConfig.fromEnum(
+                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enable"),
+                                                        DiscordRPCStatus.class,
+                                                        getConfig().get("misc.discordRpc.status", DiscordRPCStatus.ENABLED),
+                                                        DiscordRPCStatus.ENABLED
+                                                ).id("misc.discordRpc.status"))
+                                        .add(
+                                                new BooleanVisualConfig(
+                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"),
+                                                        this.getConfig().getBoolean("misc.discordRpc.showServerIp", true),
+                                                        true
+                                                ).id("misc.discordRpc.showServerIp"))
                                 )
                                 .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.title"))
                                         .add(
@@ -155,7 +159,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                                 .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d"), false).id("test.3d").description(new TextComponent("Yes!")).requiresRestart())
                 );
         registerVisualConfigTest();
-        reload();
+        onReload();
         Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
         registerArgumentTypes();
         Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
@@ -201,6 +205,17 @@ public class InternalBlueberryMod extends BlueberryMod {
         }
     }
 
+    private void saveConfig(CompoundVisualConfig config) {
+        this.save(config);
+        onReload();
+        try {
+            getConfig().saveConfig();
+            this.getLogger().info("Saved configuration");
+        } catch (IOException ex) {
+            this.getLogger().error("Could not save configuration", ex);
+        }
+    }
+
     private void registerVisualConfigTest() {
         CompoundVisualConfig config = new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.description"));
         config.add(
@@ -224,7 +239,18 @@ public class InternalBlueberryMod extends BlueberryMod {
 
     private void registerItems() {
         if (item3d) {
-            BlueberryRegistries.ITEM.register("blueberry", "3d", new SimpleBlueberryItem(this, new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC).rarity(Rarity.EPIC), item -> new BlueberryText("blueberry", "item.blueberry.3d")));
+            BlueberryRegistries.ITEM.register(
+                    "blueberry",
+                    "3d",
+                    new SimpleBlueberryItem(
+                            this,
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .tab(CreativeModeTab.TAB_MISC)
+                                    .rarity(Rarity.EPIC),
+                            item -> new BlueberryText("blueberry", "item.blueberry.3d")
+                    )
+            );
         }
     }
 
@@ -249,33 +275,49 @@ public class InternalBlueberryMod extends BlueberryMod {
         ArgumentTypes.register("blueberry:modid", ModIdArgument.class, new EmptyArgumentSerializer<>(ModIdArgument::modId));
     }
 
-    private void reload() {
-        showDRPathfinding = getConfig().getBoolean("debugRenderer.pathfinding", false);
-        showDRWaterDebug = getConfig().getBoolean("debugRenderer.waterDebug", false);
-        showDRChunkBorder = getConfig().getBoolean("debugRenderer.chunkBorder", true);
-        showDRHeightMap = getConfig().getBoolean("debugRenderer.heightMap", false);
-        showDRCollisionBox = getConfig().getBoolean("debugRenderer.collisionBox", false);
-        showDRNeighborsUpdate = getConfig().getBoolean("debugRenderer.neighborsUpdate", false);
-        showDRStructure = getConfig().getBoolean("debugRenderer.structure", false);
-        showDRLightDebug = getConfig().getBoolean("debugRenderer.lightDebug", false);
-        showDRWorldGenAttempt = getConfig().getBoolean("debugRenderer.worldGenAttempt", false);
-        showDRSolidFace = getConfig().getBoolean("debugRenderer.solidFace", false);
-        showDRChunk = getConfig().getBoolean("debugRenderer.chunk", false);
-        showDRBrainDebug = getConfig().getBoolean("debugRenderer.brainDebug", false);
-        showDRVillageSectionsDebug = getConfig().getBoolean("debugRenderer.villageSectionsDebug", false);
-        showDRBeeDebug = getConfig().getBoolean("debugRenderer.beeDebug", false);
-        showDRRaidDebug = getConfig().getBoolean("debugRenderer.raidDebug", false);
-        showDRGoalSelector = getConfig().getBoolean("debugRenderer.goalSelector", false);
-        showDRGameTestDebug = getConfig().getBoolean("debugRenderer.gameTestDebug", false);
+    @Override
+    public boolean onReload() {
+        // pre-reload
+        try {
+            getConfig().reloadConfig();
+        } catch (IOException e) {
+            getLogger().warn("Failed to reload config", e);
+        }
+        // reload
+        if (Blueberry.getSide() == Side.CLIENT) {
+            showDRPathfinding = getConfig().getBoolean("debugRenderer.pathfinding", false);
+            showDRWaterDebug = getConfig().getBoolean("debugRenderer.waterDebug", false);
+            showDRChunkBorder = getConfig().getBoolean("debugRenderer.chunkBorder", true);
+            showDRHeightMap = getConfig().getBoolean("debugRenderer.heightMap", false);
+            showDRCollisionBox = getConfig().getBoolean("debugRenderer.collisionBox", false);
+            showDRNeighborsUpdate = getConfig().getBoolean("debugRenderer.neighborsUpdate", false);
+            showDRStructure = getConfig().getBoolean("debugRenderer.structure", false);
+            showDRLightDebug = getConfig().getBoolean("debugRenderer.lightDebug", false);
+            showDRWorldGenAttempt = getConfig().getBoolean("debugRenderer.worldGenAttempt", false);
+            showDRSolidFace = getConfig().getBoolean("debugRenderer.solidFace", false);
+            showDRChunk = getConfig().getBoolean("debugRenderer.chunk", false);
+            showDRBrainDebug = getConfig().getBoolean("debugRenderer.brainDebug", false);
+            showDRVillageSectionsDebug = getConfig().getBoolean("debugRenderer.villageSectionsDebug", false);
+            showDRBeeDebug = getConfig().getBoolean("debugRenderer.beeDebug", false);
+            showDRRaidDebug = getConfig().getBoolean("debugRenderer.raidDebug", false);
+            showDRGoalSelector = getConfig().getBoolean("debugRenderer.goalSelector", false);
+            showDRGameTestDebug = getConfig().getBoolean("debugRenderer.gameTestDebug", false);
+            discordRpc = getConfig().get("misc.discordRpc.status", DiscordRPCStatus.ENABLED);
+            discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
+            extendedWidth = getConfig().getBoolean("misc.chatSettings.extendedWidth", false);
+            extendedHeight = getConfig().getBoolean("misc.chatSettings.extendedHeight", false);
+        }
+        if (Blueberry.getSide() == Side.SERVER) {
+            bungee = getConfig().getBoolean("bungeecord", false);
+        }
         liquidMilk = getConfig().getBoolean("gamePlay.liquidMilk", false);
         item3d = getConfig().getBoolean("test.3d", false);
-        discordRpc = getConfig().getBoolean("misc.discordRpc.enabled", true);
-        discordRpcShowServerIp.set(getConfig().getBoolean("misc.discordRpc.showServerIp", false));
-        extendedWidth = getConfig().getBoolean("misc.chatSettings.extendedWidth", false);
-        extendedHeight = getConfig().getBoolean("misc.chatSettings.extendedHeight", false);
-        if (Blueberry.getSide() == Side.SERVER) bungee = getConfig().getBoolean("bungeecord", false); // server only
+        // post-reload
         if (Blueberry.getSide() == Side.CLIENT) {
-            DiscordRPCTaskExecutor.init(discordRpc);
+            DiscordRPCTaskExecutor.shutdownNow();
+            if (discordRpc != DiscordRPCStatus.DISABLED) {
+                DiscordRPCTaskExecutor.init(discordRpc == DiscordRPCStatus.ENABLED);
+            }
             Minecraft mc = Minecraft.getInstance();
             //noinspection ConstantConditions
             if (mc != null) {
@@ -286,6 +328,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                 refreshDiscordStatus(Minecraft.getInstance().screen);
             }
         }
+        return false;
     }
 
     public void refreshDiscordStatus() {
@@ -340,14 +383,25 @@ public class InternalBlueberryMod extends BlueberryMod {
             if (serverData != null) {
                 if (serverData.isLan()) {
                     Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                    lastScreen.set(null);
-                    return;
                 } else {
                     Blueberry.getUtil().updateDiscordStatus("Playing on 3rd-party server", discordRpcShowServerIp.get() ? serverData.ip : null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                    lastScreen.set(null);
-                    return;
                 }
+                lastScreen.set(null);
             }
+        }
+    }
+
+    public enum DiscordRPCStatus implements NameGetter {
+        DISABLED,
+        //ENABLED_WITHOUT_RICH_PRESENCE,
+        ENABLED,
+        ;
+
+        @Contract(pure = true)
+        @NotNull
+        @Override
+        public String getName() {
+            return new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.status." + name().toLowerCase(Locale.ROOT)).getContents();
         }
     }
 
