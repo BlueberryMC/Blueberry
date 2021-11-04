@@ -38,5 +38,5 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: blueberry-installer-java-${{ matrix.java }}
+          name: blueberry-installer-java-${{ matrix.java }}.jar
           path: '*-installer.jar'

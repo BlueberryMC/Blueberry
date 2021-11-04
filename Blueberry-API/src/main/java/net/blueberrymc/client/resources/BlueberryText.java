@@ -42,7 +42,7 @@ public class BlueberryText extends BaseComponent {
     public static String getLanguageCode() {
         Minecraft mc = Minecraft.getInstance();
         if (Blueberry.isServer()) return "en_us";
-        //noinspection ConstantConditions // IT IS NULLABLE GOD DAMN MOJANG
+        //noinspection ConstantConditions
         if (mc == null) return "en_us";
         return mc.options.languageCode;
     }

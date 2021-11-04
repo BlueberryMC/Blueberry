@@ -105,14 +105,13 @@ public abstract class BlueberryRunnable implements Runnable {
         } else if (side == Side.SERVER) {
             return Blueberry.getUtil().getServerScheduler();
         } else {
-            throw new IllegalStateException("unsupported side: " + side.name());
+            throw new IllegalStateException("Unsupported side: " + side.name());
         }
     }
 
     @NotNull
     private <T> TaskPair setupId(@NotNull T task) {
-        if (task instanceof BlueberryTask) {
-            BlueberryTask blueberryTask = (BlueberryTask) task;
+        if (task instanceof BlueberryTask blueberryTask) {
             if (side == Side.CLIENT) {
                 this.clientId = blueberryTask.getTaskId();
                 return new TaskPair(blueberryTask, null);
@@ -122,11 +121,10 @@ public abstract class BlueberryRunnable implements Runnable {
             } else {
                 throw new IllegalStateException("side: " + side.name() + ", task: " + task);
             }
-        } else if (task instanceof TaskPair) {
-            TaskPair pair = (TaskPair) task;
+        } else if (task instanceof TaskPair pair) {
             if (side == Side.BOTH) {
-                this.clientId = pair.getClientTask() != null ? pair.getClientTask().getTaskId() : -1;
-                this.serverId = pair.getServerTask() != null ? pair.getServerTask().getTaskId() : -1;
+                this.clientId = pair.clientTask() != null ? pair.clientTask().getTaskId() : -1;
+                this.serverId = pair.serverTask() != null ? pair.serverTask().getTaskId() : -1;
             } else {
                 throw new IllegalStateException("side: " + side.name() + ", task: " + task);
             }

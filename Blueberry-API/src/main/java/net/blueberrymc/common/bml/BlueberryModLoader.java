@@ -402,7 +402,7 @@ public class BlueberryModLoader implements ModLoader {
                 try {
                     ((ModClassLoader) mod.getClassLoader()).close();
                 } catch (IOException ex) {
-                    LOGGER.warn("Error during closing {} of mod {} ({}) [{}]", mod.getClassLoader().getClass().getSimpleName(), mod.getName(), mod.getModId(), mod.getDescription().getVersion(), ex);
+                    LOGGER.warn("Error closing class loader '{}' of mod {} ({}) [{}]", mod.getClassLoader().getClass().getSimpleName(), mod.getName(), mod.getModId(), mod.getDescription().getVersion(), ex);
                 }
             }
             {
@@ -437,7 +437,7 @@ public class BlueberryModLoader implements ModLoader {
                 blueberryResourceManager.getPackResources().close();
                 Blueberry.getUtil().reloadResourcePacks().get(5, TimeUnit.SECONDS); // reload to apply changes
             } catch (Exception ex) {
-                LOGGER.warn("Error during unregistering ResourceManager", ex);
+                LOGGER.warn("Error unregistering ResourceManager", ex);
             }
             {
                 List<String> toRemove = new ArrayList<>();

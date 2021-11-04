@@ -11,8 +11,13 @@ import java.util.Properties;
 
 public class Versioning {
     private static final Logger LOGGER = LogManager.getLogger();
+    // cached version info
     private static BlueberryVersion VERSION = null;
 
+    /**
+     * Fetches the blueberry version file.
+     * @return version info
+     */
     @NotNull
     public static BlueberryVersion getVersion() {
         if (VERSION != null) return VERSION;

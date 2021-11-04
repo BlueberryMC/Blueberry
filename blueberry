@@ -38,6 +38,14 @@ case "$1" in
     scripts/init.sh || exit 1
   )
   ;;
+  "prb" | "patchAndRebuild")
+  (
+    set -e
+    cd "$basedir"
+    scripts/applyPatches.sh || exit 1
+    scripts/rebuildPatches.sh || exit 1
+  )
+  ;;
   "i" | "installer")
   (
     set -e
@@ -63,6 +71,7 @@ case "$1" in
     echo " Commands:"
     echo "  * rb, rebuild            | Rebuild patches, can be called from anywhere."
     echo "  * p, patch               | Apply all patches to the project without building it."
+    echo "  * prb, patchAndRebuild   | Apply all patches to the project and rebuild patches. Useful when you modified the small part of a patch file."
     echo "  * i, installer           | Creates installer. The project must be patched before doing this."
     echo "  * b, build               | Builds the project and creates installer."
   ;;

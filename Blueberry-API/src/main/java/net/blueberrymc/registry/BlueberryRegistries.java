@@ -2,7 +2,11 @@ package net.blueberrymc.registry;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
+import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -220,7 +224,9 @@ public final class BlueberryRegistries<T> {
     public <R extends T> R register(@NotNull ResourceLocation location, @NotNull R object) {
         Preconditions.checkNotNull(location, "ResourceLocation cannot be null");
         Preconditions.checkNotNull(object, "value cannot be null");
-        LOGGER.info("Registering " + object.getClass().getCanonicalName() + ": " + location);
+        String message = "Registering " + object.getClass().getCanonicalName() + ": " + location;
+        LOGGER.info(message);
+        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logMinecraft(message));
         if (object instanceof BlockItem) {
             ((BlockItem) object).registerBlocks(Item.BY_BLOCK, (Item) object);
         }
@@ -229,6 +235,7 @@ public final class BlueberryRegistries<T> {
         return result;
     }
 
+    @SideOnly(Side.CLIENT)
     public static synchronized <T extends BlockEntity> void bindTileEntityRenderer(
             @NotNull BlockEntityType<T> blockEntityType,
             @NotNull Function<? super BlockEntityRenderDispatcher, ? extends BlockEntityRenderer<? super T>> rendererFactory
