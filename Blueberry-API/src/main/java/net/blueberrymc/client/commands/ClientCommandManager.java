@@ -54,11 +54,18 @@ public class ClientCommandManager {
         return COMMANDS.get(name);
     }
 
+    /**
+     * Registers client command handler.
+     * @param name command name without leading slash (/).
+     * @param handler command handler to register command
+     */
     public static void register(@NotNull String name, @NotNull ClientCommandHandler handler) {
         if (has(name)) {
             ClientCommandHandler theirs = Objects.requireNonNull(get(name));
-            LOGGER.warn("Client command conflict: {} (yours) and {} (theirs)", handler.getMod().getName(), theirs.getMod().getName());
-            LOGGER.warn("Replacing {}'s client command with {}'s ClientCommandHandler.", theirs.getMod().getName(), handler.getMod().getName());
+            String provided = ClientCommandHandler.getMod(handler).getModId();
+            String existing = ClientCommandHandler.getMod(theirs).getModId();
+            LOGGER.warn("Client command conflict (/{}): {} (provided) and {} (existing)", name, provided, existing);
+            LOGGER.warn("Replacing {}'s client command (/{}) with {}'s ClientCommandHandler.", name, existing, provided);
         }
         COMMANDS.put(name, handler);
         handler.register(DISPATCHER);
@@ -69,12 +76,14 @@ public class ClientCommandManager {
         return DISPATCHER;
     }
 
+    // TODO: implement auto completion of client commands
+
     @NotNull
     public static CommandDispatcher<SharedSuggestionProvider> getRoot(@NotNull Player player) {
         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
         RootCommandNode<SharedSuggestionProvider> rootCommandNode = new RootCommandNode<>();
-        map.put(getDispatcher().getRoot(), rootCommandNode);
-        fillUsableCommands(getDispatcher().getRoot(), rootCommandNode, player.createCommandSourceStack(), map);
+        map.put(DISPATCHER.getRoot(), rootCommandNode);
+        fillUsableCommands(DISPATCHER.getRoot(), rootCommandNode, player.createCommandSourceStack(), map);
         return new CommandDispatcher<>(rootCommandNode);
     }
 
@@ -117,7 +126,7 @@ public class ClientCommandManager {
 
         try {
             try {
-                return getDispatcher().execute(stringReader, commandSourceStack);
+                return DISPATCHER.execute(stringReader, commandSourceStack);
             } catch (CommandRuntimeException var13) {
                 commandSourceStack.sendFailure(var13.getComponent());
                 return 0;
