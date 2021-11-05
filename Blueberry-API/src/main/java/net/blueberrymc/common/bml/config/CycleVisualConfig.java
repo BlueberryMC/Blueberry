@@ -1,5 +1,6 @@
 package net.blueberrymc.common.bml.config;
 
+import net.blueberrymc.util.ComponentGetter;
 import net.blueberrymc.util.NameGetter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Contract;
@@ -74,10 +75,12 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     @NotNull
     private String getName(T value) {
         if (value == null) return "null";
-        if (value instanceof NameGetter) {
-            return ((NameGetter) value).getName();
-        } else if (value instanceof Enum<?>) {
-            return ((Enum<?>) value).name();
+        if (value instanceof ComponentGetter cg) {
+            return cg.getComponent().getString();
+        } else if (value instanceof NameGetter ng) {
+            return ng.getName();
+        } else if (value instanceof Enum<?> e) {
+            return e.name();
         } else {
             return value.toString();
         }

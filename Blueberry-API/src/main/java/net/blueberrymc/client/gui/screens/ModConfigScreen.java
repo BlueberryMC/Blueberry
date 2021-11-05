@@ -13,6 +13,7 @@ import net.blueberrymc.common.bml.config.LongVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.StringVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
+import net.blueberrymc.util.ComponentGetter;
 import net.blueberrymc.util.NameGetter;
 import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
@@ -98,8 +99,11 @@ public class ModConfigScreen extends BlueberryScreen {
             Object def = config instanceof CompoundVisualConfig ? null : config.getDefaultValue();
             if (def != null) {
                 String s = def.toString();
-                if (def instanceof NameGetter) {
-                    s = ((NameGetter) def).getName();
+                if (def instanceof NameGetter ng) {
+                    s = ng.getName();
+                }
+                if (def instanceof ComponentGetter cg) {
+                    s = cg.getComponent().getString();
                 }
                 // if (def instanceof Enum<?>) s = ((Enum<?>) def).name();
                 if (def instanceof Class<?> cl) s = cl.getTypeName();
@@ -155,15 +159,39 @@ public class ModConfigScreen extends BlueberryScreen {
                 }, onTooltip));
                 addLabel.accept(config, offset);
             } else if (config instanceof CycleVisualConfig) {
+                final int buttonY = offset += 22;
                 CycleVisualConfig<?> cycleVisualConfig = (CycleVisualConfig<?>) config;
+                Button btn;
                 container.children().add(
-                        new Button(
-                                this.width / 2 + 6,
-                                (offset += 22),
-                                Math.min(maxWidth, this.width / 6),
+                        btn = new Button(
+                                (this.width / 2) + 6 + 24,
+                                buttonY,
+                                Math.min(maxWidth, this.width / 6 - (24 * 2)),
                                 20,
                                 new TextComponent(cycleVisualConfig.getCurrentName()),
                                 (button) -> button.setMessage(new TextComponent(cycleVisualConfig.getNextName())),
+                                onTooltip
+                        )
+                );
+                container.children().add(
+                        new Button(
+                                (this.width / 2) + 6,
+                                buttonY,
+                                22,
+                                20,
+                                new TextComponent("<-"),
+                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.getPreviousName())),
+                                onTooltip
+                        )
+                );
+                container.children().add(
+                        new Button(
+                                (this.width / 2) + 6 + this.width / 6 - 22,
+                                buttonY,
+                                22,
+                                20,
+                                new TextComponent("->"),
+                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.getNextName())),
                                 onTooltip
                         )
                 );
