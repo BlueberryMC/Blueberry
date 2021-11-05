@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index dc93da6736de0aff51295a52787784044045b734..d819ee40dbfb7fca3000b3be33225fda93f06bdd 100644
+index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d9eb2e8cd 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,32 +3,49 @@
@@ -37,7 +37,7 @@ index dc93da6736de0aff51295a52787784044045b734..d819ee40dbfb7fca3000b3be33225fda
 +        <text2speech.version>1.11.3</text2speech.version>
 +        <maven.compiler.source>16</maven.compiler.source>
 +        <maven.compiler.target>16</maven.compiler.target>
-+        <api.version>0.0.15</api.version>
++        <api.version>0.0.16</api.version>
 +        <!-- Blueberry end -->
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
