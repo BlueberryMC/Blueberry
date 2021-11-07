@@ -37,7 +37,7 @@ index 16665847a565356d875b507aecfd01760a82dfb8..81a4871125570d8fe1fb2bc9b8280604
              this.channel.close().awaitUninterruptibly();
              this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index b3542b19c4d1013e5855a568e58fec2544c2f6e9..d5196c0628331c192cfc5b529fbde5bf449b92fd 100644
+index e25a96b13f409a300dcd7cc464367942b894973f..82f0a313d5a59d059fe88e305c58241051b5e338 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -156,6 +156,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -105,7 +105,7 @@ index f5d64274e0dad42aef3b79cc02a147f0c061dd8d..0ee1ef2094cf71032427e553d7024a7f
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index d5c23b9a30258cd0fe14bd6db08f079ff1fec362..e7342be26ef4fc2a5e44ae438a07674e535724d1 100644
+index d5c23b9a30258cd0fe14bd6db08f079ff1fec362..0c21266cfe5936497dfc86d387cee13f30ff903c 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -93,7 +93,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
@@ -140,7 +140,7 @@ index d5c23b9a30258cd0fe14bd6db08f079ff1fec362..e7342be26ef4fc2a5e44ae438a07674e
              this.state = ServerLoginPacketListenerImpl.State.KEY;
              this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
          } else {
-+            initUUID(); // Blueberry
++            if (net.blueberrymc.common.bml.InternalBlueberryMod.bungee) initUUID(); // Blueberry
              this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
          }
  

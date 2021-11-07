@@ -54,7 +54,7 @@ index f3b9d636c2749ce0ef3be075bfb265509036eaa4..6e51da7c8f2e2bb6269b1e3c1d051097
          this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
          this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 6cb8f0a150d191900a6cdff3d0b3f15a0790b57d..fd33543b35dc9d226e45fea7ef35f6f2f100e5b7 100644
+index f3291e31d67ca25efb57b0e37e49878effb54875..6c3fa93c773e85a3aa7dd6940c3f81a4826712d9 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
 @@ -87,7 +87,7 @@ public class Main {
@@ -171,7 +171,7 @@ index 5562fa813e90488cdd3fc6119f8920740acd55b5..78111364866d132e2cc317dfa0c8d4d0
          return this.title;
      }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index faf73bd95fddb9ba19d3fb6025308a5a906a3634..d11e25a6050a8884b2df0c5b0af54932bbb19e34 100644
+index 68ddc80609d0c8ad85aa41ad964e2ede1f759985..573012b3f4f2e365ae423a72f3ab5f4e6ce66aba 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -84,7 +84,7 @@ public class Main {
@@ -181,8 +181,8 @@ index faf73bd95fddb9ba19d3fb6025308a5a906a3634..d11e25a6050a8884b2df0c5b0af54932
 -            net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
 +            net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file, new net.blueberrymc.server.BlueberryServerImpl()); // Blueberry
  
-             JvmProfiler.INSTANCE.initialize();
              CrashReport.preload();
+             if (optionSet.has(optionSpec14)) {
 diff --git a/src/main/java/net/minecraft/world/inventory/MenuType.java b/src/main/java/net/minecraft/world/inventory/MenuType.java
 index a8211550fcb15fe84c6fed4d68d7f82c0cc259bd..a007ee11e08806890aca8add198972c731e67601 100644
 --- a/src/main/java/net/minecraft/world/inventory/MenuType.java

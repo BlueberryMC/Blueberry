@@ -2,6 +2,8 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
@@ -25,7 +27,7 @@ public class BlueberryMod implements ModInfo {
     private ModDescriptionFile description;
     private ClassLoader classLoader;
     private ModConfig config;
-    private RootCompoundVisualConfig visualConfig;
+    private Object visualConfig;
     private File file;
     private BlueberryResourceManager resourceManager;
     boolean first = true;
@@ -54,14 +56,16 @@ public class BlueberryMod implements ModInfo {
     }
 
     final void init(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
-        this.modLoader = modLoader;
-        this.description = description;
-        this.classLoader = classLoader;
-        this.config = new ModConfig(this.description);
-        this.logger = LogManager.getLogger(this.description.getName());
-        this.visualConfig = new RootCompoundVisualConfig(new TextComponent(this.description.getName()));
-        this.file = file;
         try {
+            this.modLoader = modLoader;
+            this.description = description;
+            this.classLoader = classLoader;
+            this.config = new ModConfig(this.description);
+            this.logger = LogManager.getLogger(this.description.getName());
+            this.file = file;
+            Blueberry.runOnClient(() -> {
+                this.visualConfig = new RootCompoundVisualConfig(new TextComponent(this.description.getName()));
+            });
             this.onLoad();
         } catch (Throwable throwable) {
             this.stateList.add(ModState.ERRORED);
@@ -128,11 +132,13 @@ public class BlueberryMod implements ModInfo {
         return file;
     }
 
+    @SideOnly(Side.CLIENT)
     @NotNull
     public final RootCompoundVisualConfig getVisualConfig() {
-        return visualConfig;
+        return (RootCompoundVisualConfig) visualConfig;
     }
 
+    @SideOnly(Side.CLIENT)
     public final void setVisualConfig(@NotNull RootCompoundVisualConfig visualConfig) {
         Preconditions.checkNotNull(visualConfig, "cannot set null VisualConfig");
         this.visualConfig = visualConfig;
@@ -209,5 +215,21 @@ public class BlueberryMod implements ModInfo {
      */
     public boolean onReload() {
         return false;
+    }
+
+    /**
+     * Detects the mod from a class.
+     * @param clazz the class
+     * @return detected mod; null if mod could not be detected
+     */
+    @Nullable
+    public static BlueberryMod detectModFromClass(@NotNull Class<?> clazz) {
+        if (clazz.getClassLoader() instanceof ModClassLoader mcl) {
+            return mcl.getMod();
+        }
+        if (ClassLoader.getSystemClassLoader().equals(clazz.getClassLoader()) || (clazz.getClassLoader() instanceof LaunchClassLoader)) {
+            return Blueberry.getModManager().getModById("blueberry");
+        }
+        return null;
     }
 }

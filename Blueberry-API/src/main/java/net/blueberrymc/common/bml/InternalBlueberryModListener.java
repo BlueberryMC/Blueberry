@@ -8,13 +8,7 @@ import net.blueberrymc.common.bml.event.Listener;
 import net.blueberrymc.world.level.material.MilkFluid;
 import org.jetbrains.annotations.NotNull;
 
-public class InternalBlueberryModListener implements Listener {
-    private final InternalBlueberryMod mod;
-
-    InternalBlueberryModListener(@NotNull InternalBlueberryMod mod) {
-        this.mod = mod;
-    }
-
+public record InternalBlueberryModListener(@NotNull InternalBlueberryMod mod) implements Listener {
     @EventHandler
     public static void onLiquidBlockRender(@NotNull LiquidBlockRenderEvent e) {
         if (InternalBlueberryMod.liquidMilk && e.getFluidState().getType().isSame(MilkFluid.Source.INSTANCE)) {

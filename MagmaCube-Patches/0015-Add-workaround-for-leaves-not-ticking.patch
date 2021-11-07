@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Sun, 7 Nov 2021 21:40:40 +0900
+Subject: [PATCH] Add workaround for leaves not ticking
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
+index 0090b94ef5dac08126f6f0e0105f967fff3c57c2..7cbc066a1d3e4a4437d997a41f894b9e604784fe 100644
+--- a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
+@@ -57,7 +57,9 @@ public class LeavesBlock extends Block {
+     public BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
+         int i = getDistanceAt(blockState2) + 1;
+         if (i != 1 || blockState.getValue(DISTANCE) != i) {
+-            levelAccessor.scheduleTick(blockPos, this, 1);
++            // TODO: workaround for leaves not ticking
++            if (levelAccessor instanceof ServerLevel sl) tick(blockState, sl, blockPos, sl.random);
++            //levelAccessor.scheduleTick(blockPos, this, 1);
+         }
+ 
+         return blockState;

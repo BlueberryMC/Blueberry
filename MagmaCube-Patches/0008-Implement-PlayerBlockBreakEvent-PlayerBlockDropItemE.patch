@@ -87,7 +87,7 @@ index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 88533189778ba73d04fa96a46c9fd14974e62168..b217d1f7fc1a48402fbc22d3cee90db43b06ac70 100644
+index d61701a68c53781e3602c372bbb426253bc128fe..dca7a1e2548ad3d8c4fe46307331462a748ddab0 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -101,6 +101,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
@@ -99,10 +99,10 @@ index 88533189778ba73d04fa96a46c9fd14974e62168..b217d1f7fc1a48402fbc22d3cee90db4
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 6010d41f9e534ecf98cd03447409b823ca896f6a..79c8b1ffd52fa70e8156bf4b73664aed111a8b92 100644
+index d5b471b64a4d78c6c8217d82b8a2d07446de6fb9..f21e970a8a6b2d3d1fa569a1165cedbee3fa0ce1 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -314,11 +314,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -313,11 +313,13 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ItemEntity itemEntity = (ItemEntity)supplier.get();
              itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index 6010d41f9e534ecf98cd03447409b823ca896f6a..79c8b1ffd52fa70e8156bf4b73664aed
          if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
          }
-@@ -475,6 +477,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -474,6 +476,12 @@ public class Block extends BlockBehaviour implements ItemLike {
          return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
      }
  

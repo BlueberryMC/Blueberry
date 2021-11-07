@@ -18,6 +18,7 @@
   "gui.screens.mod_config.title": "Mod Config",
   "item.blueberry.3d": "3D",
   "item.blueberry.milk_bucket": "Milk Bucket",
+  "blueberry.mod.config.debug.title": "Debug",
   "blueberry.mod.config.debugRenderer.title": "Debug Renderers",
   "blueberry.mod.config.game_play.title": "Game Play",
   "blueberry.mod.config.game_play.liquid_milk": "Liquid Milk",

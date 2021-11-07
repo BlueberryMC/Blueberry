@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SideOnly(Side.CLIENT)
-public class BlueberryClient implements BlueberryUtil {
+public class BlueberryClient extends BlueberryUtil {
     private final BlueberryClientScheduler clientScheduler = new BlueberryClientScheduler();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();

@@ -5,6 +5,7 @@ import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.ClassVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
@@ -78,12 +79,14 @@ public class InternalBlueberryMod extends BlueberryMod {
     public static boolean showDRRaidDebug = false;
     public static boolean showDRGoalSelector = false;
     public static boolean showDRGameTestDebug = false;
-    public static boolean liquidMilk = false;
-    public static boolean item3d = false;
     public static volatile DiscordRPCStatus discordRpc = DiscordRPCStatus.ENABLED;
     public static final AtomicBoolean discordRpcShowServerIp = new AtomicBoolean(false);
     public static boolean extendedWidth = false;
     public static boolean extendedHeight = false;
+    // public static boolean debugModConfigScreen = false;
+    public static boolean enableDebugPackets = false;
+    public static boolean liquidMilk = false;
+    public static boolean item3d = false;
     public static boolean bungee = false; // server only
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
@@ -94,82 +97,25 @@ public class InternalBlueberryMod extends BlueberryMod {
     public void onLoad() {
         getLogger().debug("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getCanonicalName());
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
-        this.getVisualConfig().onSave(this::saveConfig);
-        this.getVisualConfig()
-                .add(
-                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.debugRenderer.title"))
-                                .add(new BooleanVisualConfig(new TextComponent("Pathfinding Renderer"), this.getConfig().getBoolean("debugRenderer.pathfinding", false), false).id("debugRenderer.pathfinding"))
-                                .add(new BooleanVisualConfig(new TextComponent("Water Debug Renderer"), this.getConfig().getBoolean("debugRenderer.waterDebug", false), false).id("debugRenderer.waterDebug"))
-                                .add(new BooleanVisualConfig(new TextComponent("Chunk Border Renderer"), this.getConfig().getBoolean("debugRenderer.chunkBorder", true), true).id("debugRenderer.chunkBorder"))
-                                .add(new BooleanVisualConfig(new TextComponent("Height Map Renderer"), this.getConfig().getBoolean("debugRenderer.heightMap", false), false).id("debugRenderer.heightMap"))
-                                .add(new BooleanVisualConfig(new TextComponent("Collision Box Renderer"), this.getConfig().getBoolean("debugRenderer.collisionBox", false), false).id("debugRenderer.collisionBox"))
-                                .add(new BooleanVisualConfig(new TextComponent("Neighbors Update Renderer"), this.getConfig().getBoolean("debugRenderer.neighborsUpdate", false), false).id("debugRenderer.neighborsUpdate"))
-                                .add(new BooleanVisualConfig(new TextComponent("Structure Renderer"), this.getConfig().getBoolean("debugRenderer.structure", false), false).id("debugRenderer.structure"))
-                                .add(new BooleanVisualConfig(new TextComponent("Light Debug Renderer"), this.getConfig().getBoolean("debugRenderer.lightDebug", false), false).id("debugRenderer.lightDebug"))
-                                .add(new BooleanVisualConfig(new TextComponent("World Gen Attempt Renderer"), this.getConfig().getBoolean("debugRenderer.worldGenAttempt", false), false).id("debugRenderer.worldGenAttempt"))
-                                .add(new BooleanVisualConfig(new TextComponent("Solid Face Renderer"), this.getConfig().getBoolean("debugRenderer.solidFace", false), false).id("debugRenderer.solidFace"))
-                                .add(new BooleanVisualConfig(new TextComponent("Chunk Renderer"), this.getConfig().getBoolean("debugRenderer.chunk", false), false).id("debugRenderer.chunk"))
-                                .add(new BooleanVisualConfig(new TextComponent("Brain Debug Renderer"), this.getConfig().getBoolean("debugRenderer.brainDebug", false), false).id("debugRenderer.brainDebug"))
-                                .add(new BooleanVisualConfig(new TextComponent("Village Sections Debug Renderer"), this.getConfig().getBoolean("debugRenderer.villageSectionsDebug", false), false).id("debugRenderer.villageSectionsDebug"))
-                                .add(new BooleanVisualConfig(new TextComponent("Bee Debug Renderer"), this.getConfig().getBoolean("debugRenderer.beeDebug", false), false).id("debugRenderer.beeDebug"))
-                                .add(new BooleanVisualConfig(new TextComponent("Raid Debug Renderer"), this.getConfig().getBoolean("debugRenderer.raidDebug", false), false).id("debugRenderer.raidDebug"))
-                                .add(new BooleanVisualConfig(new TextComponent("Goal Selector Renderer"), this.getConfig().getBoolean("debugRenderer.goalSelector", false), false).id("debugRenderer.goalSelector"))
-                                .add(new BooleanVisualConfig(new TextComponent("Game Test Debug Renderer"), this.getConfig().getBoolean("debugRenderer.gameTestDebug", false), false).id("debugRenderer.gameTestDebug"))
-                )
-                .add(
-                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.game_play.title"))
-                                //.add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.game_play.liquid_milk"), this.getConfig().getBoolean("gamePlay.liquidMilk", false), false).id("gamePlay.liquidMilk"))
-                )
-                .add(
-                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
-                                .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
-                                        .add(
-                                                CycleVisualConfig.fromEnum(
-                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enable"),
-                                                        DiscordRPCStatus.class,
-                                                        getConfig().get("misc.discordRpc.status", DiscordRPCStatus.ENABLED),
-                                                        DiscordRPCStatus.ENABLED
-                                                ).id("misc.discordRpc.status"))
-                                        .add(
-                                                new BooleanVisualConfig(
-                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"),
-                                                        this.getConfig().getBoolean("misc.discordRpc.showServerIp", true),
-                                                        true
-                                                ).id("misc.discordRpc.showServerIp"))
-                                )
-                                .add(new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.title"))
-                                        .add(
-                                                new BooleanVisualConfig(
-                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_width"),
-                                                        this.getConfig().getBoolean("misc.chatSettings.extendedWidth", false),
-                                                        false
-                                                ).id("misc.chatSettings.extendedWidth").description(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_width.description"))
-                                        )
-                                        .add(
-                                                new BooleanVisualConfig(
-                                                        new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_height"),
-                                                        this.getConfig().getBoolean("misc.chatSettings.extendedHeight", false),
-                                                        false
-                                                ).id("misc.chatSettings.extendedHeight").description(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_height.description"))
-                                        )
-                                )
-                )
-                .add(
-                        new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.title"))
-                                .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d"), false).id("test.3d").description(new TextComponent("Yes!")).requiresRestart())
-                );
-        registerVisualConfigTest();
+        Blueberry.runOnClient(() -> {
+            this.getVisualConfig().onSave(this::saveConfigClient);
+            this.getVisualConfig()
+                    .add(createVisualConfigDebug())
+                    .add(createVisualConfigGamePlay())
+                    .add(createVisualConfigMisc());
+            registerVisualConfigTest();
+            Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
+            Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
+                    clientTimer.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            scheduler.tickAsync();
+                        }
+                    }, 1, 1)
+            ).ifNotPresent(clientTimer::cancel);
+        });
         onReload();
-        Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
         registerArgumentTypes();
-        Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
-                clientTimer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        scheduler.tickAsync();
-                    }
-                }, 1, 1)
-        );
         AbstractBlueberryScheduler serverScheduler = Blueberry.getUtil().getServerScheduler();
         serverTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -190,6 +136,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     @Override
     public void onPreInit() {
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
+        // TODO: move to registerFluids/registerBlocks?
         FLOWING_MILK = MilkFluid.Flowing.INSTANCE;
         MILK = MilkFluid.Source.INSTANCE;
         MILK_BLOCK = new BlueberryLiquidBlock(MILK, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
@@ -205,17 +152,33 @@ public class InternalBlueberryMod extends BlueberryMod {
         }
     }
 
-    private void saveConfig(CompoundVisualConfig config) {
-        this.save(config);
-        onReload();
+    private void saveConfigCommon() {
+        if (Blueberry.getSide() == Side.SERVER) {
+            getConfig().set("bungeecord", bungee);
+        }
+        getConfig().set("enableDebugPackets", enableDebugPackets);
+        getConfig().set("gamePlay.liquidMilk", liquidMilk);
+        getConfig().set("test.3d", item3d);
+    }
+
+    private void postSaveConfigCommon() {
         try {
             getConfig().saveConfig();
             this.getLogger().info("Saved configuration");
         } catch (IOException ex) {
             this.getLogger().error("Could not save configuration", ex);
         }
+        onReload();
     }
 
+    @SideOnly(Side.CLIENT)
+    private void saveConfigClient(CompoundVisualConfig config) {
+        saveConfigCommon();
+        save(config);
+        postSaveConfigCommon();
+    }
+
+    @SideOnly(Side.CLIENT)
     private void registerVisualConfigTest() {
         CompoundVisualConfig config = new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.test.description"));
         config.add(
@@ -310,6 +273,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         if (Blueberry.getSide() == Side.SERVER) {
             bungee = getConfig().getBoolean("bungeecord", false);
         }
+        enableDebugPackets = getConfig().getBoolean("enableDebugPackets", false);
         liquidMilk = getConfig().getBoolean("gamePlay.liquidMilk", false);
         item3d = getConfig().getBoolean("test.3d", false);
         // post-reload
@@ -389,6 +353,56 @@ public class InternalBlueberryMod extends BlueberryMod {
                 lastScreen.set(null);
             }
         }
+    }
+
+    private CompoundVisualConfig createVisualConfigDebug() {
+        return new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.debug.title"))
+                .add(createVisualConfigDebug_DebugRenderers())
+                .add(new BooleanVisualConfig(new TextComponent("\"3D\" Item"), this.getConfig().getBoolean("test.3d"), false).id("test.3d").description(new TextComponent("Yes!")).requiresRestart());
+    }
+
+    private CompoundVisualConfig createVisualConfigDebug_DebugRenderers() {
+        return new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.debugRenderer.title"))
+                .add(new BooleanVisualConfig(new TextComponent("Pathfinding Renderer"), this.getConfig().getBoolean("debugRenderer.pathfinding", false), false).id("debugRenderer.pathfinding"))
+                .add(new BooleanVisualConfig(new TextComponent("Water Debug Renderer"), this.getConfig().getBoolean("debugRenderer.waterDebug", false), false).id("debugRenderer.waterDebug"))
+                .add(new BooleanVisualConfig(new TextComponent("Chunk Border Renderer"), this.getConfig().getBoolean("debugRenderer.chunkBorder", true), true).id("debugRenderer.chunkBorder"))
+                .add(new BooleanVisualConfig(new TextComponent("Height Map Renderer"), this.getConfig().getBoolean("debugRenderer.heightMap", false), false).id("debugRenderer.heightMap"))
+                .add(new BooleanVisualConfig(new TextComponent("Collision Box Renderer"), this.getConfig().getBoolean("debugRenderer.collisionBox", false), false).id("debugRenderer.collisionBox"))
+                .add(new BooleanVisualConfig(new TextComponent("Neighbors Update Renderer"), this.getConfig().getBoolean("debugRenderer.neighborsUpdate", false), false).id("debugRenderer.neighborsUpdate"))
+                .add(new BooleanVisualConfig(new TextComponent("Structure Renderer"), this.getConfig().getBoolean("debugRenderer.structure", false), false).id("debugRenderer.structure"))
+                .add(new BooleanVisualConfig(new TextComponent("Light Debug Renderer"), this.getConfig().getBoolean("debugRenderer.lightDebug", false), false).id("debugRenderer.lightDebug"))
+                .add(new BooleanVisualConfig(new TextComponent("World Gen Attempt Renderer"), this.getConfig().getBoolean("debugRenderer.worldGenAttempt", false), false).id("debugRenderer.worldGenAttempt"))
+                .add(new BooleanVisualConfig(new TextComponent("Solid Face Renderer"), this.getConfig().getBoolean("debugRenderer.solidFace", false), false).id("debugRenderer.solidFace"))
+                .add(new BooleanVisualConfig(new TextComponent("Chunk Renderer"), this.getConfig().getBoolean("debugRenderer.chunk", false), false).id("debugRenderer.chunk"))
+                .add(new BooleanVisualConfig(new TextComponent("Brain Debug Renderer"), this.getConfig().getBoolean("debugRenderer.brainDebug", false), false).id("debugRenderer.brainDebug"))
+                .add(new BooleanVisualConfig(new TextComponent("Village Sections Debug Renderer"), this.getConfig().getBoolean("debugRenderer.villageSectionsDebug", false), false).id("debugRenderer.villageSectionsDebug"))
+                .add(new BooleanVisualConfig(new TextComponent("Bee Debug Renderer"), this.getConfig().getBoolean("debugRenderer.beeDebug", false), false).id("debugRenderer.beeDebug"))
+                .add(new BooleanVisualConfig(new TextComponent("Raid Debug Renderer"), this.getConfig().getBoolean("debugRenderer.raidDebug", false), false).id("debugRenderer.raidDebug"))
+                .add(new BooleanVisualConfig(new TextComponent("Goal Selector Renderer"), this.getConfig().getBoolean("debugRenderer.goalSelector", false), false).id("debugRenderer.goalSelector"))
+                .add(new BooleanVisualConfig(new TextComponent("Game Test Debug Renderer"), this.getConfig().getBoolean("debugRenderer.gameTestDebug", false), false).id("debugRenderer.gameTestDebug"));
+    }
+
+    private CompoundVisualConfig createVisualConfigGamePlay() {
+        return new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.game_play.title"))
+                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.game_play.liquid_milk"), this.getConfig().getBoolean("gamePlay.liquidMilk", false), false).id("gamePlay.liquidMilk"));
+    }
+
+    private CompoundVisualConfig createVisualConfigMisc() {
+        return new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.title"))
+                .add(createVisualConfigMisc_DiscordRPC())
+                .add(createVisualConfigMisc_ChatSettings());
+    }
+
+    private CompoundVisualConfig createVisualConfigMisc_DiscordRPC() {
+        return new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.title"))
+                .add(CycleVisualConfig.fromEnum(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.enable"), DiscordRPCStatus.class, getConfig().get("misc.discordRpc.status", DiscordRPCStatus.ENABLED), DiscordRPCStatus.ENABLED).id("misc.discordRpc.status"))
+                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.show_server_ip"), this.getConfig().getBoolean("misc.discordRpc.showServerIp", true), true).id("misc.discordRpc.showServerIp"));
+    }
+
+    private CompoundVisualConfig createVisualConfigMisc_ChatSettings() {
+        return new CompoundVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.title"))
+                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_width"), this.getConfig().getBoolean("misc.chatSettings.extendedWidth", false), false).id("misc.chatSettings.extendedWidth").description(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_width.description")))
+                .add(new BooleanVisualConfig(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_height"), this.getConfig().getBoolean("misc.chatSettings.extendedHeight", false), false).id("misc.chatSettings.extendedHeight").description(new BlueberryText("blueberry", "blueberry.mod.config.misc.chat_settings.extended_height.description")));
     }
 
     public enum DiscordRPCStatus implements NameGetter {

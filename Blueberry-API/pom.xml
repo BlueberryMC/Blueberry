@@ -13,10 +13,6 @@
     <version>0.0.16</version>
     <name>Blueberry-API</name>
 
-    <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-    </properties>
     <repositories>
         <repository>
             <id>sponge-powered</id>

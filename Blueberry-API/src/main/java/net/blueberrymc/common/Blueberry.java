@@ -197,14 +197,26 @@ public class Blueberry {
         Blueberry.getModLoader().forceRegisterMod(description, InternalBlueberryMod.class, false);
     }
 
-    public static void crash(@NotNull("crashReport") CrashReport crashReport) {
+    /**
+     * Crashes the Minecraft with provided crash report.
+     * @param crashReport the crash report
+     */
+    public static void crash(@NotNull CrashReport crashReport) {
         getUtil().crash(crashReport);
     }
 
+    /**
+     * Crashes the minecraft with a throwable and a message.
+     * @param throwable throwable (generates stack trace section from it)
+     * @param message the message (description)
+     */
     public static void crash(@NotNull Throwable throwable, @NotNull String message) {
         crash(CrashReport.forThrowable(throwable, message));
     }
 
+    /**
+     * Copy of {@link net.minecraft.Util#pauseInIde(Throwable)}.
+     */
     @Contract("_ -> param1")
     public static <T extends Throwable> T pauseInIde(@NotNull T throwable) {
         if (SharedConstants.IS_RUNNING_IN_IDE) {
@@ -226,6 +238,7 @@ public class Blueberry {
         }
     }
 
+    /* Constructor to prevent creating instance of this class */
     @Contract(value = " -> fail", pure = true)
     private Blueberry() {
         throw new IllegalStateException();

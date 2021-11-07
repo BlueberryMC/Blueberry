@@ -40,22 +40,24 @@ public class EventManager {
                 continue;
             }
             if (!method.getReturnType().equals(void.class)) {
-                logInvalidHandler(method, "Warning: return type/value is not used", mod);
+                logInvalidHandler(method, "warning: return type is not void (return value will not be used)", mod);
             }
-            /* // TODO: do we need this check?
             if (Modifier.isAbstract(method.getModifiers())) {
-                logInvalidHandler(method, "method must not be abstract");
+                logInvalidHandler(method, "method must not be abstract", mod);
                 continue;
             }
-            */
             Class<?> clazz = method.getParameters()[0].getType();
             if (!Event.class.isAssignableFrom(clazz)) {
                 logInvalidHandler(method, "parameter type is not assignable from " + Event.class.getCanonicalName(), mod);
                 continue;
             }
+            boolean isStatic = Modifier.isStatic(method.getModifiers());
+            if (!method.canAccess(isStatic ? null : listener)) {
+                logInvalidHandler(method, "method is inaccessible from EventManager", mod);
+                continue;
+            }
             Class<? extends Event> eventClass = clazz.asSubclass(Event.class);
             HandlerList handlerList = getHandlerList(eventClass);
-            boolean isStatic = Modifier.isStatic(method.getModifiers());
             ThrowableConsumer<Event> consumer = isStatic ? event -> method.invoke(null, event) : event -> method.invoke(listener, event);
             handlerList.add(consumer, eventHandler.priority(), listener, mod);
         }
@@ -107,6 +109,15 @@ public class EventManager {
         return ImmutableMap.copyOf(handlerMap);
     }
 
+    /**
+     * Returns a handler list for an event class.
+     * @param event the class of an event
+     * @return handler list
+     * @throws IllegalArgumentException getHandlerList method is not static
+     * @throws IllegalArgumentException getHandlerList method returned null
+     * @throws IllegalArgumentException getHandlerList method is inaccessible
+     * @throws IllegalArgumentException getHandlerList method threw exception
+     */
     @NotNull
     public static HandlerList getHandlerList(@NotNull Class<? extends Event> event) {
         Preconditions.checkNotNull(event, "event cannot be null");
@@ -124,7 +135,7 @@ public class EventManager {
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " is not accessible (make sure your method has 'public' modifier");
         } catch (InvocationTargetException e) {
-            throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " threw exception", e);
+            throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " threw exception", e.getTargetException());
         }
     }
 

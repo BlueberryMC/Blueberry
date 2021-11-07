@@ -75,7 +75,7 @@ public class DiscordRPCTaskExecutor {
             }).setErroredEventHandler((i, s) -> {
                 LOGGER.error("Encountered error on Discord RPC: " + i + " (" + s + ")");
             }).setDisconnectedEventHandler((i, s) -> {
-                LOGGER.warn("Disconnected from Discord: " + i + " (" + s + ")");
+                LOGGER.info("Disconnected from Discord: " + i + " (" + s + ")");
             }).build(), true);
         });
     }

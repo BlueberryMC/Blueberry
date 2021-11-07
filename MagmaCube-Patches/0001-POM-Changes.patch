@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d9eb2e8cd 100644
+index 49f86072d215bb7ecf3ccbe2aacbd381c799dac5..2f13ee18135219cc9575ff36ef8bb64f69eeb391 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,32 +3,49 @@
@@ -22,7 +22,7 @@ index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>21w43a</version>
+-        <version>21w44a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -33,19 +33,19 @@ index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d
      
      <properties>
 +        <!-- Blueberry start -->
-         <log4j.version>2.14.1</log4j.version>
 +        <text2speech.version>1.11.3</text2speech.version>
 +        <maven.compiler.source>16</maven.compiler.source>
 +        <maven.compiler.target>16</maven.compiler.target>
 +        <api.version>0.0.16</api.version>
 +        <!-- Blueberry end -->
+         <log4j.version>2.14.1</log4j.version>
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w43a</version>
++    <version>21w44a</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -142,19 +142,16 @@ index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -102,238 +150,303 @@
-         <dependency>
+@@ -103,237 +151,302 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
--            <version>4.1.50.Final</version>
-+            <version>4.1.68.Final</version>
+             <version>4.1.68.Final</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.google.guava</groupId>
              <artifactId>guava</artifactId>
--            <version>28.2-jre</version>
-+            <version>31.0.1-jre</version>
+             <version>31.0.1-jre</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
@@ -367,36 +364,31 @@ index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d
          <dependency>
              <groupId>it.unimi.dsi</groupId>
              <artifactId>fastutil</artifactId>
--            <version>8.3.1</version>
-+            <version>8.5.6</version>
+             <version>8.5.6</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>org.apache.commons</groupId>
              <artifactId>commons-lang3</artifactId>
--            <version>3.7</version>
-+            <version>3.12.0</version>
+             <version>3.12.0</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>commons-io</groupId>
              <artifactId>commons-io</artifactId>
--            <version>2.6</version>
-+            <version>2.11.0</version>
+             <version>2.11.0</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>org.apache.httpcomponents</groupId>
              <artifactId>httpclient</artifactId>
--            <version>4.5.12</version>
-+            <version>4.5.13</version>
+             <version>4.5.13</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>org.apache.httpcomponents</groupId>
              <artifactId>httpcore</artifactId>
--            <version>4.3.2</version>
-+            <version>4.4.14</version>
+             <version>4.4.14</version>
 +            <scope>provided</scope>
 +        </dependency>
 +        <dependency>
@@ -408,29 +400,25 @@ index dc93da6736de0aff51295a52787784044045b734..832207473fa17c859af3e9a4cefb7f6d
          <dependency>
              <groupId>org.apache.commons</groupId>
              <artifactId>commons-compress</artifactId>
--            <version>1.19</version>
-+            <version>1.21</version>
+             <version>1.21</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.ibm.icu</groupId>
              <artifactId>icu4j</artifactId>
--            <version>67.1</version>
-+            <version>69.1</version>
+             <version>69.1</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.github.oshi</groupId>
              <artifactId>oshi-core</artifactId>
--            <version>5.7.5</version>
-+            <version>5.8.2</version>
+             <version>5.8.2</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>blocklist</artifactId>
--            <version>1.0.5</version>
-+            <version>1.0.6</version>
+             <version>1.0.6</version>
 +            <scope>provided</scope>
 +        </dependency>
 +        <dependency>
@@ -511,10 +499,10 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f49aaec1067962af76d43824c0d56042fe0d4e96..4088692e4fa600bdc9aeca8b3f65ec9325024260 100644
+index a22c5fd1645eee10163c1a7af5de9bc1b2b035bd..1fbd4ef02f5fbf5db92f59dae2b3f532ca146416 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -910,7 +910,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -918,7 +918,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

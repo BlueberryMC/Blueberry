@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModIdArgument implements ArgumentType<BlueberryMod> {
     private static final List<String> EXAMPLES = Collections.singletonList("blueberry");
-    private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod");
+    // private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod");
     private static final DynamicCommandExceptionType INVALID_MOD_ID = new DynamicCommandExceptionType(o -> new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod", o));
 
     @NotNull private final Mode mode;
@@ -55,21 +55,19 @@ public class ModIdArgument implements ArgumentType<BlueberryMod> {
     @NotNull
     @Override
     public BlueberryMod parse(@NotNull StringReader stringReader) throws CommandSyntaxException {
-        String smod = stringReader.readUnquotedString();
-        BlueberryMod mod = Blueberry.getModLoader().getModById(smod);
-        if (mod == null) throw INVALID_MOD_ID.createWithContext(stringReader, smod);
+        String modId = stringReader.readUnquotedString();
+        BlueberryMod mod = Blueberry.getModLoader().getModById(modId);
+        if (mod == null) throw INVALID_MOD_ID.createWithContext(stringReader, modId);
         return mod;
     }
 
     @NotNull
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
-        List<String> list;
-        switch (mode) {
-            case ONLY_ACTIVE_MODS: list = Blueberry.getModLoader().mapActiveMods(BlueberryMod::getModId); break;
-            case ALL_MODS: list = Blueberry.getModLoader().mapLoadedMods(BlueberryMod::getModId); break;
-            default: throw new RuntimeException();
-        }
+        List<String> list = switch (mode) {
+            case ONLY_ACTIVE_MODS -> Blueberry.getModLoader().mapActiveMods(BlueberryMod::getModId);
+            case ALL_MODS -> Blueberry.getModLoader().mapLoadedMods(BlueberryMod::getModId);
+        };
         return SharedSuggestionProvider.suggest(list, builder);
     }
 

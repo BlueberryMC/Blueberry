@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
-public class BlueberryServer implements BlueberryUtil {
+public class BlueberryServer extends BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     @Nullable private final BlueberryServer impl;

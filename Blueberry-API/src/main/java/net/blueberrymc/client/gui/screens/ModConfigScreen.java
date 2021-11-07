@@ -4,27 +4,34 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.components.ScrollableContainer;
 import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
+import net.blueberrymc.common.bml.config.ByteVisualConfig;
 import net.blueberrymc.common.bml.config.ClassVisualConfig;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.CycleVisualConfig;
 import net.blueberrymc.common.bml.config.DoubleVisualConfig;
+import net.blueberrymc.common.bml.config.FloatVisualConfig;
 import net.blueberrymc.common.bml.config.IntegerVisualConfig;
 import net.blueberrymc.common.bml.config.LongVisualConfig;
+import net.blueberrymc.common.bml.config.NumberVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
+import net.blueberrymc.common.bml.config.ShortVisualConfig;
 import net.blueberrymc.common.bml.config.StringVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
 import net.blueberrymc.util.ComponentGetter;
 import net.blueberrymc.util.NameGetter;
+import net.blueberrymc.util.NumberUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.SliderButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -109,17 +116,8 @@ public class ModConfigScreen extends BlueberryScreen {
                 if (def instanceof Class<?> cl) s = cl.getTypeName();
                 tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
-            if (config instanceof IntegerVisualConfig) {
-                IntegerVisualConfig integerVisualConfig = (IntegerVisualConfig) config;
-                tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", Integer.toString(integerVisualConfig.getMin()), Integer.toString(integerVisualConfig.getMax())).withStyle(ChatFormatting.AQUA)).append("\n");
-            }
-            if (config instanceof LongVisualConfig) {
-                LongVisualConfig longVisualConfig = (LongVisualConfig) config;
-                tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", Long.toString(longVisualConfig.getMin()), Long.toString(longVisualConfig.getMax())).withStyle(ChatFormatting.AQUA)).append("\n");
-            }
-            if (config instanceof DoubleVisualConfig) {
-                DoubleVisualConfig doubleVisualConfig = (DoubleVisualConfig) config;
-                tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", Double.toString(doubleVisualConfig.getMin()), Double.toString(doubleVisualConfig.getMax())).withStyle(ChatFormatting.AQUA)).append("\n");
+            if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
+                tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
             }
             if (config instanceof StringVisualConfig) {
                 StringVisualConfig stringVisualConfig = (StringVisualConfig) config;
@@ -140,8 +138,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 onTooltipFunction = (poseStack) -> (x, y) -> {};
                 onTooltip = Button.NO_TOOLTIP;
             }
-            if (config instanceof CompoundVisualConfig) {
-                CompoundVisualConfig compoundVisualConfig = (CompoundVisualConfig) config;
+            if (config instanceof CompoundVisualConfig compoundVisualConfig) {
                 Component component = Util.getOrDefault(
                         compoundVisualConfig.getComponent(),
                         compoundVisualConfig.getTitle(),
@@ -150,12 +147,12 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, component, button ->
                         this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this)), onTooltip)
                 );
-            } else if (config instanceof BooleanVisualConfig) {
-                BooleanVisualConfig booleanVisualConfig = (BooleanVisualConfig) config;
+            } else if (config instanceof BooleanVisualConfig booleanVisualConfig) {
                 container.children().add(new Button(this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, getButtonMessage(booleanVisualConfig), (button) -> {
                     Boolean curr = booleanVisualConfig.get();
                     booleanVisualConfig.set(!(curr != null && curr));
                     updateBooleanButton(booleanVisualConfig, button);
+                    booleanVisualConfig.clicked(button);
                 }, onTooltip));
                 addLabel.accept(config, offset);
             } else if (config instanceof CycleVisualConfig) {
@@ -164,7 +161,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 Button btn;
                 container.children().add(
                         btn = new Button(
-                                (this.width / 2) + 6 + 24,
+                                (this.width / 2) + 6 + 23,
                                 buttonY,
                                 Math.min(maxWidth, this.width / 6 - (24 * 2)),
                                 20,
@@ -186,7 +183,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 );
                 container.children().add(
                         new Button(
-                                (this.width / 2) + 6 + this.width / 6 - 22,
+                                (this.width / 2) + 6 + this.width / 6 - 24,
                                 buttonY,
                                 22,
                                 20,
@@ -196,56 +193,30 @@ public class ModConfigScreen extends BlueberryScreen {
                         )
                 );
                 addLabel.accept(config, offset);
-            } else if (config instanceof IntegerVisualConfig) {
-                IntegerVisualConfig integerVisualConfig = (IntegerVisualConfig) config;
+            } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
+                // TODO: slider
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
                     }
                 };
-                Integer defValue = integerVisualConfig.get();
-                if (defValue == null) defValue = integerVisualConfig.getDefaultValue();
-                if (defValue == null) defValue = integerVisualConfig.getMin();
+                Number defValue = numberVisualConfig.get();
+                if (defValue == null) defValue = numberVisualConfig.getDefaultValue();
+                if (defValue == null) defValue = numberVisualConfig.getMinAsNumber();
                 editBox.setResponder((s) -> {
                     try {
-                        int i = Integer.parseInt(s);
-                        if (i < integerVisualConfig.getMin() || i > integerVisualConfig.getMax()) throw new NumberFormatException();
+                        Number number = parseNumber(numberVisualConfig, s);
+                        if (NumberUtil.isNumberLessThan(number, numberVisualConfig.getMinAsNumber()) || NumberUtil.isNumberGreaterThan(number, numberVisualConfig.getMaxAsNumber())) throw new NumberFormatException();
                         editBox.setTextColor(0xe0e0e0);
-                        integerVisualConfig.set(i);
+                        numberVisualConfig.set(number);
                         unblock(editBox);
                     } catch (NumberFormatException e) {
                         editBox.setTextColor(0xff0000);
                         block(editBox);
                     }
                 });
-                editBox.setValue(Integer.toString(defValue));
-                container.children().add(editBox);
-                addLabel.accept(config, offset);
-            } else if (config instanceof LongVisualConfig) {
-                LongVisualConfig longVisualConfig = (LongVisualConfig) config;
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
-                    @Override
-                    public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
-                        onTooltipFunction.apply(poseStack).accept(x, y);
-                    }
-                };
-                Long defValue = longVisualConfig.get();
-                if (defValue == null) defValue = longVisualConfig.getDefaultValue();
-                if (defValue == null) defValue = longVisualConfig.getMin();
-                editBox.setResponder((s) -> {
-                    try {
-                        long l = Long.parseLong(s);
-                        if (l < longVisualConfig.getMin() || l > longVisualConfig.getMax()) throw new NumberFormatException();
-                        editBox.setTextColor(0xe0e0e0);
-                        longVisualConfig.set(l);
-                        unblock(editBox);
-                    } catch (NumberFormatException e) {
-                        editBox.setTextColor(0xff0000);
-                        block(editBox);
-                    }
-                });
-                editBox.setValue(Long.toString(defValue));
+                editBox.setValue(defValue.toString());
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig) {
@@ -295,41 +266,34 @@ public class ModConfigScreen extends BlueberryScreen {
                 editBox.setValue(defValue != null ? defValue.getTypeName() : "");
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
-            } else if (config instanceof DoubleVisualConfig) {
-                DoubleVisualConfig doubleVisualConfig = (DoubleVisualConfig) config;
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
-                    @Override
-                    public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
-                        onTooltipFunction.apply(poseStack).accept(x, y);
-                    }
-                };
-                Double defValue = doubleVisualConfig.get();
-                if (defValue == null) defValue = doubleVisualConfig.getDefaultValue();
-                if (defValue == null) defValue = doubleVisualConfig.getMin();
-                editBox.setResponder((s) -> {
-                    try {
-                        double i = Double.parseDouble(s);
-                        if (i < doubleVisualConfig.getMin() || i > doubleVisualConfig.getMax()) throw new NumberFormatException();
-                        editBox.setTextColor(0xe0e0e0);
-                        doubleVisualConfig.set(i);
-                        unblock(editBox);
-                    } catch (NumberFormatException e) {
-                        editBox.setTextColor(0xff0000);
-                        block(editBox);
-                    }
-                });
-                editBox.setValue(Double.toString(defValue));
-                container.children().add(editBox);
-                addLabel.accept(config, offset);
             }
         }
         this.children().add(container);
         super.init();
     }
 
+    @Contract("null, _ -> !null")
+    private static Number parseNumber(NumberVisualConfig<?> config, String s) throws NumberFormatException {
+        if (config instanceof ByteVisualConfig) {
+            return Byte.parseByte(s);
+        } else if (config instanceof DoubleVisualConfig) {
+            return Double.parseDouble(s);
+        } else if (config instanceof FloatVisualConfig) {
+            return Float.parseFloat(s);
+        } else if (config instanceof IntegerVisualConfig) {
+            return Integer.parseInt(s);
+        } else if (config instanceof LongVisualConfig) {
+            return Long.parseLong(s);
+        } else if (config instanceof ShortVisualConfig) {
+            return Short.parseShort(s);
+        } else {
+            return 0;
+        }
+    }
+
     private void block(Object blocker) {
         if (!blockers.contains(blocker)) blockers.add(blocker);
-        backButton.active = blockers.isEmpty();
+        backButton.active = false;
     }
 
     private void unblock(Object blocker) {

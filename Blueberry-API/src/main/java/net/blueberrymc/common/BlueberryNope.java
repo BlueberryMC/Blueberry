@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BlueberryNope implements BlueberryUtil {
+public class BlueberryNope extends BlueberryUtil {
     @Override
     public @NotNull ResourceManager getResourceManager() {
         throw new UnsupportedOperationException();
