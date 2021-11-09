@@ -15,12 +15,13 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 
 ## ✨ Key features
 - Live Compiler (Automatically compiles the mod from .java files)
-  - Reload (You can recompile the mod in-game using "Reload" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
+  - Reload (You can recompile the mod in-game using "Recompile" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
 
 ## 📝 Todo
 - ~~Apply bspatch at installer, not at runtime.~~ partially implemented
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
+- write a ton of docs
 
 ## ✏️ Translations
 All translation PRs are welcome!
