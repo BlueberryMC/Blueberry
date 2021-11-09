@@ -121,6 +121,7 @@ public class InternalBlueberryModConfig {
         }
 
         @Order(10000)
+        @RequiresMCRestart
         @DefaultValue
         @Name("\"3D\" Item")
         @Key("item3d")
@@ -131,6 +132,13 @@ public class InternalBlueberryModConfig {
         @Name("Enable debug packets")
         @Key("debugPackets")
         public static boolean enableDebugPackets = false;
+
+        @Order(10002)
+        @DefaultValue
+        @Name("Debug ModConfigScreen")
+        @Description(@Name("Shows additional information on ModConfigScreen."))
+        @Key("debugModConfigScreen")
+        public static boolean debugModConfigScreen = false;
     }
 
     @Order(-9999)
@@ -183,6 +191,7 @@ public class InternalBlueberryModConfig {
     @Name("Server")
     @Key("server")
     public static class Server {
+        @RequiresMCRestart
         @DefaultValue
         @Name("BungeeCord")
         @Key("bungeecord")

@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -115,5 +117,48 @@ public class Util {
             return min;
         }
         return Math.min(value, max);
+    }
+
+    @NotNull
+    public static String getSimpleName(@NotNull Class<?> clazz) {
+        String name = clazz.getSimpleName();
+        if (name.length() > 0) return name;
+        Class<?> superClass = clazz.getSuperclass();
+        while (name.length() == 0 && superClass != null) {
+            name = superClass.getSimpleName();
+            superClass = superClass.getSuperclass();
+        }
+        while (name.length() == 0) {
+            for (Class<?> c : clazz.getInterfaces()) {
+                name = getSimpleName(c);
+                if (name.length() > 0) return name;
+            }
+        }
+        return name;
+    }
+
+    private static final Map<Class<?>, String> extendedSimpleNameCache = new HashMap<>();
+
+    @NotNull
+    public static String getExtendedSimpleName(@NotNull Class<?> clazz) {
+        if (extendedSimpleNameCache.containsKey(clazz)) return extendedSimpleNameCache.get(clazz);
+        String simpleName = getSimpleName(clazz);
+        Class<?> sc = clazz.getSuperclass();
+        if (sc != null && sc != Object.class) {
+            String superName = simpleName;
+            while (superName.equals(simpleName) && sc != null) {
+                superName = getSimpleName(sc);
+                sc = sc.getSuperclass();
+            }
+            if (superName.equals("Object")) {
+                extendedSimpleNameCache.put(clazz, simpleName);
+                return simpleName;
+            }
+            String name = simpleName + " extends " + superName;
+            extendedSimpleNameCache.put(clazz, name);
+            return name;
+        }
+        extendedSimpleNameCache.put(clazz, simpleName);
+        return simpleName;
     }
 }

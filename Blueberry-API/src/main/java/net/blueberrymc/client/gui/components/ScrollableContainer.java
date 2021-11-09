@@ -224,7 +224,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         this.renderDecorations(poseStack, i, i2);
         children.forEach(e -> {
             if (e instanceof AbstractWidget) {
-                if (((AbstractWidget) e).isFocused()) {
+                if (((AbstractWidget) e).isHovered()) {
                     ((AbstractWidget) e).renderToolTip(poseStack, i, i2);
                 }
             }
@@ -370,7 +370,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
             int rowBottom = this.getRowBottom(i);
             if (rowBottom >= this.top && rowTop <= this.bottom) {
                 E entry = this.getEntry(i);
-                entry.render(poseStack, this.width, this.height, f);
+                entry.render(poseStack, i3, i4, f);
                 if (entry instanceof AbstractWidget aw) {
                     if (prevY == aw.y) {
                         offset -= 22;

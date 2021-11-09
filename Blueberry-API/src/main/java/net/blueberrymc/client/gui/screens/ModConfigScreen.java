@@ -3,6 +3,7 @@ package net.blueberrymc.client.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.components.ScrollableContainer;
 import net.blueberrymc.client.resources.BlueberryText;
+import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.ByteVisualConfig;
 import net.blueberrymc.common.bml.config.ClassVisualConfig;
@@ -28,6 +29,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.Contract;
@@ -105,8 +107,10 @@ public class ModConfigScreen extends BlueberryScreen {
             Function<PoseStack, BiConsumer<Integer, Integer>> onTooltipFunction;
             Button.OnTooltip onTooltip;
             MutableComponent tooltip = new TextComponent("");
+            // description
             Component desc = config.getDescription();
             if (desc != null) tooltip.append(desc.plainCopy().withStyle(ChatFormatting.YELLOW)).append("\n");
+            // default value
             Object def = config instanceof CompoundVisualConfig ? null : config.getDefaultValue();
             if (def != null) {
                 String s = def.toString();
@@ -120,6 +124,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 if (def instanceof Class<?> cl) s = cl.getTypeName();
                 tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
+            // min/max value of number
             if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
                 boolean shouldShowMinMax = true;
                 if (config instanceof IntegerVisualConfig cfg && cfg.getMin() == Integer.MIN_VALUE && cfg.getMax() == Integer.MAX_VALUE) {
@@ -138,6 +143,7 @@ public class ModConfigScreen extends BlueberryScreen {
                     tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
                 }
             }
+            // pattern
             if (config instanceof StringVisualConfig) {
                 StringVisualConfig stringVisualConfig = (StringVisualConfig) config;
                 Pattern pattern = stringVisualConfig.getPattern();
@@ -148,10 +154,11 @@ public class ModConfigScreen extends BlueberryScreen {
                 Pattern pattern = classVisualConfig.getPattern();
                 if (pattern != null) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
+            // requiresRestart
             if (config.isRequiresRestart()) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.requires_restart").withStyle(ChatFormatting.RED)).append("\n");
             if (tooltip.getSiblings().size() > 0) tooltip.getSiblings().remove(tooltip.getSiblings().size() - 1); // removes last \n
             if (tooltip.toString().length() > 0) {
-                onTooltipFunction = (poseStack) -> (x, y) -> this.renderTooltip(poseStack, this.minecraft.font.split(tooltip, Math.max(this.width / 3, 170)), x, y);
+                onTooltipFunction = (poseStack) -> (x, y) -> this.renderTooltip(poseStack, this.minecraft.font.split(addDebugInfo(config, tooltip), Math.max(this.width / 3, 170)), x, y);
                 onTooltip = (button, poseStack, x, y) -> onTooltipFunction.apply(poseStack).accept(x, y);
             } else {
                 onTooltipFunction = (poseStack) -> (x, y) -> {};
@@ -289,6 +296,50 @@ public class ModConfigScreen extends BlueberryScreen {
         }
         this.children().add(container);
         super.init();
+    }
+
+    private static FormattedText addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
+        if (!InternalBlueberryModConfig.Debug.debugModConfigScreen) return tooltip;
+        MutableComponent copy = tooltip.copy().append("\n");
+        copy.append(new TextComponent("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        String valueType;
+        Object value = config.get();
+        if (value == null) {
+            valueType = "null";
+        } else {
+            valueType = value.getClass().getTypeName();
+        }
+        copy.append(new TextComponent("[Type: " + valueType + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        if (config instanceof CompoundVisualConfig compoundVisualConfig) {
+            copy.append(new TextComponent("[Compound size: " + compoundVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        } else {
+            copy.append(new TextComponent("[Raw value: ").withStyle(ChatFormatting.GRAY))
+                    .append(new TextComponent(String.valueOf(config.get())))
+                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                    .append("\n");
+        }
+        if (config instanceof CycleVisualConfig<?> cycleVisualConfig && cycleVisualConfig.get() instanceof Enum<?> e) {
+            copy.append(new TextComponent("[List size: " + cycleVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+            copy.append(new TextComponent("[Enum constant: ").withStyle(ChatFormatting.GRAY))
+                    .append(new TextComponent(e.name()).withStyle(ChatFormatting.YELLOW))
+                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                    .append("\n");
+            copy.append(new TextComponent("[Enum ordinal: ").withStyle(ChatFormatting.GRAY))
+                    .append(new TextComponent(Integer.toString(e.ordinal())).withStyle(ChatFormatting.YELLOW))
+                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                    .append("\n");
+            copy.append(new TextComponent("[Previous value: ").withStyle(ChatFormatting.GRAY))
+                    .append(new TextComponent(String.valueOf(cycleVisualConfig.peekPrevious())))
+                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                    .append("\n");
+            copy.append(new TextComponent("[Next value: ").withStyle(ChatFormatting.GRAY))
+                    .append(new TextComponent(String.valueOf(cycleVisualConfig.peekNext())))
+                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                    .append("\n");
+        }
+        if (copy.getSiblings().get(0).getContents().equals("\n")) copy.getSiblings().remove(0);
+        copy.getSiblings().remove(copy.getSiblings().size() - 1);
+        return copy;
     }
 
     @Contract("null, _ -> !null")

@@ -161,11 +161,17 @@ public class VisualConfigManager {
             if (element instanceof Field field) {
                 Name config = field.getAnnotation(Name.class);
                 if (field.getType() == boolean.class) {
-                    var cfg = new BooleanVisualConfig(tryGetComponent(mod, config), getField(boolean.class, field), (Boolean) getDefaultValue(field)).id(getKey(field)).description(getDescription(field));
+                    var cfg = new BooleanVisualConfig(tryGetComponent(mod, config), getField(boolean.class, field), (Boolean) getDefaultValue(field))
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == AtomicBoolean.class) {
-                    var cfg = new BooleanVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicBoolean.class, field)).get(), (Boolean) getDefaultValue(field)).id(getKey(field)).description(getDescription(field));
+                    var cfg = new BooleanVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicBoolean.class, field)).get(), (Boolean) getDefaultValue(field))
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == int.class) {
@@ -176,7 +182,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new IntegerVisualConfig(tryGetComponent(mod, config), getField(int.class, field), (Integer) getDefaultValue(field), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new IntegerVisualConfig(tryGetComponent(mod, config), getField(int.class, field), (Integer) getDefaultValue(field), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == AtomicInteger.class) {
@@ -187,7 +196,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new IntegerVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicInteger.class, field)).get(), (Integer) getDefaultValue(field), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new IntegerVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicInteger.class, field)).get(), (Integer) getDefaultValue(field), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == long.class) {
@@ -198,7 +210,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new LongVisualConfig(tryGetComponent(mod, config), getField(long.class, field), (Long) getDefaultValue(field), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new LongVisualConfig(tryGetComponent(mod, config), getField(long.class, field), (Long) getDefaultValue(field), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == AtomicLong.class) {
@@ -209,7 +224,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new LongVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicLong.class, field)).get(), (Long) getDefaultValue(field), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new LongVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicLong.class, field)).get(), (Long) getDefaultValue(field), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == double.class) {
@@ -220,7 +238,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new DoubleVisualConfig(tryGetComponent(mod, config), getField(double.class, field), (Double) getDefaultValue(field), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new DoubleVisualConfig(tryGetComponent(mod, config), getField(double.class, field), (Double) getDefaultValue(field), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == float.class) {
@@ -231,7 +252,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new FloatVisualConfig(tryGetComponent(mod, config), getField(float.class, field), (Float) getDefaultValue(field), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new FloatVisualConfig(tryGetComponent(mod, config), getField(float.class, field), (Float) getDefaultValue(field), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == byte.class) {
@@ -242,7 +266,10 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new ByteVisualConfig(tryGetComponent(mod, config), getField(byte.class, field), ((Number) getDefaultValue(field)).byteValue(), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new ByteVisualConfig(tryGetComponent(mod, config), getField(byte.class, field), ((Number) getDefaultValue(field)).byteValue(), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == short.class) {
@@ -253,19 +280,31 @@ public class VisualConfigManager {
                         min = param.min();
                         max = param.max();
                     }
-                    var cfg = new ShortVisualConfig(tryGetComponent(mod, config), getField(short.class, field), ((Number) getDefaultValue(field)).shortValue(), min, max).id(getKey(field)).description(getDescription(field));
+                    var cfg = new ShortVisualConfig(tryGetComponent(mod, config), getField(short.class, field), ((Number) getDefaultValue(field)).shortValue(), min, max)
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == String.class) {
-                    var cfg = new StringVisualConfig(tryGetComponent(mod, config), getField(String.class, field), (String) getDefaultValue(field)).id(getKey(field)).description(getDescription(field));
+                    var cfg = new StringVisualConfig(tryGetComponent(mod, config), getField(String.class, field), (String) getDefaultValue(field))
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == Class.class) {
-                    var cfg = new ClassVisualConfig(tryGetComponent(mod, config), getField(Class.class, field), (Class<?>) getDefaultValue(field)).id(getKey(field));
+                    var cfg = new ClassVisualConfig(tryGetComponent(mod, config), getField(Class.class, field), (Class<?>) getDefaultValue(field))
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType().isEnum()) {
-                    var cfg = CycleVisualConfig.fromEnumUnchecked(tryGetComponent(mod, config), field.getType(), getField(Object.class, field), getDefaultValue(field)).id(getKey(field)).description(getDescription(field));
+                    var cfg = CycleVisualConfig.fromEnumUnchecked(tryGetComponent(mod, config), field.getType(), getField(Object.class, field), getDefaultValue(field))
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 }
@@ -451,6 +490,10 @@ public class VisualConfigManager {
             YamlObject object = obj.getObject(key);
             if (object != null) load(object, c);
         }
+    }
+
+    private static boolean requiresMCRestart(AnnotatedElement element) {
+        return element.isAnnotationPresent(RequiresMCRestart.class);
     }
 
     @Nullable
@@ -737,4 +780,11 @@ public class VisualConfigManager {
     public @interface HideOn {
         Side[] value();
     }
+
+    /**
+     * Adds "Requires MC restart" in description when annotated with this.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface RequiresMCRestart {}
 }

@@ -108,6 +108,15 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     }
 
     @NotNull
+    public T peekNext() {
+        int nextIndex = index + 1;
+        if (nextIndex >= list.size()) {
+            nextIndex = 0;
+        }
+        return list.get(nextIndex);
+    }
+
+    @NotNull
     public T previous() {
         if (--index < 0) {
             index = list.size() - 1;
@@ -115,7 +124,20 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
         return list.get(index);
     }
 
+    @NotNull
+    public T peekPrevious() {
+        int prevIndex = index - 1;
+        if (prevIndex < 0) {
+            prevIndex = list.size() - 1;
+        }
+        return list.get(prevIndex);
+    }
+
     public void setIndex(int value) {
         index = value;
+    }
+
+    public int size() {
+        return list.size();
     }
 }
