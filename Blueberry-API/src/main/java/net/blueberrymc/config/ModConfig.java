@@ -77,7 +77,7 @@ public class ModConfig {
         config.save(this.configFile);
     }
 
-    public void set(@NotNull("path") String path, @Nullable Object value) {
+    public void set(@NotNull String path, @Nullable Object value) {
         YamlObject parent = null;
         YamlObject object = getConfig();
         String[] arr = path.split("\\.");
@@ -95,7 +95,7 @@ public class ModConfig {
 
     @Contract
     @SuppressWarnings("unchecked")
-    public <T> T get(@NotNull("path") String path, @Nullable T def) {
+    public <T> T get(@NotNull String path, @Nullable T def) {
         YamlObject object = getConfig();
         String[] arr = path.split("\\.");
         for (int i = 0; i < arr.length; i++) {
@@ -117,74 +117,118 @@ public class ModConfig {
         return def;
     }
 
-    public boolean getBoolean(@NotNull("path") String path) {
+    public boolean getBoolean(@NotNull String path) {
         return getBoolean(path, false);
     }
 
-    public boolean getBoolean(@NotNull("path") String path, boolean def) {
+    public boolean getBoolean(@NotNull String path, boolean def) {
         return get(path, def);
     }
 
     @Contract
-    public String getString(@NotNull("path") String path) {
+    public String getString(@NotNull String path) {
         return getString(path, null);
     }
 
     @Contract("_, !null -> !null")
-    public String getString(@NotNull("path") String path, @Nullable String def) {
+    public String getString(@NotNull String path, @Nullable String def) {
         return get(path, def);
     }
 
-    public float getFloat(@NotNull("path") String path) {
+    public float getFloat(@NotNull String path) {
         return getFloat(path, 0.0F);
     }
 
-    public float getFloat(@NotNull("path") String path, float def) {
+    public float getFloat(@NotNull String path, float def) {
         return (float) getDouble(path, def);
     }
 
-    public double getDouble(@NotNull("path") String path) {
+    public double getDouble(@NotNull String path) {
         return getDouble(path, 0.0D);
     }
 
-    public double getDouble(@NotNull("path") String path, double def) {
+    public double getDouble(@NotNull String path, double def) {
         return get(path, def);
     }
 
-    public int getInt(@NotNull("path") String path) {
+    public int getInt(@NotNull String path) {
         return getInt(path, 0);
     }
 
-    public int getInt(@NotNull("path") String path, int def) {
+    public int getInt(@NotNull String path, int def) {
         return get(path, def);
     }
 
-    public long getLong(@NotNull("path") String path) {
+    public long getLong(@NotNull String path) {
         return getLong(path, 0);
     }
 
-    public long getLong(@NotNull("path") String path, long def) {
+    public long getLong(@NotNull String path, long def) {
         return get(path, def);
     }
 
-    public byte getByte(@NotNull("path") String path) {
+    public byte getByte(@NotNull String path) {
         return getByte(path, (byte) 0);
     }
 
-    public byte getByte(@NotNull("path") String path, byte def) {
+    public byte getByte(@NotNull String path, byte def) {
         return (byte) getInt(path, def);
     }
 
-    public short getShort(@NotNull("path") String path) {
+    public short getShort(@NotNull String path) {
         return getShort(path, (short) 0);
     }
 
-    public short getShort(@NotNull("path") String path, short def) {
+    public short getShort(@NotNull String path, short def) {
         return (short) getInt(path, def);
     }
 
+    /**
+     * Get class from config.
+     * @param path the path
+     * @return class if found, null otherwise
+     */
+    @Nullable
+    public Class<?> getClass(@NotNull String path) {
+        return getClass(path, (Class<?>) null);
+    }
+
+    /**
+     * Get class from config.
+     * @param path the path
+     * @param def default value
+     * @return class if found, null otherwise
+     */
+    @Contract("_, !null -> !null")
+    public Class<?> getClass(@NotNull String path, @Nullable Class<?> def) {
+        try {
+            return Class.forName(path);
+        } catch (ClassNotFoundException ex) {
+            return def;
+        }
+    }
+
+    /**
+     * Get class from config.
+     * @param path the path
+     * @param def default value
+     * @return class if found, null otherwise
+     */
+    @Nullable
+    public Class<?> getClass(@NotNull String path, @NotNull String def) {
+        try {
+            return Class.forName(path);
+        } catch (ClassNotFoundException ex) {
+            try {
+                return Class.forName(def);
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
+        }
+    }
+
     @NotNull
-    public YamlObject getOrCreateObject(@NotNull("parent") YamlObject parent, @NotNull("path") String path) {
+    public YamlObject getOrCreateObject(@NotNull("parent") YamlObject parent, @NotNull String path) {
         YamlObject obj = parent.getObject(path);
         if (obj == null) {
             obj = new YamlObject();

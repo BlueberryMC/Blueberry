@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="[Windows] Run Server (Debug)" type="Application" factoryName="Application">
+    <envs>
+      <env name="LOG4J_CONFIGURATION_FILE" value="log4j2-debug.xml" />
+    </envs>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="net.blueberrymc.server.DebugMain" />
     <module name="blueberry" />

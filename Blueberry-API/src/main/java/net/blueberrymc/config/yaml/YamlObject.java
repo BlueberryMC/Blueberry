@@ -32,7 +32,7 @@ public class YamlObject implements YamlMember {
 
     // cannot put 'null', instead, it will remove the entry
     public void set(@NotNull String key, @Nullable Object value) {
-        if (value instanceof YamlMember) {
+        if (value != NULL && value instanceof YamlMember) {
             set(key, ((YamlMember) value).getRawData());
             return;
         }
@@ -53,7 +53,7 @@ public class YamlObject implements YamlMember {
     }
 
     public void setNullableObject(@NotNull String key, @Nullable YamlObject object) {
-        setNullable(key, object == null ? null : object.getRawData());
+        setNullable(key, object == null || object == NULL ? null : object.getRawData());
     }
 
     @NotNull

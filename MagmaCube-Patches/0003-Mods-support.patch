@@ -160,7 +160,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          this.keyboardHandler.tick();
          this.profiler.pop();
 diff --git a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
-index 06c779ab7324f52380d4b3af451888e7d640e3e3..23cac512d17a6615adb545e1984814b1b262f2dc 100644
+index 06c779ab7324f52380d4b3af451888e7d640e3e3..1d66c3c1bf026edb04abf6ecd601387d4381a79a 100644
 --- a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
 +++ b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
 @@ -284,15 +284,27 @@ public class ChatComponent extends GuiComponent {
@@ -169,7 +169,7 @@ index 06c779ab7324f52380d4b3af451888e7d640e3e3..23cac512d17a6615adb545e1984814b1
      public static int getWidth(double d) {
 +        // Blueberry start
 +        int width = 320;
-+        if (net.blueberrymc.common.bml.InternalBlueberryMod.extendedWidth) {
++        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Misc.ChatSettings.extendedWidth) {
 +            width = Minecraft.getInstance().getWindow().getWidth() / 2 - 8;
 +        }
 +        // Blueberry end
@@ -182,7 +182,7 @@ index 06c779ab7324f52380d4b3af451888e7d640e3e3..23cac512d17a6615adb545e1984814b1
      public static int getHeight(double d) {
 +        // Blueberry start
 +        int height = 180;
-+        if (net.blueberrymc.common.bml.InternalBlueberryMod.extendedWidth) {
++        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Misc.ChatSettings.extendedHeight) {
 +            height = Minecraft.getInstance().getWindow().getHeight() / 2 - 40;
 +        }
 +        // Blueberry end
@@ -458,14 +458,14 @@ index 4191e7bc8d5b7c0b6abefd9674c947bd47becc4c..4ffe415377fda140d0b850944ce711ca
          float f2 = (float)(i >> 8 & 255) / 255.0F;
          float f3 = (float)(i & 255) / 255.0F;
 diff --git a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
-index a6f52260d9b45639757fcd5bd9c7008a704a9593..52ff44f5d4636bcabec3d4c1eb6c197d29262e79 100644
+index a6f52260d9b45639757fcd5bd9c7008a704a9593..e918f5f17587e3e3c7bfb0e012ce11aa535b5f2c 100644
 --- a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
 +++ b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
 @@ -23,6 +23,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.EntityHitResult;
  import net.minecraft.world.phys.Vec3;
-+import static net.blueberrymc.common.bml.InternalBlueberryMod.*; // Blueberry
++import static net.blueberrymc.common.bml.InternalBlueberryModConfig.Debug.DebugRenderers.*; // Blueberry
  
  public class DebugRenderer {
      public final PathfindingRenderer pathfindingRenderer = new PathfindingRenderer();
@@ -496,24 +496,24 @@ index a6f52260d9b45639757fcd5bd9c7008a704a9593..52ff44f5d4636bcabec3d4c1eb6c197d
 -         }
 -         // MagmaCube end - show debug renderer with F3+G
 +            // Blueberry start
-+            if (showDRPathfinding) this.pathfindingRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRWaterDebug) this.waterDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRChunkBorder) this.chunkBorderRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRHeightMap) this.heightMapRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRCollisionBox) this.collisionBoxRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRNeighborsUpdate) this.neighborsUpdateRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRStructure) this.structureRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRLightDebug) this.lightDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRWorldGenAttempt) this.worldGenAttemptRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRSolidFace) this.solidFaceRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRChunk) this.chunkRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRBrainDebug) this.brainDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRVillageSectionsDebug) this.villageSectionsDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRBeeDebug) this.beeDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRRaidDebug) this.raidDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRGoalSelector) this.goalSelectorRenderer.render(poseStack, bufferSource, d, d2, d3);
-+            if (showDRGameTestDebug) this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
-+         // Blueberry end
++            if (pathfinding) this.pathfindingRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (waterDebug) this.waterDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (chunkBorder) this.chunkBorderRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (heightMap) this.heightMapRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (collisionBox) this.collisionBoxRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (neighborsUpdate) this.neighborsUpdateRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (structure) this.structureRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (lightDebug) this.lightDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (worldGenAttempt) this.worldGenAttemptRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (solidFace) this.solidFaceRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (chunk) this.chunkRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (brainDebug) this.brainDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (villageSectionsDebug) this.villageSectionsDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (beeDebug) this.beeDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (raidDebug) this.raidDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (goalSelector) this.goalSelectorRenderer.render(poseStack, bufferSource, d, d2, d3);
++            if (gameTestDebug) this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
++            // Blueberry end
          }
  
          this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
@@ -529,6 +529,23 @@ index 56d51630cbc596a753060ff577b7879cc80231b9..e3992198a6e40a1e2e904e6f3d22ce82
  
      }
  
+diff --git a/src/main/java/net/minecraft/network/ConnectionProtocol.java b/src/main/java/net/minecraft/network/ConnectionProtocol.java
+index db7a24fd73bd40ec1b2a7ed8d1cba8c5863ce2d7..a885cc8e0a193e44d700223a90c39582c20ff46c 100644
+--- a/src/main/java/net/minecraft/network/ConnectionProtocol.java
++++ b/src/main/java/net/minecraft/network/ConnectionProtocol.java
+@@ -191,6 +191,12 @@ public enum ConnectionProtocol {
+     STATUS(1, protocol().addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet<ServerStatusPacketListener>()).addPacket(ServerboundStatusRequestPacket.class, ServerboundStatusRequestPacket::new).addPacket(ServerboundPingRequestPacket.class, ServerboundPingRequestPacket::new)).addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet<ClientStatusPacketListener>()).addPacket(ClientboundStatusResponsePacket.class, ClientboundStatusResponsePacket::new).addPacket(ClientboundPongResponsePacket.class, ClientboundPongResponsePacket::new))),
+     LOGIN(2, protocol().addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet<ClientLoginPacketListener>()).addPacket(ClientboundLoginDisconnectPacket.class, ClientboundLoginDisconnectPacket::new).addPacket(ClientboundHelloPacket.class, ClientboundHelloPacket::new).addPacket(ClientboundGameProfilePacket.class, ClientboundGameProfilePacket::new).addPacket(ClientboundLoginCompressionPacket.class, ClientboundLoginCompressionPacket::new).addPacket(ClientboundCustomQueryPacket.class, ClientboundCustomQueryPacket::new)).addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet<ServerLoginPacketListener>()).addPacket(ServerboundHelloPacket.class, ServerboundHelloPacket::new).addPacket(ServerboundKeyPacket.class, ServerboundKeyPacket::new).addPacket(ServerboundCustomQueryPacket.class, ServerboundCustomQueryPacket::new)));
+ 
++    // Blueberry start
++    static {
++        ((PacketSet<ClientStatusPacketListener>) STATUS.flows.get(PacketFlow.CLIENTBOUND)).addPacket(net.blueberrymc.network.client.handshake.ClientboundBlueberryHandshakePacket.class, net.blueberrymc.network.client.handshake.ClientboundBlueberryHandshakePacket::new);
++    }
++    // Blueberry end
++
+     private static final int MIN_PROTOCOL_ID = -1;
+     private static final int MAX_PROTOCOL_ID = 2;
+     private static final ConnectionProtocol[] LOOKUP = new ConnectionProtocol[4];
 diff --git a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java b/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
 index 43f39473c5ef3de9e53e6722bea6a0a58382526e..f5254cecd40e9d643cb59316e929560adb08c85d 100644
 --- a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java

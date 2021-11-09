@@ -157,12 +157,26 @@ public class BlueberryMod implements ModInfo {
 
     /**
      * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
+     * <p><strong>NOTE: You cannot save the config which were generated with VisualConfigManager.</strong> Use
+     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(CompoundVisualConfig, ModConfig)} for that.
      * @param compoundVisualConfig the visual config
      */
     public void save(@NotNull CompoundVisualConfig compoundVisualConfig) {
-        save(compoundVisualConfig, Function.identity());
+        save(compoundVisualConfig, o -> {
+            if (o instanceof Class<?> clazz) {
+                return clazz.getTypeName();
+            }
+            return o;
+        });
     }
 
+    /**
+     * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
+     * <p><strong>NOTE: You cannot save the config which were generated with VisualConfigManager.</strong> Use
+     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(CompoundVisualConfig, ModConfig)} for that.
+     * @param compoundVisualConfig the visual config
+     * @param valueMapper see source code of {@link #save(CompoundVisualConfig)} for example
+     */
     public void save(@NotNull CompoundVisualConfig compoundVisualConfig, @NotNull Function<Object, Object> valueMapper) {
         for (VisualConfig<?> config : compoundVisualConfig) {
             if (config instanceof CompoundVisualConfig) {

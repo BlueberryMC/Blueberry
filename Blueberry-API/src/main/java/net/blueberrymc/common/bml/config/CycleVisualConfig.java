@@ -51,6 +51,14 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
         return new CycleVisualConfig<>(component, list, Math.max(0, list.indexOf(initialValue)), initialValue, defaultValue);
     }
 
+    @SuppressWarnings({ "SuspiciousMethodCalls", "unchecked", "rawtypes" })
+    @Contract("_, _, _, _ -> new")
+    @NotNull
+    public static <E extends Enum<E>> CycleVisualConfig<E> fromEnumUnchecked(@Nullable Component component, @NotNull Class<?> clazz, @Nullable Object initialValue, @Nullable Object defaultValue) {
+        List<E> list = (List<E>) Arrays.asList(clazz.getEnumConstants());
+        return new CycleVisualConfig(component, list, Math.max(0, list.indexOf(initialValue)), initialValue, defaultValue);
+    }
+
     @NotNull
     @Override
     public T get() {

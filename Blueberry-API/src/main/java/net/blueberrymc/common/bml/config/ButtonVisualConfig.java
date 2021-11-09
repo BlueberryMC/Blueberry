@@ -24,10 +24,11 @@ public abstract class ButtonVisualConfig<V extends ButtonVisualConfig<V, T>, T> 
         if (onClick != null) onClick.accept((V) this, button);
     }
 
+    @SuppressWarnings("unchecked")
     @Contract("_ -> this")
     @NotNull
-    public ButtonVisualConfig<V, T> onClick(@Nullable BiConsumer<V, Button> handler) {
+    public V onClick(@Nullable BiConsumer<V, Button> handler) {
         onClick = handler;
-        return this;
+        return (V) this;
     }
 }

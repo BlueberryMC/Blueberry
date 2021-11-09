@@ -61,7 +61,7 @@ public class Block {
      * Gets new block state for this block. This method cannot be overridden.
      * @return the fresh block state
      */
-    @Nullable
+    @NotNull
     public final BlockState getFreshBlockState() {
         return level.getBlockState(pos);
     }
@@ -98,9 +98,9 @@ public class Block {
      * Gets block for this block. This method cannot be overridden.
      * @return the block
      */
-    @Nullable
+    @NotNull
     public final net.minecraft.world.level.block.Block getFreshBlock() {
-        return Optional.ofNullable(level.getBlockState(pos)).map(BlockState::getBlock).orElse(null);
+        return getFreshBlockState().getBlock();
     }
 
     public boolean removeBlock(boolean notify) {

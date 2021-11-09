@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml.config;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +27,7 @@ public abstract class VisualConfig<T> {
         return component;
     }
 
+    @Contract(mutates = "this")
     public void set(@Nullable T value) {
         this.value = value;
     }
@@ -43,12 +45,14 @@ public abstract class VisualConfig<T> {
     @Nullable
     private Component description;
 
+    @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> description(@Nullable String description) {
         this.description = description != null ? new TextComponent(description) : null;
         return this;
     }
 
+    @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> description(@Nullable Component description) {
         this.description = description;
@@ -60,12 +64,14 @@ public abstract class VisualConfig<T> {
         return description;
     }
 
+    @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> requiresRestart(boolean flag) {
         this.requiresRestart = flag;
         return this;
     }
 
+    @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> requiresRestart() {
         return this.requiresRestart(true);
@@ -78,6 +84,7 @@ public abstract class VisualConfig<T> {
     // you can use it for anything like storing config path, etc.
     private String id;
 
+    @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> id(@Nullable String id) {
         this.id = id;

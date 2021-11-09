@@ -5,7 +5,7 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a4c1ee0ba 100644
+index 323c53b0ed729a83047bc5c3840766b7fae78320..8b5b1c7249dd404b0eaa64fb6921eec307320070 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 @@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -16,7 +16,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a
  import net.minecraft.world.entity.ai.gossip.GossipType;
  import net.minecraft.world.entity.ai.memory.ExpirableValue;
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-@@ -90,8 +91,18 @@ public class DebugPackets {
+@@ -90,8 +91,19 @@ public class DebugPackets {
      private static void sendVillageSectionsPacket(ServerLevel serverLevel, BlockPos blockPos) {
      }
  
@@ -24,6 +24,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a
 +    // Blueberry start - implement debug packets
 +    public static void sendPathFindingPacket(Level level, Mob mob, @Nullable Path path, float pathMaxDist) {
 +        if (!(level instanceof ServerLevel) || path == null) return;
++        if (!net.blueberrymc.common.bml.InternalBlueberryModConfig.Debug.enableDebugPackets) return;
 +        FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
 +        friendlyByteBuf.writeInt(mob.getId());
 +        friendlyByteBuf.writeFloat(pathMaxDist);
@@ -36,7 +37,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a
  
      public static void sendNeighborsUpdatePacket(Level level, BlockPos blockPos) {
      }
-@@ -99,11 +110,22 @@ public class DebugPackets {
+@@ -99,11 +111,23 @@ public class DebugPackets {
      public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart<?> structureStart) {
      }
  
@@ -44,6 +45,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a
      public static void sendGoalSelector(Level level, Mob mob, GoalSelector goalSelector) {
          if (level instanceof ServerLevel) {
 -            ;
++            if (!net.blueberrymc.common.bml.InternalBlueberryModConfig.Debug.enableDebugPackets) return;
 +            FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
 +            friendlyByteBuf.writeBlockPos(mob.blockPosition());
 +            friendlyByteBuf.writeInt(mob.getId());
@@ -60,13 +62,14 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..685457f329b66f69619502994c95714a
  
      public static void sendRaids(ServerLevel serverLevel, Collection<Raid> collection) {
      }
-@@ -111,8 +133,37 @@ public class DebugPackets {
+@@ -111,8 +135,38 @@ public class DebugPackets {
      public static void sendEntityBrain(LivingEntity livingEntity) {
      }
  
 +    // Blueberry start - implement debug packets
      public static void sendBeeInfo(Bee bee) {
 +        /*
++        if (!net.blueberrymc.common.bml.InternalBlueberryModConfig.Debug.enableDebugPackets) return;
 +        if (bee.level instanceof ServerLevel) {
 +            FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer());
 +            friendlyByteBuf.writeDouble(bee.getX());

@@ -25,7 +25,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.SliderButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -64,6 +63,11 @@ public class ModConfigScreen extends BlueberryScreen {
     }
 
     @Override
+    public void onClose() {
+        this.minecraft.setScreen(this.previousScreen);
+    }
+
+    @Override
     public void mouseMoved(double x, double y) {
         super.mouseMoved(x, y);
         this.children().forEach(listener -> listener.mouseMoved(x, y));
@@ -75,12 +79,12 @@ public class ModConfigScreen extends BlueberryScreen {
         ScrollableContainer<AbstractWidget> container = new ScrollableContainer<>(Objects.requireNonNull(this.minecraft), this.width, this.height, 58, this.height - 50, 20, 2);
         this.addRenderableWidget(this.backButton = new Button(this.width / 2 - 77, this.height - 38, 154, 20, CommonComponents.GUI_BACK, (button) -> {
             this.minecraft.setScreen(this.previousScreen);
-            if (compoundVisualConfig instanceof RootCompoundVisualConfig) {
-                ((RootCompoundVisualConfig) compoundVisualConfig).onChanged();
+            if (compoundVisualConfig instanceof RootCompoundVisualConfig root) {
+                root.onChanged();
             }
         }));
         int offset = 38;
-        int _maxWidth = 0;
+        int _maxWidth = 50;
         for (VisualConfig<?> config : this.compoundVisualConfig) {
             if (!(config instanceof CompoundVisualConfig)) {
                 Component component = config.getComponent();
@@ -117,7 +121,22 @@ public class ModConfigScreen extends BlueberryScreen {
                 tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
             if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
-                tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
+                boolean shouldShowMinMax = true;
+                if (config instanceof IntegerVisualConfig cfg && cfg.getMin() == Integer.MIN_VALUE && cfg.getMax() == Integer.MAX_VALUE) {
+                    shouldShowMinMax = false;
+                }
+                if (config instanceof LongVisualConfig cfg && cfg.getMin() == Long.MIN_VALUE && cfg.getMax() == Long.MAX_VALUE) {
+                    shouldShowMinMax = false;
+                }
+                if (config instanceof FloatVisualConfig cfg && cfg.getMin() == Float.MIN_VALUE && cfg.getMax() == Float.MAX_VALUE) {
+                    shouldShowMinMax = false;
+                }
+                if (config instanceof DoubleVisualConfig cfg && cfg.getMin() == Double.MIN_VALUE && cfg.getMax() == Double.MAX_VALUE) {
+                    shouldShowMinMax = false;
+                }
+                if (shouldShowMinMax) {
+                    tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
+                }
             }
             if (config instanceof StringVisualConfig) {
                 StringVisualConfig stringVisualConfig = (StringVisualConfig) config;
@@ -183,7 +202,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 );
                 container.children().add(
                         new Button(
-                                (this.width / 2) + 6 + this.width / 6 - 24,
+                                (this.width / 2) + 6 + Math.min(maxWidth + 24, this.width / 6 - 24),
                                 buttonY,
                                 22,
                                 20,
