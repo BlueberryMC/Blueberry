@@ -7,10 +7,11 @@ import io.netty.channel.ChannelPromise;
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
+import org.jetbrains.annotations.NotNull;
 
 public class OutboundPacketTransformer extends ChannelDuplexHandler {
     @Override
-    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+    public void write(@NotNull ChannelHandlerContext ctx, @NotNull Object msg, @NotNull ChannelPromise promise) throws Exception {
         if (msg instanceof ByteBuf byteBuf) {
             ConnectionProtocol protocol = ctx.channel().attr(Connection.ATTRIBUTE_PROTOCOL).get();
             int targetPV = InternalBlueberryModConfig.Multiplayer.version.getProtocolVersion();
