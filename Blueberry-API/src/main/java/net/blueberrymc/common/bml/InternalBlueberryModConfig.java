@@ -149,6 +149,7 @@ public class InternalBlueberryModConfig {
     @Key("multiplayer")
     public static class Multiplayer {
         @Order(10000)
+        @Reverse
         @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.version")
         @Description(@Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.version.description"))
         @Key("version")

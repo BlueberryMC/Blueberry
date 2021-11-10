@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ import java.util.List;
 public class CycleVisualConfig<T> extends VisualConfig<T> {
     private final List<T> list;
     private int index;
+    private boolean reverse = false;
 
     public CycleVisualConfig(@Nullable Component component, @NotNull List<T> values) {
         this(component, values, 0);
@@ -139,5 +141,20 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
 
     public int size() {
         return list.size();
+    }
+
+    public boolean isReverse() {
+        return reverse;
+    }
+
+    @NotNull
+    public CycleVisualConfig<T> reverse(boolean flag) {
+        this.reverse = flag;
+        return this;
+    }
+
+    @NotNull
+    public CycleVisualConfig<T> reverse() {
+        return reverse(!reverse);
     }
 }

@@ -302,6 +302,7 @@ public class VisualConfigManager {
                     root.add(cfg);
                 } else if (field.getType().isEnum()) {
                     var cfg = CycleVisualConfig.fromEnumUnchecked(tryGetComponent(mod, config), field.getType(), getField(Object.class, field), getDefaultValue(field))
+                            .reverse(shouldReverse(field))
                             .id(getKey(field))
                             .description(getDescription(field))
                             .requiresRestart(requiresMCRestart(field));
@@ -490,6 +491,10 @@ public class VisualConfigManager {
             YamlObject object = obj.getObject(key);
             if (object != null) load(object, c);
         }
+    }
+
+    private static boolean shouldReverse(AnnotatedElement element) {
+        return element.isAnnotationPresent(Reverse.class);
     }
 
     private static boolean requiresMCRestart(AnnotatedElement element) {
@@ -787,4 +792,11 @@ public class VisualConfigManager {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface RequiresMCRestart {}
+
+    /**
+     * Marks the CycleVisualConfig to act like a reversed list. No effect on other config types.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Reverse {}
 }

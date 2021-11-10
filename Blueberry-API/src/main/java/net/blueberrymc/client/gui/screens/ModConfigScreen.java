@@ -192,7 +192,7 @@ public class ModConfigScreen extends BlueberryScreen {
                                 Math.min(maxWidth, this.width / 6 - (24 * 2)),
                                 20,
                                 new TextComponent(cycleVisualConfig.getCurrentName()),
-                                (button) -> button.setMessage(new TextComponent(cycleVisualConfig.getNextName())),
+                                (button) -> button.setMessage(new TextComponent(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
                                 onTooltip
                         )
                 );
@@ -203,7 +203,7 @@ public class ModConfigScreen extends BlueberryScreen {
                                 22,
                                 20,
                                 new TextComponent("<-"),
-                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.getPreviousName())),
+                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())),
                                 onTooltip
                         )
                 );
@@ -214,7 +214,7 @@ public class ModConfigScreen extends BlueberryScreen {
                                 22,
                                 20,
                                 new TextComponent("->"),
-                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.getNextName())),
+                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
                                 onTooltip
                         )
                 );
@@ -329,11 +329,11 @@ public class ModConfigScreen extends BlueberryScreen {
                     .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
             copy.append(new TextComponent("[Previous value: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(String.valueOf(cycleVisualConfig.peekPrevious())))
+                    .append(new TextComponent(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekNext() : cycleVisualConfig.peekPrevious())))
                     .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
             copy.append(new TextComponent("[Next value: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(String.valueOf(cycleVisualConfig.peekNext())))
+                    .append(new TextComponent(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekPrevious() : cycleVisualConfig.peekNext())))
                     .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
         }
