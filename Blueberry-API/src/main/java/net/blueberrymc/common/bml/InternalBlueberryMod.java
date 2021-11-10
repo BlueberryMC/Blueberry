@@ -57,7 +57,6 @@ public class InternalBlueberryMod extends BlueberryMod {
         this.setVisualConfig(VisualConfigManager.createFromClass(InternalBlueberryModConfig.class));
         Blueberry.runOnClient(() -> {
             this.getVisualConfig().onSave(this::saveConfig);
-            Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this));
             Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
                     clientTimer.scheduleAtFixedRate(new TimerTask() {
                         @Override
@@ -66,7 +65,9 @@ public class InternalBlueberryMod extends BlueberryMod {
                         }
                     }, 1, 1)
             ).ifNotPresent(clientTimer::cancel);
+            Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createClient());
         });
+        Blueberry.runOnServer(() -> Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createServer()));
         registerArgumentTypes();
         AbstractBlueberryScheduler serverScheduler = Blueberry.getUtil().getServerScheduler();
         serverTimer.scheduleAtFixedRate(new TimerTask() {

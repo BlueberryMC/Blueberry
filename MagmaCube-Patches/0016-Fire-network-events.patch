@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Wed, 10 Nov 2021 14:38:53 +0900
+Subject: [PATCH] Fire network events
+
+
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index 81a4871125570d8fe1fb2bc9b8280604a56903b0..bfb78b1ae9c0be6c51fc0b6bba4c2b855a52825a 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -93,6 +93,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+             LOGGER.fatal(var3);
+         }
+ 
++        new net.blueberrymc.common.event.network.ConnectionInitEvent(this.channel, this.receiving).callEvent(); // Blueberry
+     }
+ 
+     public void setProtocol(ConnectionProtocol connectionProtocol) {
+@@ -362,6 +363,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+             }
+         }
+ 
++        new net.blueberrymc.common.event.network.ConnectionSetupCompressionEvent(this.channel, this.receiving, i).callEvent(); // Blueberry
+     }
+ 
+     public void handleDisconnection() {

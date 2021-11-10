@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.VisualConfigManager.*;
+import net.blueberrymc.network.transformer.TransformableProtocolVersions;
 
 @Config
 @Name("Blueberry")
@@ -142,6 +143,19 @@ public class InternalBlueberryModConfig {
     }
 
     @Order(-9999)
+    @Config
+    @HideOn(Side.SERVER)
+    @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.title")
+    @Key("multiplayer")
+    public static class Multiplayer {
+        @Order(10000)
+        @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.version")
+        @Description(@Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.version.description"))
+        @Key("version")
+        public static TransformableProtocolVersions version = TransformableProtocolVersions.values()[0];
+    }
+
+    @Order(-1)
     @Config
     @HideOn(Side.SERVER)
     @Name(namespace = "blueberry", path = "blueberry.mod.config.misc.title")
