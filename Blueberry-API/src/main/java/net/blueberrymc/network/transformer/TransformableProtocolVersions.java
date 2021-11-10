@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 public enum TransformableProtocolVersions implements NameGetter {
     SNAPSHOT_21W44A("21w44a", 0x40000030),
-    SNAPSHOT_21w43A("21w43a", 0x4000002F),
+    SNAPSHOT_21W43A("21w43a", 0x4000002F),
+    SNAPSHOT_21W42A("21w42a", 0x4000002E),
+    SNAPSHOT_21W41A("21w41a", 0x4000002D),
     ;
 
     private final String name;

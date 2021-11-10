@@ -2,23 +2,18 @@ package net.blueberrymc.network.transformer.rewriters;
 
 import net.blueberrymc.network.transformer.PacketRewriter;
 import net.blueberrymc.network.transformer.PacketWrapper;
+import net.blueberrymc.network.transformer.TransformableProtocolVersions;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagCollection;
 
 public class S21w44a_To_S21w43a extends PacketRewriter {
     public S21w44a_To_S21w43a() {
-        super(0x40000030, 0x4000002F);
+        super(TransformableProtocolVersions.SNAPSHOT_21W44A, TransformableProtocolVersions.SNAPSHOT_21W43A);
     }
 
     @Override
     public void registerOutbound() {
-        // ClientIntentionPacket (server-bound)
-        rewriteOutbound(ConnectionProtocol.HANDSHAKING, 0x00, wrapper -> {
-            wrapper.readVarInt();
-            wrapper.writeVarInt(getTargetPV());
-            wrapper.passthroughAll();
-        });
         // ServerboundClientInformationPacket
         rewriteOutbound(ConnectionProtocol.PLAY, 0x05, wrapper -> {
             wrapper.passthroughUtf(16); // language

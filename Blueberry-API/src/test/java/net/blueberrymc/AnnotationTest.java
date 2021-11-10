@@ -42,6 +42,7 @@ public class AnnotationTest {
             "net/blueberrymc/common/bml/client/gui/screens/ModLoadingProblemScreen$ProblemList$Entry",
             "net/blueberrymc/common/bml/InternalBlueberryModListener$Client",
             "net/blueberrymc/common/bml/InternalBlueberryModListener$Server",
+            "net/blueberrymc/network/transformer/PacketRewriter$PacketWrapperRewriter",
 
             // internals
             "net/blueberrymc/common/util/BlueberryEvil$1",
