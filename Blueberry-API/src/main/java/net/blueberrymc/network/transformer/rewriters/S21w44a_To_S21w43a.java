@@ -6,10 +6,15 @@ import net.blueberrymc.network.transformer.TransformableProtocolVersions;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagCollection;
+import org.jetbrains.annotations.NotNull;
 
 public class S21w44a_To_S21w43a extends PacketRewriter {
     public S21w44a_To_S21w43a() {
-        super(TransformableProtocolVersions.SNAPSHOT_21W44A, TransformableProtocolVersions.SNAPSHOT_21W43A);
+        this(TransformableProtocolVersions.SNAPSHOT_21W44A, TransformableProtocolVersions.SNAPSHOT_21W43A);
+    }
+
+    protected S21w44a_To_S21w43a(@NotNull TransformableProtocolVersions sourcePV, @NotNull TransformableProtocolVersions targetPV) {
+        super(sourcePV, targetPV);
     }
 
     @Override

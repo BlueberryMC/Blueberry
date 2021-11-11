@@ -28,14 +28,24 @@ public class PacketRewriterManager {
         REWRITER_LIST.add(new S21w42a_To_S21w41a());
         REWRITER_LIST.add(new S21w43a_To_S21w42a());
         REWRITER_LIST.add(new S21w44a_To_S21w43a());
+        REWRITER_LIST.forEach(PacketRewriter::register);
     }
 
     @NotNull
     public static List<PacketRewriter> collectRewriters(int targetPV) throws NoSuchElementException {
-        if (REWRITER_LIST.get(REWRITER_LIST.size() - 1).getSourcePV() == targetPV) {
+        return collectRewriters(REWRITER_LIST.get(REWRITER_LIST.size() - 1).getSourcePV(), targetPV);
+    }
+
+    @NotNull
+    public static List<PacketRewriter> collectRewriters(int sourcePV, int targetPV) throws NoSuchElementException {
+        PacketRewriter source = REWRITER_LIST.stream()
+                .filter(rewriter -> rewriter.getSourcePV() == sourcePV)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+        if (source.getSourcePV() == targetPV) {
             return Collections.emptyList();
         }
-        if (REWRITER_LIST.get(REWRITER_LIST.size() - 1).getTargetPV() == targetPV) {
+        if (source.getTargetPV() == targetPV) {
             return Collections.singletonList(REWRITER_LIST.get(REWRITER_LIST.size() - 1));
         }
         PacketRewriter entry = REWRITER_LIST.stream()
@@ -44,7 +54,7 @@ public class PacketRewriterManager {
                 .orElseThrow(NoSuchElementException::new);
         int index = REWRITER_LIST.indexOf(entry);
         List<PacketRewriter> rewriterList = new ArrayList<>();
-        for (int i = index; i < REWRITER_LIST.size(); i++) {
+        for (int i = index; i <= REWRITER_LIST.indexOf(source); i++) {
             rewriterList.add(REWRITER_LIST.get(i));
         }
         Collections.reverse(rewriterList);
@@ -69,11 +79,13 @@ public class PacketRewriterManager {
             write.writeVarInt(packetId);
             rewriter.doRewriteInbound(protocol, packetId, new PacketWrapper(read, write));
             // reset read
-            read.clear();
+            //read.clear();
+            read.release();
             // swap read and write
             FriendlyByteBuf originalRead = read;
             read = write;
-            write = originalRead;
+            //write = originalRead;
+            write = new FriendlyByteBuf(Unpooled.buffer());
             // set currentPV to target PV of current rewriter
             currentPV = rewriter.getTargetPV();
         }
@@ -101,11 +113,13 @@ public class PacketRewriterManager {
             write.writeVarInt(packetId);
             rewriter.doRewriteOutbound(protocol, packetId, new PacketWrapper(read, write));
             // reset read
-            read.clear();
+            //read.clear();
+            read.release();
             // swap read and write
             FriendlyByteBuf originalRead = read;
             read = write;
-            write = originalRead;
+            //write = originalRead;
+            write = new FriendlyByteBuf(Unpooled.buffer());
             // set currentPV to target PV of current rewriter
             currentPV = rewriter.getTargetPV();
         }
@@ -113,5 +127,19 @@ public class PacketRewriterManager {
         if (currentPV != targetPV) throw new IllegalStateException("currentPV (" + currentPV + ") != targetPV (" + targetPV + ")");
         read.resetReaderIndex();
         return read;
+    }
+
+    public static int remapInboundPacketId(@NotNull ConnectionProtocol protocol, int packetId, int targetPV) {
+        for (PacketRewriter rewriter : collectRewriters(targetPV)) {
+            packetId = rewriter.getInboundId(protocol, packetId);
+        }
+        return packetId;
+    }
+
+    public static int remapOutboundPacketId(@NotNull ConnectionProtocol protocol, int packetId, int targetPV) {
+        for (PacketRewriter rewriter : collectRewriters(targetPV)) {
+            packetId = rewriter.getOutboundId(protocol, packetId);
+        }
+        return packetId;
     }
 }

@@ -1046,10 +1046,18 @@ public class PacketWrapper extends FriendlyByteBuf {
         return this;
     }
 
-    // no readIsPassthrough
     @NotNull
-    public PacketWrapper readBytes(@NotNull ByteBuffer byteBuffer) {
-        read.readBytes(byteBuffer);
+    public PacketWrapper readBytes(@NotNull ByteBuffer dst) {
+        if (readIsPassthrough) {
+            int pos = dst.position();
+            read.readBytes(dst);
+            int pos2 = dst.position();
+            dst.position(pos);
+            write.writeBytes(dst);
+            dst.position(pos2);
+            return this;
+        }
+        read.readBytes(dst);
         return this;
     }
 
@@ -1077,8 +1085,10 @@ public class PacketWrapper extends FriendlyByteBuf {
     }
 
     @NotNull
-    public ByteBuf skipBytes(int i) {
-        return read.skipBytes(i);
+    public PacketWrapper skipBytes(int i) {
+        read.skipBytes(i);
+        write.skipBytes(i);
+        return this;
     }
 
     public int writeBytes(@NotNull InputStream inputStream, int i) throws IOException {
@@ -1709,6 +1719,9 @@ public class PacketWrapper extends FriendlyByteBuf {
     }
 
     public byte@NotNull[] passthroughBytes(byte@NotNull[] bytes, int dstIndex, int length) {
+        if (bytes.length == length) {
+            return passthroughBytes(bytes);
+        }
         read.readBytes(bytes, dstIndex, length);
         write.writeBytes(bytes, dstIndex, length);
         return bytes;
@@ -1856,14 +1869,16 @@ public class PacketWrapper extends FriendlyByteBuf {
     @Nullable
     public CompoundTag passthroughNbt(@NotNull NbtAccounter nbtAccounter) {
         int readerIndex = this.readerIndex();
+        int writerIndex = this.writerIndex();
         byte type = passthroughByte();
         if (type == 0) {
             return null;
         } else {
             this.readerIndex(readerIndex);
+            this.writerIndex(writerIndex);
             try {
                 CompoundTag tag = NbtIo.read(new ByteBufInputStream(this), nbtAccounter);
-                //write.writeNbt(tag);
+                if (!readIsPassthrough) write.writeNbt(tag);
                 return tag;
             } catch (IOException var5) {
                 throw new EncoderException(var5);
