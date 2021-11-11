@@ -151,6 +151,7 @@ public class PacketRewriter {
         return passthroughItemData(wrapper);
     }
 
+    @NotNull
     protected final ItemStack passthroughItemData(@NotNull PacketWrapper wrapper) {
         if (wrapper.passthroughBoolean()) { // present
             var id = wrapper.passthroughVarInt();
@@ -208,7 +209,7 @@ public class PacketRewriter {
         internalRewrite(rewriteOutbounds, protocol, oldId, handler);
     }
 
-    protected final void internalRewrite(Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> map, ConnectionProtocol protocol, int oldId, Consumer<PacketWrapper> handler) {
+    protected final void internalRewrite(@NotNull Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> map, @NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
         map.computeIfAbsent(protocol, (k) -> ArrayListMultimap.create(4, 3)).put(oldId, handler);
     }
 
