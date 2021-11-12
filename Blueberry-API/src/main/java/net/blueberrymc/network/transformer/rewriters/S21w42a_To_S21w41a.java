@@ -16,11 +16,10 @@ public class S21w42a_To_S21w41a extends S21w43a_To_S21w42a {
     }
 
     @Override
-    public void register() {
+    protected void preRegister() {
         registerSoundRewriter();
         registerItemRewriter();
         registerParticleRewriter();
-        super.register();
     }
 
     @Override

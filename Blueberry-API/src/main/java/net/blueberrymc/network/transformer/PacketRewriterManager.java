@@ -2,6 +2,8 @@ package net.blueberrymc.network.transformer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.blueberrymc.network.transformer.rewriters.S21w40a_To_S21w39a;
+import net.blueberrymc.network.transformer.rewriters.S21w41a_To_S21w40a;
 import net.blueberrymc.network.transformer.rewriters.S21w42a_To_S21w41a;
 import net.blueberrymc.network.transformer.rewriters.S21w43a_To_S21w42a;
 import net.blueberrymc.network.transformer.rewriters.S21w44a_To_S21w43a;
@@ -16,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+// this is not implemented for the server
 public class PacketRewriterManager {
     private static final List<PacketRewriter> REWRITER_LIST = new ArrayList<>();
 
@@ -26,6 +29,8 @@ public class PacketRewriterManager {
     public static void register() {
         REWRITER_LIST.clear();
         // list order: older versions -> newer versions
+        REWRITER_LIST.add(new S21w40a_To_S21w39a());
+        REWRITER_LIST.add(new S21w41a_To_S21w40a());
         REWRITER_LIST.add(new S21w42a_To_S21w41a());
         REWRITER_LIST.add(new S21w43a_To_S21w42a());
         REWRITER_LIST.add(new S21w44a_To_S21w43a());

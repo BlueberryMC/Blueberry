@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.blueberrymc.native_util.NativeUtil;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -41,7 +42,6 @@ public class PacketRewriter {
     private final Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> rewriteOutbounds = new HashMap<>();
     private boolean registeringInbound;
     private boolean registeringOutbound;
-    private boolean hasRegistered = false;
 
     /**
      * @param sourcePV source protocol version (pv before rewrite)
@@ -52,8 +52,14 @@ public class PacketRewriter {
         this.targetPV = targetPV;
     }
 
-    public void register() {
-        if (hasRegistered) throw new IllegalStateException("PacketRewriter already registered");
+    protected void preRegister() {}
+
+    public final void register() {
+        remapInbounds.clear();
+        remapOutbounds.clear();
+        rewriteInbounds.clear();
+        rewriteOutbounds.clear();
+        preRegister();
         registeringInbound = true;
         preRegisterInbound();
         registerInbound();
@@ -62,7 +68,6 @@ public class PacketRewriter {
         preRegisterOutbound();
         registerOutbound();
         registeringOutbound = false;
-        hasRegistered = true;
     }
 
     protected PacketRewriter(@NotNull TransformableProtocolVersions sourcePV, @NotNull TransformableProtocolVersions targetPV) {
@@ -87,6 +92,10 @@ public class PacketRewriter {
         return targetPV;
     }
 
+    public int getFinalPV() {
+        return InternalBlueberryModConfig.Multiplayer.version.getProtocolVersion();
+    }
+
     protected void preRegisterInbound() {
     }
 
@@ -107,27 +116,27 @@ public class PacketRewriter {
             wrapper.passthroughAll();
         });
         // ClientboundSoundPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x5D, targetPV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x5D, wrapper -> {
             wrapper.writeVarInt(remapSoundId(wrapper.readVarInt()));
             wrapper.passthroughAll();
         });
     }
 
     protected void registerItemRewriter() {
-        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, 0x08, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundContainerClickPacket(wrapper)));
-        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, 0x28, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundSetCreativeModeSlotPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x14, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetContentPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x16, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetSlotPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x28, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundMerchantOffersPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x4D, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEntityDataPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x50, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEquipmentPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x63, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateAdvancementsPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x66, targetPV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateRecipesPacket(wrapper)));
+        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, 0x08, wrapper -> wrapper.readIsPassthrough(() -> new ServerboundContainerClickPacket(wrapper)));
+        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, 0x28, wrapper -> wrapper.readIsPassthrough(() -> new ServerboundSetCreativeModeSlotPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x14, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetContentPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x16, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetSlotPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x28, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundMerchantOffersPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x4D, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEntityDataPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x50, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEquipmentPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x63, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateAdvancementsPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x66, wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateRecipesPacket(wrapper)));
     }
 
     protected void registerParticleRewriter() {
         // ClientboundLevelParticlesPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x24, targetPV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, 0x24, wrapper -> {
             wrapper.writeInt(remapParticleId(wrapper.readInt()));
             wrapper.passthroughAll();
         });
@@ -174,7 +183,7 @@ public class PacketRewriter {
         remapInbounds.computeIfAbsent(protocol, (k) -> new HashMap<>()).put(oldId, newId);
     }
 
-    protected final void remapOutbound(@NotNull ConnectionProtocol protocol, int newId, int oldId) {
+    protected final void remapOutbound(@NotNull ConnectionProtocol protocol, int oldId, int newId) {
         if (!registeringOutbound) throw new IllegalStateException("Not registering outbound");
         remapOutbounds.computeIfAbsent(protocol, (k) -> new HashMap<>()).put(oldId, newId);
     }
@@ -215,12 +224,14 @@ public class PacketRewriter {
 
     public final void doRewriteInbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper) {
         PacketWrapperRewriter packetWrapperRewriter = new PacketWrapperRewriter(wrapper, this::rewriteInboundItemData);
-        doRewrite(protocol, oldId, packetWrapperRewriter, rewriteInbounds);
+        int newId = remapInboundPacketId(protocol, oldId, getFinalPV());
+        doRewrite(protocol, newId, packetWrapperRewriter, rewriteInbounds);
     }
 
     public final void doRewriteOutbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper) {
         PacketWrapperRewriter packetWrapperRewriter = new PacketWrapperRewriter(wrapper, this::rewriteOutboundItemData);
-        doRewrite(protocol, oldId, packetWrapperRewriter, rewriteOutbounds);
+        int newId = remapOutboundPacketId(protocol, oldId, getFinalPV());
+        doRewrite(protocol, newId, packetWrapperRewriter, rewriteOutbounds);
     }
 
     private void doRewrite(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper, Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> map) {
