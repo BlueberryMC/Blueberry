@@ -20,6 +20,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -34,6 +36,7 @@ import static net.blueberrymc.network.transformer.PacketRewriterManager.remapOut
 
 // new -> old
 public class PacketRewriter {
+    protected static final Logger LOGGER = LogManager.getLogger();
     private final int sourcePV;
     private final int targetPV;
     private final Map<ConnectionProtocol, Map<Integer, Integer>> remapInbounds = new HashMap<>();

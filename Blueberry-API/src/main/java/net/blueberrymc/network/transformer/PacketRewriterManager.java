@@ -2,6 +2,7 @@ package net.blueberrymc.network.transformer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.blueberrymc.network.transformer.rewriters.S21w37a_To_v1_17_1;
 import net.blueberrymc.network.transformer.rewriters.S21w38a_To_S21w37a;
 import net.blueberrymc.network.transformer.rewriters.S21w39a_To_S21w38a;
 import net.blueberrymc.network.transformer.rewriters.S21w40a_To_S21w39a;
@@ -31,6 +32,7 @@ public class PacketRewriterManager {
     public static void register() {
         REWRITER_LIST.clear();
         // list order: older versions -> newer versions
+        REWRITER_LIST.add(new S21w37a_To_v1_17_1());
         REWRITER_LIST.add(new S21w38a_To_S21w37a());
         REWRITER_LIST.add(new S21w39a_To_S21w38a());
         REWRITER_LIST.add(new S21w40a_To_S21w39a());

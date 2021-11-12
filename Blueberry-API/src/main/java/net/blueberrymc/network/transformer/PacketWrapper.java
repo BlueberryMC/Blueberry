@@ -10,6 +10,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.blueberrymc.util.IntPair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
@@ -2115,6 +2116,16 @@ public class PacketWrapper extends FriendlyByteBuf {
         int i = read.readVarInt();
         read.readerIndex(readerIndex);
         return i;
+    }
+
+    @NotNull
+    public IntPair index() {
+        return IntPair.of(readerIndex(), writerIndex());
+    }
+
+    public void index(@NotNull IntPair pair) {
+        readerIndex(pair.first());
+        writerIndex(pair.second());
     }
 
     public enum Type {
