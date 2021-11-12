@@ -11,6 +11,8 @@ public enum TransformableProtocolVersions implements NameGetter {
     SNAPSHOT_21W41A("21w41a", 0x4000002D),
     SNAPSHOT_21W40A("21w40a", 0x4000002C),
     SNAPSHOT_21W39A("21w39a", 0x4000002B),
+    SNAPSHOT_21W38A("21w38a", 0x4000002A),
+    SNAPSHOT_21W37A("21w37a", 0x40000029),
     ;
 
     private final String name;

@@ -2,6 +2,8 @@ package net.blueberrymc.network.transformer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.blueberrymc.network.transformer.rewriters.S21w38a_To_S21w37a;
+import net.blueberrymc.network.transformer.rewriters.S21w39a_To_S21w38a;
 import net.blueberrymc.network.transformer.rewriters.S21w40a_To_S21w39a;
 import net.blueberrymc.network.transformer.rewriters.S21w41a_To_S21w40a;
 import net.blueberrymc.network.transformer.rewriters.S21w42a_To_S21w41a;
@@ -29,6 +31,8 @@ public class PacketRewriterManager {
     public static void register() {
         REWRITER_LIST.clear();
         // list order: older versions -> newer versions
+        REWRITER_LIST.add(new S21w38a_To_S21w37a());
+        REWRITER_LIST.add(new S21w39a_To_S21w38a());
         REWRITER_LIST.add(new S21w40a_To_S21w39a());
         REWRITER_LIST.add(new S21w41a_To_S21w40a());
         REWRITER_LIST.add(new S21w42a_To_S21w41a());
@@ -136,9 +140,23 @@ public class PacketRewriterManager {
         return read;
     }
 
+    public static int remapInboundPacketId(@NotNull ConnectionProtocol protocol, int packetId, int sourcePV, int targetPV) {
+        for (PacketRewriter rewriter : collectRewriters(sourcePV, targetPV)) {
+            packetId = rewriter.getInboundId(protocol, packetId);
+        }
+        return packetId;
+    }
+
     public static int remapInboundPacketId(@NotNull ConnectionProtocol protocol, int packetId, int targetPV) {
         for (PacketRewriter rewriter : collectRewriters(targetPV)) {
             packetId = rewriter.getInboundId(protocol, packetId);
+        }
+        return packetId;
+    }
+
+    public static int remapOutboundPacketId(@NotNull ConnectionProtocol protocol, int packetId, int sourcePV, int targetPV) {
+        for (PacketRewriter rewriter : collectRewriters(sourcePV, targetPV)) {
+            packetId = rewriter.getOutboundId(protocol, packetId);
         }
         return packetId;
     }
