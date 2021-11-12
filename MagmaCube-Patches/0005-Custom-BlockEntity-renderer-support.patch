@@ -42,10 +42,10 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index f3b9d636c2749ce0ef3be075bfb265509036eaa4..6e51da7c8f2e2bb6269b1e3c1d0510978fece9af 100644
+index 312c86961f81a4ba5c55701ce81bb2253b85fff7..02d569fc4fa676c85998a3fcb14fb2d1376aa84a 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -486,6 +486,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -487,6 +487,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer);
          this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
          BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);

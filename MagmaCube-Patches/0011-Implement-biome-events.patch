@@ -5,10 +5,10 @@ Subject: [PATCH] Implement biome events
 
 
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index 93ca6e6d807adf8d03fa0fb9ff5d850e4636fdd8..9d7f506b771a2c9f011156ac87b8e861676fa62e 100644
+index 77cc8501d5d02677cf81b44c24f6569ae5010dca..70e64de60392459172a281aa8d04fbac28c51582 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
-@@ -295,7 +295,8 @@ public final class Biome {
+@@ -298,7 +298,8 @@ public final class Biome {
  
          public Biome build() {
              if (this.precipitation != null && this.biomeCategory != null && this.temperature != null && this.downfall != null && this.specialEffects != null && this.mobSpawnSettings != null && this.generationSettings != null) {
@@ -19,10 +19,10 @@ index 93ca6e6d807adf8d03fa0fb9ff5d850e4636fdd8..9d7f506b771a2c9f011156ac87b8e861
                  throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
              }
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index 2d3e19b09058b5a1f6404fac29065d422a77f5c7..45ea7f0cf9cbe613a86a985f194a48bfc4ee043f 100644
+index 47e0c96fff7690c27fa14fb5a1cda24563718aa0..7bcaa43f272aed6ff77d57984a5a5e97094ce1fd 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-@@ -84,7 +84,8 @@ public class BiomeGenerationSettings {
+@@ -85,7 +85,8 @@ public class BiomeGenerationSettings {
          }
  
          public BiomeGenerationSettings build() {

@@ -18,6 +18,6 @@
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <minecraft.version>21w44a</minecraft.version>
+        <minecraft.version>1.18-pre1</minecraft.version>
     </properties>
 </project>

@@ -71,10 +71,10 @@ index 74e8f78d68f387fc5d99e42999b7a63a8103f77c..ab536263910ad9aa825fbf2e015bf475
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb265509036eaa4 100644
+index 7d82002a71c0a9c081d271b0753402d188918417..312c86961f81a4ba5c55701ce81bb2253b85fff7 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -451,7 +451,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -452,7 +452,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear(ON_OSX);
@@ -84,7 +84,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode);
-@@ -465,6 +467,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -466,6 +468,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.splashManager = new SplashManager(this.user);
          this.resourceManager.registerReloadListener(this.splashManager);
          this.musicManager = new MusicManager(this);
@@ -92,7 +92,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          this.fontManager = new FontManager(this.textureManager);
          this.font = this.fontManager.createFont();
          this.resourceManager.registerReloadListener(this.fontManager.getReloadListener());
-@@ -532,6 +535,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -533,6 +536,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.gameRenderer.preloadUiShader(this.getClientPackSource().getVanillaPack());
          LoadingOverlay.registerTextures(this);
          List<PackResources> list = this.resourcePackRepository.openAllSelected();
@@ -100,7 +100,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          this.reloadStateTracker.startReload(ResourceLoadStateTracker.ReloadReason.INITIAL, list);
          this.setOverlay(new LoadingOverlay(this, this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
                  if (SharedConstants.IS_RUNNING_IN_IDE) {
-@@ -541,9 +545,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -542,9 +546,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.reloadStateTracker.finishReload();
              }), false));
          if (s != null) {
@@ -112,7 +112,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          }
  
      }
-@@ -728,9 +732,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -729,9 +733,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
      }
  
      public static void crash(CrashReport crashReport) {
@@ -124,7 +124,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          if (crashReport.getSaveFile() != null) {
              Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile());
              System.exit(-1);
-@@ -869,6 +874,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -870,6 +875,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
          this.screen = screen;
          BufferUploader.reset();
@@ -132,7 +132,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
          if (screen != null) {
              this.mouseHandler.releaseMouse();
              KeyMapping.releaseAll();
-@@ -884,6 +890,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -885,6 +891,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
      public void setOverlay(@Nullable Overlay overlay) {
          this.overlay = overlay;
@@ -140,7 +140,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
      }
  
      public void destroy() {
-@@ -908,6 +915,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -909,6 +916,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.screen.removed();
              }
  
@@ -148,7 +148,7 @@ index 2fbe4f3c8ba1a139715e7d7998cae03b1908fa41..f3b9d636c2749ce0ef3be075bfb26550
              this.close();
          } finally {
              Util.timeSource = System::nanoTime;
-@@ -1636,6 +1644,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -1641,6 +1649,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
              this.pendingConnection.tick();
          }
  
@@ -599,7 +599,7 @@ index 32412fbbd625b7ae22e62b0f439152187f061f5b..68ddc80609d0c8ad85aa41ad964e2ede
                  dedicatedServerIn.setPort(optionSet.valueOf(optionSpec12));
                  dedicatedServerIn.setDemo(optionSet.has(optionSpec3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 1fbd4ef02f5fbf5db92f59dae2b3f532ca146416..444fc55701fe78211a48103c958a7ccca4b1695b 100644
+index f06865674237f13aa328cd13b11e33719656ea1b..6c3dc9d90866f7ecba3873e905020e4bc758b05c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -272,6 +272,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -651,7 +651,7 @@ index 5806dc0c47a57ac76aaaf739d9f91e6f02bed26c..e25a96b13f409a300dcd7cc464367942
          Util.shutdownExecutors();
      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index d2c8d963c4a4e3d7ab30509b3b382a107a92fd8c..1833cbda146daa63469108bc46a1ad6700bb5b90 100644
+index 96da582335b5be5a6367862a036a2b694f02543f..3214e6579896c302b5eefd762f14e4817546d5e8 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -153,7 +153,7 @@ import org.apache.commons.lang3.StringUtils;
@@ -663,7 +663,7 @@ index d2c8d963c4a4e3d7ab30509b3b382a107a92fd8c..1833cbda146daa63469108bc46a1ad67
      static final Logger LOGGER = LogManager.getLogger();
      private static final int LATENCY_CHECK_INTERVAL = 15000;
      public final Connection connection;
-@@ -1382,6 +1382,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1386,6 +1386,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
      }
  
      public void handleCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket) {

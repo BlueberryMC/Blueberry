@@ -59,7 +59,6 @@ import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElemen
 import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
-import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
@@ -145,7 +144,6 @@ public final class BlueberryRegistries<T> {
     public static final BlueberryRegistries<Feature<?>> FEATURE = new BlueberryRegistries<>(Registry.FEATURE);
     public static final BlueberryRegistries<StructureFeature<?>> STRUCTURE_FEATURE = new BlueberryRegistries<>(Registry.STRUCTURE_FEATURE);
     public static final BlueberryRegistries<StructurePieceType> STRUCTURE_PIECE = new BlueberryRegistries<>(Registry.STRUCTURE_PIECE);
-    public static final BlueberryRegistries<FeatureDecorator<?>> DECORATOR = new BlueberryRegistries<>(Registry.DECORATOR);
     public static final BlueberryRegistries<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = new BlueberryRegistries<>(BuiltinRegistries.CONFIGURED_FEATURE);
     public static final BlueberryRegistries<ConfiguredWorldCarver<?>> CONFIGURED_CARVER = new BlueberryRegistries<>(BuiltinRegistries.CONFIGURED_CARVER);
     public static final BlueberryRegistries<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = new BlueberryRegistries<>(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE);

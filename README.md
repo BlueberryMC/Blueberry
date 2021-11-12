@@ -16,12 +16,14 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 ## ✨ Key features
 - Live Compiler (Automatically compiles the mod from .java files)
   - Reload (You can recompile the mod in-game using "Recompile" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
+- Packet transformer (you can join the server which has a different version than the client)
 
 ## 📝 Todo
 - ~~Apply bspatch at installer, not at runtime.~~ partially implemented
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
-- write a ton of docs
+- write a ton of [docs](https://github.com/BlueberryMC/Blueberry-docs)
+- server jar
 
 ## ✏️ Translations
 All translation PRs are welcome!

@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import net.blueberrymc.network.transformer.rewriters.S21w42a_To_S21w41a;
 import net.blueberrymc.network.transformer.rewriters.S21w43a_To_S21w42a;
 import net.blueberrymc.network.transformer.rewriters.S21w44a_To_S21w43a;
+import net.blueberrymc.network.transformer.rewriters.V1_18_Pre1_To_S21w44a;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -28,6 +29,7 @@ public class PacketRewriterManager {
         REWRITER_LIST.add(new S21w42a_To_S21w41a());
         REWRITER_LIST.add(new S21w43a_To_S21w42a());
         REWRITER_LIST.add(new S21w44a_To_S21w43a());
+        REWRITER_LIST.add(new V1_18_Pre1_To_S21w44a());
         REWRITER_LIST.forEach(PacketRewriter::register);
     }
 

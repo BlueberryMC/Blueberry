@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 49f86072d215bb7ecf3ccbe2aacbd381c799dac5..2f13ee18135219cc9575ff36ef8bb64f69eeb391 100644
+index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218039a3420 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,32 +3,49 @@
@@ -22,7 +22,7 @@ index 49f86072d215bb7ecf3ccbe2aacbd381c799dac5..2f13ee18135219cc9575ff36ef8bb64f
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>21w44a</version>
+-        <version>1.18-pre1</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -45,7 +45,7 @@ index 49f86072d215bb7ecf3ccbe2aacbd381c799dac5..2f13ee18135219cc9575ff36ef8bb64f
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>21w44a</version>
++    <version>1.18-pre1</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -130,8 +130,7 @@ index 49f86072d215bb7ecf3ccbe2aacbd381c799dac5..2f13ee18135219cc9575ff36ef8bb64f
          <dependency>
              <groupId>com.google.code.gson</groupId>
              <artifactId>gson</artifactId>
--            <version>2.8.0</version>
-+            <version>2.8.8</version>
+             <version>2.8.8</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
@@ -499,7 +498,7 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a22c5fd1645eee10163c1a7af5de9bc1b2b035bd..1fbd4ef02f5fbf5db92f59dae2b3f532ca146416 100644
+index f8faef739e7e2e92f5048162f8abf25f076b5ad6..f06865674237f13aa328cd13b11e33719656ea1b 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -918,7 +918,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
