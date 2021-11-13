@@ -78,7 +78,7 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             int x = wrapper.passthroughInt(); // Chunk X
             int z = wrapper.passthroughInt(); // Chunk Z
             lightDataMap.remove(IntPair.of(x, z));
-            LOGGER.debug("Removed ChunkLightData for {}, {}", x, z);
+            //LOGGER.debug("Removed ChunkLightData for {}, {}", x, z);
         });
         // ClientboundLevelChunkPacket -> ClientLevelChunkWithLightPacket
         rewriteInbound(ConnectionProtocol.PLAY, 0x22, wrapper -> {
@@ -141,13 +141,18 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
                 int y = tag.getInt("y") & 15;
                 var id = new ResourceLocation(tag.getString("id"));
                 var blockEntityType = Registry.BLOCK_ENTITY_TYPE.get(id);
-                if (blockEntityType == null) throw new RuntimeException(id + " is missing a mapping");
+                int typeId = -1;
+                if (blockEntityType == null) {
+                    LOGGER.warn("Unknown block entity: {}", id);
+                } else {
+                    typeId = Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType);
+                }
                 tag.remove("x");
                 tag.remove("y");
                 tag.remove("z");
                 wrapper.writeByte(packedXZ); // Packed XZ
                 wrapper.writeShort(y); // The height relative to the world
-                wrapper.writeVarInt(Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType)); // The type of block entity
+                wrapper.writeVarInt(typeId); // The type of block entity
                 wrapper.writeNbt(tag); // The block entity's data, without the X, Y, and Z values
             });
             writeLightData(x, z, wrapper);
@@ -158,7 +163,7 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             int z = wrapper.passthroughVarInt();
             var data = ChunkLightData.passthrough(wrapper);
             lightDataMap.put(IntPair.of(x, z), data);
-            LOGGER.debug("Added ChunkLightData for {}, {}", x, z);
+            //LOGGER.debug("Added ChunkLightData for {}, {}", x, z);
         });
         // ClientboundLoginPacket
         rewriteInbound(ConnectionProtocol.PLAY, 0x26, wrapper -> {

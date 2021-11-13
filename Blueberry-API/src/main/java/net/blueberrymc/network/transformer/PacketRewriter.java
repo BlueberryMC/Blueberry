@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
-import net.blueberrymc.native_util.NativeUtil;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -24,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -256,7 +256,9 @@ public class PacketRewriter {
     @NotNull
     public final Map<ResourceLocation, IntList> getTags(@NotNull TagCollection.NetworkPayload networkPayload) {
         try {
-            return (Map<ResourceLocation, IntList>) NativeUtil.get(TagCollection.NetworkPayload.class.getDeclaredField("tags"), networkPayload);
+            Field f = TagCollection.NetworkPayload.class.getDeclaredField("tags");
+            f.setAccessible(true);
+            return (Map<ResourceLocation, IntList>) f.get(networkPayload);
         } catch (ReflectiveOperationException ex) {
             throw new RuntimeException(ex);
         }
