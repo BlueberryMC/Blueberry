@@ -1,33 +1,24 @@
 package net.blueberrymc.network.transformer.rewriters;
 
 import io.netty.buffer.Unpooled;
-import net.blueberrymc.common.util.reflect.Ref;
-import net.blueberrymc.native_util.NativeUtil;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.blueberrymc.network.transformer.PacketWrapper;
 import net.blueberrymc.network.transformer.TransformableProtocolVersions;
+import net.blueberrymc.util.CompactArrayUtil;
 import net.blueberrymc.util.IntPair;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagCollection;
-import net.minecraft.util.BitStorage;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.Palette;
-import net.minecraft.world.level.chunk.PalettedContainer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.BitSet;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +28,8 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
     private static final int WIDTH_BITS = 2;
     private static final int HORIZONTAL_MASK = 3;
     private static final int BIOMES_PER_CHUNK = 4 * 4 * 4;
+    private final Map<IntPair, ChunkLightData> lightDataMap = new ConcurrentHashMap<>();
+    private int biomesCount;
 
     public S21w37a_To_v1_17_1() {
         this(TransformableProtocolVersions.SNAPSHOT_21W37A, TransformableProtocolVersions.v1_17_1);
@@ -80,6 +73,13 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             wrapper.writeVarInt(type); // BlockEntity ID
             wrapper.passthrough(PacketWrapper.Type.NBT); // Tag
         });
+        // ClientboundForgetLevelChunkPacket
+        rewriteInbound(ConnectionProtocol.PLAY, 0x1D, wrapper -> {
+            int x = wrapper.passthroughInt(); // Chunk X
+            int z = wrapper.passthroughInt(); // Chunk Z
+            lightDataMap.remove(IntPair.of(x, z));
+            LOGGER.debug("Removed ChunkLightData for {}, {}", x, z);
+        });
         // ClientboundLevelChunkPacket -> ClientLevelChunkWithLightPacket
         rewriteInbound(ConnectionProtocol.PLAY, 0x22, wrapper -> {
             int x = wrapper.passthroughInt(); // Chunk X
@@ -93,14 +93,18 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             int[] biomes = wrapper.readVarIntArray(); // Biomes length / Biomes
             byte[] data = wrapper.readByteArray();
             var dataWrapper = new PacketWrapper(Unpooled.wrappedBuffer(data), Unpooled.buffer());
-            ChunkSection[] sections = new ChunkSection[dataLength];
+            int sectionSize = Math.max(16, dataLength);
+            ChunkSection[] sections = new ChunkSection[sectionSize];
+            // Fill with chunk sections
+            for (int i = dataLength; i < sectionSize; i++) sections[i] = ChunkSection.emptySection;
+            // Read from packet
             for (int i = 0; i < dataLength; i++) {
-                var section = sections[i] = ChunkSection.readWithoutBiomes(dataWrapper);
-                //dataWrapper.writeByte(2); // Bits Per Block (sizeBits)
-                int bpb = 2;
-                Object theData = ChunkSection.createOrReuseData(section.biomes, bpb);
-                var storage = ChunkSection.getStorageFor(theData); // unused
-                var palette = ChunkSection.getPaletteFor(theData);
+                // Read nonEmptyBlockCount
+                ChunkSection section = sections[i] = ChunkSection.readChunkSection(dataWrapper, Mth.ceillog2(20341), Mth.ceillog2(biomesCount));
+                // Read block states
+                section.states = section.statesType.readPalette(dataWrapper);
+                // Create biomes data palette
+                DataPalette palette = section.biomes = new DataPalette();
                 for (int biomeIndex = i * BIOMES_PER_CHUNK; biomeIndex < (i * BIOMES_PER_CHUNK) + BIOMES_PER_CHUNK; biomeIndex++) {
                     int biome = biomes[biomeIndex];
                     int minX = (biomeIndex & HORIZONTAL_MASK) << 2;
@@ -109,21 +113,25 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
                     for (int bX = minX; bX < minX + 4; bX++) {
                         for (int bY = minY; bY < minY + 4; bY++) {
                             for (int bZ = minZ; bZ < minZ + 4; bZ++) {
-                                int index = PalettedContainer.Strategy.SECTION_BIOMES.getIndex(bX, bY, bZ);
-                                // TODO: IllegalArgumentException: The value <index> is not in the specified inclusive range of 0 to <bits>
-                                section.biomes.set(bX, bY, bZ, (Biome) palette.valueFor(biome));
-                                //storage.set(index, biome);
+                                palette.setIdAt(bX, bY, bZ, biome);
                             }
                         }
                     }
                 }
-                ChunkSection.setDataFor(section.biomes, theData);
-                section.biomes.write(dataWrapper);
+            }
+            // Write the data
+            for (ChunkSection section : sections) {
+                dataWrapper.writeShort(section.nonEmptyBlockCount);
+                section.statesType.writePalette(dataWrapper, section.states);
+                section.biomesType.writePalette(dataWrapper, section.biomes);
             }
             dataWrapper.getWrite().readerIndex(0);
             byte[] newData = new byte[dataWrapper.getWrite().readableBytes()];
             dataWrapper.getWrite().readBytes(newData);
             wrapper.writeByteArray(newData);
+            // Release the data
+            dataWrapper.getRead().release();
+            dataWrapper.getWrite().release();
             wrapper.passthroughCollection(() -> {
                 // Block entities (old)
                 var tag = Objects.requireNonNull(wrapper.readNbt(), "tag cannot be null");
@@ -151,6 +159,23 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             var data = ChunkLightData.passthrough(wrapper);
             lightDataMap.put(IntPair.of(x, z), data);
             LOGGER.debug("Added ChunkLightData for {}, {}", x, z);
+        });
+        // ClientboundLoginPacket
+        rewriteInbound(ConnectionProtocol.PLAY, 0x26, wrapper -> {
+            wrapper.passthrough(PacketWrapper.Type.INT); // Entity ID
+            wrapper.passthrough(PacketWrapper.Type.BOOLEAN); // Is hardcore
+            wrapper.passthrough(PacketWrapper.Type.BYTE); // Game mode
+            wrapper.passthrough(PacketWrapper.Type.BYTE); // Previous game mode
+            wrapper.passthroughCollection(PacketWrapper.Type.RESOURCE_LOCATION); // World count / World names
+            var registry = wrapper.passthroughNbt(); // Dimension Codec
+            var biomeRegistry = Objects.requireNonNull(registry).getCompound("minecraft:worldgen/biome");
+            biomesCount = ((ListTag) Objects.requireNonNull(biomeRegistry.get("value"))).size();
+            ChunkSection.emptySection = new ChunkSection((short) 0, Mth.ceillog2(20341), Mth.ceillog2(biomesCount));
+            ChunkSection.emptySection.states = new DataPalette();
+            ChunkSection.emptySection.states.addId(0);
+            ChunkSection.emptySection.biomes = new DataPalette();
+            ChunkSection.emptySection.biomes.addId(0);
+            wrapper.passthroughAll();
         });
         // ClientboundUpdateTagsPacket
         // TODO: it should be 0x66
@@ -193,8 +218,6 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
         }
     }
 
-    private final Map<IntPair, ChunkLightData> lightDataMap = new ConcurrentHashMap<>();
-
     private static record ChunkLightData(boolean trustEdges, @NotNull BitSet slm, @NotNull BitSet blm, @NotNull BitSet eslm, @NotNull BitSet eblm, byte[][] sl, byte[][] bl) {
         @NotNull
         public static ChunkLightData passthrough(@NotNull PacketWrapper wrapper) {
@@ -230,65 +253,255 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
     }
 
     private static class ChunkSection {
+        public static ChunkSection emptySection;
+        public static final int SIZE = 16 * 16 * 16;
         public final short nonEmptyBlockCount;
-        public final PalettedContainer<BlockState> states;
-        public final PalettedContainer<Biome> biomes;
+        public DataPalettes statesType;
+        public DataPalette states = null;
+        public DataPalettes biomesType;
+        public DataPalette biomes = null;
 
-        private ChunkSection(short nonEmptyBlockCount) {
+        private ChunkSection(short nonEmptyBlockCount, int statesGlobalPaletteBits, int biomesGlobalPaletteBits) {
             this.nonEmptyBlockCount = nonEmptyBlockCount;
-            Registry<Biome> registry = RegistryAccess.builtin().registryOrThrow(Registry.BIOME_REGISTRY);
-            this.states = new net.minecraft.world.level.chunk.PalettedContainer<>(Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
-            this.biomes = new net.minecraft.world.level.chunk.PalettedContainer<>(registry, registry.getOrThrow(Biomes.PLAINS), PalettedContainer.Strategy.SECTION_BIOMES);
+            this.statesType = new DataPalettes(DataPaletteType.STATES, statesGlobalPaletteBits);
+            this.biomesType = new DataPalettes(DataPaletteType.BIOMES, biomesGlobalPaletteBits);
         }
 
         @NotNull
-        public static ChunkSection read(@NotNull PacketWrapper wrapper) {
-            var section = readWithoutBiomes(wrapper);
-            section.biomes.read(wrapper);
-            return section;
-        }
-
-        @NotNull
-        public static ChunkSection readWithoutBiomes(@NotNull PacketWrapper wrapper) {
+        public static ChunkSection readChunkSection(@NotNull PacketWrapper wrapper, int statesGlobalPaletteBits, int biomesGlobalPaletteBits) {
             short nonEmptyBlockCount = wrapper.readShort();
-            var section = new ChunkSection(nonEmptyBlockCount);
-            section.states.read(wrapper);
-            return section;
+            return new ChunkSection(nonEmptyBlockCount, statesGlobalPaletteBits, biomesGlobalPaletteBits);
         }
+    }
 
-        private static final Class<?> PalettedContainer_Data = Ref.forName("net.minecraft.world.level.chunk.PalettedContainer$Data").getClazz();
-        private static final Field dataField = Ref.getClass(PalettedContainer.class).getDeclaredField("data").getField();
-        private static final Field storageField = Ref.getClass(PalettedContainer_Data).getDeclaredField("storage").getField();
-        private static final Field paletteField = Ref.getClass(PalettedContainer_Data).getDeclaredField("palette").getField();
-        private static final Method createOrReuseDataMethod = Ref.getClass(PalettedContainer.class).getDeclaredMethod("createOrReuseData", PalettedContainer_Data, int.class).getMethod();
+    public enum DataPaletteType {
+        STATES(ChunkSection.SIZE, 8),
+        BIOMES(4 * 4 * 4, 2),
+        ;
 
-        @Nullable
-        public static Object getDataFor(@NotNull PalettedContainer<?> palettedContainer) {
-            return NativeUtil.get(dataField, palettedContainer);
+        private final int maxSize;
+        private final int highestBitsPerValue;
+
+        DataPaletteType(int maxSize, int highestBitsPerValue) {
+            this.maxSize = maxSize;
+            this.highestBitsPerValue = highestBitsPerValue;
         }
+    }
 
-        public static void setDataFor(@NotNull PalettedContainer<?> palettedContainer, @NotNull Object data) {
-            NativeUtil.set(dataField, palettedContainer, data);
-        }
-
+    public static record DataPalettes(@NotNull DataPaletteType type, int globalPaletteBits) {
         @NotNull
-        public static Object createOrReuseData(@NotNull PalettedContainer<?> palettedContainer, int i) {
-            return NativeUtil.invoke(createOrReuseDataMethod, palettedContainer, getDataFor(palettedContainer), i);
+        public DataPalette readPalette(@NotNull PacketWrapper wrapper) {
+            int bitsPerValue = wrapper.readByte();
+            int originalBitsPerValue = bitsPerValue;
+            if (bitsPerValue > type.highestBitsPerValue) {
+                bitsPerValue = globalPaletteBits;
+            }
+            DataPalette palette;
+            if (bitsPerValue == 0) {
+                palette = new DataPalette(1);
+                palette.addId(wrapper.readVarInt());
+                wrapper.readVarInt();
+                return palette;
+            }
+            if (bitsPerValue != globalPaletteBits) {
+                int paletteLength = wrapper.readVarInt();
+                palette = new DataPalette(paletteLength);
+                for (int i = 0; i < paletteLength; i++) {
+                    palette.addId(wrapper.readVarInt());
+                }
+            } else {
+                palette = new DataPalette();
+            }
+            long[] values = new long[wrapper.readVarInt()];
+            if (values.length > 0) {
+                char valuesPerLong = (char) (64 / bitsPerValue);
+                int expectedLength = (type.maxSize + valuesPerLong - 1) / valuesPerLong;
+                if (values.length != expectedLength) {
+                    throw new IllegalStateException("Palette data length (" + values.length + ") does not match expected length (" + expectedLength + ")! bitsPerValue=" + bitsPerValue + ", originalBitsPerValue=" + originalBitsPerValue);
+                }
+                for (int i = 0; i < values.length; i++) {
+                    values[i] = wrapper.readLong();
+                }
+                CompactArrayUtil.iterateCompactArrayWithPadding(
+                        bitsPerValue,
+                        type.maxSize,
+                        values,
+                        bitsPerValue == globalPaletteBits ? palette::setIdAt : palette::setPaletteIndexAt
+                );
+            }
+            return palette;
         }
 
-        @NotNull
-        public static Object createOrReuseData(@NotNull PalettedContainer<?> palettedContainer, @NotNull Object data, int i) {
-            return NativeUtil.invoke(createOrReuseDataMethod, palettedContainer, data, i);
+        public void writePalette(@NotNull PacketWrapper wrapper, @NotNull DataPalette palette) {
+            int bitsPerValue;
+            if (palette.size() > 1) {
+                bitsPerValue = type == DataPaletteType.STATES ? 4 : 1;
+                while (palette.size() > 1 << bitsPerValue) {
+                    bitsPerValue++;
+                }
+                if (bitsPerValue > type.highestBitsPerValue) {
+                    bitsPerValue = globalPaletteBits;
+                }
+            } else {
+                bitsPerValue = 0;
+            }
+            wrapper.writeByte(bitsPerValue);
+            if (bitsPerValue == 0) {
+                wrapper.writeVarInt(palette.idByIndex(0));
+                wrapper.writeVarInt(0);
+                return;
+            }
+            if (bitsPerValue != globalPaletteBits) {
+                wrapper.writeVarInt(palette.size());
+                for (int i = 0; i < palette.size(); i++) {
+                    wrapper.writeVarInt(palette.idByIndex(i));
+                }
+            }
+            long[] data = CompactArrayUtil.createCompactArrayWithPadding(
+                    bitsPerValue,
+                    type.maxSize,
+                    bitsPerValue == globalPaletteBits ? palette::idAt : palette::paletteIndexAt
+            );
+            wrapper.writeVarInt(data.length);
+            for (long l : data) {
+                wrapper.writeLong(l);
+            }
+        }
+    }
+
+    public static class DataPalette {
+        private final int[] values;
+        private final IntList palette;
+        private final Int2IntMap inversePalette;
+
+        public DataPalette() {
+            this.values = new int[ChunkSection.SIZE];
+            palette = new IntArrayList();
+            inversePalette = new Int2IntOpenHashMap();
+            inversePalette.defaultReturnValue(-1);
         }
 
-        @NotNull
-        public static Palette<?> getPaletteFor(@NotNull Object data) {
-            return (Palette<?>) NativeUtil.get(paletteField, data);
+        public DataPalette(int expectedSize) {
+            this.values = new int[ChunkSection.SIZE];
+            palette = new IntArrayList(expectedSize);
+            inversePalette = new Int2IntOpenHashMap(expectedSize);
+            inversePalette.defaultReturnValue(-1);
         }
 
-        @NotNull
-        public static BitStorage getStorageFor(@NotNull Object data) {
-            return (BitStorage) NativeUtil.get(storageField, data);
+        public int idAt(int sectionCoordinate) {
+            int index = values[sectionCoordinate];
+            return palette.getInt(index);
+        }
+
+        public int idAt(int secX, int secY, int secZ) {
+            return idAt(index(secX, secY, secZ));
+        }
+
+        public void setIdAt(int sectionCoordinate, int id) {
+            int index = inversePalette.get(id);
+            if (index == -1) {
+                index = palette.size();
+                palette.add(id);
+                inversePalette.put(id, index);
+            }
+            values[sectionCoordinate] = index;
+        }
+
+        public void setIdAt(int secX, int secY, int secZ, int id) {
+            setIdAt(index(secX, secY, secZ), id);
+        }
+
+        public int idByIndex(int index) {
+            return palette.getInt(index);
+        }
+
+        /*
+        public void setIdByIndex(int index, int id) {
+            int oldId = palette.set(index, id);
+            if (oldId == id) return;
+            inversePalette.put(id, index);
+            if (inversePalette.get(oldId) == index) {
+                inversePalette.remove(oldId);
+                for (int i = 0; i < palette.size(); i++) {
+                    if (palette.getInt(i) == oldId) {
+                        inversePalette.put(oldId, i);
+                        break;
+                    }
+                }
+            }
+        }
+        */
+
+        public int paletteIndexAt(int packedCoordinate) {
+            return values[packedCoordinate];
+        }
+
+        public void setPaletteIndexAt(int sectionCoordinate, int index) {
+            values[sectionCoordinate] = index;
+        }
+
+        public void addId(int id) {
+            inversePalette.put(id, palette.size());
+            palette.add(id);
+        }
+
+        /*
+        public void replaceId(int oldId, int newId) {
+            int index = inversePalette.remove(oldId);
+            if (index == -1) return;
+            inversePalette.put(newId, index);
+            for (int i = 0; i < palette.size(); i++) {
+                if (palette.getInt(i) == oldId) {
+                    palette.set(i, newId);
+                }
+            }
+        }
+        */
+
+        public int size() {
+            return palette.size();
+        }
+
+        public void setEntry(int index, int id) {
+            int oldId = palette.set(index, id);
+            if (oldId == id) return;
+            inversePalette.put(id, index);
+            if (inversePalette.get(oldId) == index) {
+                inversePalette.remove(oldId);
+                for (int i = 0; i < palette.size(); i++) {
+                    if (palette.getInt(i) == oldId) {
+                        inversePalette.put(oldId, i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /*
+        public void replaceEntry(int oldId, int newId) {
+            final int index = inversePalette.remove(oldId);
+            if (index == -1) return;
+            inversePalette.put(newId, index);
+            for (int i = 0; i < palette.size(); i++) {
+                if (palette.getInt(i) == oldId) {
+                    palette.set(i, newId);
+                }
+            }
+        }
+        */
+
+        public void addEntry(int id) {
+            inversePalette.put(id, palette.size());
+            palette.add(id);
+        }
+
+        public void clear() {
+            palette.clear();
+            inversePalette.clear();
+        }
+
+        public static int index(int x, int y, int z) {
+            return y << 8 | z << 4 | x;
         }
     }
 }

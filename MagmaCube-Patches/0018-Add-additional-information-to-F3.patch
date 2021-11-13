@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Sat, 13 Nov 2021 14:32:10 +0900
+Subject: [PATCH] Add additional information to F3
+
+Added to game information:
+- Server Version
+- Server Protocol Version
+- Client Protocol Version
+
+diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
+index 83877228d193f30ed98b20761623b058fab0f316..6392aa1ed60af34b54d8b5342701b460d9397dbf 100644
+--- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
++++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
+@@ -175,8 +175,9 @@ public class DebugScreenOverlay extends GuiComponent {
+         }
+ 
+         BlockPos blockPos = this.minecraft.getCameraEntity().blockPosition();
++        List<String> list;
+         if (this.minecraft.showOnlyReducedInfo()) {
+-            return Lists.newArrayList(new String[]{"Minecraft " + SharedConstants.getCurrentVersion().getName() + " (" + this.minecraft.getLaunchedVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.minecraft.fpsString, s, this.minecraft.levelRenderer.getChunkStatistics(), this.minecraft.levelRenderer.getEntityStatistics(), "P: " + this.minecraft.particleEngine.countParticles() + ". T: " + this.minecraft.level.getEntityCount(), this.minecraft.level.gatherChunkSourceStats(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)});
++            list = Lists.newArrayList(new String[]{"Minecraft " + SharedConstants.getCurrentVersion().getName() + " (" + this.minecraft.getLaunchedVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.minecraft.fpsString, s, this.minecraft.levelRenderer.getChunkStatistics(), this.minecraft.levelRenderer.getEntityStatistics(), "P: " + this.minecraft.particleEngine.countParticles() + ". T: " + this.minecraft.level.getEntityCount(), this.minecraft.level.gatherChunkSourceStats(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)}); // Blueberry
+         } else {
+             Entity entity = this.minecraft.getCameraEntity();
+             Direction direction = entity.getDirection();
+@@ -206,7 +207,7 @@ public class DebugScreenOverlay extends GuiComponent {
+ 
+             Level level = this.getLevel();
+             LongSet longSet = (LongSet)(level instanceof ServerLevel ? ((ServerLevel)level).getForcedChunks() : LongSets.EMPTY_SET);
+-            List<String> list = Lists.newArrayList(new String[]{"Minecraft " + SharedConstants.getCurrentVersion().getName() + " (" + this.minecraft.getLaunchedVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType()) + ")", this.minecraft.fpsString, s, this.minecraft.levelRenderer.getChunkStatistics(), this.minecraft.levelRenderer.getEntityStatistics(), "P: " + this.minecraft.particleEngine.countParticles() + ". T: " + this.minecraft.level.getEntityCount(), this.minecraft.level.gatherChunkSourceStats()});
++            list = Lists.newArrayList(new String[]{"Minecraft " + SharedConstants.getCurrentVersion().getName() + " (" + this.minecraft.getLaunchedVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType()) + ")", this.minecraft.fpsString, s, this.minecraft.levelRenderer.getChunkStatistics(), this.minecraft.levelRenderer.getEntityStatistics(), "P: " + this.minecraft.particleEngine.countParticles() + ". T: " + this.minecraft.level.getEntityCount(), this.minecraft.level.gatherChunkSourceStats()}); // Blueberry
+             String s8 = this.getServerChunkStats();
+             if (s8 != null) {
+                 list.add(s8);
+@@ -288,8 +289,25 @@ public class DebugScreenOverlay extends GuiComponent {
+             }
+ 
+             list.add(this.minecraft.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.minecraft.player.getCurrentMood() * 100.0F)));
+-            return list;
+         }
++        // Blueberry start
++        list.add("");
++        var serverVersion = net.blueberrymc.common.bml.InternalBlueberryModConfig.Multiplayer.version;
++        list.add("Server Version: " + serverVersion.getName());
++        if (serverVersion.getProtocolVersion() >= 0x40000000) {
++            String hex = Integer.toHexString(serverVersion.getProtocolVersion());
++            list.add("Server Protocol Version: " + serverVersion.getProtocolVersion() + " (0x" + hex + ")");
++        } else {
++            list.add("Server Protocol Version: " + serverVersion.getProtocolVersion());
++        }
++        if (SharedConstants.getProtocolVersion() >= 0x40000000) {
++            String hex = Integer.toHexString(SharedConstants.getProtocolVersion());
++            list.add("Client Protocol Version: " + SharedConstants.getProtocolVersion() + " (0x" + hex + ")");
++        } else {
++            list.add("Client Protocol Version: " + SharedConstants.getProtocolVersion());
++        }
++        return list;
++        // Blueberry end
+     }
+ 
+     @Nullable
