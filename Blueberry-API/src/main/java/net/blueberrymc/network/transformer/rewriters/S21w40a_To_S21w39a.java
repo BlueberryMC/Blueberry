@@ -59,4 +59,14 @@ public class S21w40a_To_S21w39a extends S21w41a_To_S21w40a {
             wrapper.passthrough(PacketWrapper.Type.BOOLEAN); // Is flat
         });
     }
+
+    @Override
+    protected void registerSoundRewriter() {
+        registerSoundRewriter(0x5B, 0x5C);
+    }
+
+    @Override
+    protected void registerItemRewriter() {
+        registerItemRewriter(0x08, 0x28, 0x14, 0x16, 0x28, 0x4D, 0x50, 0x62, 0x65);
+    }
 }

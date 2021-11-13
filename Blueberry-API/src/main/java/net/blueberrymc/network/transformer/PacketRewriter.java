@@ -1,9 +1,12 @@
 package net.blueberrymc.network.transformer;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -25,9 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -39,10 +40,10 @@ public class PacketRewriter {
     protected static final Logger LOGGER = LogManager.getLogger();
     private final int sourcePV;
     private final int targetPV;
-    private final Map<ConnectionProtocol, Map<Integer, Integer>> remapInbounds = new HashMap<>();
-    private final Map<ConnectionProtocol, Map<Integer, Integer>> remapOutbounds = new HashMap<>();
-    private final Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> rewriteInbounds = new HashMap<>();
-    private final Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> rewriteOutbounds = new HashMap<>();
+    private final Int2ObjectMap<Int2IntMap> remapInbounds = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Int2IntMap> remapOutbounds = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> rewriteInbounds = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> rewriteOutbounds = new Int2ObjectOpenHashMap<>();
     private boolean registeringInbound;
     private boolean registeringOutbound;
 
@@ -113,33 +114,45 @@ public class PacketRewriter {
     }
 
     protected void registerSoundRewriter() {
+        registerSoundRewriter(0x5C, 0x5D);
+    }
+
+    protected void registerSoundRewriter(int soundEntityPacketId, int soundPacketId) {
         // ClientboundSoundEntityPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x5C, sourcePV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, soundEntityPacketId, sourcePV), wrapper -> {
             wrapper.writeVarInt(remapSoundId(wrapper.readVarInt()));
             wrapper.passthroughAll();
         });
         // ClientboundSoundPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x5D, sourcePV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, soundPacketId, sourcePV), wrapper -> {
             wrapper.writeVarInt(remapSoundId(wrapper.readVarInt()));
             wrapper.passthroughAll();
         });
     }
 
     protected void registerItemRewriter() {
-        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, 0x08, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundContainerClickPacket(wrapper)));
-        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, 0x28, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundSetCreativeModeSlotPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x14, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetContentPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x16, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetSlotPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x28, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundMerchantOffersPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x4D, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEntityDataPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x50, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEquipmentPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x63, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateAdvancementsPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x66, sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateRecipesPacket(wrapper)));
+        registerItemRewriter(0x08, 0x28, 0x14, 0x16, 0x28, 0x4D, 0x50, 0x63, 0x66);
+    }
+
+    protected void registerItemRewriter(int... ids) {
+        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, ids[0], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundContainerClickPacket(wrapper)));
+        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, ids[1], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundSetCreativeModeSlotPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[2], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetContentPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[3], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetSlotPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[4], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundMerchantOffersPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[5], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEntityDataPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[6], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEquipmentPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[7], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateAdvancementsPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[8], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateRecipesPacket(wrapper)));
     }
 
     protected void registerParticleRewriter() {
+        registerParticleRewriter(0x24);
+    }
+
+    protected void registerParticleRewriter(int packetId) {
         // ClientboundLevelParticlesPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, 0x24, sourcePV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, packetId, sourcePV), wrapper -> {
             wrapper.writeInt(remapParticleId(wrapper.readInt()));
             wrapper.passthroughAll();
         });
@@ -183,12 +196,12 @@ public class PacketRewriter {
 
     protected final void remapInbound(@NotNull ConnectionProtocol protocol, int newId, int oldId) {
         if (!registeringInbound) throw new IllegalStateException("Not registering inbound");
-        remapInbounds.computeIfAbsent(protocol, (k) -> new HashMap<>()).put(oldId, newId);
+        remapInbounds.computeIfAbsent(protocol.ordinal(), (k) -> new Int2IntOpenHashMap()).put(oldId, newId);
     }
 
     protected final void remapOutbound(@NotNull ConnectionProtocol protocol, int oldId, int newId) {
         if (!registeringOutbound) throw new IllegalStateException("Not registering outbound");
-        remapOutbounds.computeIfAbsent(protocol, (k) -> new HashMap<>()).put(oldId, newId);
+        remapOutbounds.computeIfAbsent(protocol.ordinal(), (k) -> new Int2IntOpenHashMap()).put(oldId, newId);
     }
 
     /**
@@ -197,8 +210,8 @@ public class PacketRewriter {
      * @return packet id of older version
      */
     public final int getInboundId(@NotNull ConnectionProtocol protocol, int newId) {
-        if (!remapInbounds.containsKey(protocol)) return newId;
-        return Objects.requireNonNullElse(remapInbounds.get(protocol).get(newId), newId);
+        if (!remapInbounds.containsKey(protocol.ordinal())) return newId;
+        return remapInbounds.get(protocol.ordinal()).getOrDefault(newId, newId);
     }
 
     /**
@@ -207,22 +220,26 @@ public class PacketRewriter {
      * @return packet id of older version
      */
     public final int getOutboundId(@NotNull ConnectionProtocol protocol, int newId) {
-        if (!remapOutbounds.containsKey(protocol)) return newId;
-        return Objects.requireNonNullElse(remapOutbounds.get(protocol).get(newId), newId);
+        if (!remapOutbounds.containsKey(protocol.ordinal())) return newId;
+        return remapOutbounds.get(protocol.ordinal()).getOrDefault(newId, newId);
     }
 
     protected final void rewriteInbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
         if (!registeringInbound) throw new IllegalStateException("Not registering inbound");
-        internalRewrite(rewriteInbounds, protocol, oldId, handler);
+        int newId = remapInboundPacketId(protocol, oldId, sourcePV);
+        internalRewrite(rewriteInbounds, protocol, newId, handler);
     }
 
     protected final void rewriteOutbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
         if (!registeringOutbound) throw new IllegalStateException("Not registering outbound");
-        internalRewrite(rewriteOutbounds, protocol, oldId, handler);
+        int newId = remapOutboundPacketId(protocol, oldId, sourcePV);
+        internalRewrite(rewriteOutbounds, protocol, newId, handler);
     }
 
-    protected final void internalRewrite(@NotNull Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> map, @NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
-        map.computeIfAbsent(protocol, (k) -> ArrayListMultimap.create(4, 3)).put(oldId, handler);
+    protected final void internalRewrite(@NotNull Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> map, @NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
+        map.computeIfAbsent(protocol.ordinal(), (k) -> new Int2ObjectOpenHashMap<>(4))
+                .computeIfAbsent(oldId, (k) -> new ObjectArrayList<>())
+                .add(handler);
     }
 
     public final void doRewriteInbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper) {
@@ -237,13 +254,13 @@ public class PacketRewriter {
         doRewrite(protocol, newId, packetWrapperRewriter, rewriteOutbounds);
     }
 
-    private void doRewrite(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper, Map<ConnectionProtocol, Multimap<Integer, Consumer<PacketWrapper>>> map) {
-        if (!map.containsKey(protocol)) {
+    private void doRewrite(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper, Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> map) {
+        if (!map.containsKey(protocol.ordinal())) {
             wrapper.passthroughAll();
             return;
         }
-        Collection<Consumer<PacketWrapper>> consumers = map.get(protocol).get(oldId);
-        if (consumers.isEmpty()) {
+        Collection<Consumer<PacketWrapper>> consumers = map.get(protocol.ordinal()).get(oldId);
+        if (consumers == null || consumers.isEmpty()) {
             wrapper.passthroughAll();
             return;
         }

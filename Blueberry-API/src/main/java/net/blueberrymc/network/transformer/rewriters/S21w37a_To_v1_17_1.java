@@ -85,28 +85,37 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             int x = wrapper.passthroughInt(); // Chunk X
             int z = wrapper.passthroughInt(); // Chunk Z
             var bitSet = BitSet.valueOf(wrapper.readLongArray());
-            int dataLength = 0;
-            for (int i = 0; i < bitSet.size(); i++) {
-                if (bitSet.get(i)) dataLength++;
-            }
             wrapper.passthrough(PacketWrapper.Type.NBT); // Heightmaps
             int[] biomes = wrapper.readVarIntArray(); // Biomes length / Biomes
             byte[] data = wrapper.readByteArray();
             var dataWrapper = new PacketWrapper(Unpooled.wrappedBuffer(data), Unpooled.buffer());
-            int sectionSize = Math.max(16, dataLength);
+            int sectionSize = Math.max(16, bitSet.size());
             ChunkSection[] sections = new ChunkSection[sectionSize];
-            // Fill with chunk sections
-            for (int i = dataLength; i < sectionSize; i++) sections[i] = ChunkSection.emptySection;
+            // Fill with empty chunk sections
+            for (int i = 0; i < sectionSize; i++) sections[i] = ChunkSection.emptySection;
             // Read from packet
-            for (int i = 0; i < dataLength; i++) {
-                // Read nonEmptyBlockCount
-                ChunkSection section = sections[i] = ChunkSection.readChunkSection(dataWrapper, Mth.ceillog2(20341), Mth.ceillog2(biomesCount));
-                // Read block states
-                section.states = section.statesType.readPalette(dataWrapper);
+            for (int i = 0; i < bitSet.size(); i++) {
+                ChunkSection section;
+                if (bitSet.get(i)) {
+                    // has data
+                    // Read nonEmptyBlockCount
+                    section = sections[i] = ChunkSection.readChunkSection(dataWrapper, Mth.ceillog2(20341), Mth.ceillog2(biomesCount));
+                    // Read block states
+                    section.states = section.statesType.readPalette(dataWrapper);
+                } else {
+                    section = sections[i] = new ChunkSection((short) 0, Mth.ceillog2(20341), Mth.ceillog2(biomesCount));
+                    section.states = new DataPalette();
+                    section.states.addId(0);
+                }
                 // Create biomes data palette
                 DataPalette palette = section.biomes = new DataPalette();
                 for (int biomeIndex = i * BIOMES_PER_CHUNK; biomeIndex < (i * BIOMES_PER_CHUNK) + BIOMES_PER_CHUNK; biomeIndex++) {
-                    int biome = biomes[biomeIndex];
+                    int biome;
+                    try {
+                        biome = biomes[biomeIndex];
+                    } catch (IndexOutOfBoundsException ex) {
+                        biome = 127;
+                    }
                     int minX = (biomeIndex & HORIZONTAL_MASK) << 2;
                     int minY = ((biomeIndex >> WIDTH_BITS + WIDTH_BITS) << 2) & 15;
                     int minZ = (biomeIndex >> WIDTH_BITS & HORIZONTAL_MASK) << 2;
@@ -183,8 +192,7 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
             wrapper.passthroughAll();
         });
         // ClientboundUpdateTagsPacket
-        // TODO: it should be 0x66
-        rewriteInbound(ConnectionProtocol.PLAY, 0x67, wrapper -> {
+        rewriteInbound(ConnectionProtocol.PLAY, 0x66, wrapper -> {
             var tags = wrapper.readMap((buf) -> ResourceKey.createRegistryKey(buf.readResourceLocation()), TagCollection.NetworkPayload::read);
             wrapper.writeVarInt(tags.size());
             tags.forEach((key, value) -> {

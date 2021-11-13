@@ -41,7 +41,9 @@ public class PacketRewriterManager {
         REWRITER_LIST.add(new S21w43a_To_S21w42a());
         REWRITER_LIST.add(new S21w44a_To_S21w43a());
         REWRITER_LIST.add(new V1_18_Pre1_To_S21w44a());
-        REWRITER_LIST.forEach(PacketRewriter::register);
+        var list = new ArrayList<>(REWRITER_LIST);
+        Collections.reverse(list);
+        list.forEach(PacketRewriter::register);
     }
 
     @NotNull
@@ -91,13 +93,8 @@ public class PacketRewriterManager {
             read.readerIndex(readerIndex);
             write.writeVarInt(packetId);
             rewriter.doRewriteInbound(protocol, packetId, new PacketWrapper(read, write));
-            // reset read
-            //read.clear();
             read.release();
-            // swap read and write
-            FriendlyByteBuf originalRead = read;
             read = write;
-            //write = originalRead;
             write = new FriendlyByteBuf(Unpooled.buffer());
             // set currentPV to target PV of current rewriter
             currentPV = rewriter.getTargetPV();
@@ -125,13 +122,8 @@ public class PacketRewriterManager {
             read.readerIndex(readerIndex);
             write.writeVarInt(packetId);
             rewriter.doRewriteOutbound(protocol, packetId, new PacketWrapper(read, write));
-            // reset read
-            //read.clear();
             read.release();
-            // swap read and write
-            FriendlyByteBuf originalRead = read;
             read = write;
-            //write = originalRead;
             write = new FriendlyByteBuf(Unpooled.buffer());
             // set currentPV to target PV of current rewriter
             currentPV = rewriter.getTargetPV();
