@@ -119,12 +119,12 @@ public class PacketRewriter {
 
     protected void registerSoundRewriter(int soundEntityPacketId, int soundPacketId) {
         // ClientboundSoundEntityPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, soundEntityPacketId, sourcePV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, soundEntityPacketId, wrapper -> {
             wrapper.writeVarInt(remapSoundId(wrapper.readVarInt()));
             wrapper.passthroughAll();
         });
         // ClientboundSoundPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, soundPacketId, sourcePV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, soundPacketId, wrapper -> {
             wrapper.writeVarInt(remapSoundId(wrapper.readVarInt()));
             wrapper.passthroughAll();
         });
@@ -135,15 +135,15 @@ public class PacketRewriter {
     }
 
     protected void registerItemRewriter(int... ids) {
-        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, ids[0], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundContainerClickPacket(wrapper)));
-        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, remapOutboundPacketId(ConnectionProtocol.PLAY, ids[1], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ServerboundSetCreativeModeSlotPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[2], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetContentPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[3], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetSlotPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[4], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundMerchantOffersPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[5], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEntityDataPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[6], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEquipmentPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[7], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateAdvancementsPacket(wrapper)));
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, ids[8], sourcePV), wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateRecipesPacket(wrapper)));
+        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, ids[0], wrapper -> wrapper.readIsPassthrough(() -> new ServerboundContainerClickPacket(wrapper)));
+        internalRewrite(rewriteOutbounds, ConnectionProtocol.PLAY, ids[1], wrapper -> wrapper.readIsPassthrough(() -> new ServerboundSetCreativeModeSlotPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[2], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetContentPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[3], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundContainerSetSlotPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[4], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundMerchantOffersPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[5], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEntityDataPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[6], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundSetEquipmentPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[7], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateAdvancementsPacket(wrapper)));
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, ids[8], wrapper -> wrapper.readIsPassthrough(() -> new ClientboundUpdateRecipesPacket(wrapper)));
     }
 
     protected void registerParticleRewriter() {
@@ -152,7 +152,7 @@ public class PacketRewriter {
 
     protected void registerParticleRewriter(int packetId) {
         // ClientboundLevelParticlesPacket
-        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, remapInboundPacketId(ConnectionProtocol.PLAY, packetId, sourcePV), wrapper -> {
+        internalRewrite(rewriteInbounds, ConnectionProtocol.PLAY, packetId, wrapper -> {
             wrapper.writeInt(remapParticleId(wrapper.readInt()));
             wrapper.passthroughAll();
         });
@@ -226,14 +226,12 @@ public class PacketRewriter {
 
     protected final void rewriteInbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
         if (!registeringInbound) throw new IllegalStateException("Not registering inbound");
-        int newId = remapInboundPacketId(protocol, oldId, sourcePV);
-        internalRewrite(rewriteInbounds, protocol, newId, handler);
+        internalRewrite(rewriteInbounds, protocol, oldId, handler);
     }
 
     protected final void rewriteOutbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
         if (!registeringOutbound) throw new IllegalStateException("Not registering outbound");
-        int newId = remapOutboundPacketId(protocol, oldId, sourcePV);
-        internalRewrite(rewriteOutbounds, protocol, newId, handler);
+        internalRewrite(rewriteOutbounds, protocol, oldId, handler);
     }
 
     protected final void internalRewrite(@NotNull Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> map, @NotNull ConnectionProtocol protocol, int oldId, @NotNull Consumer<PacketWrapper> handler) {
@@ -244,14 +242,12 @@ public class PacketRewriter {
 
     public final void doRewriteInbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper) {
         PacketWrapperRewriter packetWrapperRewriter = new PacketWrapperRewriter(wrapper, this::rewriteInboundItemData);
-        int newId = remapInboundPacketId(protocol, oldId, sourcePV, getFinalPV());
-        doRewrite(protocol, newId, packetWrapperRewriter, rewriteInbounds);
+        doRewrite(protocol, oldId, packetWrapperRewriter, rewriteInbounds);
     }
 
     public final void doRewriteOutbound(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper) {
         PacketWrapperRewriter packetWrapperRewriter = new PacketWrapperRewriter(wrapper, this::rewriteOutboundItemData);
-        int newId = remapOutboundPacketId(protocol, oldId, sourcePV, getFinalPV());
-        doRewrite(protocol, newId, packetWrapperRewriter, rewriteOutbounds);
+        doRewrite(protocol, oldId, packetWrapperRewriter, rewriteOutbounds);
     }
 
     private void doRewrite(@NotNull ConnectionProtocol protocol, int oldId, @NotNull PacketWrapper wrapper, Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> map) {
