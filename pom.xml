@@ -15,9 +15,9 @@
     </modules>
     <name>Blueberry-Parent</name>
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <minecraft.version>1.18-pre1</minecraft.version>
+        <minecraft.version>1.18-pre5</minecraft.version>
     </properties>
 </project>

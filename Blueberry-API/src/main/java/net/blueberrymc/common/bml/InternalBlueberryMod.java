@@ -44,6 +44,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     private static final Timer clientTimer = new Timer("Async Client Blueberry Scheduler", true);
     private static final Timer serverTimer = new Timer("Async Server Blueberry Scheduler", true);
     private static final AtomicReference<String> lastScreen = new AtomicReference<>();
+    private static DiscordRPCStatus lastDiscordRPCStatus = null;
 
     protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         super(modLoader, description, classLoader, file);
@@ -169,10 +170,13 @@ public class InternalBlueberryMod extends BlueberryMod {
         VisualConfigManager.load(getConfig(), InternalBlueberryModConfig.class);
         // post-reload
         if (Blueberry.getSide() == Side.CLIENT) {
-            DiscordRPCTaskExecutor.shutdownNow();
-            if (InternalBlueberryModConfig.Misc.DiscordRPC.status != DiscordRPCStatus.DISABLED) {
-                DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
+            if (lastDiscordRPCStatus != InternalBlueberryModConfig.Misc.DiscordRPC.status) {
+                DiscordRPCTaskExecutor.shutdownNow();
+                if (InternalBlueberryModConfig.Misc.DiscordRPC.status != DiscordRPCStatus.DISABLED) {
+                    DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
+                }
             }
+            lastDiscordRPCStatus = InternalBlueberryModConfig.Misc.DiscordRPC.status;
             Minecraft mc = Minecraft.getInstance();
             //noinspection ConstantConditions
             if (mc != null) {

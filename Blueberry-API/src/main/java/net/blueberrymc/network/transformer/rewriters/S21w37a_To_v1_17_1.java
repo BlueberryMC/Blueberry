@@ -17,6 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.BitSet;
@@ -25,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int WIDTH_BITS = 2;
     private static final int HORIZONTAL_MASK = 3;
     private static final int BIOMES_PER_CHUNK = 4 * 4 * 4;
@@ -68,7 +71,10 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
                 case 12 -> Registry.BLOCK_ENTITY_TYPE.getId(BlockEntityType.JIGSAW);
                 case 13 -> Registry.BLOCK_ENTITY_TYPE.getId(BlockEntityType.CAMPFIRE);
                 case 14 -> Registry.BLOCK_ENTITY_TYPE.getId(BlockEntityType.BEEHIVE);
-                default -> type;
+                default -> {
+                    LOGGER.warn("Unknown block entity type: {}", type);
+                    yield -1;
+                }
             };
             wrapper.writeVarInt(type); // BlockEntity ID
             wrapper.passthrough(PacketWrapper.Type.NBT); // Tag

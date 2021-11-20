@@ -5,10 +5,10 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index c0cff115d095a0f781597b163464d32624372055..e020147a25c457cf3151348fcdc854ba8f9af765 100644
+index fcd5a9c05bc1b394a90da6cabfa3f72353e67547..1198c010f69f12ccd71c5c71c3029369d9194ab5 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -271,6 +271,7 @@ public class LocalPlayer extends AbstractClientPlayer {
+@@ -272,6 +272,7 @@ public class LocalPlayer extends AbstractClientPlayer {
      }
  
      public void chat(String s) {

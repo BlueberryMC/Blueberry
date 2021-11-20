@@ -13,16 +13,16 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218039a3420 100644
+index c776993503cbc7d441f9335d4970f58fe32a0cb2..d7775bac927c945d6daa18562996b06f7bb74129 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -3,32 +3,49 @@
+@@ -3,13 +3,18 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>1.18-pre1</version>
+-        <version>1.18-pre5</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -33,19 +33,19 @@ index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218
      
      <properties>
 +        <!-- Blueberry start -->
-+        <text2speech.version>1.11.3</text2speech.version>
-+        <maven.compiler.source>16</maven.compiler.source>
-+        <maven.compiler.target>16</maven.compiler.target>
 +        <api.version>0.0.16</api.version>
 +        <!-- Blueberry end -->
-         <log4j.version>2.14.1</log4j.version>
+         <text2speech.version>1.11.3</text2speech.version>
+         <maven.compiler.source>17</maven.compiler.source>
+         <maven.compiler.target>17</maven.compiler.target>
+@@ -17,21 +22,30 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.18-pre1</version>
++    <version>1.18-pre5</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -73,7 +73,7 @@ index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -49,6 +66,11 @@
+@@ -52,6 +66,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
@@ -85,13 +85,7 @@ index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218
                              </excludes>
                          </filter>
                      </filters>
-@@ -64,11 +86,34 @@
-         </repository>
-         <repository>
-             <id>indexdata</id>
--            <url>http://maven.indexdata.com/</url>
-+            <url>https://maven.indexdata.com/</url>
-         </repository>
+@@ -72,6 +91,29 @@
      </repositories>
  
      <dependencies>
@@ -121,7 +115,7 @@ index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
-@@ -78,16 +123,19 @@
+@@ -81,16 +123,19 @@
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
              <version>5.0.4</version>
@@ -136,12 +130,12 @@ index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>authlib</artifactId>
-             <version>3.1.36</version>
+             <version>3.2.38</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -103,237 +151,302 @@
+@@ -106,237 +151,302 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
              <version>4.1.68.Final</version>
@@ -426,26 +420,25 @@ index 3fe54596cdcb7cf246ce76e3ef7862dd75affd8e..40f181d412d14cc86ef34bc9f3b3f218
 +            <!-- Blueberry start -->
 +            <version>${text2speech.version}</version>
 +            <scope>provided</scope>
-         </dependency>
-         <dependency>
-             <groupId>com.mojang</groupId>
-             <artifactId>text2speech</artifactId>
--            <version>1.11.3</version>
-+            <version>${text2speech.version}</version>
-+            <classifier>natives-linux</classifier>
-+            <scope>provided</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>com.mojang</groupId>
 +            <artifactId>text2speech</artifactId>
 +            <version>${text2speech.version}</version>
++            <classifier>natives-linux</classifier>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>text2speech</artifactId>
+             <version>${text2speech.version}</version>
 +            <classifier>natives-windows</classifier>
 +            <scope>provided</scope>
 +            <!-- Blueberry end -->
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -342,25 +455,38 @@
+@@ -345,25 +455,38 @@
          </dependency>
  
          <!-- Logger -->
@@ -498,10 +491,10 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f8faef739e7e2e92f5048162f8abf25f076b5ad6..f06865674237f13aa328cd13b11e33719656ea1b 100644
+index 6b552c2315e86fa2cf5d8ef7e2d79b7439da7e4d..7dc3684e8a55a0df719ce4a86e8aeb53ad23dc86 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -918,7 +918,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -922,7 +922,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

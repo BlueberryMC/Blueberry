@@ -56,6 +56,10 @@ public class PacketRewriter {
         this.targetPV = targetPV;
     }
 
+    protected PacketRewriter(@NotNull TransformableProtocolVersions sourcePV, @NotNull TransformableProtocolVersions targetPV) {
+        this(sourcePV.getProtocolVersion(), targetPV.getProtocolVersion());
+    }
+
     protected void preRegister() {}
 
     public final void register() {
@@ -72,10 +76,6 @@ public class PacketRewriter {
         preRegisterOutbound();
         registerOutbound();
         registeringOutbound = false;
-    }
-
-    protected PacketRewriter(@NotNull TransformableProtocolVersions sourcePV, @NotNull TransformableProtocolVersions targetPV) {
-        this(sourcePV.getProtocolVersion(), targetPV.getProtocolVersion());
     }
 
     @NotNull

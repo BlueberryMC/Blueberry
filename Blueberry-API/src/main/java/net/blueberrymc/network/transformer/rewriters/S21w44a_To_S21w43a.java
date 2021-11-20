@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagCollection;
 import org.jetbrains.annotations.NotNull;
 
-public class S21w44a_To_S21w43a extends V1_18_Pre1_To_S21w44a {
+public class S21w44a_To_S21w43a extends v1_18_Pre5_To_v1_18_Pre4 {
     public S21w44a_To_S21w43a() {
         this(TransformableProtocolVersions.SNAPSHOT_21W44A, TransformableProtocolVersions.SNAPSHOT_21W43A);
     }

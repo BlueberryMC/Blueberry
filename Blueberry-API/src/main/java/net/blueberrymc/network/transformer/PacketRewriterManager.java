@@ -4,13 +4,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.blueberrymc.network.transformer.rewriters.S21w37a_To_v1_17_1;
 import net.blueberrymc.network.transformer.rewriters.S21w38a_To_S21w37a;
-import net.blueberrymc.network.transformer.rewriters.S21w39a_To_S21w38a;
 import net.blueberrymc.network.transformer.rewriters.S21w40a_To_S21w39a;
 import net.blueberrymc.network.transformer.rewriters.S21w41a_To_S21w40a;
 import net.blueberrymc.network.transformer.rewriters.S21w42a_To_S21w41a;
 import net.blueberrymc.network.transformer.rewriters.S21w43a_To_S21w42a;
 import net.blueberrymc.network.transformer.rewriters.S21w44a_To_S21w43a;
-import net.blueberrymc.network.transformer.rewriters.V1_18_Pre1_To_S21w44a;
+import net.blueberrymc.network.transformer.rewriters.v1_18_Pre5_To_v1_18_Pre4;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,13 +33,17 @@ public class PacketRewriterManager {
         // list order: older versions -> newer versions
         REWRITER_LIST.add(new S21w37a_To_v1_17_1());
         REWRITER_LIST.add(new S21w38a_To_S21w37a());
-        REWRITER_LIST.add(new S21w39a_To_S21w38a());
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.SNAPSHOT_21W39A, TransformableProtocolVersions.SNAPSHOT_21W38A));
         REWRITER_LIST.add(new S21w40a_To_S21w39a());
         REWRITER_LIST.add(new S21w41a_To_S21w40a());
         REWRITER_LIST.add(new S21w42a_To_S21w41a());
         REWRITER_LIST.add(new S21w43a_To_S21w42a());
         REWRITER_LIST.add(new S21w44a_To_S21w43a());
-        REWRITER_LIST.add(new V1_18_Pre1_To_S21w44a());
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_PRE1, TransformableProtocolVersions.SNAPSHOT_21W44A));
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_PRE2, TransformableProtocolVersions.v1_18_PRE1));
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_PRE3, TransformableProtocolVersions.v1_18_PRE2));
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_PRE4, TransformableProtocolVersions.v1_18_PRE3));
+        REWRITER_LIST.add(new v1_18_Pre5_To_v1_18_Pre4());
         var list = new ArrayList<>(REWRITER_LIST);
         Collections.reverse(list);
         list.forEach(PacketRewriter::register);
@@ -56,7 +59,7 @@ public class PacketRewriterManager {
         PacketRewriter source = REWRITER_LIST.stream()
                 .filter(rewriter -> rewriter.getSourcePV() == sourcePV)
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("No packet rewriter set for " + sourcePV + " (source)"));
         if (source.getSourcePV() == targetPV) {
             return Collections.emptyList();
         }
@@ -66,7 +69,7 @@ public class PacketRewriterManager {
         PacketRewriter entry = REWRITER_LIST.stream()
                 .filter(rewriter -> rewriter.getTargetPV() == targetPV)
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("No packet rewriter set for " + targetPV + " (target)"));
         int index = REWRITER_LIST.indexOf(entry);
         List<PacketRewriter> rewriterList = new ArrayList<>();
         for (int i = index; i <= REWRITER_LIST.indexOf(source); i++) {

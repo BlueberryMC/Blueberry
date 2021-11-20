@@ -1209,13 +1209,13 @@
     {
       "downloads": {
         "artifact": {
-          "path": "com/mojang/authlib/3.1.36/authlib-3.1.36.jar",
-          "sha1": "591072d77cb6c87514fc59ab3618e13f09b20455",
+          "path": "com/mojang/authlib/3.2.38/authlib-3.2.38.jar",
+          "sha1": "7bba19e34be22fded9ceb409ca1e8fb7525daf55",
           "size": 98945,
-          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.1.36/authlib-3.1.36.jar"
+          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.2.38/authlib-3.2.38.jar"
         }
       },
-      "name": "com.mojang:authlib:3.1.36"
+      "name": "com.mojang:authlib:3.2.38"
     },
     {
       "downloads": {

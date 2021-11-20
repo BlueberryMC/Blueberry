@@ -224,7 +224,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         this.renderDecorations(poseStack, i, i2);
         children.forEach(e -> {
             if (e instanceof AbstractWidget) {
-                if (((AbstractWidget) e).isHovered()) {
+                if (((AbstractWidget) e).isHoveredOrFocused()) {
                     ((AbstractWidget) e).renderToolTip(poseStack, i, i2);
                 }
             }
