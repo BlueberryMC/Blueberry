@@ -175,6 +175,8 @@ public class InternalBlueberryMod extends BlueberryMod {
                 if (InternalBlueberryModConfig.Misc.DiscordRPC.status != DiscordRPCStatus.DISABLED) {
                     DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
                 }
+            } else if (lastDiscordRPCStatus == null) {
+                DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
             }
             lastDiscordRPCStatus = InternalBlueberryModConfig.Misc.DiscordRPC.status;
             Minecraft mc = Minecraft.getInstance();
