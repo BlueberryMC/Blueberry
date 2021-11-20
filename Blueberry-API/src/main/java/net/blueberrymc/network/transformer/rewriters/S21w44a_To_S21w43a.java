@@ -1,6 +1,5 @@
 package net.blueberrymc.network.transformer.rewriters;
 
-import net.blueberrymc.network.transformer.PacketRewriter;
 import net.blueberrymc.network.transformer.PacketWrapper;
 import net.blueberrymc.network.transformer.TransformableProtocolVersions;
 import net.minecraft.network.ConnectionProtocol;

@@ -14,8 +14,9 @@ public class InboundPacketTransformer extends ChannelDuplexHandler {
         if (msg instanceof ByteBuf byteBuf) {
             ConnectionProtocol protocol = ctx.channel().attr(Connection.ATTRIBUTE_PROTOCOL).get();
             int targetPV = InternalBlueberryModConfig.Multiplayer.version.getProtocolVersion();
-            ByteBuf buf = PacketRewriterManager.rewriteInbound(protocol, byteBuf, targetPV);
-            super.channelRead(ctx, buf);
+            for (ByteBuf buf : PacketRewriterManager.rewriteInbound(protocol, byteBuf, targetPV)) {
+                super.channelRead(ctx, buf);
+            }
             return;
         }
         super.channelRead(ctx, msg);

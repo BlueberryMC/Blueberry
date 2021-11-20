@@ -2,6 +2,8 @@ package net.blueberrymc.network.transformer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.blueberrymc.network.transformer.rewriters.S21w37a_To_v1_17_1;
 import net.blueberrymc.network.transformer.rewriters.S21w38a_To_S21w37a;
 import net.blueberrymc.network.transformer.rewriters.S21w40a_To_S21w39a;
@@ -10,6 +12,7 @@ import net.blueberrymc.network.transformer.rewriters.S21w42a_To_S21w41a;
 import net.blueberrymc.network.transformer.rewriters.S21w43a_To_S21w42a;
 import net.blueberrymc.network.transformer.rewriters.S21w44a_To_S21w43a;
 import net.blueberrymc.network.transformer.rewriters.v1_17_1_To_v1_17;
+import net.blueberrymc.network.transformer.rewriters.v1_17_To_v1_16_5;
 import net.blueberrymc.network.transformer.rewriters.v1_18_Pre5_To_v1_18_Pre4;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.ConnectionProtocol;
@@ -35,6 +38,7 @@ public class PacketRewriterManager {
     public static void register() {
         REWRITER_LIST.clear();
         // list order: older versions -> newer versions
+        REWRITER_LIST.add(new v1_17_To_v1_16_5());
         REWRITER_LIST.add(new v1_17_1_To_v1_17());
         REWRITER_LIST.add(new S21w37a_To_v1_17_1());
         REWRITER_LIST.add(new S21w38a_To_S21w37a());
@@ -85,7 +89,7 @@ public class PacketRewriterManager {
     }
 
     @NotNull
-    public static ByteBuf rewriteInbound(@NotNull ConnectionProtocol protocol, @NotNull ByteBuf byteBuf, int targetPV) {
+    public static List<ByteBuf> rewriteInbound(@NotNull ConnectionProtocol protocol, @NotNull ByteBuf byteBuf, int targetPV) {
         FriendlyByteBuf read = new FriendlyByteBuf(Unpooled.buffer());
         read.writeBytes(byteBuf, byteBuf.readerIndex(), byteBuf.readableBytes());
         int packetId = read.readVarInt();
@@ -93,6 +97,7 @@ public class PacketRewriterManager {
         read.resetReaderIndex();
         int currentPV = targetPV;
         FriendlyByteBuf write = new FriendlyByteBuf(Unpooled.buffer());
+        ObjectList<ByteBuf> packets = new ObjectArrayList<>();
         for (PacketRewriter rewriter : collectRewriters(targetPV, false)) {
             if (currentPV != rewriter.getTargetPV()) {
                 throw new IllegalStateException("currentPV (" + currentPV + ") != targetPV (" + rewriter.getTargetPV() + ")");
@@ -101,7 +106,9 @@ public class PacketRewriterManager {
             read.readerIndex(readerIndex);
             write.writeVarInt(packetId);
             try {
-                rewriter.doRewriteInbound(protocol, packetId, new PacketWrapper(read, write));
+                PacketWrapper pw = new PacketWrapper(read, write);
+                packets.addAll(rewriter.doRewriteInbound(protocol, packetId, pw));
+                if (pw.isCancelled()) return packets;
             } catch (Exception e) {
                 LOGGER.error("Failed to rewrite inbound packet in " + rewriter.getClass().getTypeName(), e);
                 throw e;
@@ -117,11 +124,12 @@ public class PacketRewriterManager {
             throw new IllegalStateException("currentPV (" + currentPV + ") != client PV (" + SharedConstants.getProtocolVersion() + ")");
         }
         read.resetReaderIndex();
-        return read;
+        packets.add(0, read);
+        return packets;
     }
 
     @NotNull
-    public static ByteBuf rewriteOutbound(@NotNull ConnectionProtocol protocol, @NotNull ByteBuf byteBuf, int targetPV) {
+    public static List<ByteBuf> rewriteOutbound(@NotNull ConnectionProtocol protocol, @NotNull ByteBuf byteBuf, int targetPV) {
         FriendlyByteBuf read = new FriendlyByteBuf(Unpooled.buffer());
         read.writeBytes(byteBuf, byteBuf.readerIndex(), byteBuf.readableBytes());
         int packetId = read.readVarInt();
@@ -129,6 +137,7 @@ public class PacketRewriterManager {
         read.resetReaderIndex();
         int currentPV = SharedConstants.getProtocolVersion();
         FriendlyByteBuf write = new FriendlyByteBuf(Unpooled.buffer());
+        ObjectList<ByteBuf> packets = new ObjectArrayList<>();
         for (PacketRewriter rewriter : collectRewriters(targetPV, true)) {
             if (currentPV != rewriter.getSourcePV()) {
                 throw new IllegalStateException("currentPV (" + currentPV + ") != sourcePV (" + rewriter.getSourcePV() + ")");
@@ -137,7 +146,9 @@ public class PacketRewriterManager {
             read.readerIndex(readerIndex);
             write.writeVarInt(packetId);
             try {
-                rewriter.doRewriteOutbound(protocol, packetId, new PacketWrapper(read, write));
+                PacketWrapper pw = new PacketWrapper(read, write);
+                packets.addAll(rewriter.doRewriteOutbound(protocol, packetId, pw));
+                if (pw.isCancelled()) return packets;
             } catch (Exception e) {
                 LOGGER.error("Failed to rewrite outbound packet in " + rewriter.getClass().getTypeName(), e);
                 throw e;
@@ -151,7 +162,8 @@ public class PacketRewriterManager {
         write.release();
         if (currentPV != targetPV) throw new IllegalStateException("currentPV (" + currentPV + ") != targetPV (" + targetPV + ")");
         read.resetReaderIndex();
-        return read;
+        packets.add(0, read);
+        return packets;
     }
 
     public static int remapInboundPacketId(@NotNull ConnectionProtocol protocol, int packetId, int sourcePV, int targetPV) {

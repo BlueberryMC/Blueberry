@@ -24,22 +24,22 @@ public class S21w40a_To_S21w39a extends S21w41a_To_S21w40a {
 
     @Override
     public void registerInbound() {
-        remapInbound(ConnectionProtocol.PLAY, 0x58, 0x57);
-        remapInbound(ConnectionProtocol.PLAY, 0x59, 0x58);
-        remapInbound(ConnectionProtocol.PLAY, 0x5A, 0x59);
-        remapInbound(ConnectionProtocol.PLAY, 0x5B, 0x5A);
-        remapInbound(ConnectionProtocol.PLAY, 0x5C, 0x5B);
-        remapInbound(ConnectionProtocol.PLAY, 0x5D, 0x5C);
-        remapInbound(ConnectionProtocol.PLAY, 0x5E, 0x5D);
-        remapInbound(ConnectionProtocol.PLAY, 0x5F, 0x5E);
-        remapInbound(ConnectionProtocol.PLAY, 0x60, 0x5F);
-        remapInbound(ConnectionProtocol.PLAY, 0x61, 0x60);
-        remapInbound(ConnectionProtocol.PLAY, 0x62, 0x61);
-        remapInbound(ConnectionProtocol.PLAY, 0x63, 0x62);
-        remapInbound(ConnectionProtocol.PLAY, 0x64, 0x63);
-        remapInbound(ConnectionProtocol.PLAY, 0x65, 0x64);
-        remapInbound(ConnectionProtocol.PLAY, 0x66, 0x65);
-        remapInbound(ConnectionProtocol.PLAY, 0x67, 0x66);
+        remapInbound(ConnectionProtocol.PLAY, 0x57, 0x58);
+        remapInbound(ConnectionProtocol.PLAY, 0x58, 0x59);
+        remapInbound(ConnectionProtocol.PLAY, 0x59, 0x5A);
+        remapInbound(ConnectionProtocol.PLAY, 0x5A, 0x5B);
+        remapInbound(ConnectionProtocol.PLAY, 0x5B, 0x5C);
+        remapInbound(ConnectionProtocol.PLAY, 0x5C, 0x5D);
+        remapInbound(ConnectionProtocol.PLAY, 0x5D, 0x5E);
+        remapInbound(ConnectionProtocol.PLAY, 0x5E, 0x5F);
+        remapInbound(ConnectionProtocol.PLAY, 0x5F, 0x60);
+        remapInbound(ConnectionProtocol.PLAY, 0x60, 0x61);
+        remapInbound(ConnectionProtocol.PLAY, 0x61, 0x62);
+        remapInbound(ConnectionProtocol.PLAY, 0x62, 0x63);
+        remapInbound(ConnectionProtocol.PLAY, 0x63, 0x64);
+        remapInbound(ConnectionProtocol.PLAY, 0x64, 0x65);
+        remapInbound(ConnectionProtocol.PLAY, 0x65, 0x66);
+        remapInbound(ConnectionProtocol.PLAY, 0x66, 0x67);
         rewriteInbound(ConnectionProtocol.PLAY, 0x26, wrapper -> {
             wrapper.passthrough(PacketWrapper.Type.INT); // Entity ID
             wrapper.passthrough(PacketWrapper.Type.BOOLEAN); // Is hardcore

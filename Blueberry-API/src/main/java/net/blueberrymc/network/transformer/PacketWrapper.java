@@ -52,6 +52,7 @@ public class PacketWrapper extends FriendlyByteBuf {
     private final FriendlyByteBuf read;
     private final FriendlyByteBuf write;
     private boolean readIsPassthrough = false;
+    private boolean cancelled = false;
 
     public PacketWrapper(@NotNull ByteBuf read) {
         this(read, Unpooled.buffer());
@@ -61,6 +62,14 @@ public class PacketWrapper extends FriendlyByteBuf {
         super(read);
         this.read = new FriendlyByteBuf(read);
         this.write = new FriendlyByteBuf(write);
+    }
+
+    public void cancel() {
+        cancelled = true;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     public boolean isReadIsPassthrough() {
@@ -234,12 +243,12 @@ public class PacketWrapper extends FriendlyByteBuf {
 
     @Override
     public boolean release() {
-        return read.release();
+        return read.release() && write.release();
     }
 
     @Override
     public boolean release(int i) {
-        return read.release(i);
+        return read.release(i) && write.release(i);
     }
 
     @Override

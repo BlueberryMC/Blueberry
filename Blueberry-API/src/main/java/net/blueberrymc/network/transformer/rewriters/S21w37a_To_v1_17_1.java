@@ -141,12 +141,9 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
                 section.biomesType.writePalette(dataWrapper, section.biomes);
             }
             dataWrapper.getWrite().readerIndex(0);
-            byte[] newData = new byte[dataWrapper.getWrite().readableBytes()];
-            dataWrapper.getWrite().readBytes(newData);
-            wrapper.writeByteArray(newData);
-            // Release the data
-            dataWrapper.getRead().release();
-            dataWrapper.getWrite().release();
+            wrapper.writeVarInt(dataWrapper.getWrite().readableBytes());
+            wrapper.writeBytes(dataWrapper.getWrite());
+            dataWrapper.release();
             wrapper.passthroughCollection(() -> {
                 // Block entities (old)
                 var tag = Objects.requireNonNull(wrapper.readNbt(), "tag cannot be null");
