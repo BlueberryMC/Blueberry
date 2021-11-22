@@ -99,7 +99,7 @@ public abstract class AbstractBlueberryScheduler {
     }
 
     @NotNull
-    public BlueberryTask runTaskLater(@NotNull BlueberryMod mod, @NotNull Runnable task, long delay) {
+    public BlueberryTask runTaskLater(@NotNull BlueberryMod mod, long delay, @NotNull Runnable task) {
         if (delay < 1) throw new IllegalArgumentException("delay time is lower than 1");
         long id = nextId.getAndIncrement();
         ScheduledBlueberryTask blueberryTask = new ScheduledBlueberryTask(this, id, mod, task, true, false, delay, -1);
@@ -108,7 +108,7 @@ public abstract class AbstractBlueberryScheduler {
     }
 
     @NotNull
-    public BlueberryTask runTaskTimer(@NotNull BlueberryMod mod, @NotNull Runnable task, long delay, long interval) {
+    public BlueberryTask runTaskTimer(@NotNull BlueberryMod mod, long delay, long interval, @NotNull Runnable task) {
         if (delay < 1) throw new IllegalArgumentException("delay time is lower than 1");
         if (interval < 1) throw new IllegalArgumentException("interval period is lower than 1");
         long id = nextId.getAndIncrement();
@@ -126,7 +126,7 @@ public abstract class AbstractBlueberryScheduler {
     }
 
     @NotNull
-    public BlueberryTask runTaskLaterAsynchronously(@NotNull BlueberryMod mod, @NotNull Runnable task, long delay) {
+    public BlueberryTask runTaskLaterAsynchronously(@NotNull BlueberryMod mod, long delay, @NotNull Runnable task) {
         if (delay < 1) throw new IllegalArgumentException("delay time is lower than 1");
         long id = nextId.getAndIncrement();
         ScheduledBlueberryTask blueberryTask = new ScheduledBlueberryTask(this, id, mod, task, false, false, delay, -1);
@@ -135,7 +135,7 @@ public abstract class AbstractBlueberryScheduler {
     }
 
     @NotNull
-    public BlueberryTask runTaskTimerAsynchronously(@NotNull BlueberryMod mod, @NotNull Runnable task, long delay, long interval) {
+    public BlueberryTask runTaskTimerAsynchronously(@NotNull BlueberryMod mod, long delay, long interval, @NotNull Runnable task) {
         if (delay < 1) throw new IllegalArgumentException("delay time is lower than 1");
         if (interval < 1) throw new IllegalArgumentException("interval period is lower than 1");
         long id = nextId.getAndIncrement();
