@@ -140,7 +140,7 @@ public class Blueberry {
         return Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
     }
 
-    public static void bootstrap(@NotNull("side") Side side, @NotNull("gameDir") File gameDir, @NotNull BlueberryUtil utilImpl) {
+    public static void bootstrap(@NotNull Side side, @NotNull File gameDir, @NotNull BlueberryUtil utilImpl) {
         Preconditions.checkArgument(Blueberry.side == null && util == null, "Blueberry is already initialized!");
         Preconditions.checkArgument(side != Side.BOTH, "Invalid Side: " + side.name());
         Preconditions.checkNotNull(gameDir, "gameDir cannot be null");

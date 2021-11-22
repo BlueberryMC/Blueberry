@@ -6,6 +6,9 @@ import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.network.protocol.PacketFlow;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Called when the compression level was set by the server.
+ */
 public class ConnectionSetupCompressionEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     protected final Channel channel;

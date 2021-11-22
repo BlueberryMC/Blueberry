@@ -6,6 +6,10 @@ import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.network.protocol.PacketFlow;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Called when the channel is active and is ready to send/receive packets. No player information is available at this
+ * point. Protocol is set to {@link net.minecraft.network.ConnectionProtocol#HANDSHAKING} when the event is fired.
+ */
 public class ConnectionInitEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     protected final Channel channel;

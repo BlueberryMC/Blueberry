@@ -13,7 +13,7 @@ public record TaskPair(@Nullable BlueberryTask clientTask, @Nullable BlueberryTa
             throw new IllegalArgumentException("Both clientTask and serverTask is null");
         }
         if (clientTask != null && serverTask != null) {
-            throw new IllegalArgumentException("Both clientTask and serverTask is present (use getClientTask and getServerTask)");
+            throw new IllegalArgumentException("Both clientTask and serverTask is present");
         }
         if (clientTask == null) return serverTask;
         return clientTask;
