@@ -42,7 +42,7 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 64e1fbca9b2b16c429638cc7e8c132229560f415..46a8794eb1cb17c5e1ff34195c4be90c62660361 100644
+index 877590f4b14f467d731820179de0a0ecb54bffcd..a7fa9de2fcf9536d74c603feca6730dfb4c4338f 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -486,6 +486,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -146,10 +146,10 @@ index f0bb4ef4821ee4730c6ac9131ce739e33d796a29..6ddfe3a0efb8f174451e3344178b2b2b
  
              poseStack.popPose();
 diff --git a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-index 291459ecdad6fdc3edeecef7564d4c2b2f7e0ba9..f52b4f1a70eb03751916d0e504955d1eb65c27f6 100644
+index da24885506bce0329a550c3cfee61090894eb24e..7e45acf5a5f5145d76825a430c2d7042029264d8 100644
 --- a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -94,6 +94,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
+@@ -96,6 +96,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
          int i3 = Integer.MAX_VALUE;
          int i4 = 1 << i;
          profilerFiller.popPush("extracting_frames");
@@ -206,10 +206,10 @@ index a8211550fcb15fe84c6fed4d68d7f82c0cc259bd..a007ee11e08806890aca8add198972c7
          T create(int var1, Inventory var2);
      }
 diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
-index 159f2f3a86a3e5b60e2ab7501286191e5fe4a2ee..741c16dda4310988fa3ba5f15a056c264f5f4928 100644
+index ecefece122be354261c74d7915da783cc445198d..c047691d93d68ee632f710ab1be124f3f1222d38 100644
 --- a/src/main/java/net/minecraft/world/item/Item.java
 +++ b/src/main/java/net/minecraft/world/item/Item.java
-@@ -95,6 +95,7 @@ public class Item implements ItemLike {
+@@ -96,6 +96,7 @@ public class Item implements ItemLike {
              }
          }
  
@@ -217,7 +217,7 @@ index 159f2f3a86a3e5b60e2ab7501286191e5fe4a2ee..741c16dda4310988fa3ba5f15a056c26
      }
  
      public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int i) {
-@@ -373,6 +374,15 @@ public class Item implements ItemLike {
+@@ -374,6 +375,15 @@ public class Item implements ItemLike {
          return true;
      }
  
@@ -233,7 +233,7 @@ index 159f2f3a86a3e5b60e2ab7501286191e5fe4a2ee..741c16dda4310988fa3ba5f15a056c26
      public static class Properties {
          int maxStackSize = 64;
          int maxDamage;
-@@ -384,6 +394,7 @@ public class Item implements ItemLike {
+@@ -385,6 +395,7 @@ public class Item implements ItemLike {
          @Nullable
          FoodProperties foodProperties;
          boolean isFireResistant;
@@ -241,7 +241,7 @@ index 159f2f3a86a3e5b60e2ab7501286191e5fe4a2ee..741c16dda4310988fa3ba5f15a056c26
  
          public Item.Properties food(FoodProperties foodProperties) {
              this.foodProperties = foodProperties;
-@@ -428,5 +439,12 @@ public class Item implements ItemLike {
+@@ -429,5 +440,12 @@ public class Item implements ItemLike {
              this.isFireResistant = true;
              return this;
          }

@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index c776993503cbc7d441f9335d4970f58fe32a0cb2..d7775bac927c945d6daa18562996b06f7bb74129 100644
+index a95730f9de0796d820b48ecef26656f07869cec2..7cd4822e7884b6e0a73760894f4e595d2b83d2f5 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,13 +3,18 @@
@@ -22,7 +22,7 @@ index c776993503cbc7d441f9335d4970f58fe32a0cb2..d7775bac927c945d6daa18562996b06f
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>1.18-pre5</version>
+-        <version>1.18-rc1</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -45,7 +45,7 @@ index c776993503cbc7d441f9335d4970f58fe32a0cb2..d7775bac927c945d6daa18562996b06f
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.18-pre5</version>
++    <version>1.18-rc1</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
@@ -491,7 +491,7 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 6b552c2315e86fa2cf5d8ef7e2d79b7439da7e4d..7dc3684e8a55a0df719ce4a86e8aeb53ad23dc86 100644
+index 2495572ee0b0dce2beb87d1c612ad2965e1af99c..cd8e5afc3601391e0f427504b8f8055e4f585cb0 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -922,7 +922,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

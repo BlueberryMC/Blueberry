@@ -28,10 +28,10 @@ index 5d8b3a70aae2ceb52b98cea838202aec6fefe9a2..25df894786ad8052b7079688e4528565
              VideoMode videoMode = monitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
              this.windowedX = this.x = monitor.getX() + videoMode.getWidth() / 2 - this.width / 2;
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index 5203f9f6202a4824a4f96607a3466a5d804d4df7..8cd04bbd0777acfd4cbb6a4621ee98db9d88f97d 100644
+index 9b0fe57f2c787e0b137a9b57137bfdeb740a95eb..760593f8fe8597420796a0ab675d5ea82aabd26a 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
-@@ -228,6 +228,6 @@ public class CrashReport {
+@@ -225,6 +225,6 @@ public class CrashReport {
  
      public static void preload() {
          MemoryReserve.allocate();
@@ -71,7 +71,7 @@ index 74e8f78d68f387fc5d99e42999b7a63a8103f77c..ab536263910ad9aa825fbf2e015bf475
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index d2d74805e253f6bed33a97b2e82a24355708e1af..64e1fbca9b2b16c429638cc7e8c132229560f415 100644
+index 8483499abf9b6a25eec653f13e1f1bbed92d4738..877590f4b14f467d731820179de0a0ecb54bffcd 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -451,7 +451,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -527,7 +527,7 @@ index 8751753b726c78f8ec6c330d1436895b3b99c110..e918f5f17587e3e3c7bfb0e012ce11aa
  
          this.gameTestDebugRenderer.render(poseStack, bufferSource, d, d2, d3);
 diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-index 56d51630cbc596a753060ff577b7879cc80231b9..e3992198a6e40a1e2e904e6f3d22ce82bfe15550 100644
+index 83e00c5d5ec212215274d2e9312df080ea7413a2..62dbed527d21722f0bdec54a97363264c98587a3 100644
 --- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 +++ b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 @@ -86,6 +86,7 @@ public class ClientPackSource implements RepositorySource {
@@ -599,7 +599,7 @@ index 32412fbbd625b7ae22e62b0f439152187f061f5b..68ddc80609d0c8ad85aa41ad964e2ede
                  dedicatedServerIn.setPort(optionSet.valueOf(optionSpec12));
                  dedicatedServerIn.setDemo(optionSet.has(optionSpec3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7dc3684e8a55a0df719ce4a86e8aeb53ad23dc86..dfa5a8031fe5a4196d0ea506833dc30f4aa47290 100644
+index cd8e5afc3601391e0f427504b8f8055e4f585cb0..20a6ffe4d3b1eed13c6e215c5f06306e1f0cc496 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -272,6 +272,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

@@ -5,18 +5,10 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index 8a8cfcc46680dc7afeb3332c73d8b070e0972570..ec3b32806271653107aa3f60f7fb4d1ca7ef2e47 100644
+index 60142dfb9590f291a29078c9085d8bf033898a80..6494ddd928bc3ee81d24dabea017df5053a76aea 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -12,6 +12,7 @@ import com.google.gson.JsonSyntaxException;
- import java.util.Collection;
- import java.util.Collections;
- import java.util.Comparator;
-+import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
- import java.util.Objects;
-@@ -33,10 +34,10 @@ import net.minecraft.world.level.Level;
+@@ -32,10 +32,10 @@ import net.minecraft.world.level.Level;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -26,22 +18,23 @@ index 8a8cfcc46680dc7afeb3332c73d8b070e0972570..ec3b32806271653107aa3f60f7fb4d1c
      private static final Logger LOGGER = LogManager.getLogger();
 -    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = ImmutableMap.of();
 +    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = Maps.newHashMap(); // Blueberry - use HashMap instead
+     private Map<ResourceLocation, Recipe<?>> byName = ImmutableMap.of();
      private boolean hasErrors;
  
-     public RecipeManager() {
-@@ -58,7 +59,8 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -60,8 +60,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
              }
          }
  
 -        this.recipes = map2.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entryx) -> ((Builder)entryx.getValue()).build()));
-+        this.recipes = map2.entrySet().stream().collect(Collectors.toMap(Entry::getKey, (entryx) -> ((Builder)entryx.getValue()).build(), (a, b) -> a)); // Blueberry - use normal map
++        this.recipes = map2.entrySet().stream().collect(Collectors.toMap(Entry::getKey, (entryx) -> entryx.getValue().build(), (a, b) -> a)); // Blueberry - use normal map
+         this.byName = builder.build();
 +        net.blueberrymc.world.item.crafting.RecipeBuilder.getRecipes().forEach((id, recipe) -> addRecipe(recipe)); // Blueberry - add recipes now
          LOGGER.info("Loaded {} recipes", map2.size());
      }
  
-@@ -126,4 +128,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
-         });
+@@ -133,4 +134,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
          this.recipes = ImmutableMap.copyOf(map);
+         this.byName = builder.build();
      }
 +
 +    // Blueberry start - implement addRecipe/removeRecipe
@@ -52,7 +45,7 @@ index 8a8cfcc46680dc7afeb3332c73d8b070e0972570..ec3b32806271653107aa3f60f7fb4d1c
 +        Map<ResourceLocation, Recipe<?>> map = this.recipes.get(recipe.getType());
 +        boolean doAdd = false;
 +        if (map instanceof ImmutableMap) {
-+            map = new HashMap<>(map);
++            map = new java.util.HashMap<>(map);
 +            doAdd = true;
 +        }
 +        if (map.containsKey(recipe.getId())) {

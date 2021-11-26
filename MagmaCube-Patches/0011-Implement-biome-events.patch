@@ -5,10 +5,10 @@ Subject: [PATCH] Implement biome events
 
 
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index 77cc8501d5d02677cf81b44c24f6569ae5010dca..70e64de60392459172a281aa8d04fbac28c51582 100644
+index 939893d2ad4fcabc083b0aa41966169e62d482e5..94537ae1dd0518ca2ccca02be005a1c8e20457f8 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
-@@ -298,7 +298,8 @@ public final class Biome {
+@@ -313,7 +313,8 @@ public final class Biome {
  
          public Biome build() {
              if (this.precipitation != null && this.biomeCategory != null && this.temperature != null && this.downfall != null && this.specialEffects != null && this.mobSpawnSettings != null && this.generationSettings != null) {
