@@ -150,7 +150,7 @@ public class S21w37a_To_v1_17_1 extends S21w40a_To_S21w39a {
                 int relX = tag.getInt("x") & 15;
                 int relZ = tag.getInt("z") & 15;
                 int packedXZ = (relX << 4) | relZ;
-                int y = tag.getInt("y") & 15;
+                int y = tag.getInt("y");
                 var id = new ResourceLocation(tag.getString("id"));
                 var blockEntityType = Registry.BLOCK_ENTITY_TYPE.get(id);
                 int typeId = -1;
