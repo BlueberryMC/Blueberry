@@ -22,7 +22,7 @@ cp "$basedir/work/jbsdiffPatcher/target/jbsdiffPatcher.jar" "$res/client.jar" ||
 cp "$basedir/scripts/files/version.json" "$res/client.json" || exit 1
 echo "  \"releaseTime\": \"$datetime\"," >> "$res/client.json"
 echo "  \"time\": \"$datetime\"," >> "$res/client.json"
-echo "  \"mainClass\": \"net.blueberrymc.jbsdiffPatcher.Patcher\"," >> "$res/client.json"
+echo "  \"mainClass\": \"net.blueberrymc.client.main.ClientMain\"," >> "$res/client.json"
 echo "  \"id\": \"$name\"" >> "$res/client.json"
 echo "}" >> "$res/client.json"
 echo "Baking installer"

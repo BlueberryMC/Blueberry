@@ -126,8 +126,8 @@
     }
   },
   "javaVersion": {
-    "component": "java-runtime-alpha",
-    "majorVersion": 16
+    "component": "java-runtime-beta",
+    "majorVersion": 17
   },
   "libraries": [
     {
