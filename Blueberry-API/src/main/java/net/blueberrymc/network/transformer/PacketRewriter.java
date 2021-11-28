@@ -46,7 +46,7 @@ public class PacketRewriter {
     private final Int2ObjectMap<Int2IntMap> remapOutbounds = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> rewriteInbounds = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<Int2ObjectMap<ObjectArrayList<Consumer<PacketWrapper>>>> rewriteOutbounds = new Int2ObjectOpenHashMap<>();
-    private final Stack<ObjectList<ByteBuf>> writtenPackets = new ObjectArrayList<>();
+    private final ThreadLocal<Stack<ObjectList<ByteBuf>>> writtenPackets = ThreadLocal.withInitial(ObjectArrayList::new);
     private boolean registeringInbound;
     private boolean registeringOutbound;
 
@@ -247,14 +247,14 @@ public class PacketRewriter {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeVarInt(packetId);
         handler.accept(buf);
-        writtenPackets.top().addAll(PacketRewriterManager.rewriteInbound(protocol, buf, targetPV));
+        writtenPackets.get().top().addAll(PacketRewriterManager.rewriteInbound(protocol, buf, targetPV));
     }
 
     protected final void writeOutboundPacket(@NotNull ConnectionProtocol protocol, int packetId, @NotNull Consumer<FriendlyByteBuf> handler) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeVarInt(packetId);
         handler.accept(buf);
-        writtenPackets.top().addAll(PacketRewriterManager.rewriteOutbound(protocol, buf, targetPV));
+        writtenPackets.get().top().addAll(PacketRewriterManager.rewriteOutbound(protocol, buf, targetPV));
     }
 
     @NotNull
@@ -280,14 +280,14 @@ public class PacketRewriter {
             wrapper.passthroughAll();
             return ObjectList.of();
         }
-        writtenPackets.push(new ObjectArrayList<>());
+        writtenPackets.get().push(new ObjectArrayList<>());
         ObjectList<ByteBuf> list;
         try {
             for (Consumer<PacketWrapper> consumer : consumers) {
                 consumer.accept(wrapper);
             }
         } finally {
-            list = writtenPackets.pop();
+            list = writtenPackets.get().pop();
         }
         return list;
     }

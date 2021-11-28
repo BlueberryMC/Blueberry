@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.blueberrymc.network.transformer.rewriters.S21w37a_To_v1_17_1;
 import net.blueberrymc.network.transformer.rewriters.S21w38a_To_S21w37a;
 import net.blueberrymc.network.transformer.rewriters.S21w40a_To_S21w39a;
-import net.blueberrymc.network.transformer.rewriters.S21w41a_To_S21w40a;
 import net.blueberrymc.network.transformer.rewriters.S21w42a_To_S21w41a;
 import net.blueberrymc.network.transformer.rewriters.S21w43a_To_S21w42a;
 import net.blueberrymc.network.transformer.rewriters.S21w44a_To_S21w43a;
@@ -44,7 +43,7 @@ public class PacketRewriterManager {
         REWRITER_LIST.add(new S21w38a_To_S21w37a());
         REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.SNAPSHOT_21W39A, TransformableProtocolVersions.SNAPSHOT_21W38A));
         REWRITER_LIST.add(new S21w40a_To_S21w39a());
-        REWRITER_LIST.add(new S21w41a_To_S21w40a());
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.SNAPSHOT_21W41A, TransformableProtocolVersions.SNAPSHOT_21W40A));
         REWRITER_LIST.add(new S21w42a_To_S21w41a());
         REWRITER_LIST.add(new S21w43a_To_S21w42a());
         REWRITER_LIST.add(new S21w44a_To_S21w43a());

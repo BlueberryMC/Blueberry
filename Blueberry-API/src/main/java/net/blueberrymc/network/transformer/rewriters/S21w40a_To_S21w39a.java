@@ -5,7 +5,7 @@ import net.blueberrymc.network.transformer.TransformableProtocolVersions;
 import net.minecraft.network.ConnectionProtocol;
 import org.jetbrains.annotations.NotNull;
 
-public class S21w40a_To_S21w39a extends S21w41a_To_S21w40a {
+public class S21w40a_To_S21w39a extends S21w42a_To_S21w41a {
     public S21w40a_To_S21w39a() {
         this(TransformableProtocolVersions.SNAPSHOT_21W40A, TransformableProtocolVersions.SNAPSHOT_21W39A);
     }

@@ -154,6 +154,11 @@ public class InternalBlueberryModConfig {
         @Description(@Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.version.description"))
         @Key("version")
         public static TransformableProtocolVersions version = TransformableProtocolVersions.values()[0];
+
+        @Order(10001)
+        @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.ignore_server_view_distance")
+        @Key("ignoreServerViewDistance")
+        public static boolean ignoreServerViewDistance = false;
     }
 
     @Order(-1)

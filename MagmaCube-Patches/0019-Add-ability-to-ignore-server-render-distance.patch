@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Fri, 26 Nov 2021 19:11:37 +0900
+Subject: [PATCH] Add ability to ignore server render distance
+
+
+diff --git a/src/main/java/net/minecraft/client/Options.java b/src/main/java/net/minecraft/client/Options.java
+index b79acc9ccbcc4e001b4c7634a87a4d6d707676ee..dc13c62ff89daa3de054bd83b3bd9f0a3bc2bf24 100644
+--- a/src/main/java/net/minecraft/client/Options.java
++++ b/src/main/java/net/minecraft/client/Options.java
+@@ -695,7 +695,8 @@ public class Options {
+     }
+ 
+     public int getEffectiveRenderDistance() {
+-        return this.serverRenderDistance > 0 ? Math.min(this.renderDistance, this.serverRenderDistance) : this.renderDistance;
++        // Blueberry - ability to ignore server render distance
++        return !net.blueberrymc.common.bml.InternalBlueberryModConfig.Multiplayer.ignoreServerViewDistance && this.serverRenderDistance > 0 ? Math.min(this.renderDistance, this.serverRenderDistance) : this.renderDistance;
+     }
+ 
+     interface FieldAccess {
