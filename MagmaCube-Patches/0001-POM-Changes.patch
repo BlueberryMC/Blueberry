@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index a95730f9de0796d820b48ecef26656f07869cec2..7cd4822e7884b6e0a73760894f4e595d2b83d2f5 100644
+index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053fa4dc803 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,13 +3,18 @@
@@ -22,7 +22,7 @@ index a95730f9de0796d820b48ecef26656f07869cec2..7cd4822e7884b6e0a73760894f4e595d
      <parent>
 -        <artifactId>minecraft-parent</artifactId>
 -        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>1.18-rc1</version>
+-        <version>1.18-rc3</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -45,7 +45,7 @@ index a95730f9de0796d820b48ecef26656f07869cec2..7cd4822e7884b6e0a73760894f4e595d
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.18-rc1</version>
++    <version>1.18-rc3</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
