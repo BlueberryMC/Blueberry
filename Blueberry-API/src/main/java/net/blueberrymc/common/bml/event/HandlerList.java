@@ -72,8 +72,8 @@ public class HandlerList {
                         registeredListener.getExecutor().accept(event);
                     } catch (Throwable e) {
                         Throwable cause = e.getCause() != null ? e.getCause() : e;
-                        String listenerName = registeredListener.getListener() == null ? null : registeredListener.getListener().getClass().getCanonicalName();
-                        new EventException("Could not pass event " + event.getEventName() + " to listener " + listenerName + " of mod " + registeredListener.getMod().getName(), cause).printStackTrace();
+                        String listenerName = registeredListener.getListener() == null ? null : registeredListener.getListener().getClass().getTypeName();
+                        EventManager.printStackTrace(new EventException("Could not pass event " + event.getEventTypeName() + " to listener " + listenerName + " of mod " + registeredListener.getMod().getName(), cause));
                     }
                 });
     }

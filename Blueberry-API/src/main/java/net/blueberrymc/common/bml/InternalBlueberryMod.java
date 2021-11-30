@@ -52,7 +52,7 @@ public class InternalBlueberryMod extends BlueberryMod {
 
     @Override
     public void onLoad() {
-        getLogger().debug("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getCanonicalName());
+        getLogger().debug("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getTypeName());
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
         onReload();
         this.setVisualConfig(VisualConfigManager.createFromClass(InternalBlueberryModConfig.class));

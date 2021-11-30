@@ -21,10 +21,10 @@ public abstract class BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Get a resource manager. Returns null for server.
+     * Get a resource manager.
      * @return resource manager
      */
-    @Nullable
+    @NotNull
     public abstract ResourceManager getResourceManager();
 
     /**

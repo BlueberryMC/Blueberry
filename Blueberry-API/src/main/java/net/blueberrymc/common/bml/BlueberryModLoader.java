@@ -423,27 +423,20 @@ public class BlueberryModLoader implements ModLoader {
             try {
                 BlueberryResourceManager blueberryResourceManager = mod.getResourceManager();
                 ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
-                if (resourceManager instanceof BlueberryResourceProvider) {
-                    ((BlueberryResourceProvider) resourceManager).remove(blueberryResourceManager.getPackResources());
+                if (resourceManager instanceof BlueberryResourceProvider provider) {
+                    provider.remove(blueberryResourceManager.getPackResources());
                 } else {
-                    if (resourceManager != null) {
-                        LOGGER.warn("Failed to remove PackResources for ResourceManager: " + resourceManager.getClass().getCanonicalName());
-                    } else {
-                        if (Blueberry.isClient()) {
-                            LOGGER.warn("ResourceManager is null!", new NullPointerException());
-                        }
-                    }
+                    LOGGER.warn("Unknown ResourceManager type: " + resourceManager.getClass().getTypeName());
                 }
                 blueberryResourceManager.getPackResources().close();
-                Blueberry.getUtil().reloadResourcePacks().get(5, TimeUnit.SECONDS); // reload to apply changes
+                Blueberry.getUtil().reloadResourcePacks(); // reload to apply changes
             } catch (Exception ex) {
                 LOGGER.warn("Error unregistering ResourceManager", ex);
             }
             {
                 List<String> toRemove = new ArrayList<>();
                 this.classes.forEach((s, c) -> {
-                    ClassLoader cl = c.getClassLoader();
-                    if (cl instanceof ModClassLoader && ((ModClassLoader) cl).mod.getModId().equals(mod.getModId())) {
+                    if (c.getClassLoader() instanceof ModClassLoader mcl && mcl.mod.getModId().equals(mod.getModId())) {
                         toRemove.add(s);
                     }
                 });
@@ -498,7 +491,7 @@ public class BlueberryModLoader implements ModLoader {
         }
         BlueberryMod mod;
         String path = ClasspathUtil.getClasspath(clazz);
-        LOGGER.debug("Class Path of " + clazz.getCanonicalName() + ": " + path);
+        LOGGER.debug("Class Path of " + clazz.getTypeName() + ": " + path);
         File file = new File(path);
         if (useModClassLoader) {
             ModClassLoader modClassLoader;
@@ -521,7 +514,7 @@ public class BlueberryModLoader implements ModLoader {
         descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, null));
         id2ModMap.put(description.getModId(), mod);
         registeredMods.add(mod);
-        LOGGER.info("Loaded mod {} ({}) from class {}/{}", mod.getName(), mod.getDescription().getModId(), mod.getClass().getCanonicalName(), clazz.getCanonicalName());
+        LOGGER.info("Loaded mod {} ({}) from class {}", mod.getName(), mod.getDescription().getModId(), clazz.getTypeName());
         return (T) mod;
     }
 
@@ -530,18 +523,12 @@ public class BlueberryModLoader implements ModLoader {
         BlueberryResourceManager blueberryResourceManager = new BlueberryResourceManager(mod);
         mod.setResourceManager(blueberryResourceManager);
         ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
-        if (resourceManager instanceof SimpleReloadableResourceManager) {
-            ((SimpleReloadableResourceManager) resourceManager).add(blueberryResourceManager.getPackResources());
-        } else if (resourceManager instanceof FallbackResourceManager) {
-            ((FallbackResourceManager) resourceManager).add(blueberryResourceManager.getPackResources());
+        if (resourceManager instanceof SimpleReloadableResourceManager rm) {
+            rm.add(blueberryResourceManager.getPackResources());
+        } else if (resourceManager instanceof FallbackResourceManager rm) {
+            rm.add(blueberryResourceManager.getPackResources());
         } else {
-            if (resourceManager != null) {
-                LOGGER.warn("Failed to add PackResources for ResourceManager: " + resourceManager.getClass().getCanonicalName());
-            } else {
-                if (Blueberry.isClient()) {
-                    LOGGER.warn("ResourceManager is null!", new NullPointerException());
-                }
-            }
+            LOGGER.warn("Unknown ResourceManager type: " + resourceManager.getClass().getTypeName());
         }
     }
 

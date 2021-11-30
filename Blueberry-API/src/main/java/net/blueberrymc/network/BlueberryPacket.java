@@ -9,7 +9,6 @@ import java.io.IOException;
 public interface BlueberryPacket<T extends BlueberryPacketListener> {
     @NotNull
     ResourceLocation getId();
-    void read(@NotNull FriendlyByteBuf buf) throws IOException;
     void write(@NotNull FriendlyByteBuf buf) throws IOException;
     void handle(@NotNull T packetListener);
 }

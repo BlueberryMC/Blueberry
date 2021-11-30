@@ -13,10 +13,10 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053fa4dc803 100644
+index 941beb411e9b9f86e8989832129bafcfb8ec3acb..6416d62a2804bf003b9da45ddfe6050bd63a159f 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -3,13 +3,18 @@
+@@ -3,9 +3,11 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <parent>
@@ -31,26 +31,20 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-     <properties>
-+        <!-- Blueberry start -->
-+        <api.version>0.0.16</api.version>
-+        <!-- Blueberry end -->
-         <text2speech.version>1.11.3</text2speech.version>
-         <maven.compiler.source>17</maven.compiler.source>
-         <maven.compiler.target>17</maven.compiler.target>
-@@ -17,21 +22,30 @@
+@@ -17,21 +19,31 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
 -    <artifactId>minecraft</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
-+    <version>1.18-rc3</version>
++    <version>${minecraft.version}-${api.version}</version>
 +    <name>Blueberry-Client</name>
 +    <!-- Blueberry end -->
  
      <build>
 -        <finalName>Minecraft</finalName>
++        <finalName>${artifactId}-${minecraft.version}</finalName>
          <plugins>
 +            <!-- Blueberry start -->
              <plugin>
@@ -73,7 +67,7 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -52,6 +66,11 @@
+@@ -52,6 +64,11 @@
                              <artifact>*:*</artifact>
                              <excludes>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
@@ -85,7 +79,7 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
                              </excludes>
                          </filter>
                      </filters>
-@@ -72,6 +91,29 @@
+@@ -72,6 +89,55 @@
      </repositories>
  
      <dependencies>
@@ -94,6 +88,32 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
 +            <groupId>net.blueberrymc</groupId>
 +            <artifactId>blueberry-api</artifactId>
 +            <version>${api.version}</version>
++            <exclusions>
++                <exclusion>
++                    <groupId>org.apache.commons</groupId>
++                    <artifactId>commons-lang3</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.yaml</groupId>
++                    <artifactId>snakeyaml</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.ow2.asm</groupId>
++                    <artifactId>asm-commons</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.ow2.asm</groupId>
++                    <artifactId>asm-util</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.jetbrains.kotlin</groupId>
++                    <artifactId>kotlin-stdlib</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.jetbrains.kotlin</groupId>
++                    <artifactId>kotlin-stdlib-common</artifactId>
++                </exclusion>
++            </exclusions>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.blueberrymc</groupId>
@@ -115,7 +135,7 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
-@@ -81,16 +123,19 @@
+@@ -81,16 +147,19 @@
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
              <version>5.0.4</version>
@@ -135,7 +155,7 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -106,237 +151,302 @@
+@@ -106,237 +175,302 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
              <version>4.1.68.Final</version>
@@ -413,12 +433,12 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
              <artifactId>blocklist</artifactId>
              <version>1.0.6</version>
 +            <scope>provided</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>com.mojang</groupId>
-+            <artifactId>text2speech</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>text2speech</artifactId>
 +            <!-- Blueberry start -->
-+            <version>${text2speech.version}</version>
+             <version>${text2speech.version}</version>
 +            <scope>provided</scope>
 +        </dependency>
 +        <dependency>
@@ -427,18 +447,18 @@ index 941beb411e9b9f86e8989832129bafcfb8ec3acb..8ea8788abd6a639e64fb5f0411962053
 +            <version>${text2speech.version}</version>
 +            <classifier>natives-linux</classifier>
 +            <scope>provided</scope>
-         </dependency>
-         <dependency>
-             <groupId>com.mojang</groupId>
-             <artifactId>text2speech</artifactId>
-             <version>${text2speech.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>com.mojang</groupId>
++            <artifactId>text2speech</artifactId>
++            <version>${text2speech.version}</version>
 +            <classifier>natives-windows</classifier>
 +            <scope>provided</scope>
 +            <!-- Blueberry end -->
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -345,25 +455,38 @@
+@@ -345,25 +479,38 @@
          </dependency>
  
          <!-- Logger -->

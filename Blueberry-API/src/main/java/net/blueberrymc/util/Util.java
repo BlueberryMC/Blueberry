@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Util {
@@ -26,6 +27,18 @@ public class Util {
             if (value != null) return value;
         }
         return null;
+    }
+
+    @Contract(pure = true)
+    public static <V, R> R mapOrGet(@Nullable V value, @NotNull Function<V, R> mapper, @NotNull Supplier<R> defaultValueSupplier) {
+        if (value != null) return mapper.apply(value);
+        return defaultValueSupplier.get();
+    }
+
+    @Contract(pure = true)
+    public static <V, R> R mapOrElse(@Nullable V value, @NotNull Function<V, R> mapper, @Nullable R def) {
+        if (value != null) return mapper.apply(value);
+        return def;
     }
 
     @NotNull

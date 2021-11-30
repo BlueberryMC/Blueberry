@@ -31,10 +31,9 @@ public class BlueberryServer extends BlueberryUtil {
         this.impl = impl;
     }
 
-    @Contract("-> null")
     @Override
-    public @Nullable ResourceManager getResourceManager() {
-        return null;
+    public @NotNull ResourceManager getResourceManager() {
+        return this.server.getResourceManager();
     }
 
     private MinecraftServer server = null;

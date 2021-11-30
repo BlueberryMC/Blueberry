@@ -8,8 +8,10 @@ import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.ParameterNode;
 
@@ -246,6 +248,16 @@ public class AnnotationTest {
     }
 
     private static void warn(@NotNull Collection<String> out, @NotNull ClassNode clazz, @NotNull MethodNode method, @NotNull String description) {
-        out.add(clazz.name + " \t" + method.name + " \t" + description);
+        String[] split = clazz.name.split("/");
+        String[] split2 = split[split.length - 1].split("\\$");
+        String className = split2[0];
+        int line = 0;
+        for (AbstractInsnNode insnNode : method.instructions) {
+            if (insnNode instanceof LineNumberNode lineNumberNode) {
+                line = lineNumberNode.line;
+                break;
+            }
+        }
+        out.add(clazz.name + " \t" + method.name + " \t" + description + "\n\t\tat " + clazz.name.replace('/', '.') + '.' + method.name + "(" + className + ".java:" + line + ")");
     }
 }

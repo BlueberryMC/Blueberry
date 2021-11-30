@@ -1440,6 +1440,83 @@
     {
       "downloads": {
         "artifact": {
+          "path": "org/ow2/asm/asm/9.2/asm-9.2.jar",
+          "sha1": "81a03f76019c67362299c40e0ba13405f5467bff",
+          "size": 122004,
+          "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.2/asm-9.2.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm:9.2"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm-commons/9.2/asm-commons-9.2.jar",
+          "sha1": "f4d7f0fc9054386f2893b602454d48e07d4fbead",
+          "size": 72642,
+          "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.2/asm-commons-9.2.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-commons:9.2"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm-util/9.2/asm-util-9.2.jar",
+          "sha1": "fbc178fc5ba3dab50fd7e8a5317b8b647c8e8946",
+          "size": 84854,
+          "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/9.2/asm-util-9.2.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-util:9.2"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm-tree/9.2/asm-tree-9.2.jar",
+          "sha1": "d96c99a30f5e1a19b0e609dbb19a44d8518ac01e",
+          "size": 52660,
+          "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.2/asm-tree-9.2.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-tree:9.2"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/yaml/snakeyaml/1.29/snakeyaml-1.29.jar",
+          "sha1": "6d0cdafb2010f1297e574656551d7145240f6e25",
+          "size": 329836,
+          "url": "https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/1.29/snakeyaml-1.29.jar"
+        }
+      },
+      "name": "org.yaml:snakeyaml:1.29"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/jetbrains/kotlin/kotlin-stdlib/1.6.0/kotlin-stdlib-1.6.0.jar",
+          "sha1": "a40b8b22529b733892edf4b73468ce598bb17f04",
+          "size": 1508076,
+          "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.0/kotlin-stdlib-1.6.0.jar"
+        }
+      },
+      "name": "org.jetbrains.kotlin:kotlin-stdlib:1.6.0"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.0/kotlin-stdlib-common-1.6.0.jar",
+          "sha1": "7857e365f925cfa060f941c1357cda1f8790502c",
+          "size": 200616,
+          "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.0/kotlin-stdlib-common-1.6.0.jar"
+        }
+      },
+      "name": "org.jetbrains.kotlin:kotlin-stdlib-common:1.6.0"
+    },
+    {
+      "downloads": {
+        "artifact": {
           "path": "com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar",
           "sha1": "f378f889797edd7df8d32272c06ca80a1b6b0f58",
           "size": 13164,

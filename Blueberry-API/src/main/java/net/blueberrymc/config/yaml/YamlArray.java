@@ -82,6 +82,10 @@ public class YamlArray extends ArrayList<Object> implements YamlMember {
         return newList;
     }
 
+    public @NotNull List<String> mapToString() {
+        return mapAsType(o -> o instanceof String ? (String) o : o.toString());
+    }
+
     @Override
     public @NotNull Yaml getYaml() { return yaml; }
 

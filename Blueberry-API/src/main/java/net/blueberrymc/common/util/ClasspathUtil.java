@@ -27,7 +27,7 @@ public class ClasspathUtil {
                 path = path.replace(clazz.getPackage().getName().replace(".", "/"), "");
                 path = path.replaceAll("(.*)/.*\\.class", "$1");
             } else {
-                path = path.replace(clazz.getCanonicalName().replace(".", "/") + ".class", "");
+                path = path.replace(clazz.getTypeName().replace(".", "/") + ".class", "");
             }
         }
         if (path.endsWith("/") || path.endsWith("\\")) path = path.substring(0, path.length() - 1);

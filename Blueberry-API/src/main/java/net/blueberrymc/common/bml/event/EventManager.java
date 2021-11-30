@@ -142,4 +142,8 @@ public class EventManager {
     private static RuntimeException throwNoHandlerListError(Class<? extends Event> event) {
         return new IllegalArgumentException(event.getCanonicalName() + " does not implement a static getHandlerList() method that does not have any parameters and returns HandlerList as a result");
     }
+
+    static void printStackTrace(@NotNull Throwable throwable) {
+        LOGGER.error(throwable);
+    }
 }

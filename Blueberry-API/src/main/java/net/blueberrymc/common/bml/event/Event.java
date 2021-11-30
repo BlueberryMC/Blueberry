@@ -68,4 +68,9 @@ public abstract class Event {
         }
         return name;
     }
+
+    @NotNull
+    public final String getEventTypeName() {
+        return getClass().getTypeName();
+    }
 }

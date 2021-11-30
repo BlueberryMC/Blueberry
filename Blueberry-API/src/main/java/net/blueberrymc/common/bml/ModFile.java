@@ -19,7 +19,7 @@ public class ModFile implements Closeable, AutoCloseable {
     private final File dir;
     private boolean closed = false;
 
-    public ModFile(@NotNull("file") File file) throws IOException {
+    public ModFile(@NotNull File file) throws IOException {
         Preconditions.checkNotNull(file, "file cannot be null");
         if (file.isFile()) {
             try {
@@ -60,7 +60,7 @@ public class ModFile implements Closeable, AutoCloseable {
     }
 
     @Nullable
-    public InputStream getResourceAsStream(@NotNull("name") String name) throws IOException {
+    public InputStream getResourceAsStream(@NotNull String name) throws IOException {
         if (jar != null) {
             JarEntry entry = jar.getJarEntry(name);
             if (entry == null) return null;

@@ -37,7 +37,7 @@ public class BlueberryMod implements ModInfo {
     public BlueberryMod() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         if (!(classLoader instanceof ModClassLoader)) {
-            throw new IllegalStateException("BlueberryMod requires " + ModClassLoader.class.getCanonicalName() + " (Got " + classLoader.getClass().getCanonicalName() + " instead)");
+            throw new IllegalStateException("BlueberryMod requires " + ModClassLoader.class.getTypeName() + " (Got " + classLoader.getClass().getTypeName() + " instead)");
         }
         try {
             ((ModClassLoader) classLoader).initialize(this);
