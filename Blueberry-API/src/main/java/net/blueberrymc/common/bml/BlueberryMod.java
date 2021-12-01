@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.net.URL;
 import java.util.function.Function;
 
 public class BlueberryMod implements ModInfo {
@@ -78,6 +79,14 @@ public class BlueberryMod implements ModInfo {
      */
     protected final boolean isFirst() {
         return first;
+    }
+
+    protected void addURLToClassLoader(@NotNull URL url) {
+        if (classLoader instanceof ModClassLoader mcl) {
+            mcl.addURL(url);
+        } else {
+            throw new UnsupportedOperationException("classLoader is not instance of ModClassLoader");
+        }
     }
 
     public final boolean isUnloaded() {
@@ -158,7 +167,7 @@ public class BlueberryMod implements ModInfo {
     /**
      * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
      * <p><strong>NOTE: You cannot save the config which were generated with VisualConfigManager.</strong> Use
-     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(CompoundVisualConfig, ModConfig)} for that.
+     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(ModConfig, CompoundVisualConfig)} for that.
      * @param compoundVisualConfig the visual config
      */
     public void save(@NotNull CompoundVisualConfig compoundVisualConfig) {
@@ -173,7 +182,7 @@ public class BlueberryMod implements ModInfo {
     /**
      * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
      * <p><strong>NOTE: You cannot save the config which were generated with VisualConfigManager.</strong> Use
-     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(CompoundVisualConfig, ModConfig)} for that.
+     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(ModConfig, CompoundVisualConfig)} for that.
      * @param compoundVisualConfig the visual config
      * @param valueMapper see source code of {@link #save(CompoundVisualConfig)} for example
      */

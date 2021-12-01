@@ -67,6 +67,11 @@ public class ModClassLoader extends URLClassLoader {
         }
     }
 
+    @Override
+    protected void addURL(URL url) {
+        super.addURL(url);
+    }
+
     @NotNull
     public BlueberryMod getMod() {
         return mod;
@@ -121,7 +126,7 @@ public class ModClassLoader extends URLClassLoader {
                 int dot = name.lastIndexOf('.');
                 if (dot != -1) {
                     String pkgName = name.substring(0, dot);
-                    if (_getPackage(pkgName) == null) {
+                    if (getPackageRecursively(pkgName) == null) {
                         try {
                             if (manifest != null) {
                                 definePackage(pkgName, manifest, url);
@@ -129,7 +134,7 @@ public class ModClassLoader extends URLClassLoader {
                                 definePackage(pkgName, null, null, null, null, null, null, null);
                             }
                         } catch (IllegalArgumentException ex) {
-                            if (_getPackage(pkgName) == null) {
+                            if (getPackageRecursively(pkgName) == null) {
                                 throw new IllegalStateException("Cannot find package " + pkgName);
                             }
                         }
@@ -152,7 +157,7 @@ public class ModClassLoader extends URLClassLoader {
     }
 
     @Nullable
-    protected Package _getPackage(@NotNull String name) {
+    protected Package getPackageRecursively(@NotNull String name) {
         Package pkg = getDefinedPackage(name);
         if (pkg == null) {
             ClassLoader parent = getParent();
