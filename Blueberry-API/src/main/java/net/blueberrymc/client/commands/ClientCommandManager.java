@@ -40,10 +40,12 @@ public class ClientCommandManager {
     @NotNull
     public static String strip(@NotNull String s) {
         s = s.split(" ")[0];
-        return s.substring(1);
+        return s.startsWith("/") ? s.substring(1) : s;
     }
 
-    public static boolean hasCommand(@NotNull String s) { return has(strip(s)); }
+    public static boolean hasCommand(@NotNull String s) {
+        return has(strip(s));
+    }
 
     public static boolean has(@NotNull String name) {
         return COMMANDS.containsKey(name);
@@ -65,7 +67,7 @@ public class ClientCommandManager {
             String provided = ClientCommandHandler.getMod(handler).getModId();
             String existing = ClientCommandHandler.getMod(theirs).getModId();
             LOGGER.warn("Client command conflict (/{}): {} (provided) and {} (existing)", name, provided, existing);
-            LOGGER.warn("Replacing {}'s client command (/{}) with {}'s ClientCommandHandler.", name, existing, provided);
+            LOGGER.warn("Replacing {}'s client command (/{}) with {}'s ClientCommandHandler.", existing, name, provided);
         }
         COMMANDS.put(name, handler);
         handler.register(DISPATCHER);
@@ -116,61 +118,58 @@ public class ClientCommandManager {
 
     }
 
-    public static int performCommand(@NotNull CommandSourceStack commandSourceStack, @NotNull String s) {
-        StringReader stringReader = new StringReader(s);
-        if (stringReader.canRead() && stringReader.peek() == '/') {
-            stringReader.skip();
+    public static int performCommand(@NotNull CommandSourceStack commandSourceStack, @NotNull String input) {
+        StringReader reader = new StringReader(input);
+        if (reader.canRead() && reader.peek() == '/') {
+            reader.skip();
         }
-
-        commandSourceStack.getServer().getProfiler().push(s);
 
         try {
-            try {
-                return DISPATCHER.execute(stringReader, commandSourceStack);
-            } catch (CommandRuntimeException var13) {
-                commandSourceStack.sendFailure(var13.getComponent());
-                return 0;
-            } catch (CommandSyntaxException var14) {
-                commandSourceStack.sendFailure(ComponentUtils.fromMessage(var14.getRawMessage()));
-                if (var14.getInput() != null && var14.getCursor() >= 0) {
-                    int i = Math.min(var14.getInput().length(), var14.getCursor());
-                    MutableComponent mutableComponent = (new TextComponent("")).withStyle(ChatFormatting.GRAY).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, s)));
-                    if (i > 10) {
-                        mutableComponent.append("...");
-                    }
-
-                    mutableComponent.append(var14.getInput().substring(Math.max(0, i - 10), i));
-                    if (i < var14.getInput().length()) {
-                        Component component = (new TextComponent(var14.getInput().substring(i))).withStyle(ChatFormatting.RED, ChatFormatting.UNDERLINE);
-                        mutableComponent.append(component);
-                    }
-
-                    mutableComponent.append((new TranslatableComponent("command.context.here")).withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
-                    commandSourceStack.sendFailure(mutableComponent);
-                }
-            } catch (Exception var15) {
-                MutableComponent mutableComponent2 = new TextComponent(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.error("Command exception: {}", s, var15);
-                    StackTraceElement[] stackTraceElements = var15.getStackTrace();
-
-                    for(int i2 = 0; i2 < Math.min(stackTraceElements.length, 3); ++i2) {
-                        mutableComponent2.append("\n\n").append(stackTraceElements[i2].getMethodName()).append("\n ").append(stackTraceElements[i2].getFileName()).append(":").append(String.valueOf(stackTraceElements[i2].getLineNumber()));
-                    }
+            return DISPATCHER.execute(reader, commandSourceStack);
+        } catch (CommandRuntimeException commandRuntimeException) {
+            commandSourceStack.sendFailure(commandRuntimeException.getComponent());
+        } catch (CommandSyntaxException commandSyntaxException) {
+            commandSourceStack.sendFailure(ComponentUtils.fromMessage(commandSyntaxException.getRawMessage()));
+            if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
+                int i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
+                MutableComponent mutableComponent = new TextComponent("").withStyle(ChatFormatting.GRAY).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)));
+                if (i > 10) {
+                    mutableComponent.append("...");
                 }
 
-                commandSourceStack.sendFailure((new TranslatableComponent("command.failed")).withStyle((style) -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableComponent2))));
-                if (SharedConstants.IS_RUNNING_IN_IDE) {
-                    commandSourceStack.sendFailure(new TextComponent(Util.describeError(var15)));
-                    LOGGER.error("'" + s + "' threw an exception", var15);
+                mutableComponent.append(commandSyntaxException.getInput().substring(Math.max(0, i - 10), i));
+                if (i < commandSyntaxException.getInput().length()) {
+                    Component component = new TextComponent(commandSyntaxException.getInput().substring(i)).withStyle(ChatFormatting.RED, ChatFormatting.UNDERLINE);
+                    mutableComponent.append(component);
                 }
 
-                return 0;
+                mutableComponent.append(new TranslatableComponent("command.context.here").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
+                commandSourceStack.sendFailure(mutableComponent);
+            }
+        } catch (Exception ex) {
+            MutableComponent exceptionComponent = new TextComponent(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.error("Command exception: {}", input, ex);
+                StackTraceElement[] stackTraceElements = ex.getStackTrace();
+
+                for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
+                    exceptionComponent
+                            .append("\n\n")
+                            .append(stackTraceElements[i].getMethodName())
+                            .append("\n ")
+                            .append(stackTraceElements[i].getFileName())
+                            .append(":")
+                            .append(String.valueOf(stackTraceElements[i].getLineNumber()));
+                }
             }
 
-            return 0;
-        } finally {
-            commandSourceStack.getServer().getProfiler().pop();
+            commandSourceStack.sendFailure(new TranslatableComponent("command.failed").withStyle((style) -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, exceptionComponent))));
+            if (SharedConstants.IS_RUNNING_IN_IDE) {
+                commandSourceStack.sendFailure(new TextComponent(Util.describeError(ex)));
+                LOGGER.error("'" + input + "' threw an exception", ex);
+            }
         }
+
+        return 0;
     }
 }
