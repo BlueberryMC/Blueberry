@@ -3,6 +3,8 @@ package net.blueberrymc.common.scheduler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * A class used to hold the pair of client/server tasks.
  */
@@ -15,8 +17,7 @@ public record TaskPair(@Nullable BlueberryTask clientTask, @Nullable BlueberryTa
         if (clientTask != null && serverTask != null) {
             throw new IllegalArgumentException("Both clientTask and serverTask is present");
         }
-        if (clientTask == null) return serverTask;
-        return clientTask;
+        return Objects.requireNonNullElse(clientTask, serverTask);
     }
 
     @Deprecated

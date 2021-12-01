@@ -4,20 +4,14 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RefInstanceAwareField<T, R> {
-    @NotNull private final RefField<T> field;
-    @Nullable private final T instance;
-
-    public RefInstanceAwareField(@NotNull RefField<T> field, @Nullable T instance) {
-        this.field = field;
-        this.instance = instance;
-    }
-
+public record RefInstanceAwareField<T, R>(@NotNull RefField<T> field, @Nullable T instance) {
+    @Deprecated
     @NotNull
     public RefField<T> getField() {
         return field;
     }
 
+    @Deprecated
     @Nullable
     public T getInstance() {
         return this.instance;

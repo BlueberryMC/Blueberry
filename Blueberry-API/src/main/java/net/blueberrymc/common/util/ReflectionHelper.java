@@ -241,7 +241,7 @@ public final class ReflectionHelper {
         for (int i = 1 + offset; i < stElements.length; i++) {
             StackTraceElement ste = stElements[i];
             if (!ste.getClassName().equals(ReflectionHelper.class.getName()) && !ste.getClassName().contains("java.lang.Thread")) {
-                return Ref.forName(ste.getClassName()).getClazz();
+                return Ref.forName(ste.getClassName()).clazz();
             }
         }
         throw new NoSuchElementException("sorry :(");

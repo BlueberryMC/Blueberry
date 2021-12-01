@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Member;
 
 public class RefConstructor<T> extends RefExecutable {
     @NotNull
@@ -52,12 +51,9 @@ public class RefConstructor<T> extends RefExecutable {
     }
 
     @NotNull
-    public Constructor<T> getConstructor() { return constructor; }
+    public final Constructor<T> getConstructor() { return constructor; }
 
     @Override
     @NotNull
     public String toString() { return this.constructor.toString(); }
-
-    @Override
-    public @NotNull Member getMember() { return constructor; }
 }

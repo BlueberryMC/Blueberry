@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 public class RefMethod<T> extends RefExecutable {
@@ -13,7 +12,7 @@ public class RefMethod<T> extends RefExecutable {
     private final Method method;
 
     @NotNull
-    public Method getMethod() { return method; }
+    public final Method getMethod() { return method; }
 
     /**
      * @deprecated obj is unchecked, may throw exception at runtime
@@ -58,7 +57,4 @@ public class RefMethod<T> extends RefExecutable {
     @Contract("_ -> this")
     @NotNull
     public RefMethod<T> accessible(boolean flag) { setAccessible(flag); return this; }
-
-    @Override
-    public @NotNull Member getMember() { return method; }
 }
