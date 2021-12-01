@@ -17,7 +17,7 @@
         <dependency>
             <groupId>net.blueberrymc</groupId>
             <artifactId>blueberry-api</artifactId>
-            <version>0.0.16</version>
+            <version>${api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
