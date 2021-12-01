@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Fri, 12 Nov 2021 14:27:56 +0900
+Subject: [PATCH] Add workaround for race condition
+
+CrudeIncrementalIntIdentityHashBiMap#byId returns null... for some reason
+
+diff --git a/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java b/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
+index f03f3cac0815d17ff9e1153e43a2bfc0a9def504..9fdaa8f55f2d16884596b455fb03dd6132710389 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
++++ b/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
+@@ -58,6 +58,17 @@ public class HashMapPalette<T> implements Palette<T> {
+     public T valueFor(int i) {
+         T object = this.values.byId(i);
+         if (object == null) {
++            // Blueberry start
++            // TODO: figure out why Thread.sleep(1) works; maybe race condition?
++            try {
++                Thread.sleep(1);
++            } catch (InterruptedException e) {
++                Thread.currentThread().interrupt();
++            }
++            object = this.values.byId(i);
++            if (object != null) return object;
++            try { return (T) net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(); } catch (ClassCastException ignore) {}
++            // Blueberry end
+             throw new MissingPaletteEntryException(i);
+         } else {
+             return object;

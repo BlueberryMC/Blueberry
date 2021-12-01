@@ -51,21 +51,21 @@ public abstract class BlueberryRunnable implements Runnable {
     @NotNull
     public final TaskPair runTaskLater(@NotNull BlueberryMod blueberryMod, long time) {
         if (side == Side.BOTH) {
-            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskLater(blueberryMod, this, time)).get();
-            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskLater(blueberryMod, this, time);
+            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskLater(blueberryMod, time, this)).get();
+            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskLater(blueberryMod, time, this);
             return setupId(new TaskPair(clientTask, serverTask));
         }
-        return setupId(getSingleScheduler().runTaskLater(blueberryMod, this, time));
+        return setupId(getSingleScheduler().runTaskLater(blueberryMod, time, this));
     }
 
     @NotNull
     public final TaskPair runTaskTimer(@NotNull BlueberryMod blueberryMod, long delayTime, long timerTime) {
         if (side == Side.BOTH) {
-            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskTimer(blueberryMod, this, delayTime, timerTime)).get();
-            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskTimer(blueberryMod, this, delayTime, timerTime);
+            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskTimer(blueberryMod, delayTime, timerTime, this)).get();
+            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskTimer(blueberryMod, delayTime, timerTime, this);
             return setupId(new TaskPair(clientTask, serverTask));
         }
-        return setupId(getSingleScheduler().runTaskTimer(blueberryMod, this, delayTime, timerTime));
+        return setupId(getSingleScheduler().runTaskTimer(blueberryMod, delayTime, timerTime, this));
     }
 
     @NotNull
@@ -81,21 +81,21 @@ public abstract class BlueberryRunnable implements Runnable {
     @NotNull
     public final TaskPair runTaskLaterAsynchronously(@NotNull BlueberryMod blueberryMod, long time) {
         if (side == Side.BOTH) {
-            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskLaterAsynchronously(blueberryMod, this, time)).get();
-            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskLaterAsynchronously(blueberryMod, this, time);
+            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskLaterAsynchronously(blueberryMod, time, this)).get();
+            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskLaterAsynchronously(blueberryMod, time, this);
             return setupId(new TaskPair(clientTask, serverTask));
         }
-        return setupId(getSingleScheduler().runTaskLaterAsynchronously(blueberryMod, this, time));
+        return setupId(getSingleScheduler().runTaskLaterAsynchronously(blueberryMod, time, this));
     }
 
     @NotNull
     public final TaskPair runTaskTimerAsynchronously(@NotNull BlueberryMod blueberryMod, long delayTime, long timerTime) {
         if (side == Side.BOTH) {
-            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskTimerAsynchronously(blueberryMod, this, delayTime, timerTime)).get();
-            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskTimerAsynchronously(blueberryMod, this, delayTime, timerTime);
+            BlueberryTask clientTask = Blueberry.getUtil().getClientSchedulerOptional().map(scheduler -> scheduler.runTaskTimerAsynchronously(blueberryMod, delayTime, timerTime, this)).get();
+            BlueberryTask serverTask = Blueberry.getUtil().getServerScheduler().runTaskTimerAsynchronously(blueberryMod, delayTime, timerTime, this);
             return setupId(new TaskPair(clientTask, serverTask));
         }
-        return setupId(getSingleScheduler().runTaskTimerAsynchronously(blueberryMod, this, delayTime, timerTime));
+        return setupId(getSingleScheduler().runTaskTimerAsynchronously(blueberryMod, delayTime, timerTime, this));
     }
 
     @NotNull
@@ -105,14 +105,13 @@ public abstract class BlueberryRunnable implements Runnable {
         } else if (side == Side.SERVER) {
             return Blueberry.getUtil().getServerScheduler();
         } else {
-            throw new IllegalStateException("unsupported side: " + side.name());
+            throw new IllegalStateException("Unsupported side: " + side.name());
         }
     }
 
     @NotNull
     private <T> TaskPair setupId(@NotNull T task) {
-        if (task instanceof BlueberryTask) {
-            BlueberryTask blueberryTask = (BlueberryTask) task;
+        if (task instanceof BlueberryTask blueberryTask) {
             if (side == Side.CLIENT) {
                 this.clientId = blueberryTask.getTaskId();
                 return new TaskPair(blueberryTask, null);
@@ -122,11 +121,10 @@ public abstract class BlueberryRunnable implements Runnable {
             } else {
                 throw new IllegalStateException("side: " + side.name() + ", task: " + task);
             }
-        } else if (task instanceof TaskPair) {
-            TaskPair pair = (TaskPair) task;
+        } else if (task instanceof TaskPair pair) {
             if (side == Side.BOTH) {
-                this.clientId = pair.getClientTask() != null ? pair.getClientTask().getTaskId() : -1;
-                this.serverId = pair.getServerTask() != null ? pair.getServerTask().getTaskId() : -1;
+                this.clientId = pair.clientTask() != null ? pair.clientTask().getTaskId() : -1;
+                this.serverId = pair.serverTask() != null ? pair.serverTask().getTaskId() : -1;
             } else {
                 throw new IllegalStateException("side: " + side.name() + ", task: " + task);
             }

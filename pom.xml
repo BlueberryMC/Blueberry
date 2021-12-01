@@ -11,12 +11,14 @@
     <modules>
         <module>Blueberry-Client</module>
         <module>Blueberry-API</module>
-        <module>minecraftforge-api</module>
+        <module>MinecraftForge-API</module>
     </modules>
     <name>Blueberry-Parent</name>
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <api.version>0.0.17</api.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <minecraft.version>1.18</minecraft.version>
     </properties>
 </project>

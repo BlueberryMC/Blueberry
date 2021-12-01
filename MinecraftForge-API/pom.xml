@@ -9,30 +9,27 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- we don't need to specify our version really, since it's just forge support / compatibility. -->
     <artifactId>minecraftforge-api</artifactId>
+    <version>0.0.17</version>
     <name>MinecraftForge-API</name>
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>net.blueberrymc</groupId>
             <artifactId>blueberry-api</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.16</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>xyz.acrylicstyle.minecraft</groupId>
+            <groupId>net.blueberrymc.minecraft</groupId>
             <artifactId>minecraft</artifactId>
-            <version>1.16.5</version>
+            <version>${minecraft.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>18.0.0</version>
+            <version>22.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

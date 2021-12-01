@@ -1,6 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="[Windows] Run Server" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+    <envs>
+      <env name="LOG4J_CONFIGURATION_FILE" value="log4j2.xml" />
+    </envs>
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="net.minecraft.server.Main" />
     <module name="blueberry" />
     <option name="PROGRAM_PARAMETERS" value="nogui" />

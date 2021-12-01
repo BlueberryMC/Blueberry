@@ -121,7 +121,7 @@ public class ModClassLoader extends URLClassLoader {
                 int dot = name.lastIndexOf('.');
                 if (dot != -1) {
                     String pkgName = name.substring(0, dot);
-                    if (getPackage(pkgName) == null) {
+                    if (_getPackage(pkgName) == null) {
                         try {
                             if (manifest != null) {
                                 definePackage(pkgName, manifest, url);
@@ -129,7 +129,7 @@ public class ModClassLoader extends URLClassLoader {
                                 definePackage(pkgName, null, null, null, null, null, null, null);
                             }
                         } catch (IllegalArgumentException ex) {
-                            if (getPackage(pkgName) == null) {
+                            if (_getPackage(pkgName) == null) {
                                 throw new IllegalStateException("Cannot find package " + pkgName);
                             }
                         }
@@ -149,6 +149,21 @@ public class ModClassLoader extends URLClassLoader {
         }
         if (result == null) throw new ClassNotFoundException(name);
         return result;
+    }
+
+    @Nullable
+    protected Package _getPackage(@NotNull String name) {
+        Package pkg = getDefinedPackage(name);
+        if (pkg == null) {
+            ClassLoader parent = getParent();
+            while (pkg == null && parent != null) {
+                pkg = parent.getDefinedPackage(name);
+                parent = parent.getParent();
+            }
+            if (pkg == null) pkg = ClassLoader.getSystemClassLoader().getDefinedPackage(name);
+            if (pkg == null) pkg = ClassLoader.getPlatformClassLoader().getDefinedPackage(name);
+        }
+        return pkg;
     }
 
     public boolean isClosed() {

@@ -91,7 +91,7 @@ public interface ModLoader {
     BlueberryMod loadMod(@NotNull File file) throws InvalidModException;
 
     /**
-     * Try to enable a mod that was been disabled. This method is typically used to re-enable that was disabled
+     * Try to enable a mod that was disabled. This method is typically used to re-enable that was disabled
      * previously.
      * @param mod the mod to enable
      * @throws IllegalArgumentException if the mod is already enabled or classloader is already closed

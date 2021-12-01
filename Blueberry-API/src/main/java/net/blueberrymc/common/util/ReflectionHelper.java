@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,14 +29,33 @@ public final class ReflectionHelper {
      * @return Method if found, null otherwise
      */
     @Nullable
-    public static <T> Method findMethod(@NotNull("clazz") Class<? extends T> clazz, @NotNull("methodName") String methodName, @Nullable Class<?>... args) {
+    public static Method findMethod(@NotNull Class<?> clazz, @NotNull String methodName, @NotNull Class<?>... args) {
         try {
             Method method = clazz.getDeclaredMethod(methodName, args);
-            method.setAccessible(true);
+            try {
+                method.setAccessible(true);
+            } catch (InaccessibleObjectException ignore) {}
             return method;
         } catch (NoSuchMethodException e) {
             return null;
         }
+    }
+
+    @Nullable
+    public static Method findMethodRecursively(@NotNull Class<?> clazz, @NotNull String methodName, @NotNull Class<?>... args) {
+        Method method = findMethod(clazz, methodName, args);
+        if (method != null) return method;
+        Class<?> parent = clazz.getSuperclass();
+        while (parent != null) {
+            method = findMethod(clazz, methodName, args);
+            if (method != null) return method;
+            parent = parent.getSuperclass();
+        }
+        for (Class<?> parentInterface : clazz.getInterfaces()) {
+            method = findMethodRecursively(parentInterface, methodName, args);
+            if (method != null) return method;
+        }
+        return null;
     }
 
     /**
@@ -50,7 +70,7 @@ public final class ReflectionHelper {
      * @throws NoSuchMethodException If couldn't method find
      */
     @Contract
-    public static <T> Object invokeMethod(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("methodName") String methodName, @NotNull("args") Object... args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public static <T> Object invokeMethod(@NotNull Class<? extends T> clazz, @Nullable T instance, @NotNull String methodName, @NotNull("args") Object... args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<Class<?>> classes = new ArrayList<>();
         for (Object arg : args) classes.add(arg.getClass());
         Method method = findMethod(clazz, methodName, classes.toArray(new Class[0]));
@@ -67,7 +87,7 @@ public final class ReflectionHelper {
      * @return Result of method, null if invoked method returned null or thrown error
      */
     @Nullable
-    public static <T> Object invokeMethodWithoutException(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("methodName") String methodName, @NotNull("args") Object... args) {
+    public static <T> Object invokeMethodWithoutException(@NotNull Class<? extends T> clazz, @Nullable T instance, @NotNull String methodName, @NotNull("args") Object... args) {
         try {
             return invokeMethod(clazz, instance, methodName, args);
         } catch (ReflectiveOperationException e) {
@@ -83,10 +103,12 @@ public final class ReflectionHelper {
      * @return Field if found, null otherwise
      */
     @Nullable
-    public static <T> Field findField(@NotNull("clazz") Class<? extends T> clazz, @NotNull("field") String fieldName) {
+    public static <T> Field findField(@NotNull Class<? extends T> clazz, @NotNull String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
-            field.setAccessible(true);
+            try {
+                field.setAccessible(true);
+            } catch (InaccessibleObjectException ignore) {}
             return field;
         } catch (NoSuchFieldException e) {
             return null;
@@ -103,7 +125,7 @@ public final class ReflectionHelper {
      * @throws IllegalAccessException If the operation isn't allowed
      */
     @NotNull
-    public static <T> Object getField(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("field") String fieldName) throws NoSuchFieldException, IllegalAccessException {
+    public static <T> Object getField(@NotNull Class<? extends T> clazz, @Nullable T instance, @NotNull String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = findField(clazz, fieldName);
         if (field == null) throw new NoSuchFieldException();
         field.setAccessible(true);
@@ -118,7 +140,7 @@ public final class ReflectionHelper {
      * @return Value of field if success, null otherwise
      */
     @Nullable
-    public static <T> Object getFieldWithoutException(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("field") String fieldName) {
+    public static <T> Object getFieldWithoutException(@NotNull Class<? extends T> clazz, @Nullable T instance, @NotNull String fieldName) {
         try {
             return getField(clazz, instance, fieldName);
         } catch (NoSuchFieldException | IllegalAccessException ignored) {
@@ -135,7 +157,7 @@ public final class ReflectionHelper {
      * @throws NoSuchFieldException If couldn't find field
      * @throws IllegalAccessException If the operation isn't allowed
      */
-    public static <T> void setField(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("field") String fieldName, @Nullable Object value) throws NoSuchFieldException, IllegalAccessException {
+    public static <T> void setField(@NotNull Class<? extends T> clazz, @Nullable T instance, @NotNull String fieldName, @Nullable Object value) throws NoSuchFieldException, IllegalAccessException {
         Field field = findField(clazz, fieldName);
         if (field == null) throw new NoSuchFieldException();
         field.setAccessible(true);
@@ -150,7 +172,7 @@ public final class ReflectionHelper {
      * @param value Value
      * @return True if success, false otherwise
      */
-    public static <T> boolean setFieldWithoutException(@NotNull("clazz") Class<? extends T> clazz, @Nullable T instance, @NotNull("field") String fieldName, @Nullable Object value) {
+    public static <T> boolean setFieldWithoutException(@NotNull Class<? extends T> clazz, @Nullable T instance, @NotNull String fieldName, @Nullable Object value) {
         try {
             setField(clazz, instance, fieldName, value);
             return true;
@@ -166,7 +188,7 @@ public final class ReflectionHelper {
      * @return Constructor if found, null otherwise
      */
     @Nullable
-    public static <T> Constructor<? super T> findConstructor(@NotNull("clazz") Class<T> clazz, @Nullable Class<?>... types) {
+    public static <T> Constructor<? super T> findConstructor(@NotNull Class<T> clazz, @NotNull Class<?>... types) {
         try {
             Constructor<? super T> constructor = clazz.getConstructor(types);
             constructor.setAccessible(true);
@@ -187,7 +209,7 @@ public final class ReflectionHelper {
      */
     @SuppressWarnings("unchecked")
     @NotNull
-    public static <T> T invokeConstructor(@NotNull("clazz") Class<T> clazz, @NotNull("args") Object... args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static <T> T invokeConstructor(@NotNull Class<T> clazz, @NotNull Object... args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         List<Class<?>> classes = new ArrayList<>();
         for (Object arg : args) classes.add(arg.getClass());
         Constructor<? super T> constructor = findConstructor(clazz, classes.toArray(new Class[0]));
@@ -202,7 +224,7 @@ public final class ReflectionHelper {
      * @return Result of constructor if success, null otherwise
      */
     @Nullable
-    public static <T> T invokeConstructorWithoutException(@NotNull("clazz") Class<? extends T> clazz, @NotNull("args") Object... args) {
+    public static <T> T invokeConstructorWithoutException(@NotNull Class<? extends T> clazz, @NotNull Object... args) {
         try {
             return invokeConstructor(clazz, args);
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException ignored) {
@@ -230,14 +252,14 @@ public final class ReflectionHelper {
      * @return the super classes and interfaces.
      */
     @NotNull
-    public static List<Class<?>> getSupers(@NotNull("clazz") Class<?> clazz) {
+    public static List<Class<?>> getSupers(@NotNull Class<?> clazz) {
         List<Class<?>> list = getSuperclasses(clazz);
         list.addAll(getInterfaces(clazz));
         return list;
     }
 
     @NotNull
-    public static List<Class<?>> getSuperclasses(@NotNull("clazz") Class<?> clazz) {
+    public static List<Class<?>> getSuperclasses(@NotNull Class<?> clazz) {
         List<Class<?>> classes = new ArrayList<>();
         Class<?> superclass = clazz;
         while (superclass.getSuperclass() != null) {
@@ -248,7 +270,7 @@ public final class ReflectionHelper {
     }
 
     @NotNull
-    public static List<Class<?>> getInterfaces(@NotNull("clazz") Class<?> clazz) {
+    public static List<Class<?>> getInterfaces(@NotNull Class<?> clazz) {
         List<Class<?>> classes = new ArrayList<>(Collections.singletonList(clazz));
         for (Class<?> anInterface : clazz.getInterfaces()) classes.addAll(getInterfaces(anInterface));
         Class<?> superclass = clazz;

@@ -17,20 +17,27 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface BlueberryUtil {
-    Logger LOGGER = LogManager.getLogger();
+public abstract class BlueberryUtil {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Get a resource manager. Returns null for server.
+     * Get a resource manager.
      * @return resource manager
      */
-    @Nullable
-    ResourceManager getResourceManager();
-
     @NotNull
-    CompletableFuture<Void> reloadResourcePacks();
+    public abstract ResourceManager getResourceManager();
 
-    void crash(@NotNull CrashReport crashReport);
+    /**
+     * Reloads the client resource packs. This method returns CompletedFuture of value null.
+     * @return completable future
+     */
+    @NotNull
+    public abstract CompletableFuture<Void> reloadResourcePacks();
+
+    /**
+     * Crashes the Minecraft using provided crash report. Destroys window if on client, and stops the server if on server.
+     */
+    public abstract void crash(@NotNull CrashReport crashReport);
 
     /**
      * Gets task scheduler for client.
@@ -38,14 +45,21 @@ public interface BlueberryUtil {
      * @throws UnsupportedOperationException Thrown when the side is not a client
      */
     @NotNull
-    AbstractBlueberryScheduler getClientScheduler();
+    public abstract AbstractBlueberryScheduler getClientScheduler();
+
+    /**
+     * Gets task scheduler for server. This method should be available from both sides.
+     * @return scheduler
+     */
+    @NotNull
+    public abstract AbstractBlueberryScheduler getServerScheduler();
 
     /**
      * Gets task scheduler for client, but returns nullable value.
      * @return (nullable) scheduler
      */
     @Nullable
-    default AbstractBlueberryScheduler getClientSchedulerNullable() {
+    public AbstractBlueberryScheduler getClientSchedulerNullable() {
         try {
             return getClientScheduler();
         } catch (UnsupportedOperationException ex) {
@@ -54,47 +68,40 @@ public interface BlueberryUtil {
     }
 
     @NotNull
-    default ActionableResult<AbstractBlueberryScheduler> getClientSchedulerOptional() {
+    public ActionableResult<AbstractBlueberryScheduler> getClientSchedulerOptional() {
         return ActionableResult.ofThrowable(this::getClientScheduler);
     }
 
-    /**
-     * Gets task scheduler for server. This method should be available from both sides.
-     * @return scheduler
-     */
-    @NotNull
-    AbstractBlueberryScheduler getServerScheduler();
-
-    default boolean isOnGameThread() {
+    public boolean isOnGameThread() {
         return false;
     }
 
-    SimpleEntry<String, String> BLUEBERRY_ICON = SimpleEntry.of("blueberry", Versioning.getVersion().getFullyQualifiedVersion());
+    public static final SimpleEntry<String, String> BLUEBERRY_ICON = SimpleEntry.of("blueberry", Versioning.getVersion().getFullyQualifiedVersion());
 
-    default void updateDiscordStatus(@Nullable String details) {
+    public void updateDiscordStatus(@Nullable String details) {
         updateDiscordStatus(details, null);
     }
 
-    default void updateDiscordStatus(@Nullable String details, @Nullable String state) {
+    public void updateDiscordStatus(@Nullable String details, @Nullable String state) {
         updateDiscordStatus(details, state, BLUEBERRY_ICON);
     }
 
-    default void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage) {
+    public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage) {
         updateDiscordStatus(details, state, bigImage, null);
     }
 
-    default void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage) {
+    public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage) {
         updateDiscordStatus(details, state, bigImage, smallImage, 0);
     }
 
-    default void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {}
+    public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {}
 
     @Nullable
-    default DiscordRichPresence getDiscordRichPresenceQueue() { return null; }
+    public DiscordRichPresence getDiscordRichPresenceQueue() { return null; }
 
-    default void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {}
+    public void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {}
 
-    default byte@NotNull[] processClass(@NotNull String path, byte@NotNull[] b) {
+    public byte@NotNull[] processClass(@NotNull String path, byte @NotNull [] b) {
         try {
             b = BlueberryEvil.convert(b);
         } catch (Throwable ex) {
@@ -104,18 +111,18 @@ public interface BlueberryUtil {
     }
 
     @NotNull
-    default BlueberryUtil getImpl() {
+    public BlueberryUtil getImpl() {
         throw new UnsupportedOperationException();
     }
 
     @SideOnly(Side.CLIENT)
     @NotNull
-    default BlueberryClient asClient() {
+    public BlueberryClient asClient() {
         return (BlueberryClient) this;
     }
 
     @NotNull
-    default BlueberryServer asServer() {
+    public BlueberryServer asServer() {
         return (BlueberryServer) this;
     }
 }

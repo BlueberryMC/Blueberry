@@ -10,13 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>blueberry-api</artifactId>
-    <version>0.0.14</version>
+    <version>0.0.17</version>
     <name>Blueberry-API</name>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
     <repositories>
         <repository>
             <id>sponge-powered</id>
@@ -51,7 +47,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>1.5.20</version>
+                <version>1.6.0</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -66,9 +62,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>xyz.acrylicstyle.minecraft</groupId>
+            <groupId>net.blueberrymc.minecraft</groupId>
             <artifactId>minecraft</artifactId>
-            <version>1.17</version>
+            <version>${minecraft.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -79,38 +75,58 @@
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
-            <version>8.4.4</version>
+            <version>8.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>net.blueberrymc</groupId>
+            <artifactId>native-util</artifactId>
+            <version>1.2.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>1.29</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>18.0.0</version>
-            <scope>provided</scope>
+            <version>22.0.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>9.1</version>
+            <version>9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <version>9.2</version>
         </dependency>
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>mixin</artifactId>
-            <version>0.7.11-SNAPSHOT</version>
+            <version>0.8.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>1.5.20</version>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>net.minecraft</groupId>
@@ -129,6 +145,10 @@
                     <groupId>org.lwjgl</groupId>
                     <artifactId>lwjgl-openal</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-debug-all</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -139,8 +159,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.68.Final</version>
         </dependency>
     </dependencies>
 </project>

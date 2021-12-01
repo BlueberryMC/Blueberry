@@ -42,7 +42,7 @@ public class BlueberryText extends BaseComponent {
     public static String getLanguageCode() {
         Minecraft mc = Minecraft.getInstance();
         if (Blueberry.isServer()) return "en_us";
-        //noinspection ConstantConditions // IT IS NULLABLE GOD DAMN MOJANG
+        //noinspection ConstantConditions
         if (mc == null) return "en_us";
         return mc.options.languageCode;
     }
@@ -102,7 +102,7 @@ public class BlueberryText extends BaseComponent {
             cache.put(cachePath, text);
         }
         String text = cache.get(cachePath);
-        if (args != null) {
+        if (args != null && args.size() > 0) {
             text = String.format(text, args.toArray());
         }
         return text;
@@ -112,5 +112,10 @@ public class BlueberryText extends BaseComponent {
     @Override
     public BaseComponent plainCopy() {
         return new BlueberryText(this.namespace, this.path);
+    }
+
+    @NotNull
+    public BlueberryText cloneWithArgs(@Nullable Object@Nullable... args) {
+        return new BlueberryText(namespace, path, args);
     }
 }

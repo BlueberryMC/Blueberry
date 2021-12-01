@@ -2,6 +2,8 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.function.Function;
 
 public class BlueberryMod implements ModInfo {
     private Logger logger = LogManager.getLogger();
@@ -24,7 +27,7 @@ public class BlueberryMod implements ModInfo {
     private ModDescriptionFile description;
     private ClassLoader classLoader;
     private ModConfig config;
-    private RootCompoundVisualConfig visualConfig;
+    private Object visualConfig;
     private File file;
     private BlueberryResourceManager resourceManager;
     boolean first = true;
@@ -34,7 +37,7 @@ public class BlueberryMod implements ModInfo {
     public BlueberryMod() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         if (!(classLoader instanceof ModClassLoader)) {
-            throw new IllegalStateException("BlueberryMod requires " + ModClassLoader.class.getCanonicalName() + " (Got " + classLoader.getClass().getCanonicalName() + " instead)");
+            throw new IllegalStateException("BlueberryMod requires " + ModClassLoader.class.getTypeName() + " (Got " + classLoader.getClass().getTypeName() + " instead)");
         }
         try {
             ((ModClassLoader) classLoader).initialize(this);
@@ -53,14 +56,16 @@ public class BlueberryMod implements ModInfo {
     }
 
     final void init(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
-        this.modLoader = modLoader;
-        this.description = description;
-        this.classLoader = classLoader;
-        this.config = new ModConfig(this.description);
-        this.logger = LogManager.getLogger(this.description.getName());
-        this.visualConfig = new RootCompoundVisualConfig(new TextComponent(this.description.getName()));
-        this.file = file;
         try {
+            this.modLoader = modLoader;
+            this.description = description;
+            this.classLoader = classLoader;
+            this.config = new ModConfig(this.description);
+            this.logger = LogManager.getLogger(this.description.getName());
+            this.file = file;
+            Blueberry.runOnClient(() -> {
+                this.visualConfig = new RootCompoundVisualConfig(new TextComponent(this.description.getName()));
+            });
             this.onLoad();
         } catch (Throwable throwable) {
             this.stateList.add(ModState.ERRORED);
@@ -113,7 +118,9 @@ public class BlueberryMod implements ModInfo {
     }
 
     @NotNull
-    public final ModStateList getStateList() { return stateList; }
+    public final ModStateList getStateList() {
+        return stateList;
+    }
 
     @NotNull
     public final ModConfig getConfig() {
@@ -125,11 +132,13 @@ public class BlueberryMod implements ModInfo {
         return file;
     }
 
+    @SideOnly(Side.CLIENT)
     @NotNull
     public final RootCompoundVisualConfig getVisualConfig() {
-        return visualConfig;
+        return (RootCompoundVisualConfig) visualConfig;
     }
 
+    @SideOnly(Side.CLIENT)
     public final void setVisualConfig(@NotNull RootCompoundVisualConfig visualConfig) {
         Preconditions.checkNotNull(visualConfig, "cannot set null VisualConfig");
         this.visualConfig = visualConfig;
@@ -148,16 +157,34 @@ public class BlueberryMod implements ModInfo {
 
     /**
      * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
+     * <p><strong>NOTE: You cannot save the config which were generated with VisualConfigManager.</strong> Use
+     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(CompoundVisualConfig, ModConfig)} for that.
      * @param compoundVisualConfig the visual config
      */
-    public void save(@NotNull("compoundVisualConfig") CompoundVisualConfig compoundVisualConfig) {
+    public void save(@NotNull CompoundVisualConfig compoundVisualConfig) {
+        save(compoundVisualConfig, o -> {
+            if (o instanceof Class<?> clazz) {
+                return clazz.getTypeName();
+            }
+            return o;
+        });
+    }
+
+    /**
+     * Saves the configuration file. {@link VisualConfig#id(String)} must be called with valid config path to work.
+     * <p><strong>NOTE: You cannot save the config which were generated with VisualConfigManager.</strong> Use
+     * {@link net.blueberrymc.common.bml.config.VisualConfigManager#save(CompoundVisualConfig, ModConfig)} for that.
+     * @param compoundVisualConfig the visual config
+     * @param valueMapper see source code of {@link #save(CompoundVisualConfig)} for example
+     */
+    public void save(@NotNull CompoundVisualConfig compoundVisualConfig, @NotNull Function<Object, Object> valueMapper) {
         for (VisualConfig<?> config : compoundVisualConfig) {
             if (config instanceof CompoundVisualConfig) {
                 save((CompoundVisualConfig) config);
                 continue;
             }
             if (config.getId() != null) {
-                this.getConfig().set(config.getId(), config.get());
+                this.getConfig().set(config.getId(), valueMapper.apply(config.get()));
             }
         }
     }
@@ -172,7 +199,7 @@ public class BlueberryMod implements ModInfo {
     }
 
     /**
-     * Called at very early stage of the mod loading, so you cannot use most minecraft classes here.
+     * Called at very early stage of the mod loading, you cannot use most minecraft classes here.
      */
     public void onLoad() {}
 
@@ -192,7 +219,31 @@ public class BlueberryMod implements ModInfo {
     public void onPostInit() {}
 
     /**
-     * Called when the mod is being unloaded.
+     * Called when the mod is being unloaded. Use {@link Blueberry#stopping} to distinguish between reloading and shutdown.
      */
     public void onUnload() {}
+
+    /**
+     * Called when the mod is being reloaded via mod list screen or via command.
+     * @return Set to true if you want to reload resources, false otherwise.
+     */
+    public boolean onReload() {
+        return false;
+    }
+
+    /**
+     * Detects the mod from a class.
+     * @param clazz the class
+     * @return detected mod; null if mod could not be detected
+     */
+    @Nullable
+    public static BlueberryMod detectModFromClass(@NotNull Class<?> clazz) {
+        if (clazz.getClassLoader() instanceof ModClassLoader mcl) {
+            return mcl.getMod();
+        }
+        if (ClassLoader.getSystemClassLoader().equals(clazz.getClassLoader()) || (clazz.getClassLoader() instanceof LaunchClassLoader)) {
+            return Blueberry.getModManager().getModById("blueberry");
+        }
+        return null;
+    }
 }

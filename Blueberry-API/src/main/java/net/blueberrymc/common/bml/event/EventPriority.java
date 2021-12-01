@@ -2,8 +2,7 @@ package net.blueberrymc.common.bml.event;
 
 public enum EventPriority {
     /**
-     * Event call is of very low importance and should be ran first, to allow other plugins to further customise the outcome
-     * Mods should use VERY_LOW priority instead of LOWEST.
+     * Event call is of very low importance and should be run first, to allow other plugins to further customise the outcome.
      */
     LOWEST(-3),    // ^ First
     VERY_LOW(-2),  // |
@@ -12,7 +11,7 @@ public enum EventPriority {
     HIGH(1),       // |
     VERY_HIGH(2),  // |
     HIGHEST(3),    // |
-    /** The event executor should be ran last, No modifications to the event should be made under this priority. */
+    /** The event executor should be run last, No modifications to the event should be made under this priority. */
     MONITOR(4),    // v Last
     ;
 

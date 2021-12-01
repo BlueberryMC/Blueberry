@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SideOnly(Side.CLIENT)
-public class BlueberryClient implements BlueberryUtil {
+public class BlueberryClient extends BlueberryUtil {
     private final BlueberryClientScheduler clientScheduler = new BlueberryClientScheduler();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();
@@ -106,7 +106,7 @@ public class BlueberryClient implements BlueberryUtil {
         discordRichPresenceQueue.set(discordRichPresence);
     }
 
-    @SuppressWarnings("ConstantConditions") // if mc was initialized before this method, then yes it is non-null
+    @SuppressWarnings("ConstantConditions") // it is null before init of Minecraft
     @Nullable
     public MinecraftServer getIntegratedServer() {
         return Minecraft.getInstance() != null ? Minecraft.getInstance().getSingleplayerServer() : null;
@@ -126,6 +126,7 @@ public class BlueberryClient implements BlueberryUtil {
         getImpl().registerMenuScreensFactory(menuType, screenConstructor);
     }
 
+    @FunctionalInterface
     public interface ScreenConstructor<T extends AbstractContainerMenu, U extends Screen & MenuAccess<T>> {
         @NotNull
         U create(@NotNull T menu, @NotNull Inventory inventory, @NotNull Component component);

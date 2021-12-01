@@ -18,26 +18,47 @@ public class BlueberryVersion {
         this.builtAt = builtAt;
     }
 
+    /**
+     * Returns the client name ("blueberry" if unmodified).
+     * @return client name
+     */
     @NotNull
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the Blueberry API version.
+     * @return api version
+     */
     @NotNull
     public String getVersion() {
         return version;
     }
 
+    /**
+     * Returns the commit hash of MagmaCube.
+     * @return commit hash
+     */
     @NotNull
     public String getMagmaCubeCommit() {
         return magmaCubeCommit;
     }
 
+    /**
+     * Returns the commit hash of Blueberry.
+     * @return commit hash
+     */
     @NotNull
     public String getCommit() {
         return commit;
     }
 
+    /**
+     * Returns the build date.
+     * Example output: 2021-10-30T00:30:44+09:00 (yyyy-mm-ddThh:mm:ss+offset)
+     * @return build date
+     */
     @NotNull
     public String getBuiltAt() {
         return builtAt;
@@ -45,6 +66,10 @@ public class BlueberryVersion {
 
     private String gameVersion = null;
 
+    /**
+     * Returns the game version. (e.g. 1.18, or 21w43a)
+     * @return game version
+     */
     @NotNull
     public String getGameVersion() {
         if (gameVersion != null) return gameVersion;
@@ -53,6 +78,10 @@ public class BlueberryVersion {
 
     private String fqv = null;
 
+    /**
+     * Returns the version string of [game version]-[name]-[api version].
+     * @return [game version]-[name]-[api version]
+     */
     @NotNull
     public String getFullyQualifiedVersion() {
         if (fqv != null) return fqv;

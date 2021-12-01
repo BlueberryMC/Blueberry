@@ -4,27 +4,28 @@
 
 Open-source modding API for Minecraft
 
-## Why?
+## 🤔 Why?
 - Faster update (since it uses mojang mapping, no need to make our mapping)
   - it does not mean "fast update", because sometimes i don't have enough time to work on this project :(
 - Deobfuscated code (classes, fields, methods)
 
-## Important Warning
+## ⚠️ Important Warning
 **Blueberry is a very small project.**
 Whilst I try not to break API compatibility, but things could change at anytime!
 
-## Known Issues
-- Cannot stop debug profiler using `/debug stop` after using `/debug start`
-- Can't join using BungeeCord/Waterfall? (needs testing)
-- `CPU: <unknown>`
-  - Does not happen on MagmaCube, so it is specific to Blueberry
+## ✨ Key features
+- Live Compiler (Automatically compiles the mod from .java files)
+  - Reload (You can recompile the mod in-game using "Recompile" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
+- Packet transformer (you can join the server which has a different version than the client)
 
-## Todo
-- Apply bspatch at installer, not at runtime.
+## 📝 Todo
+- ~~Apply bspatch at installer, not at runtime.~~ partially implemented
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
+- write a ton of [docs](https://github.com/BlueberryMC/Blueberry-docs)
+- server jar
 
-## Translations
+## ✏️ Translations
 All translation PRs are welcome!
 
 To start the translation of the project, please follow these steps:
@@ -33,5 +34,5 @@ To start the translation of the project, please follow these steps:
 - Go to `Blueberry-API/src/main/resources/assets/blueberry/lang`, create or modify the translation file! (Do not edit `en_us.json` unless they are misspelled)
 - Create a PR with your changes.
 
-## Links
+## 🔗 Links
 - [Changelogs](https://cl-b.acrylicstyle.xyz/)

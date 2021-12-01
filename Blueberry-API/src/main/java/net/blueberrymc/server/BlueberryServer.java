@@ -6,10 +6,10 @@ import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.server.scheduler.BlueberryServerScheduler;
 import net.minecraft.CrashReport;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
-public class BlueberryServer implements BlueberryUtil {
+public class BlueberryServer extends BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     @Nullable private final BlueberryServer impl;
@@ -32,8 +32,8 @@ public class BlueberryServer implements BlueberryUtil {
     }
 
     @Override
-    public @Nullable ResourceManager getResourceManager() {
-        return null;
+    public @NotNull ResourceManager getResourceManager() {
+        return this.server.getResourceManager();
     }
 
     private MinecraftServer server = null;
@@ -52,9 +52,7 @@ public class BlueberryServer implements BlueberryUtil {
     }
 
     public void stopServer() {
-        if (this.server instanceof DedicatedServer) {
-            ((DedicatedServer) this.server).stopServer();
-        }
+        this.server.stopServer();
     }
 
     @NotNull

@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class RootCompoundVisualConfig extends CompoundVisualConfig {
+    /**
+     * @deprecated Use {@link #onSave(Consumer)} instead.
+     */
+    @Deprecated
     public Consumer<CompoundVisualConfig> onSave = null;
 
     public RootCompoundVisualConfig(@Nullable Component component) {

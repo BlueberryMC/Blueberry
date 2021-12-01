@@ -9,6 +9,7 @@ import net.blueberrymc.common.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -17,9 +18,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class DiscordRPCTaskExecutor {
+    private static final String CLIENT_ID = "814409121255915520";
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder().setNameFormat("Discord RPC Task Executor").build());
+    private static ScheduledExecutorService executor;
+
+    private static ScheduledExecutorService createExecutor() {
+        return Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder().setNameFormat("Discord RPC Task Executor").build());
+    }
+
     private static final Queue<Runnable> taskQueue = new ArrayDeque<>();
+    @Nullable
     private static Thread thread = null;
     private static boolean init = false;
     public static boolean discordRpcEnabled = false;
@@ -29,9 +37,10 @@ public class DiscordRPCTaskExecutor {
         if (init) return;
         init = true;
         DiscordRPCTaskExecutor.discordRpcEnabled = discordRpc;
-        LOGGER.info("Discord RPC: " + (discordRpcEnabled ? "Enabled" : "Disabled"));
+        LOGGER.info("Discord Rich Presence: " + (discordRpcEnabled ? "Enabled" : "Disabled"));
+        executor = createExecutor();
         if (discordRpcEnabled) {
-            EXECUTOR.scheduleAtFixedRate(() -> {
+            executor.scheduleAtFixedRate(() -> {
                 thread = Thread.currentThread();
                 Runnable task;
                 while ((task = taskQueue.poll()) != null) {
@@ -45,24 +54,34 @@ public class DiscordRPCTaskExecutor {
                     Blueberry.getUtil().setDiscordRichPresenceQueue(null);
                 }
             }, 0, 100, TimeUnit.MILLISECONDS);
+        } else {
+            executor.scheduleAtFixedRate(() -> {
+                thread = Thread.currentThread();
+                taskQueue.clear();
+                DiscordRPC.discordRunCallbacks();
+                DiscordRichPresence presence = Blueberry.getUtil().getDiscordRichPresenceQueue();
+                if (presence != null) {
+                    Blueberry.getUtil().setDiscordRichPresenceQueue(null);
+                }
+            }, 0, 100, TimeUnit.MILLISECONDS);
         }
         DiscordRPCTaskExecutor.submit(() -> {
             LOGGER.info("Loading Discord RPC Library...");
             //noinspection InstantiationOfUtilityClass
             new DiscordRPC();
             LOGGER.info("Logging into Discord...");
-            DiscordRPC.discordInitialize("814409121255915520", new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
+            DiscordRPC.discordInitialize(CLIENT_ID, new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
                 LOGGER.info("Successfully logged into Discord: " + user.username + "#" + user.discriminator + " (" + user.userId + ")");
             }).setErroredEventHandler((i, s) -> {
                 LOGGER.error("Encountered error on Discord RPC: " + i + " (" + s + ")");
             }).setDisconnectedEventHandler((i, s) -> {
-                LOGGER.warn("Disconnected from Discord: " + i + " (" + s + ")");
+                LOGGER.info("Disconnected from Discord: " + i + " (" + s + ")");
             }).build(), true);
         });
     }
 
     public static boolean isOnExecutorThread() {
-        return Thread.currentThread().equals(thread);
+        return thread == null || !thread.isAlive() || Thread.currentThread() == thread;
     }
 
     public static void submit(@NotNull Runnable runnable) {
@@ -74,9 +93,18 @@ public class DiscordRPCTaskExecutor {
     }
 
     public static void shutdownNow() {
-        if (Blueberry.getSide() != Side.CLIENT) return;
+        if (Blueberry.getSide() != Side.CLIENT || thread == null || !thread.isAlive()) return;
         try {
+            executor.shutdownNow();
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                executor.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
             DiscordRPC.discordShutdown();
+            thread = null;
+            init = false;
             LOGGER.info("Successfully disconnected from Discord.");
         } catch (Throwable ignore) {}
     }

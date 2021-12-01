@@ -16,5 +16,5 @@ echo "builtAt=$datetime" >> "$version_prop"
 echo "" >> "$version_prop"
 echo "api-version.properties:"
 cat "$version_prop"
-mvn clean install
+mvn clean install || exit 1
 git restore "$basedir/Blueberry-API/src/main/resources/api-version.properties"

@@ -24,7 +24,7 @@ public class HandlerList {
         listeners.add(new RegisteredListener(consumer, priority, listener, mod));
     }
 
-    public void remove(@NotNull("mod") BlueberryMod mod) {
+    public void remove(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         List<RegisteredListener> toRemove = new ArrayList<>();
         listeners.forEach(registeredListener -> {
@@ -35,7 +35,23 @@ public class HandlerList {
         toRemove.forEach(listeners::remove);
     }
 
-    public void remove(@NotNull("listener") Listener listener) {
+    public boolean anyContains(@NotNull BlueberryMod mod) {
+        Preconditions.checkNotNull(mod, "mod cannot be null");
+        for (RegisteredListener listener : listeners) {
+            if (mod.equals(listener.getMod())) return true;
+        }
+        return false;
+    }
+
+    public boolean isEmpty() {
+        return listeners.isEmpty();
+    }
+
+    public int size() {
+        return listeners.size();
+    }
+
+    public void remove(@NotNull Listener listener) {
         Preconditions.checkNotNull(listener, "listener cannot be null");
         List<RegisteredListener> toRemove = new ArrayList<>();
         listeners.forEach(registeredListener -> {
@@ -46,7 +62,7 @@ public class HandlerList {
         toRemove.forEach(listeners::remove);
     }
 
-    public void fire(@NotNull("event") Event event) {
+    public void fire(@NotNull Event event) {
         Preconditions.checkNotNull(event, "event cannot be null");
         this.listeners
                 .stream()
@@ -56,8 +72,8 @@ public class HandlerList {
                         registeredListener.getExecutor().accept(event);
                     } catch (Throwable e) {
                         Throwable cause = e.getCause() != null ? e.getCause() : e;
-                        String listenerName = registeredListener.getListener() == null ? null : registeredListener.getListener().getClass().getCanonicalName();
-                        new EventException("Could not pass event " + event.getEventName() + " to listener " + listenerName + " of mod " + registeredListener.getMod().getName(), cause).printStackTrace();
+                        String listenerName = registeredListener.getListener() == null ? null : registeredListener.getListener().getClass().getTypeName();
+                        EventManager.printStackTrace(new EventException("Could not pass event " + event.getEventTypeName() + " to listener " + listenerName + " of mod " + registeredListener.getMod().getName(), cause));
                     }
                 });
     }

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.ModInfo;
 import net.blueberrymc.config.yaml.YamlArray;
 import net.blueberrymc.config.yaml.YamlObject;
+import net.blueberrymc.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ModDescriptionFile implements ModInfo {
-    private static final Pattern PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
+    private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
     private static final Logger LOGGER = LogManager.getLogger();
     @NotNull protected final String modId;
     @NotNull protected final String version;
@@ -43,7 +44,7 @@ public class ModDescriptionFile implements ModInfo {
                               boolean source,
                               @Nullable String sourceDir,
                               @Nullable String include) {
-        if (!PATTERN.matcher(modId).matches()) throw new IllegalArgumentException("Mod ID must match the pattern: '^[a-zA-Z0-9][a-zA-Z0-9_-]$'");
+        if (!MOD_ID_PATTERN.matcher(modId).matches()) throw new IllegalArgumentException("Mod ID must match the pattern: '^[a-zA-Z0-9][a-zA-Z0-9_-]$'");
         this.modId = modId;
         this.version = version;
         this.mainClass = mainClass;
@@ -144,9 +145,9 @@ public class ModDescriptionFile implements ModInfo {
             creditsArray.add(credit);
         }
         YamlArray descriptionArray = yaml.getArray("description");
-        List<String> description = descriptionArray == null ? null : descriptionArray.mapAsType(o -> o instanceof String ? (String) o : o.toString());
+        List<String> description = Util.mapOrElse(descriptionArray, YamlArray::mapToString, null);
         boolean unloadable = yaml.getBoolean("unloadable", false);
-        List<String> depends = yaml.getArray("depends") == null ? new ArrayList<>() : yaml.getArray("depends").mapAsType(o -> o instanceof String ? (String) o : o.toString());
+        List<String> depends = Util.mapOrGet(yaml.getArray("depends"), YamlArray::mapToString, ArrayList::new);
         boolean source = yaml.getBoolean("source", false);
         String sourceDir = yaml.getString("sourceDir");
         String include = yaml.getString("include");
@@ -156,9 +157,11 @@ public class ModDescriptionFile implements ModInfo {
         Preconditions.checkNotNull(mainClass, "mainClass (main) is missing");
         if (name == null) {
             name = modId;
+            // TODO: remove log message, probably
             LOGGER.info("Mod name for " + name + " is missing, using modId instead");
         }
         if (description == null) {
+            // TODO: remove log message, probably
             LOGGER.info("Mod description for " + name + " is missing");
         }
         return new ModDescriptionFile(

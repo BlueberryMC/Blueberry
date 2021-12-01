@@ -224,7 +224,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         this.renderDecorations(poseStack, i, i2);
         children.forEach(e -> {
             if (e instanceof AbstractWidget) {
-                if (((AbstractWidget) e).isFocused()) {
+                if (((AbstractWidget) e).isHoveredOrFocused()) {
                     ((AbstractWidget) e).renderToolTip(poseStack, i, i2);
                 }
             }
@@ -363,15 +363,20 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
     protected void renderList(@NotNull PoseStack poseStack, int rowLeft, int adjustedScrollAmount, int i3, int i4, float f) {
         int itemCount = this.getItemCount();
         int offset = 38;
+        int prevY = Integer.MIN_VALUE;
         for (int i = 0; i < itemCount; ++i) {
             offset += 22;
             int rowTop = this.getRowTop(i);
             int rowBottom = this.getRowBottom(i);
             if (rowBottom >= this.top && rowTop <= this.bottom) {
                 E entry = this.getEntry(i);
-                entry.render(poseStack, this.width, this.height, f);
-                if (entry instanceof AbstractWidget) {
-                    ((AbstractWidget) entry).y = (int) (offset - getScrollAmount());
+                entry.render(poseStack, i3, i4, f);
+                if (entry instanceof AbstractWidget aw) {
+                    if (prevY == aw.y) {
+                        offset -= 22;
+                    }
+                    prevY = aw.y;
+                    aw.y = (int) (offset - getScrollAmount());
                 }
             }
         }

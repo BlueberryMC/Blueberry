@@ -1,9 +1,10 @@
 package net.blueberrymc.common.bml.config;
 
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LongVisualConfig extends VisualConfig<Long> {
+public class LongVisualConfig extends NumberVisualConfig<Long> {
     private final long min;
     private final long max;
 
@@ -22,6 +23,18 @@ public class LongVisualConfig extends VisualConfig<Long> {
     }
 
     public long getMax() {
+        return max;
+    }
+
+    @NotNull
+    @Override
+    public Long getMinAsNumber() {
+        return min;
+    }
+
+    @NotNull
+    @Override
+    public Long getMaxAsNumber() {
         return max;
     }
 }

@@ -4,15 +4,42 @@ Date: Fri, 15 Jan 2021 19:48:53 +0900
 Subject: [PATCH] Client-side command support
 
 
-diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index 50028bfdd2a4342d3f2643275bf17298ad389fb5..22169423745c6ea9b48d9b02adf689c394b1e524 100644
---- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
-+++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -269,6 +269,7 @@ public class LocalPlayer extends AbstractClientPlayer {
-    }
+diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
+index b978ac67055c4a5a00f123e35d613f8d0f97caad..50888f5ebf5e9e8718985a22805893394fbc904f 100644
+--- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
++++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
+@@ -170,7 +170,16 @@ public class CommandSuggestions {
+         boolean flag2 = this.commandsOnly || flag;
+         int i = this.input.getCursorPosition();
+         if (flag2) {
+-            CommandDispatcher<SharedSuggestionProvider> commandDispatcher = this.minecraft.player.connection.getCommands();
++            // Blueberry start - client-side command completion
++            String cmd = input.getValue().substring(i).split(" ")[0];
++            boolean clientCommand = net.blueberrymc.client.commands.ClientCommandManager.has(cmd);
++            CommandDispatcher<SharedSuggestionProvider> commandDispatcher;
++            if (clientCommand) {
++                commandDispatcher = net.blueberrymc.client.commands.ClientCommandManager.getRoot(this.minecraft.player);
++            } else {
++                commandDispatcher = this.minecraft.player.connection.getCommands();
++            }
++            // Blueberry end - client-side command completion
+             if (this.currentParse == null) {
+                 this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
+             }
+diff --git a/src/main/java/net/minecraft/client/gui/screens/Screen.java b/src/main/java/net/minecraft/client/gui/screens/Screen.java
+index a94df3bb3195e631b82cccdb3653be924ffcc35a..99a5de9c078c82c36b812fba1b96479fc24b12c9 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/Screen.java
++++ b/src/main/java/net/minecraft/client/gui/screens/Screen.java
+@@ -354,6 +354,12 @@ public abstract class Screen extends AbstractContainerEventHandler implements Wi
+             this.minecraft.gui.getChat().addRecentChat(s);
+         }
  
-    public void chat(String s) {
-+      if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.createCommandSourceStack(), s); // Blueberry
-       this.connection.send(new ServerboundChatPacket(s));
-    }
++        // Blueberry start
++        if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) {
++            net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.minecraft.player.createCommandSourceStack(), s);
++            return;
++        }
++        // Blueberry end
+         this.minecraft.player.chat(s);
+     }
  

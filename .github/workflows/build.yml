@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '16', '17' ]
+        java: [ '17' ]
     name: Java ${{ matrix.Java }}
     steps:
       - uses: actions/checkout@v2
@@ -38,5 +38,5 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: blueberry-installer
+          name: blueberry-installer-java-${{ matrix.java }}
           path: '*-installer.jar'

@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
 source ./scripts/functions.sh
 git="git -c commit.gpgsign=false"
-rm -rf "$basedir/work/jbsdiff"
-$git clone https://github.com/malensek/jbsdiff "$basedir/work/jbsdiff" || exit 1
-cd ./work/jbsdiff || exit 1
-mvn clean package || exit 1
+if [ ! -e "$basedir/work/jbsdiff" ]; then
+  $git clone https://github.com/malensek/jbsdiff "$basedir/work/jbsdiff" || exit 1
+else
+  cd "$basedir/work/jbsdiff" || exit 1
+  $git pull
+  cd "$basedir" || exit 1
+fi
+cd "$basedir/work/jbsdiff" || exit 1
+mvn clean package -Djdk.version=16 || exit 1
 cd "$basedir" || exit 1
-rm -rf "$basedir/work/jbsdiffPatcher"
-$git clone https://github.com/BlueberryMC/jbsdiffPatcher "$basedir/work/jbsdiffPatcher" || exit 1
+if [ ! -e "$basedir/work/jbsdiffPatcher" ]; then
+  $git clone https://github.com/BlueberryMC/jbsdiffPatcher "$basedir/work/jbsdiffPatcher" || exit 1
+else
+  cd "$basedir/work/jbsdiffPatcher" || exit 1
+  $git fetch || exit 1
+  $git checkout origin/main || exit 1
+  cd "$basedir" || exit 1
+fi
 mkdir -p "$basedir/work/jbsdiffPatcher/src/main/resources/" || exit 1
 patchFile="$basedir/work/jbsdiffPatcher/src/main/resources/patch.bz2"
 vanillaUrl="$clientJarUrl"

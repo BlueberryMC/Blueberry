@@ -1,6 +1,6 @@
 package net.blueberrymc.common.bml;
 
-public class UnknownModDependencyException extends RuntimeException {
+public class UnknownModDependencyException extends InvalidModException {
     public UnknownModDependencyException(String message) {
         super(message);
     }
