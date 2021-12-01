@@ -58,6 +58,8 @@ public class PacketRewriterManager {
         REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_RC1, TransformableProtocolVersions.v1_18_PRE8));
         REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_RC2, TransformableProtocolVersions.v1_18_RC1));
         REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_RC3, TransformableProtocolVersions.v1_18_RC2));
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18_RC4, TransformableProtocolVersions.v1_18_RC3));
+        REWRITER_LIST.add(PacketRewriter.of(TransformableProtocolVersions.v1_18, TransformableProtocolVersions.v1_18_RC4));
         var list = new ArrayList<>(REWRITER_LIST);
         Collections.reverse(list);
         list.forEach(PacketRewriter::register);
