@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Locale;
 
 public class FileUtil {
     public static void delete(@NotNull File file) throws IOException {
@@ -16,6 +17,19 @@ public class FileUtil {
                 .sorted(Comparator.reverseOrder())
                 .map(Path::toFile)
                 .forEach(File::delete);
+    }
+
+    @NotNull
+    public static File getMinecraftDir() {
+        String userHomeDir = System.getProperty("user.home", ".");
+        String osType = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+        String mcDir = ".minecraft";
+        if (osType.contains("win") && System.getenv("APPDATA") != null) {
+            return new File(System.getenv("APPDATA"), mcDir);
+        } else if (osType.contains("mac")) {
+            return new File(new File(new File(userHomeDir, "Library"), "Application Support"), "minecraft");
+        }
+        return new File(userHomeDir, mcDir);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

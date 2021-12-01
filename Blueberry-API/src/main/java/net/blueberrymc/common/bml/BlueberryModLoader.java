@@ -93,6 +93,12 @@ public class BlueberryModLoader implements ModLoader {
         LOGGER.info("Looking for mods in " + this.getModsDir().getAbsolutePath());
         Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Looking for mods in " + this.getModsDir().getAbsolutePath()));
         Deque<File> toLoad = new ConcurrentLinkedDeque<>();
+        Blueberry.runOnClient(() -> {
+            File dir = net.blueberrymc.client.main.ClientMain.tempModDir;
+            if (dir != null) {
+                toLoad.add(dir);
+            }
+        });
         int dirCount = 0;
         int fileCount = 0;
         File[] files = this.getModsDir().listFiles();
