@@ -68,7 +68,7 @@ public class ModClassLoader extends URLClassLoader {
     }
 
     @Override
-    protected void addURL(URL url) {
+    protected void addURL(@NotNull URL url) {
         super.addURL(url);
     }
 
