@@ -324,12 +324,21 @@ public class BlueberryModLoader implements ModLoader {
             if (id2ModMap.containsKey(depend)) continue;
             try {
                 loadMod(descriptions.get(depend).getValue());
-            } catch (Throwable throwable) {
+            } catch (Exception throwable) {
                 throw new InvalidModException("Failed to load dependency of the mod '" + description.getModId() + "': " + depend, throwable);
             }
         }
         if (!noDescription.isEmpty()) {
             throw new InvalidModException("Missing dependencies of the mod '" + description.getModId() + "': " + ListUtils.join(noDescription, ", "));
+        }
+        for (String depend : description.getSoftDepends()) {
+            if (!descriptions.containsKey(depend)) continue;
+            if (id2ModMap.containsKey(depend)) continue;
+            try {
+                loadMod(descriptions.get(depend).getValue());
+            } catch (Exception throwable) {
+                LOGGER.warn(new InvalidModException("Failed to load (soft) dependency of the mod '" + description.getModId() + "': " + depend, throwable));
+            }
         }
         try {
             LOGGER.info("Loading mod {} ({}) version {}", description.getName(), description.getModId(), description.getVersion());

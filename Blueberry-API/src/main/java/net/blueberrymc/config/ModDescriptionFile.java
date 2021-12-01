@@ -28,10 +28,12 @@ public class ModDescriptionFile implements ModInfo {
     @Nullable protected final List<String> description;
     protected final boolean unloadable;
     @NotNull protected final Set<String> depends;
+    @NotNull protected final Set<String> softDepends;
     protected final boolean source;
     @Nullable protected final String sourceDir;
     @Nullable protected final String include;
 
+    // NOTE: This constructor is NOT an API.
     public ModDescriptionFile(@NotNull String modId,
                               @NotNull String version,
                               @NotNull String mainClass,
@@ -41,6 +43,7 @@ public class ModDescriptionFile implements ModInfo {
                               @Nullable List<String> description,
                               boolean unloadable,
                               @Nullable List<String> depends,
+                              @Nullable List<String> softDepends,
                               boolean source,
                               @Nullable String sourceDir,
                               @Nullable String include) {
@@ -54,6 +57,7 @@ public class ModDescriptionFile implements ModInfo {
         this.description = description;
         this.unloadable = unloadable;
         this.depends = depends == null ? new HashSet<>() : new HashSet<>(depends);
+        this.softDepends = softDepends == null ? new HashSet<>() : new HashSet<>(softDepends);
         this.source = source;
         this.sourceDir = sourceDir;
         this.include = include;
@@ -105,6 +109,11 @@ public class ModDescriptionFile implements ModInfo {
         return depends;
     }
 
+    @NotNull
+    public Set<String> getSoftDepends() {
+        return softDepends;
+    }
+
     /**
      * Returns whether the mod needs to be compiled before using it.
      * @return whether the mod contains source code or not
@@ -148,6 +157,7 @@ public class ModDescriptionFile implements ModInfo {
         List<String> description = Util.mapOrElse(descriptionArray, YamlArray::mapToString, null);
         boolean unloadable = yaml.getBoolean("unloadable", false);
         List<String> depends = Util.mapOrGet(yaml.getArray("depends"), YamlArray::mapToString, ArrayList::new);
+        List<String> softDepends = Util.mapOrGet(yaml.getArray("softDepends"), YamlArray::mapToString, ArrayList::new);
         boolean source = yaml.getBoolean("source", false);
         String sourceDir = yaml.getString("sourceDir");
         String include = yaml.getString("include");
@@ -174,6 +184,7 @@ public class ModDescriptionFile implements ModInfo {
                 description,
                 unloadable,
                 depends,
+                softDepends,
                 source,
                 sourceDir,
                 include
