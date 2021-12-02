@@ -144,6 +144,6 @@ public class EventManager {
     }
 
     static void printStackTrace(@NotNull Throwable throwable) {
-        LOGGER.error(throwable);
+        LOGGER.error("", throwable);
     }
 }
