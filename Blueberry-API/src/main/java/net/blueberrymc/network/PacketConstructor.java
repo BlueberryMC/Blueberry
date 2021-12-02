@@ -1,5 +1,6 @@
 package net.blueberrymc.network;
 
+import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface

@@ -91,7 +91,7 @@ public class BlueberryNetworkManager {
         if (blueberryPacketConstructor == null) {
             return null;
         }
-        BlueberryPacket<?> blueberryPacket = blueberryPacketConstructor.create(new net.blueberrymc.network.FriendlyByteBuf(data));
+        BlueberryPacket<?> blueberryPacket = blueberryPacketConstructor.create(data);
         data.release();
         return blueberryPacket;
     }
