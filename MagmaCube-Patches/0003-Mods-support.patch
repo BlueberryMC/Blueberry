@@ -304,18 +304,9 @@ index 4b8d68438c9ead9ac3306a75ffa19e478882d323..20ad0c5987999dda6f08f00f4e855e3d
              if (i > this.copyrightX && i < this.copyrightX + this.copyrightWidth && i2 > this.height - 10 && i2 < this.height) {
                  fill(poseStack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | i6);
 diff --git a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-index 277fa1da2087d084912b4ff96eaf0602d126678c..9fc0c68d7573278da30ac50d97f340d1bee6cca7 100644
+index 277fa1da2087d084912b4ff96eaf0602d126678c..8dc0789d7c447030bf7a53e814506f47c72f7667 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-@@ -239,7 +239,7 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
-                 });
-             }
- 
--            boolean flag2 = this.serverData.protocol != SharedConstants.getCurrentVersion().getProtocolVersion();
-+            boolean flag2 = this.serverData.protocol != net.blueberrymc.common.bml.InternalBlueberryModConfig.Multiplayer.version.getProtocolVersion(); // Blueberry
-             this.minecraft.font.draw(poseStack, this.serverData.name, (float)(i3 + 32 + 3), (float)(i2 + 1), 16777215);
-             List<FormattedCharSequence> list = this.minecraft.font.split(this.serverData.motd, i4 - 32 - 2);
- 
 @@ -295,6 +295,13 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
              RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
              RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);

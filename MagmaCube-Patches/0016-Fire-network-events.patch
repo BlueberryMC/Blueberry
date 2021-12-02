@@ -4,19 +4,6 @@ Date: Wed, 10 Nov 2021 14:38:53 +0900
 Subject: [PATCH] Fire network events
 
 
-diff --git a/src/main/java/net/minecraft/client/multiplayer/ServerData.java b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
-index 75a31f723df73125e7eaac2775a4c3a36697951c..1807d3cfe54d4f42cad753845a67fdf47f82dbaa 100644
---- a/src/main/java/net/minecraft/client/multiplayer/ServerData.java
-+++ b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
-@@ -15,7 +15,7 @@ public class ServerData {
-     public Component status;
-     public Component motd;
-     public long ping;
--    public int protocol = SharedConstants.getCurrentVersion().getProtocolVersion();
-+    public int protocol = net.blueberrymc.common.bml.InternalBlueberryModConfig.Multiplayer.version.getProtocolVersion(); // Blueberry
-     public Component version = new TextComponent(SharedConstants.getCurrentVersion().getName());
-     public boolean pinged;
-     public List<Component> playerList = Collections.emptyList();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index 81a4871125570d8fe1fb2bc9b8280604a56903b0..bfb78b1ae9c0be6c51fc0b6bba4c2b855a52825a 100644
 --- a/src/main/java/net/minecraft/network/Connection.java

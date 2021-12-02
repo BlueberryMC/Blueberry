@@ -9,7 +9,7 @@ Added to game information:
 - Client Protocol Version
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index 83877228d193f30ed98b20761623b058fab0f316..6392aa1ed60af34b54d8b5342701b460d9397dbf 100644
+index 83877228d193f30ed98b20761623b058fab0f316..32bfdfae6629d769cc707a1909c39cb88ebf22c3 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -175,8 +175,9 @@ public class DebugScreenOverlay extends GuiComponent {
@@ -32,30 +32,13 @@ index 83877228d193f30ed98b20761623b058fab0f316..6392aa1ed60af34b54d8b5342701b460
              String s8 = this.getServerChunkStats();
              if (s8 != null) {
                  list.add(s8);
-@@ -288,8 +289,25 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -288,8 +289,8 @@ public class DebugScreenOverlay extends GuiComponent {
              }
  
              list.add(this.minecraft.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.minecraft.player.getCurrentMood() * 100.0F)));
 -            return list;
          }
-+        // Blueberry start
-+        list.add("");
-+        var serverVersion = net.blueberrymc.common.bml.InternalBlueberryModConfig.Multiplayer.version;
-+        list.add("Server Version: " + serverVersion.getName());
-+        if (serverVersion.getProtocolVersion() >= 0x40000000) {
-+            String hex = Integer.toHexString(serverVersion.getProtocolVersion());
-+            list.add("Server Protocol Version: " + serverVersion.getProtocolVersion() + " (0x" + hex + ")");
-+        } else {
-+            list.add("Server Protocol Version: " + serverVersion.getProtocolVersion());
-+        }
-+        if (SharedConstants.getProtocolVersion() >= 0x40000000) {
-+            String hex = Integer.toHexString(SharedConstants.getProtocolVersion());
-+            list.add("Client Protocol Version: " + SharedConstants.getProtocolVersion() + " (0x" + hex + ")");
-+        } else {
-+            list.add("Client Protocol Version: " + SharedConstants.getProtocolVersion());
-+        }
-+        return list;
-+        // Blueberry end
++        return list; // Blueberry
      }
  
      @Nullable

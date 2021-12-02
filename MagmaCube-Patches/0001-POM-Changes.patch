@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..6416d62a2804bf003b9da45ddfe6050bd63a159f 100644
+index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766175ecbae 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -79,7 +79,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..6416d62a2804bf003b9da45ddfe6050b
                              </excludes>
                          </filter>
                      </filters>
-@@ -72,6 +89,55 @@
+@@ -72,6 +89,79 @@
      </repositories>
  
      <dependencies>
@@ -121,6 +121,30 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..6416d62a2804bf003b9da45ddfe6050b
 +            <version>${api.version}</version>
 +        </dependency>
 +        <dependency>
++            <groupId>org.jetbrains.kotlin</groupId>
++            <artifactId>kotlin-stdlib</artifactId>
++            <version>1.6.0</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.yaml</groupId>
++            <artifactId>snakeyaml</artifactId>
++            <version>1.29</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-util</artifactId>
++            <version>9.2</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-commons</artifactId>
++            <version>9.2</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
 +            <groupId>net.java.dev.jna</groupId>
 +            <artifactId>jna</artifactId>
 +            <version>5.9.0</version>
@@ -135,7 +159,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..6416d62a2804bf003b9da45ddfe6050b
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
-@@ -81,16 +147,19 @@
+@@ -81,16 +171,19 @@
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
              <version>5.0.4</version>
@@ -155,7 +179,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..6416d62a2804bf003b9da45ddfe6050b
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -106,237 +175,302 @@
+@@ -106,237 +199,302 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
              <version>4.1.68.Final</version>
@@ -458,7 +482,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..6416d62a2804bf003b9da45ddfe6050b
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -345,25 +479,38 @@
+@@ -345,25 +503,38 @@
          </dependency>
  
          <!-- Logger -->
