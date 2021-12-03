@@ -299,6 +299,12 @@ public class BlueberryModLoader implements ModLoader {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself", true));
             description.getDepends().remove(description.getModId());
         }
+        if (descriptions.containsKey(description.getModId())) {
+            ModDescriptionFile another = descriptions.get(description.getModId()).getKey();
+            if (another != description) {
+                throw new InvalidModDescriptionException("Duplicate mod ID: " + description.getModId() + "(Name: " + description.getName() + ") @ " + description.getVersion() + " and " + another.getModId() + " (Name: " + another.getName() + ") @ " + another.getVersion());
+            }
+        }
         Map.Entry<ModDescriptionFile, File> entry = new AbstractMap.SimpleImmutableEntry<>(description, file);
         filePath2descriptionMap.put(file.getAbsolutePath(), entry);
         descriptions.put(description.getModId(), entry);
