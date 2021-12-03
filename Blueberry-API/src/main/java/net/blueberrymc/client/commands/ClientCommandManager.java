@@ -8,6 +8,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -30,11 +32,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientCommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ConcurrentHashMap<String, ClientCommandHandler> COMMANDS = new ConcurrentHashMap<>();
+    private static final Object2ObjectMap<String, ClientCommandHandler> COMMANDS = new Object2ObjectOpenHashMap<>();
     private static final CommandDispatcher<CommandSourceStack> DISPATCHER = new CommandDispatcher<>();
 
     @NotNull
@@ -77,8 +78,6 @@ public class ClientCommandManager {
     public static CommandDispatcher<CommandSourceStack> getDispatcher() {
         return DISPATCHER;
     }
-
-    // TODO: implement auto completion of client commands
 
     @NotNull
     public static CommandDispatcher<SharedSuggestionProvider> getRoot(@NotNull Player player) {
@@ -157,7 +156,7 @@ public class ClientCommandManager {
                             .append("\n\n")
                             .append(stackTraceElements[i].getMethodName())
                             .append("\n ")
-                            .append(stackTraceElements[i].getFileName())
+                            .append(stackTraceElements[i].getFileName() != null ? Objects.requireNonNull(stackTraceElements[i].getFileName()) : "?")
                             .append(":")
                             .append(String.valueOf(stackTraceElements[i].getLineNumber()));
                 }

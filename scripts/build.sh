@@ -3,9 +3,9 @@ basedir="."
 source ./scripts/functions.sh
 apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
 datetime=$(date +%Y-%m-%dT%T%:z)
-commit=$(git rev-parse HEAD | head -c 10)
+commit=$(git rev-parse HEAD)
 cd "$basedir/MagmaCube/Minecraft" || exit 1
-magmacubeCommit=$(git rev-parse HEAD | head -c 10)
+magmacubeCommit=$(git rev-parse HEAD)
 cd "$basedir" || exit 1
 version_prop="$basedir/Blueberry-API/src/main/resources/api-version.properties"
 echo "name=blueberry" > "$version_prop"

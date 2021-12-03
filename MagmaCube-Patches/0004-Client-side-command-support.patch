@@ -5,22 +5,19 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-index b978ac67055c4a5a00f123e35d613f8d0f97caad..50888f5ebf5e9e8718985a22805893394fbc904f 100644
+index b978ac67055c4a5a00f123e35d613f8d0f97caad..c7acfaddbe5542dc3defb6b209a0e4f8a8db4206 100644
 --- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 +++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-@@ -170,7 +170,16 @@ public class CommandSuggestions {
+@@ -170,7 +170,13 @@ public class CommandSuggestions {
          boolean flag2 = this.commandsOnly || flag;
          int i = this.input.getCursorPosition();
          if (flag2) {
 -            CommandDispatcher<SharedSuggestionProvider> commandDispatcher = this.minecraft.player.connection.getCommands();
 +            // Blueberry start - client-side command completion
-+            String cmd = input.getValue().substring(i).split(" ")[0];
-+            boolean clientCommand = net.blueberrymc.client.commands.ClientCommandManager.has(cmd);
-+            CommandDispatcher<SharedSuggestionProvider> commandDispatcher;
-+            if (clientCommand) {
-+                commandDispatcher = net.blueberrymc.client.commands.ClientCommandManager.getRoot(this.minecraft.player);
-+            } else {
-+                commandDispatcher = this.minecraft.player.connection.getCommands();
++            CommandDispatcher<SharedSuggestionProvider> commandDispatcher = net.blueberrymc.client.commands.ClientCommandManager.getRoot(this.minecraft.player);
++            CommandDispatcher<SharedSuggestionProvider> mojangCommandDispatcher = this.minecraft.player.connection.getCommands();
++            for (CommandNode<SharedSuggestionProvider> child : mojangCommandDispatcher.getRoot().getChildren()) {
++                commandDispatcher.getRoot().addChild(child);
 +            }
 +            // Blueberry end - client-side command completion
              if (this.currentParse == null) {

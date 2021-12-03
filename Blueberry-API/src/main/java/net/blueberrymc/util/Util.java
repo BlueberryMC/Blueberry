@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -173,5 +174,11 @@ public class Util {
         }
         extendedSimpleNameCache.put(clazz, simpleName);
         return simpleName;
+    }
+
+    @NotNull
+    public static String capitalize(@NotNull String s) {
+        if (s.length() == 0) return s;
+        return s.substring(0, 1).toUpperCase(Locale.ROOT) + s.substring(1);
     }
 }

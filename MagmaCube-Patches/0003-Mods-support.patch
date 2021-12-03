@@ -41,16 +41,17 @@ index 9b0fe57f2c787e0b137a9b57137bfdeb740a95eb..760593f8fe8597420796a0ab675d5ea8
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/SystemReport.java b/src/main/java/net/minecraft/SystemReport.java
-index 74e8f78d68f387fc5d99e42999b7a63a8103f77c..ab536263910ad9aa825fbf2e015bf47582f8f2c0 100644
+index 74e8f78d68f387fc5d99e42999b7a63a8103f77c..d8933757bd773ac7d9b4749af92bbf7f5a320665 100644
 --- a/src/main/java/net/minecraft/SystemReport.java
 +++ b/src/main/java/net/minecraft/SystemReport.java
-@@ -48,6 +48,25 @@ public class SystemReport {
+@@ -48,6 +48,26 @@ public class SystemReport {
              List<String> list = Util.getVmArguments().collect(Collectors.toList());
              return String.format("%d total; %s", list.size(), String.join(" ", list));
          }));
 +        // Blueberry start
-+        // TODO: we need better layout
 +        this.setDetail("Blueberry Version", net.blueberrymc.common.util.Versioning.getVersion().getFullyQualifiedVersion());
++        this.setDetail("Blueberry commit", net.blueberrymc.common.util.Versioning.getVersion().getCommit());
++        // TODO: we need better layout
 +        this.setDetail("Mods", () -> {
 +            StringBuilder sb = new StringBuilder("\n");
 +            sb.append("      Status:\n");
@@ -194,7 +195,7 @@ index 06c779ab7324f52380d4b3af451888e7d640e3e3..1d66c3c1bf026edb04abf6ecd601387d
  
      public int getLinesPerPage() {
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index 47c955961f3166ce741773660c509b4154063c9e..83877228d193f30ed98b20761623b058fab0f316 100644
+index 47c955961f3166ce741773660c509b4154063c9e..3fd0bbea5fd984e3d1b32f95c7aa7dc4ddc4d69f 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
@@ -211,7 +212,7 @@ index 47c955961f3166ce741773660c509b4154063c9e..83877228d193f30ed98b20761623b058
          List<String> list = Lists.newArrayList(new String[]{String.format("Java: %s %dbit", System.getProperty("java.version"), this.minecraft.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", l4 * 100L / l, bytesToMegabytes(l4), bytesToMegabytes(l)), String.format("Allocated: % 2d%% %03dMB", l2 * 100L / l, bytesToMegabytes(l2)), "", String.format("CPU: %s", GlUtil.getCpuInfo()), "", String.format("Display: %dx%d (%s)", Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), GlUtil.getVendor()), GlUtil.getRenderer(), GlUtil.getOpenGLVersion()});
 +        // Blueberry start
 +        list.add("");
-+        list.add("MagmaCube " + Blueberry.getVersion().getMagmaCubeCommit());
++        list.add("MagmaCube " + Blueberry.getVersion().getShortMagmaCubeCommit());
 +        list.add("Blueberry " + Blueberry.getVersion().getFullyQualifiedVersion());
 +        list.add(Blueberry.getModLoader().getLoadedMods().size() + " mods loaded, " + Blueberry.getModLoader().getActiveMods().size() + " mods active");
 +        // Blueberry end
@@ -277,7 +278,7 @@ index 3718f7005844bf6ae52680838ca9f5925c14eecb..7f70bd20be52d13f170a7832236e75d2
  
      public void tick() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-index 4b8d68438c9ead9ac3306a75ffa19e478882d323..20ad0c5987999dda6f08f00f4e855e3dca8381d6 100644
+index 4b8d68438c9ead9ac3306a75ffa19e478882d323..4c0c8b5e718e1bf0f8f42335245f4c5de366cfae 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 @@ -146,7 +146,8 @@ public class TitleScreen extends Screen {
@@ -297,7 +298,7 @@ index 4b8d68438c9ead9ac3306a75ffa19e478882d323..20ad0c5987999dda6f08f00f4e855e3d
 -            drawString(poseStack, this.font, "MagmaCube " + ((net.minecraft.DetectedVersion) SharedConstants.getCurrentVersion()).magmaCubeVersion, 2, this.height - 20, 0xFFFFFF | i6); // MagmaCube
 -            drawString(poseStack, this.font, s, 2, this.height - 10, 16777215 | i6);
 +            drawString(poseStack, this.font, "Blueberry " + net.blueberrymc.common.Blueberry.getVersion().getFullyQualifiedVersion(), 2, this.height - 40, 0xFFFFFF | i6); // Blueberry
-+            drawString(poseStack, this.font, "MagmaCube " + ((net.minecraft.DetectedVersion) SharedConstants.getCurrentVersion()).magmaCubeVersion, 2, this.height - 30, 0xFFFFFF | i6); // MagmaCube // Blueberry - offset 20 -> 30
++            drawString(poseStack, this.font, "MagmaCube " + net.blueberrymc.common.util.Versioning.getVersion().getShortMagmaCubeCommit(), 2, this.height - 30, 0xFFFFFF | i6); // MagmaCube // Blueberry - offset 20 -> 30
 +            drawString(poseStack, this.font, s, 2, this.height - 20, 16777215 | i6); // Blueberry - offset 10 -> 20
 +            drawString(poseStack, this.font, net.blueberrymc.common.Blueberry.getModLoader().getLoadedMods().size() + " mods loaded, " + net.blueberrymc.common.Blueberry.getModLoader().getActiveMods().size() + " mods active", 2, this.height - 10, 0xFFFFFF | i6); // Blueberry
              drawString(poseStack, this.font, COPYRIGHT_TEXT, this.copyrightX, this.height - 10, 16777215 | i6);

@@ -1,7 +1,11 @@
 package net.blueberrymc.common.util;
 
 import net.minecraft.DetectedVersion;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class BlueberryVersion {
     @NotNull private final String name;
@@ -46,12 +50,30 @@ public class BlueberryVersion {
     }
 
     /**
+     * Returns the commit hash of MagmaCube but limited to 10 characters max.
+     * @return commit hash (10 chars maximum)
+     */
+    @NotNull
+    public String getShortMagmaCubeCommit() {
+        return magmaCubeCommit.substring(0, Math.min(10, magmaCubeCommit.length()));
+    }
+
+    /**
      * Returns the commit hash of Blueberry.
      * @return commit hash
      */
     @NotNull
     public String getCommit() {
         return commit;
+    }
+
+    /**
+     * Returns the commit hash of Blueberry but limited to 10 characters max.
+     * @return commit hash (10 chars maximum)
+     */
+    @NotNull
+    public String getShortCommit() {
+        return commit.substring(0, Math.min(10, commit.length()));
     }
 
     /**
@@ -86,5 +108,19 @@ public class BlueberryVersion {
     public String getFullyQualifiedVersion() {
         if (fqv != null) return fqv;
         return fqv = getGameVersion() + "-" + this.name + "-" + this.version;
+    }
+
+    @Contract(value = "null -> false", pure = true)
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlueberryVersion that = (BlueberryVersion) o;
+        return name.equals(that.name) && version.equals(that.version) && magmaCubeCommit.equals(that.magmaCubeCommit) && commit.equals(that.commit) && builtAt.equals(that.builtAt) && Objects.equals(gameVersion, that.gameVersion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, version, magmaCubeCommit, commit, builtAt, gameVersion);
     }
 }

@@ -1,5 +1,7 @@
 package net.blueberrymc.common.bml;
 
+import net.blueberrymc.client.command.ClientBlueberryCommand;
+import net.blueberrymc.client.commands.ClientCommandManager;
 import net.blueberrymc.client.resources.BlueberryText;
 import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
@@ -67,6 +69,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                     }, 1, 1)
             ).ifNotPresent(clientTimer::cancel);
             Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createClient());
+            ClientCommandManager.register("cblueberry", new ClientBlueberryCommand());
         });
         Blueberry.runOnServer(() -> Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createServer()));
         registerArgumentTypes();
