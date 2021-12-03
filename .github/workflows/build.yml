@@ -2,12 +2,10 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
-      - 'dev/1.18'
+      - '*'
   pull_request:
     branches:
-      - 'main'
-      - 'dev/1.18'
+      - '*'
   workflow_dispatch:
 jobs:
   build:
@@ -30,6 +28,20 @@ jobs:
         run: './blueberry p'
       - name: Bake installer
         run: './blueberry i'
+      - name: Retrieve Minecraft version
+        run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=minecraft.version -q -DforceStdout)"'
+        id: retrieveMcVersion
+      - name: Retrieve API version
+        run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=api.version -q -DforceStdout)"'
+        id: retrieveApiVersion
+      - name: Release installer as prerelease
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          prerelease: true
+          tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}-${{ github.run_number }}
+          files: '*-installer.jar'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache
         uses: actions/cache@v2.1.6
         with:
