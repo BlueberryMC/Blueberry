@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.collect.ImmutableList;
 import net.blueberrymc.config.ModDescriptionFile;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -145,6 +146,7 @@ public interface ModLoader {
         InputStream in = null;
         for (BlueberryMod mod : this.getLoadedMods()) {
             ClassLoader cl = mod.getClassLoader();
+            if (cl instanceof LaunchClassLoader) continue;
             if ((in = cl.getResourceAsStream(name)) != null) break;
             if ((in = mod.getClass().getResourceAsStream(name)) != null) break;
         }
