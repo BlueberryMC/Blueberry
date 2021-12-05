@@ -1,6 +1,6 @@
 package net.blueberrymc.common.util;
 
-import net.minecraft.DetectedVersion;
+import net.blueberrymc.util.DetectedVersion;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,7 +95,7 @@ public class BlueberryVersion {
     @NotNull
     public String getGameVersion() {
         if (gameVersion != null) return gameVersion;
-        return gameVersion = DetectedVersion.tryDetectVersion().getId();
+        return gameVersion = Objects.requireNonNull(DetectedVersion.tryDetectVersion()).getId();
     }
 
     private String fqv = null;

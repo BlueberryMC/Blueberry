@@ -1,8 +1,12 @@
 package net.blueberrymc.common;
 
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
+import net.blueberrymc.common.util.FileUtil;
+import net.blueberrymc.server.main.ServerMain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 class BlueberryShutdownHookThread extends Thread {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -16,6 +20,15 @@ class BlueberryShutdownHookThread extends Thread {
     public void run() {
         if (executed) return; // Don't execute more than once
         executed = true;
+        LOGGER.info("Shutting down Discord RPC Task Executor");
         DiscordRPCTaskExecutor.shutdownNow();
+        LOGGER.info("Deleting temp directory");
+        if (ServerMain.tempModDir != null) {
+            try {
+                FileUtil.delete(ServerMain.tempModDir);
+            } catch (IOException e) {
+                LOGGER.warn("Failed to delete temp directory", e);
+            }
+        }
     }
 }

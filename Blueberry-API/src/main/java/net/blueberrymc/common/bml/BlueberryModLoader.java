@@ -19,9 +19,10 @@ import net.blueberrymc.common.util.tools.JavaTools;
 import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.config.yaml.YamlConfiguration;
+import net.blueberrymc.server.main.ServerMain;
 import net.blueberrymc.server.packs.resources.BlueberryResourceProvider;
 import net.blueberrymc.util.Util;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
@@ -33,10 +34,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +63,7 @@ public class BlueberryModLoader implements ModLoader {
     private final List<String> circularDependency = new ArrayList<>();
     private final File configDir = new File(Blueberry.getGameDir(), "config");
     private final File modsDir = new File(Blueberry.getGameDir(), "mods");
+    @Nullable
     private UniversalClassLoader universalClassLoader = null;
 
     public BlueberryModLoader() {
@@ -88,17 +92,12 @@ public class BlueberryModLoader implements ModLoader {
         return id2ModMap.get(modId);
     }
 
-    @Override
-    public void loadMods() {
+    @NotNull
+    public Deque<File> lookForMods() {
         LOGGER.info("Looking for mods in " + this.getModsDir().getAbsolutePath());
         Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Looking for mods in " + this.getModsDir().getAbsolutePath()));
         Deque<File> toLoad = new ConcurrentLinkedDeque<>();
-        Blueberry.runOnClient(() -> {
-            File dir = net.blueberrymc.client.main.ClientMain.tempModDir;
-            if (dir != null) {
-                toLoad.add(dir);
-            }
-        });
+        if (ServerMain.tempModDir != null) toLoad.add(ServerMain.tempModDir);
         int dirCount = 0;
         int fileCount = 0;
         File[] files = this.getModsDir().listFiles();
@@ -144,6 +143,39 @@ public class BlueberryModLoader implements ModLoader {
         int finalFileCount = fileCount;
         int finalDirCount = dirCount;
         Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Found " + toLoad.size() + " files to load (files: " + finalFileCount + ", directories: " + finalDirCount + ")"));
+        return toLoad;
+    }
+
+    public void init() {
+        for (File file : lookForMods()) {
+            try {
+                addToUniversalClassLoader(file.toURI().toURL());
+            } catch (Throwable e) {
+                LOGGER.warn("Could not add into the classpath: {}", file.getAbsolutePath(), e);
+            }
+        }
+    }
+
+    public void destroyUniversalClassLoader() {
+        if (universalClassLoader != null) {
+            try {
+                universalClassLoader.close();
+            } catch (IOException e) {
+                LOGGER.warn("Failed to destroy UniversalClassLoader", e);
+            }
+        }
+        universalClassLoader = null;
+    }
+
+    public void addURLsToSet(@NotNull Set<URL> urlSet) {
+        if (universalClassLoader != null) {
+            urlSet.addAll(Arrays.asList(universalClassLoader.getURLs()));
+        }
+    }
+
+    @Override
+    public void loadMods() {
+        Deque<File> toLoad = lookForMods();
         Map<String, File> fromSource = new HashMap<>();
         List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {
@@ -377,18 +409,9 @@ public class BlueberryModLoader implements ModLoader {
         if (mod.getClassLoader() instanceof ModClassLoader && ((ModClassLoader) mod.getClassLoader()).isClosed()) {
             throw new IllegalArgumentException("ClassLoader is already closed (unregistered?)");
         }
-        if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) throw new IllegalArgumentException("The mod is already enabled");
+        if (mod.getStateList().getCurrentState() == ModState.AVAILABLE) throw new IllegalArgumentException("Mod " + mod.getModId() + " is already enabled");
         try {
-            mod.getStateList().add(ModState.LOADED);
-            mod.setVisualConfig(new RootCompoundVisualConfig(new TextComponent(mod.getName())));
-            mod.onLoad();
-            mod.getStateList().add(ModState.PRE_INIT);
-            mod.onPreInit();
-            mod.getStateList().add(ModState.INIT);
-            mod.onInit();
-            mod.getStateList().add(ModState.POST_INIT);
-            mod.onPostInit();
-            mod.getStateList().add(ModState.AVAILABLE);
+            mod.doEnable();
         } catch (Throwable throwable) {
             LOGGER.error("Failed to enable a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
             mod.getStateList().add(ModState.ERRORED);
@@ -482,9 +505,8 @@ public class BlueberryModLoader implements ModLoader {
     }
 
     @NotNull
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz, boolean useModClassLoader) throws InvalidModException {
+    public BlueberryMod forceRegisterMod(@NotNull ModDescriptionFile description, boolean useModClassLoader) throws InvalidModException {
         AtomicBoolean cancel = new AtomicBoolean(false);
         if (description.getDepends().contains(description.getModId())) {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself (check mod.yml)", true));
@@ -510,6 +532,12 @@ public class BlueberryModLoader implements ModLoader {
             throw new InvalidModException("Following mods has circular dependency, cannot load: " + ListUtils.join(circularDependency, ", "));
         }
         BlueberryMod mod;
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(description.getMainClass(), false, Launch.classLoader);
+        } catch (ClassNotFoundException ex) {
+            throw new InvalidModException(ex);
+        }
         String path = ClasspathUtil.getClasspath(clazz);
         LOGGER.debug("Class Path of " + clazz.getTypeName() + ": " + path);
         File file = new File(path);
@@ -524,9 +552,10 @@ public class BlueberryModLoader implements ModLoader {
             mod = modClassLoader.mod;
         } else {
             try {
-                mod = clazz
-                        .getDeclaredConstructor(BlueberryModLoader.class, ModDescriptionFile.class, ClassLoader.class, File.class)
-                        .newInstance(this, description, this.getClass().getClassLoader(), file);
+                Constructor<?> constructor = clazz
+                        .getDeclaredConstructor(BlueberryModLoader.class, ModDescriptionFile.class, ClassLoader.class, File.class);
+                constructor.setAccessible(true);
+                mod = (BlueberryMod) constructor.newInstance(this, description, this.getClass().getClassLoader(), file);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 throw new InvalidModException(e);
             }
@@ -535,7 +564,7 @@ public class BlueberryModLoader implements ModLoader {
         id2ModMap.put(description.getModId(), mod);
         registeredMods.add(mod);
         LOGGER.info("Loaded mod {} ({}) from class {}", mod.getName(), mod.getDescription().getModId(), clazz.getTypeName());
-        return (T) mod;
+        return mod;
     }
 
     @Override
@@ -599,6 +628,15 @@ public class BlueberryModLoader implements ModLoader {
                 Blueberry.crash(throwable, "Post Initialization of " + mod.getName() + " (" + mod.getDescription().getModId() + ")");
             }
         });
+    }
+
+    @Nullable
+    @Override
+    public InputStream getResourceAsStream(@NotNull String name) {
+        InputStream in = ModLoader.super.getResourceAsStream(name);
+        if (in != null) return in;
+        if (universalClassLoader == null) return null;
+        return universalClassLoader.getResourceAsStream(name);
     }
 
     @Nullable

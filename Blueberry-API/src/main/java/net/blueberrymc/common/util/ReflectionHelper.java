@@ -1,6 +1,7 @@
 package net.blueberrymc.common.util;
 
 import net.blueberrymc.common.util.reflect.Ref;
+import net.blueberrymc.native_util.NativeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,11 @@ import java.util.NoSuchElementException;
  */
 public final class ReflectionHelper {
     private ReflectionHelper() {}
+
+    @NotNull
+    public static Object newInstance(@NotNull String clazz) {
+        return NativeUtil.newInstance(Ref.forName(clazz).getDeclaredConstructor().getConstructor());
+    }
 
     /**
      * Find method in class.

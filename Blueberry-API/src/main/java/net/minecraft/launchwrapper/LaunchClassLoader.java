@@ -1,24 +1,38 @@
 package net.minecraft.launchwrapper;
 
-import java.io.*;
+import net.blueberrymc.common.Blueberry;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.security.CodeSigner;
 import java.security.CodeSource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class LaunchClassLoader extends URLClassLoader {
     public static final int BUFFER_SIZE = 1 << 12;
@@ -52,10 +66,17 @@ public class LaunchClassLoader extends URLClassLoader {
 
         // classloader exclusions
         addClassLoaderExclusion("java.");
+        addClassLoaderExclusion("com.sun.");
         addClassLoaderExclusion("sun.");
         addClassLoaderExclusion("org.lwjgl.");
         addClassLoaderExclusion("org.apache.logging.");
         addClassLoaderExclusion("net.minecraft.launchwrapper.");
+        addClassLoaderExclusion("net.blueberrymc.client.main.ClientMain");
+        addClassLoaderExclusion("net.blueberrymc.server.main.ServerMain");
+        addClassLoaderExclusion("com.google.gson.");
+        addClassLoaderExclusion("com.google.common.");
+        addClassLoaderExclusion("com.mojang.bridge.");
+        addClassLoaderExclusion("io.netty.");
 
         // transformer exclusions
         addTransformerExclusion("javax.");
@@ -92,6 +113,17 @@ public class LaunchClassLoader extends URLClassLoader {
         } catch (Exception e) {
             LogWrapper.log(Level.ERROR, e, "A critical problem occurred registering the ASM transformer class %s", transformerClassName);
         }
+    }
+
+    @NotNull
+    @Override
+    public Class<?> loadClass(@NotNull String name) throws ClassNotFoundException {
+        Class<?> clazz = this.findLoadedClass(name);
+        if (clazz != null) return clazz;
+        try {
+            return this.findClass(name);
+        } catch (ClassNotFoundException ignore) {}
+        return parent.loadClass(name);
     }
 
     @Override
@@ -191,7 +223,7 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void saveTransformedClass(@NotNull final byte@NotNull[] data, @NotNull final String transformedName) {
+    private void saveTransformedClass(byte@NotNull[] data, @NotNull String transformedName) {
         if (tempFolder == null) {
             return;
         }
@@ -341,8 +373,7 @@ public class LaunchClassLoader extends URLClassLoader {
         transformerExceptions.add(toExclude);
     }
 
-    @NotNull
-    public byte@NotNull[] getClassBytes(@NotNull String name) throws IOException {
+    public byte@Nullable[] getClassBytes(@NotNull String name) throws IOException {
         if (negativeResourceCache.contains(name)) {
             return null;
         } else if (resourceCache.containsKey(name)) {
@@ -392,5 +423,13 @@ public class LaunchClassLoader extends URLClassLoader {
 
     public void clearNegativeEntries(@NotNull Set<String> entriesToClear) {
         negativeResourceCache.removeAll(entriesToClear);
+    }
+
+    @Nullable
+    @Override
+    public InputStream getResourceAsStream(@NotNull String name) {
+        InputStream in = super.getResourceAsStream(name);
+        if (in != null) return in;
+        return Blueberry.getModLoader().getResourceAsStream(name);
     }
 }

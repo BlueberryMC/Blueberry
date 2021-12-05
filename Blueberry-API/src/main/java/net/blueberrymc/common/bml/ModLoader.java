@@ -130,7 +130,7 @@ public interface ModLoader {
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
-    <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull Class<T> clazz, boolean useModClassLoader) throws InvalidModException;
+    BlueberryMod forceRegisterMod(@NotNull ModDescriptionFile description, boolean useModClassLoader) throws InvalidModException;
 
     void initModResources(@NotNull BlueberryMod mod);
 

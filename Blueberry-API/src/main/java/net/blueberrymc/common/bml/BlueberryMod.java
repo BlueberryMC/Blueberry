@@ -56,6 +56,19 @@ public class BlueberryMod implements ModInfo {
         init(modLoader, description, classLoader, file);
     }
 
+    final void doEnable() {
+        getStateList().add(ModState.LOADED);
+        setVisualConfig(new RootCompoundVisualConfig(new net.minecraft.network.chat.TextComponent(getName())));
+        onLoad();
+        getStateList().add(ModState.PRE_INIT);
+        onPreInit();
+        getStateList().add(ModState.INIT);
+        onInit();
+        getStateList().add(ModState.POST_INIT);
+        onPostInit();
+        getStateList().add(ModState.AVAILABLE);
+    }
+
     final void init(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         try {
             this.modLoader = modLoader;

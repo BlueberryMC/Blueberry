@@ -15,7 +15,7 @@
     </modules>
     <name>Blueberry-Parent</name>
     <properties>
-        <api.version>0.0.19</api.version>
+        <api.version>0.1.0</api.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

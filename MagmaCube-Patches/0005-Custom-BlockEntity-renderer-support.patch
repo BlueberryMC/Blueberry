@@ -54,15 +54,15 @@ index 877590f4b14f467d731820179de0a0ecb54bffcd..a7fa9de2fcf9536d74c603feca6730df
          this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
          this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.font, this.options, this.entityModels);
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index f3291e31d67ca25efb57b0e37e49878effb54875..6c3fa93c773e85a3aa7dd6940c3f81a4826712d9 100644
+index f03e82e1505f03f22033d96535c0f3eea4ec170c..e367738be381d1348681e89f804c1f719cbdd63c 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -87,7 +87,7 @@ public class Main {
+@@ -85,7 +85,7 @@ public class Main {
+         if (!list.isEmpty()) {
              System.out.println("Completely ignored arguments: " + list);
          }
-         File file = parseArgument(optionSet, optionSpec4); // Blueberry - moved from below
--        net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file);
-+        net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file, new net.blueberrymc.client.BlueberryClientImpl()); // Blueberry
+-        net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.common.BlueberryNope()); // Blueberry
++        net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.client.BlueberryClientImpl()); // Blueberry
  
          String s = parseArgument(optionSet, optionSpec7);
          Proxy proxy = Proxy.NO_PROXY;
@@ -171,15 +171,15 @@ index 5562fa813e90488cdd3fc6119f8920740acd55b5..78111364866d132e2cc317dfa0c8d4d0
          return this.title;
      }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 68ddc80609d0c8ad85aa41ad964e2ede1f759985..573012b3f4f2e365ae423a72f3ab5f4e6ce66aba 100644
+index 6acd409da990936662384c6f1b50d66747a4c8e6..5acd6b3634878d6ec189ca16119cb01fca605be5 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -84,7 +84,7 @@ public class Main {
+                 optionParser.printHelpOn(System.err);
                  return;
              }
-             File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved from below
--            net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
-+            net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file, new net.blueberrymc.server.BlueberryServerImpl()); // Blueberry
+-            net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.common.BlueberryNope()); // Blueberry
++            net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.server.BlueberryServerImpl()); // Blueberry
  
              CrashReport.preload();
              if (optionSet.has(optionSpec14)) {

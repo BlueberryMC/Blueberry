@@ -12,6 +12,11 @@ import java.util.Locale;
 public class FileUtil {
     public static void delete(@NotNull File file) throws IOException {
         if (!file.exists()) return;
+        if (file.isFile()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+            return;
+        }
         //noinspection ResultOfMethodCallIgnored
         Files.walk(file.toPath())
                 .sorted(Comparator.reverseOrder())

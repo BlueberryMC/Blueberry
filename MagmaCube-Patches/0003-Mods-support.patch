@@ -336,35 +336,17 @@ index 277fa1da2087d084912b4ff96eaf0602d126678c..8dc0789d7c447030bf7a53e814506f47
                  this.screen.setToolTip(list2);
              }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 9653ac4b7cd9f69707d1a2614e44fa3b2f4f7d2b..f3291e31d67ca25efb57b0e37e49878effb54875 100644
+index 9653ac4b7cd9f69707d1a2614e44fa3b2f4f7d2b..f03e82e1505f03f22033d96535c0f3eea4ec170c 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
-@@ -47,6 +47,7 @@ public class Main {
-     @DontObfuscate
-     public static void main(String[] args) {
-         SharedConstants.tryDetectVersion();
-+        org.lwjgl.glfw.GLFW.glfwInit(); // MagmaCube - lwjgl debug agent causes glGetError to crash when we didn't call glfwInit // Blueberry - just init even if we aren't debugging
-         OptionParser optionParser = new OptionParser();
-         optionParser.allowsUnrecognizedOptions();
-         optionParser.accepts("demo");
-@@ -85,6 +86,8 @@ public class Main {
+@@ -85,6 +85,7 @@ public class Main {
          if (!list.isEmpty()) {
              System.out.println("Completely ignored arguments: " + list);
          }
-+        File file = parseArgument(optionSet, optionSpec4); // Blueberry - moved from below
-+        net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.CLIENT, file);
++        net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.common.BlueberryNope()); // Blueberry
  
          String s = parseArgument(optionSet, optionSpec7);
          Proxy proxy = Proxy.NO_PROXY;
-@@ -118,7 +121,7 @@ public class Main {
-         PropertyMap propertyMap = GsonHelper.fromJson(gson, parseArgument(optionSet, optionSpec21), PropertyMap.class);
-         PropertyMap propertyMap2 = GsonHelper.fromJson(gson, parseArgument(optionSet, optionSpec22), PropertyMap.class);
-         String s5 = parseArgument(optionSet, optionSpec25);
--        File file = parseArgument(optionSet, optionSpec4);
-+        // File file = parseArgument(optionSet, optionSpec4); // Blueberry - moved up
-         File file2 = optionSet.has(optionSpec5) ? parseArgument(optionSet, optionSpec5) : new File(file, "assets/");
-         File file3 = optionSet.has(optionSpec6) ? parseArgument(optionSet, optionSpec6) : new File(file, "resourcepacks/");
-         String s6 = optionSet.has(optionSpec12) ? (String)optionSpec12.value(optionSet) : Player.createPlayerUUID((String)optionSpec11.value(optionSet)).toString();
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 index e5c361d891800862f85345ae63e69a640fc88611..f14d8bf7a7d74274b34e56b95c9b783688d4bd33 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
@@ -561,48 +543,43 @@ index 43f39473c5ef3de9e53e6722bea6a0a58382526e..f5254cecd40e9d643cb59316e929560a
  
      void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 32412fbbd625b7ae22e62b0f439152187f061f5b..68ddc80609d0c8ad85aa41ad964e2ede1f759985 100644
+index 32412fbbd625b7ae22e62b0f439152187f061f5b..6acd409da990936662384c6f1b50d66747a4c8e6 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -83,6 +83,8 @@ public class Main {
+@@ -76,6 +76,7 @@ public class Main {
+         OptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
+         OptionSpec<Void> optionSpec14 = optionParser.accepts("jfrProfile");
+         OptionSpec<String> optionSpec15 = optionParser.nonOptions();
++        optionParser.allowsUnrecognizedOptions(); // Blueberry
+ 
+         try {
+             OptionSet optionSet = optionParser.parse(args);
+@@ -83,6 +84,7 @@ public class Main {
                  optionParser.printHelpOn(System.err);
                  return;
              }
-+            File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved from below
-+            net.blueberrymc.common.Blueberry.bootstrap(net.blueberrymc.common.Side.SERVER, file); // Blueberry
++            net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.common.BlueberryNope()); // Blueberry
  
              CrashReport.preload();
              if (optionSet.has(optionSpec14)) {
-@@ -108,7 +110,7 @@ public class Main {
-                 return;
-             }
- 
--            File file = new File((String)optionSet.valueOf(optionSpec10));
-+            // File file = new File((String)optionSet.valueOf(optionSpec10)); // Blueberry - moved up
-             YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
-             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-@@ -175,6 +177,7 @@ public class Main {
-             WorldData worldData2 = worldData;
-             final DedicatedServer dedicatedServer = MinecraftServer.spin((threadx) -> {
-                 DedicatedServer dedicatedServerIn = new DedicatedServer(threadx, registryHolder, levelStorageAccess, packRepository, serverResources, worldData2, dedicatedServerSettings, DataFixers.getDataFixer(), minecraftSessionService, gameProfileRepository, gameProfileCache, LoggerChunkProgressListener::new);
-+                ((net.blueberrymc.server.BlueberryServer) net.blueberrymc.common.Blueberry.getUtil()).setServer(dedicatedServerIn); // Blueberry
-                 dedicatedServerIn.setSingleplayerName((String)optionSet.valueOf(optionSpec9));
-                 dedicatedServerIn.setPort(optionSet.valueOf(optionSpec12));
-                 dedicatedServerIn.setDemo(optionSet.has(optionSpec3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index cd8e5afc3601391e0f427504b8f8055e4f585cb0..20a6ffe4d3b1eed13c6e215c5f06306e1f0cc496 100644
+index cd8e5afc3601391e0f427504b8f8055e4f585cb0..a4226c5a742a33d4f1d64070928e7cfa9bcbb945 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -272,6 +272,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -272,6 +272,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.proxy = proxy;
          this.packRepository = packRepository;
          this.resources = serverResources;
-+        if (net.blueberrymc.common.Blueberry.isServer()) net.blueberrymc.common.Blueberry.getModLoader().callPreInit(); // Blueberry
++        // Blueberry start
++        if (net.blueberrymc.common.Blueberry.isServer()) {
++            ((net.blueberrymc.server.BlueberryServer) net.blueberrymc.common.Blueberry.getUtil()).setServer(this);
++            net.blueberrymc.common.Blueberry.getModLoader().callPreInit();
++        }
++        // Blueberry end
          this.sessionService = minecraftSessionService;
          this.profileRepository = gameProfileRepository;
          this.profileCache = gameProfileCache;
-@@ -288,6 +289,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -288,6 +294,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.structureManager = new StructureManager(serverResources.getResourceManager(), levelStorageAccess, dataFixer);
          this.serverThread = thread;
          this.executor = Util.backgroundExecutor();
@@ -610,7 +587,7 @@ index cd8e5afc3601391e0f427504b8f8055e4f585cb0..20a6ffe4d3b1eed13c6e215c5f06306e
      }
  
      private void readScoreboard(DimensionDataStorage dimensionDataStorage) {
-@@ -635,6 +637,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -635,6 +642,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  this.status.setDescription(new TextComponent(this.motd));
                  this.status.setVersion(new ServerStatus.Version(SharedConstants.getCurrentVersion().getName(), SharedConstants.getCurrentVersion().getProtocolVersion()));
                  this.updateStatusIcon(this.status);
@@ -618,7 +595,7 @@ index cd8e5afc3601391e0f427504b8f8055e4f585cb0..20a6ffe4d3b1eed13c6e215c5f06306e
  
                  while(this.running) {
                      long l = Util.getMillis() - this.nextTickTime;
-@@ -815,6 +818,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -815,6 +823,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              LOGGER.debug("Autosave finished");
          }
  

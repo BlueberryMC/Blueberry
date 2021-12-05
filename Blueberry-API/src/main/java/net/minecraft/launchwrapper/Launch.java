@@ -2,6 +2,7 @@ package net.minecraft.launchwrapper;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -15,10 +16,16 @@ import java.util.Set;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import org.apache.logging.log4j.Level;
+import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.bml.BlueberryModLoader;
+import net.blueberrymc.common.util.ClasspathUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+// TODO: fix classes are not loading using LaunchClassLoader
 public class Launch {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
     public static File minecraftHome;
     public static File assetsDir;
@@ -26,15 +33,24 @@ public class Launch {
     public static LaunchClassLoader classLoader;
 
     public static void main(@NotNull String@NotNull[] args) {
-        (new Launch()).launch(args);
+        new Launch().launch(args);
     }
 
     private Launch() {
         ClassLoader cl = this.getClass().getClassLoader();
-        if (cl instanceof URLClassLoader) {
-            classLoader = new LaunchClassLoader(((URLClassLoader) cl).getURLs(), null);
+        if (cl instanceof URLClassLoader ucl) {
+            classLoader = new LaunchClassLoader(ucl.getURLs(), null);
         } else {
-            classLoader = new LaunchClassLoader(new URL[0], cl);
+            try {
+                Set<URL> cp = ClasspathUtil.collectClasspathAsURL();
+                if (Blueberry.getModLoader() instanceof BlueberryModLoader bml) {
+                    bml.addURLsToSet(cp);
+                }
+                classLoader = new LaunchClassLoader(cp.toArray(new URL[0]), cl);
+            } catch (MalformedURLException e) {
+                LOGGER.warn("Failed to create LaunchClassLoader with path: {}", ClasspathUtil.getClasspath(Launch.class), e);
+                classLoader = new LaunchClassLoader(new URL[0], cl);
+            }
         }
         Thread.currentThread().setContextClassLoader(classLoader);
     }
@@ -65,22 +81,22 @@ public class Launch {
 
             for (String tweakName : tweakClassNames) {
                 if (allTweakerNames.contains(tweakName)) {
-                    LogWrapper.log(Level.WARN, "Tweak class name %s has already been visited -- skipping", tweakName);
+                    LOGGER.warn("Tweak class name {} has already been visited -- skipping", tweakName);
                 } else {
                     allTweakerNames.add(tweakName);
-                    LogWrapper.log(Level.INFO, "Loading tweak class name %s", tweakName);
+                    LOGGER.info("Loading tweak class name {}", tweakName);
                     classLoader.addClassLoaderExclusion(tweakName.substring(0, tweakName.lastIndexOf(46)));
                     ITweaker tweaker = (ITweaker)Class.forName(tweakName, true, classLoader).getDeclaredConstructor().newInstance();
                     tweakers.add(tweaker);
                     if (primaryTweaker == null) {
-                        LogWrapper.log(Level.INFO, "Using primary tweak class name %s", tweakName);
+                        LOGGER.info("Using primary tweak class name {}", tweakName);
                         primaryTweaker = tweaker;
                     }
                 }
             }
 
             tweakers.forEach(tweaker -> {
-                LogWrapper.log(Level.INFO, "Calling tweak class %s", tweaker.getClass().getName());
+                LOGGER.info("Calling tweak class {}", tweaker.getClass().getName());
                 tweaker.acceptOptions(options.valuesOf(nonOption), minecraftHome, assetsDir, profileName);
                 tweaker.injectIntoClassLoader(classLoader);
                 allTweakers.add(tweaker);
@@ -88,13 +104,16 @@ public class Launch {
 
             allTweakers.forEach(tweaker -> argumentList.addAll(Arrays.asList(tweaker.getLaunchArguments())));
 
+            if (Blueberry.getModLoader() instanceof BlueberryModLoader bml) {
+                bml.destroyUniversalClassLoader();
+            }
             String launchTarget = Objects.requireNonNull(primaryTweaker).getLaunchTarget();
             Class<?> clazz = Class.forName(launchTarget, false, classLoader);
             Method mainMethod = clazz.getMethod("main", String[].class);
-            LogWrapper.info("Launching wrapped minecraft {%s}", launchTarget);
+            LOGGER.info("Launching wrapped minecraft {}", launchTarget);
             mainMethod.invoke(null, (Object) argumentList.toArray(new String[0]));
         } catch (Exception e) {
-            LogWrapper.log(Level.ERROR, e, "Unable to launch");
+            LOGGER.error("Unable to launch", e);
             System.exit(1);
         }
     }

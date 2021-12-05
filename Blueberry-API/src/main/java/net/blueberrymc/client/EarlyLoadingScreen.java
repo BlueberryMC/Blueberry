@@ -68,7 +68,7 @@ import static org.lwjgl.opengl.GL14.GL_CONSTANT_ALPHA;
 import static org.lwjgl.opengl.GL14.GL_ONE_MINUS_CONSTANT_ALPHA;
 
 public class EarlyLoadingScreen {
-    private static final boolean DISABLED = Boolean.parseBoolean(System.getProperty("net.blueberrymc.client.disableEarlyLoadingScreen", "true"));
+    public static final boolean DISABLED = Boolean.parseBoolean(System.getProperty("net.blueberrymc.client.disableEarlyLoadingScreen", "true"));
     private static final int width = 854;
     private static final int height = 480;
     private final Object LOCK = new Object();

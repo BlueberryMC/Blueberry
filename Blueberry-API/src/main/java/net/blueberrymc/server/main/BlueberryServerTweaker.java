@@ -1,12 +1,12 @@
-package net.blueberrymc.client.main;
+package net.blueberrymc.server.main;
 
 import net.blueberrymc.common.launch.BlueberryTweaker;
 import org.jetbrains.annotations.NotNull;
 
-public class BlueberryClientTweaker extends BlueberryTweaker {
+public class BlueberryServerTweaker extends BlueberryTweaker {
     @NotNull
     @Override
     public String getLaunchTarget() {
-        return "net.minecraft.client.main.Main";
+        return "net.minecraft.server.Main";
     }
 }

@@ -1,11 +1,15 @@
 package net.blueberrymc.util;
 
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -180,5 +184,20 @@ public class Util {
     public static String capitalize(@NotNull String s) {
         if (s.length() == 0) return s;
         return s.substring(0, 1).toUpperCase(Locale.ROOT) + s.substring(1);
+    }
+
+    @Nullable
+    public static <T> T parseArgument(@NotNull OptionSet optionSet, @NotNull OptionSpec<T> optionSpec) {
+        try {
+            return optionSet.valueOf(optionSpec);
+        } catch (Throwable throwable) {
+            if (optionSpec instanceof ArgumentAcceptingOptionSpec<T> argumentAcceptingOptionSpec) {
+                List<T> defaults = argumentAcceptingOptionSpec.defaultValues();
+                if (!defaults.isEmpty()) {
+                    return defaults.get(0);
+                }
+            }
+            throw throwable;
+        }
     }
 }

@@ -9,12 +9,12 @@ import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.ModLoader;
 import net.blueberrymc.common.bml.ModManager;
 import net.blueberrymc.common.bml.ModState;
-import net.blueberrymc.common.bml.InternalBlueberryMod;
 import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.server.BlueberryServer;
+import net.blueberrymc.server.main.ServerMain;
 import net.minecraft.CrashReport;
 import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
@@ -132,7 +132,7 @@ public class Blueberry {
     @Contract(pure = true)
     @NotNull
     public static BlueberryUtil getUtil() {
-        return util;
+        return Objects.requireNonNull(util);
     }
 
     @NotNull
@@ -140,13 +140,22 @@ public class Blueberry {
         return Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
     }
 
-    public static void bootstrap(@NotNull Side side, @NotNull File gameDir, @NotNull BlueberryUtil utilImpl) {
-        Preconditions.checkArgument(Blueberry.side == null && util == null, "Blueberry is already initialized!");
-        Preconditions.checkArgument(side != Side.BOTH, "Invalid Side: " + side.name());
-        Preconditions.checkNotNull(gameDir, "gameDir cannot be null");
-        Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
+    public static void preBootstrap(@NotNull Side side, @NotNull File gameDir) {
+        Preconditions.checkArgument(Blueberry.side == null, "Blueberry is already pre-bootstrapped!");
         Blueberry.side = side;
         Blueberry.gameDir = gameDir;
+        Preconditions.checkArgument(side != Side.BOTH, "Invalid Side: " + side.name());
+        Preconditions.checkNotNull(gameDir, "gameDir cannot be null");
+        modLoader = new BlueberryModLoader();
+        modLoader.init();
+    }
+
+    public static void bootstrap(@Nullable BlueberryUtil utilImpl) {
+        Preconditions.checkArgument(util == null, "Blueberry is already initialized!");
+        Blueberry.side = Side.valueOf((String) Objects.requireNonNull(ServerMain.blackboard.get("side"), "side is null"));
+        Blueberry.gameDir = (File) Objects.requireNonNull(ServerMain.blackboard.get("universe"), "universe is null");
+        if (Boolean.parseBoolean(ServerMain.blackboard.get("debug").toString())) SharedConstants.IS_RUNNING_IN_IDE = true;
+        Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
         if (isClient()) {
             util = new BlueberryClient((BlueberryClient) utilImpl);
         } else if (isServer()) {
@@ -160,8 +169,7 @@ public class Blueberry {
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             registerInternalMod();
             if (isClient()) new EarlyLoadingScreen().startRender(true);
-            //MixinBootstrap.init();
-            Blueberry.getModLoader().loadMods();
+            modLoader.loadMods();
             LOGGER.info("Loaded " + Blueberry.getModLoader().getLoadedMods().size() + " mods");
         } catch (Throwable throwable) {
             crash(throwable, "Initializing Blueberry");
@@ -179,25 +187,6 @@ public class Blueberry {
         mods.forEach(modLoader::disableMod);
     }
 
-    @SuppressWarnings("deprecation")
-    private static void registerInternalMod() {
-        ModDescriptionFile description = new ModDescriptionFile(
-                "blueberry",
-                Versioning.getVersion().getFullyQualifiedVersion(),
-                "net.blueberrymc.common.bml.InternalBlueberryMod",
-                "Blueberry",
-                Collections.singletonList("Blueberry development team"),
-                Collections.singletonList("MagmaCube"),
-                Collections.singletonList("Modding API for Minecraft"),
-                false,
-                null,
-                null,
-                false,
-                null,
-                null);
-        Blueberry.getModLoader().forceRegisterMod(description, InternalBlueberryMod.class, false);
-    }
-
     /**
      * Crashes the Minecraft with provided crash report.
      * @param crashReport the crash report
@@ -212,7 +201,13 @@ public class Blueberry {
      * @param message the message (description)
      */
     public static void crash(@NotNull Throwable throwable, @NotNull String message) {
-        crash(CrashReport.forThrowable(throwable, message));
+        try {
+            crash(CrashReport.forThrowable(throwable, message));
+        } catch (Throwable throwable1) {
+            LOGGER.fatal("Crashed while crashing the minecraft", throwable1);
+            LOGGER.fatal("Provided throwable: ", throwable);
+            throw new RuntimeException();
+        }
     }
 
     /**
@@ -237,6 +232,25 @@ public class Blueberry {
                 return;
             }
         }
+    }
+
+    @SuppressWarnings({ "deprecation" })
+    static void registerInternalMod() {
+        ModDescriptionFile description = new ModDescriptionFile(
+                "blueberry",
+                Versioning.getVersion().getFullyQualifiedVersion(),
+                "net.blueberrymc.common.bml.InternalBlueberryMod",
+                "Blueberry",
+                Collections.singletonList("Blueberry development team"),
+                Collections.singletonList("MagmaCube"),
+                Collections.singletonList("Modding API for Minecraft"),
+                false,
+                null,
+                null,
+                false,
+                null,
+                null);
+        Blueberry.getModLoader().forceRegisterMod(description, false);
     }
 
     /* Constructor to prevent creating instance of this class */

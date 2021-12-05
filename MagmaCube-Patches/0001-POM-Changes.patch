@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766175ecbae 100644
+index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..ebe4dc2b844afc0ee18dd9a1fe7c3c14158825e1 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -67,9 +67,11 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -52,6 +64,11 @@
+@@ -51,7 +63,13 @@
+                         <filter>
                              <artifact>*:*</artifact>
                              <excludes>
++                                <exclude>org/objectweb/asm/**</exclude>
                                  <exclude>**/Log4j2Plugins.dat</exclude>
 +                                <!-- Blueberry start -->
 +                                <exclude>META-INF/*.SF</exclude>
@@ -79,7 +81,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766
                              </excludes>
                          </filter>
                      </filters>
-@@ -72,6 +89,79 @@
+@@ -72,6 +90,79 @@
      </repositories>
  
      <dependencies>
@@ -159,7 +161,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
-@@ -81,16 +171,19 @@
+@@ -81,16 +172,19 @@
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
              <version>5.0.4</version>
@@ -179,7 +181,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -106,237 +199,302 @@
+@@ -106,237 +200,302 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
              <version>4.1.68.Final</version>
@@ -482,7 +484,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..bbf48fbf7a28ab1b9e461bb57857e766
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -345,25 +503,38 @@
+@@ -345,25 +504,38 @@
          </dependency>
  
          <!-- Logger -->

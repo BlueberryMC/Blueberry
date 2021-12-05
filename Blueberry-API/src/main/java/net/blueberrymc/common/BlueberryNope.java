@@ -22,7 +22,7 @@ public class BlueberryNope extends BlueberryUtil {
 
     @Override
     public void crash(@NotNull CrashReport crashReport) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(crashReport.getException());
     }
 
     @Override
