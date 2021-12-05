@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.config.ModDescriptionFile;
+import net.minecraft.launchwrapper.Launch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,12 +16,33 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSigner;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Manifest;
 
 public class ModClassLoader extends URLClassLoader {
+    private static final List<String> classLoaderExclusions = new ArrayList<>();
+
+    static {
+        classLoaderExclusions.add("com.mojang.");
+        classLoaderExclusions.add("net.minecraft.");
+        classLoaderExclusions.add("net.blueberrymc.");
+        classLoaderExclusions.add("java.");
+        classLoaderExclusions.add("jdk.");
+        classLoaderExclusions.add("sun.");
+        classLoaderExclusions.add("com.sun.");
+        classLoaderExclusions.add("javax.");
+        classLoaderExclusions.add("org.lwjgl.");
+        classLoaderExclusions.add("org.apache.logging.");
+        classLoaderExclusions.add("io.netty.");
+        classLoaderExclusions.add("com.google.gson.");
+        classLoaderExclusions.add("com.google.common.");
+        classLoaderExclusions.add("org.objectweb.asm.");
+    }
+
     protected final BlueberryModLoader modLoader;
     protected final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
     protected final ModDescriptionFile description;
@@ -105,8 +127,20 @@ public class ModClassLoader extends URLClassLoader {
         return findClass(name, true);
     }
 
+    private static boolean shouldUseLaunchClassLoader(String name) {
+        for (String exclusion : classLoaderExclusions) {
+            if (name.startsWith(exclusion)) return true;
+        }
+        return false;
+    }
+
     @NotNull
     protected Class<?> findClass(@NotNull String name, boolean checkGlobal) throws ClassNotFoundException {
+        if (shouldUseLaunchClassLoader(name)) {
+            try {
+                return Launch.classLoader.findClass(name);
+            } catch (ClassNotFoundException ignore) {}
+        }
         Class<?> result = classes.get(name);
         if (result != null) return result;
         if (checkGlobal) {
