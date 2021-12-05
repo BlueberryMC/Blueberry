@@ -34,10 +34,9 @@ jobs:
       - name: Retrieve API version
         run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=api.version -q -DforceStdout)"'
         id: retrieveApiVersion
-      - name: Release installer as prerelease
+      - name: Release new build
         uses: softprops/action-gh-release@v0.1.14
         with:
-          #prerelease: true
           tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}-${{ github.run_number }}
           files: '*-installer.jar'
         env:
