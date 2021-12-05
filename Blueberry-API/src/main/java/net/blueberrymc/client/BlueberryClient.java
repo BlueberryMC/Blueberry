@@ -6,8 +6,6 @@ import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
 import net.blueberrymc.client.scheduler.BlueberryClientScheduler;
 import net.blueberrymc.common.BlueberryUtil;
-import net.blueberrymc.common.Side;
-import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.common.util.SimpleEntry;
 import net.blueberrymc.server.scheduler.BlueberryServerScheduler;
@@ -23,14 +21,16 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
-@SideOnly(Side.CLIENT)
 public class BlueberryClient extends BlueberryUtil {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final BlueberryClientScheduler clientScheduler = new BlueberryClientScheduler();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
     private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();
@@ -58,6 +58,7 @@ public class BlueberryClient extends BlueberryUtil {
     public void crash(@NotNull CrashReport crashReport) {
         Preconditions.checkNotNull(crashReport, "crashReport cannot be null");
         Minecraft.fillReport(Minecraft.getInstance(), null, "unknown", null, crashReport);
+        LOGGER.fatal(crashReport.getFriendlyReport());
         Minecraft.crash(crashReport);
     }
 

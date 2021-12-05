@@ -6,7 +6,6 @@ import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
-import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
@@ -504,9 +503,7 @@ public class BlueberryModLoader implements ModLoader {
         }
     }
 
-    @NotNull
-    @Override
-    public BlueberryMod forceRegisterMod(@NotNull ModDescriptionFile description, boolean useModClassLoader) throws InvalidModException {
+    private void precheckRegisterMod(@NotNull ModDescriptionFile description) {
         AtomicBoolean cancel = new AtomicBoolean(false);
         if (description.getDepends().contains(description.getModId())) {
             ModLoadingErrors.add(new ModLoadingError(description, "Depends on itself (check mod.yml)", true));
@@ -531,6 +528,26 @@ public class BlueberryModLoader implements ModLoader {
         if (!circularDependency.isEmpty()) {
             throw new InvalidModException("Following mods has circular dependency, cannot load: " + ListUtils.join(circularDependency, ", "));
         }
+    }
+
+    public void registerInternalBlueberryMod(@NotNull ModDescriptionFile description) {
+        forceRegisterMod(description, new InternalBlueberryMod(this, description, Launch.classLoader, new File(ClasspathUtil.getClasspath(InternalBlueberryMod.class))));
+    }
+
+    @NotNull
+    public <T extends BlueberryMod> T forceRegisterMod(@NotNull ModDescriptionFile description, @NotNull T mod) throws InvalidModException {
+        precheckRegisterMod(description);
+        descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, null));
+        id2ModMap.put(description.getModId(), mod);
+        registeredMods.add(mod);
+        LOGGER.info("Loaded mod {} ({}) from class {}", mod.getName(), mod.getDescription().getModId(), mod.getClass().getTypeName());
+        return mod;
+    }
+
+    @NotNull
+    @Override
+    public BlueberryMod forceRegisterMod(@NotNull ModDescriptionFile description, boolean useModClassLoader) throws InvalidModException {
+        precheckRegisterMod(description);
         BlueberryMod mod;
         Class<?> clazz;
         try {

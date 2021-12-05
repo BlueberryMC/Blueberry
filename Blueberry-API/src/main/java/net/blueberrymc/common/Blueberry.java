@@ -234,7 +234,6 @@ public class Blueberry {
         }
     }
 
-    @SuppressWarnings({ "deprecation" })
     static void registerInternalMod() {
         ModDescriptionFile description = new ModDescriptionFile(
                 "blueberry",
@@ -250,7 +249,7 @@ public class Blueberry {
                 false,
                 null,
                 null);
-        Blueberry.getModLoader().forceRegisterMod(description, false);
+        ((BlueberryModLoader) Blueberry.getModLoader()).registerInternalBlueberryMod(description);
     }
 
     /* Constructor to prevent creating instance of this class */

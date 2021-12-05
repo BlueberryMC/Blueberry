@@ -48,7 +48,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     private static final AtomicReference<String> lastScreen = new AtomicReference<>();
     private static DiscordRPCStatus lastDiscordRPCStatus = null;
 
-    protected InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
+    InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         super(modLoader, description, classLoader, file);
     }
 
