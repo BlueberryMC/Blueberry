@@ -6,6 +6,7 @@ import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.yaml.YamlObject;
+import net.blueberrymc.native_util.NativeUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
@@ -564,6 +565,7 @@ public class VisualConfigManager {
     private static void setField(Field field, Object value) {
         try {
             field.set(null, value);
+            NativeUtil.set(field, null, value);
         } catch (IllegalAccessException e) {
             LOGGER.warn("Failed to set config at '{}'", field.toGenericString(), e);
         }

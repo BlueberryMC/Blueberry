@@ -1,6 +1,9 @@
 package net.minecraft.launchwrapper;
 
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.bml.ModClassLoader;
+import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.server.main.ServerMain;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
@@ -77,6 +80,7 @@ public class LaunchClassLoader extends URLClassLoader {
         addClassLoaderExclusion("com.google.common.");
         addClassLoaderExclusion("com.mojang.bridge.");
         addClassLoaderExclusion("io.netty.");
+        addClassLoaderExclusion("it.unimi.dsi.fastutil.");
 
         // transformer exclusions
         addTransformerExclusion("javax.");
@@ -126,9 +130,51 @@ public class LaunchClassLoader extends URLClassLoader {
         return parent.loadClass(name);
     }
 
+    @Nullable
+    @SuppressWarnings("unchecked")
+    private static Set<ClassLoader> getLoaders() {
+        Object o = ServerMain.blackboard.get("bml");
+        if (o != null) {
+            try {
+                return (Set<ClassLoader>) NativeUtil.get(o.getClass().getDeclaredField("loaders"), o);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public Class<?> findClassFromLoaders(@NotNull String name) {
+        Set<ClassLoader> loaders = getLoaders();
+        if (loaders == null) return null;
+        Class<?> result = null;
+        for (ClassLoader loader : loaders) {
+            try {
+                if (loader instanceof ModClassLoader mcl) {
+                    result = mcl.findClass(name, false);
+                } else {
+                    result = loader.loadClass(name);
+                }
+            } catch (ClassNotFoundException ignore) {}
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
     @Override
     @NotNull
     public Class<?> findClass(@NotNull final String name) throws ClassNotFoundException {
+        if (!ModClassLoader.shouldUseLaunchClassLoader(name)) {
+            Class<?> clazz = findClassFromLoaders(name);
+            if (clazz != null) return clazz;
+        }
+        if (name.equals("xyz.acrylicstyle.multiVersion.transformer.TransformableProtocolVersions")) {
+            throw new AssertionError("why");
+        }
+
         if (invalidClasses.contains(name)) {
             throw new ClassNotFoundException(name);
         }

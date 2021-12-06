@@ -129,7 +129,6 @@ public interface ModLoader {
      * Try to register a mod.
      * @deprecated unstable API
      */
-    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     BlueberryMod forceRegisterMod(@NotNull ModDescriptionFile description, boolean useModClassLoader) throws InvalidModException;
 

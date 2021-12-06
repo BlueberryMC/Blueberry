@@ -41,6 +41,7 @@ public class ModClassLoader extends URLClassLoader {
         classLoaderExclusions.add("com.google.gson.");
         classLoaderExclusions.add("com.google.common.");
         classLoaderExclusions.add("org.objectweb.asm.");
+        classLoaderExclusions.add("it.unimi.dsi.fastutil.");
     }
 
     protected final BlueberryModLoader modLoader;
@@ -123,11 +124,22 @@ public class ModClassLoader extends URLClassLoader {
 
     @NotNull
     @Override
+    public Class<?> loadClass(@NotNull String name) throws ClassNotFoundException {
+        Class<?> clazz = this.findLoadedClass(name);
+        if (clazz != null) return clazz;
+        try {
+            return this.findClass(name);
+        } catch (ClassNotFoundException ignore) {}
+        return super.loadClass(name);
+    }
+
+    @NotNull
+    @Override
     protected Class<?> findClass(@NotNull String name) throws ClassNotFoundException {
         return findClass(name, true);
     }
 
-    private static boolean shouldUseLaunchClassLoader(String name) {
+    public static boolean shouldUseLaunchClassLoader(@NotNull String name) {
         for (String exclusion : classLoaderExclusions) {
             if (name.startsWith(exclusion)) return true;
         }
@@ -135,7 +147,7 @@ public class ModClassLoader extends URLClassLoader {
     }
 
     @NotNull
-    protected Class<?> findClass(@NotNull String name, boolean checkGlobal) throws ClassNotFoundException {
+    public Class<?> findClass(@NotNull String name, boolean checkGlobal) throws ClassNotFoundException {
         if (shouldUseLaunchClassLoader(name)) {
             try {
                 return Launch.classLoader.findClass(name);

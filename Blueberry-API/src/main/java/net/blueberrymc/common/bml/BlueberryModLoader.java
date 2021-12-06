@@ -174,6 +174,7 @@ public class BlueberryModLoader implements ModLoader {
 
     @Override
     public void loadMods() {
+        ServerMain.blackboard.put("bml", this);
         Deque<File> toLoad = lookForMods();
         Map<String, File> fromSource = new HashMap<>();
         List<File> toAdd = new ArrayList<>();
@@ -657,7 +658,7 @@ public class BlueberryModLoader implements ModLoader {
     }
 
     @Nullable
-    protected Class<?> findClass(@NotNull String name) {
+    public Class<?> findClass(@NotNull String name) {
         Class<?> result = classes.get(name);
         if (result != null) return result;
         for (ClassLoader loader : loaders) {
