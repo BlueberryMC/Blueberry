@@ -82,6 +82,7 @@ public class LaunchClassLoader extends URLClassLoader {
         addClassLoaderExclusion("com.mojang.bridge.");
         addClassLoaderExclusion("io.netty.");
         addClassLoaderExclusion("it.unimi.dsi.fastutil.");
+        addClassLoaderExclusion("org.slf4j.");
 
         // transformer exclusions
         addTransformerExclusion("javax.");

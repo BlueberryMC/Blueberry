@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -83,12 +82,7 @@ public class Launch {
         } catch (NoSuchMethodException e) {
             return new URL[0];
         }
-        Object urls;
-        try {
-            urls = getURLs.invoke(cl);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            return new URL[0];
-        }
+        Object urls = NativeUtil.invokeObject(getURLs, ucp);
         if (urls == null) return new URL[0];
         return (URL[]) urls;
     }

@@ -45,6 +45,7 @@ public class ModClassLoader extends URLClassLoader {
         classLoaderExclusions.add("com.google.common.");
         classLoaderExclusions.add("org.objectweb.asm.");
         classLoaderExclusions.add("it.unimi.dsi.fastutil.");
+        classLoaderExclusions.add("org.slf4j.");
     }
 
     protected final BlueberryModLoader modLoader;
