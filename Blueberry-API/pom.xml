@@ -139,6 +139,11 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
             <version>9.2</version>
         </dependency>

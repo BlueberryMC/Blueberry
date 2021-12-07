@@ -1484,6 +1484,17 @@
     {
       "downloads": {
         "artifact": {
+          "path": "org/ow2/asm/asm-analysis/9.2/asm-analysis-9.2.jar",
+          "sha1": "7487dd756daf96cab9986e44b9d7bcb796a61c10",
+          "size": 34257,
+          "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/9.2/asm-analysis-9.2.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-analysis:9.2"
+    },
+    {
+      "downloads": {
+        "artifact": {
           "path": "org/yaml/snakeyaml/1.29/snakeyaml-1.29.jar",
           "sha1": "6d0cdafb2010f1297e574656551d7145240f6e25",
           "size": 329836,

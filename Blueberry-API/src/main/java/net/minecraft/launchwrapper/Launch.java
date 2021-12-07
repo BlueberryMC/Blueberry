@@ -29,12 +29,13 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Launch {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("LaunchWrapper");
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
     public static File minecraftHome;
     public static File assetsDir;
     public static final Map<String, Object> blackboard = new HashMap<>();
     public static LaunchClassLoader classLoader;
+    private static Throwable lastError;
 
     public static void main(@NotNull String@NotNull[] args) {
         new Launch().launch(args);
@@ -42,19 +43,26 @@ public class Launch {
 
     private Launch() {
         ClassLoader cl = this.getClass().getClassLoader();
+        LOGGER.info("ClassLoader: {} / {}", cl, cl.getClass().getTypeName());
         if (cl instanceof URLClassLoader ucl) {
             classLoader = new LaunchClassLoader(ucl.getURLs(), null);
         } else {
-            Set<URL> cp;
+            Set<URL> cp = new HashSet<>(Arrays.asList(tryGetURLsFromAppClassLoader(cl)));
             try {
-                cp = new HashSet<>(List.of(
-                        ClasspathUtil.getClasspathAsURL(ServerMain.class)
-                ));
-                cp.addAll(Arrays.asList(tryGetURLsFromAppClassLoader(cl)));
+                if (cp.isEmpty()) {
+                    cp.add(ClasspathUtil.getClasspathAsURL(ServerMain.class));
+                }
             } catch (MalformedURLException e) {
                 throw new AssertionError(e);
             }
+            if (lastError != null) {
+                LOGGER.warn("Could not get URLs from AppClassLoader", lastError);
+            }
             BlueberryPreBootstrap.addURLsToSet(cp);
+            LOGGER.info("Classpath for LaunchClassLoader:");
+            for (URL url : cp) {
+                LOGGER.info(" - \"{}\"", url);
+            }
             classLoader = new LaunchClassLoader(cp.toArray(new URL[0]), cl);
         }
         Thread.currentThread().setContextClassLoader(classLoader);
@@ -63,7 +71,10 @@ public class Launch {
     @Contract(value = "null -> new", pure = true)
     @NotNull
     private static URL@NotNull[] tryGetURLsFromAppClassLoader(@Nullable ClassLoader cl) {
-        if (cl == null) return new URL[0];
+        if (cl == null) {
+            lastError = new RuntimeException("cl is null");
+            return new URL[0];
+        }
         Field field;
         try {
             field = cl.getClass().getDeclaredField("ucp");
@@ -71,19 +82,28 @@ public class Launch {
             try {
                 field = cl.getClass().getSuperclass().getDeclaredField("ucp");
             } catch (NoSuchFieldException | NullPointerException ex) {
+                ex.addSuppressed(e);
+                lastError = ex;
                 return new URL[0];
             }
         }
         Object ucp = NativeUtil.getObject(field, cl);
-        if (ucp == null) return new URL[0];
+        if (ucp == null) {
+            lastError = new RuntimeException("ucp is null");
+            return new URL[0];
+        }
         Method getURLs;
         try {
             getURLs = ucp.getClass().getMethod("getURLs");
         } catch (NoSuchMethodException e) {
+            lastError = e;
             return new URL[0];
         }
         Object urls = NativeUtil.invokeObject(getURLs, ucp);
-        if (urls == null) return new URL[0];
+        if (urls == null) {
+            lastError = new RuntimeException("getURLs() is null");
+            return new URL[0];
+        }
         return (URL[]) urls;
     }
 
@@ -138,7 +158,8 @@ public class Launch {
 
             BlueberryPreBootstrap.destroyUniversalClassLoader();
             String launchTarget = Objects.requireNonNull(primaryTweaker).getLaunchTarget();
-            Class<?> clazz = Class.forName(launchTarget, false, classLoader);
+            // Class<?> clazz = Class.forName(launchTarget, false, classLoader);
+            Class<?> clazz = classLoader.findClass(launchTarget);
             Method mainMethod = clazz.getMethod("main", String[].class);
             LOGGER.info("Launching wrapped minecraft {}", launchTarget);
             mainMethod.invoke(null, (Object) argumentList.toArray(new String[0]));

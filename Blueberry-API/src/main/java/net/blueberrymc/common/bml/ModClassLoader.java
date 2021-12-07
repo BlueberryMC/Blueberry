@@ -133,7 +133,7 @@ public class ModClassLoader extends URLClassLoader {
         Class<?> clazz = this.findLoadedClass(name);
         if (clazz != null) return clazz;
         try {
-            return this.findClass(name);
+            return this.findClass(name, true);
         } catch (ClassNotFoundException ignore) {}
         return super.loadClass(name);
     }
