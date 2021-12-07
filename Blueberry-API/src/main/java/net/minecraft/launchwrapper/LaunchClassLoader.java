@@ -1,6 +1,5 @@
 package net.minecraft.launchwrapper;
 
-import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.blueberrymc.native_util.NativeUtil;
 import net.blueberrymc.server.main.ServerMain;
@@ -15,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -121,13 +122,15 @@ public class LaunchClassLoader extends URLClassLoader {
 
     @NotNull
     @Override
-    public Class<?> loadClass(@NotNull String name) throws ClassNotFoundException {
+    protected Class<?> loadClass(@NotNull String name, boolean resolve) throws ClassNotFoundException {
         Class<?> clazz = this.findLoadedClass(name);
         if (clazz != null) return clazz;
         try {
             return this.findClass(name);
         } catch (ClassNotFoundException ignore) {}
-        return parent.loadClass(name);
+        clazz = parent.loadClass(name);
+        if (clazz != null) return clazz;
+        throw new ClassNotFoundException(name);
     }
 
     @Nullable
@@ -170,9 +173,6 @@ public class LaunchClassLoader extends URLClassLoader {
         if (!ModClassLoader.shouldUseLaunchClassLoader(name)) {
             Class<?> clazz = findClassFromLoaders(name);
             if (clazz != null) return clazz;
-        }
-        if (name.equals("xyz.acrylicstyle.multiVersion.transformer.TransformableProtocolVersions")) {
-            throw new AssertionError("why");
         }
 
         if (invalidClasses.contains(name)) {
@@ -474,7 +474,15 @@ public class LaunchClassLoader extends URLClassLoader {
     @Override
     public InputStream getResourceAsStream(@NotNull String name) {
         InputStream in = super.getResourceAsStream(name);
+        if (in == null) in = parent.getResourceAsStream(name);
         if (in != null) return in;
-        return Blueberry.getModLoader().getResourceAsStream(name);
+        Object bml = ServerMain.blackboard.get("bml");
+        if (bml == null) return null;
+        try {
+            Method m = bml.getClass().getMethod("getResourceAsStream", String.class);
+            return (InputStream) m.invoke(bml, name);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new AssertionError(e);
+        }
     }
 }

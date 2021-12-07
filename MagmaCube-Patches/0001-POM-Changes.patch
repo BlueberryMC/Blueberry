@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..ebe4dc2b844afc0ee18dd9a1fe7c3c14158825e1 100644
+index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..2f35c6918925c6a598f1a2bdcc01d5dedcfcd26f 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -44,7 +44,7 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..ebe4dc2b844afc0ee18dd9a1fe7c3c14
  
      <build>
 -        <finalName>Minecraft</finalName>
-+        <finalName>${artifactId}-${minecraft.version}</finalName>
++        <finalName>${project.artifactId}-${minecraft.version}</finalName>
          <plugins>
 +            <!-- Blueberry start -->
              <plugin>

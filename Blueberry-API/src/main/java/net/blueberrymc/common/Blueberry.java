@@ -11,7 +11,9 @@ import net.blueberrymc.common.bml.ModManager;
 import net.blueberrymc.common.bml.ModState;
 import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
+import net.blueberrymc.common.util.SafeExecutor;
 import net.blueberrymc.common.util.Versioning;
+import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.server.BlueberryServer;
 import net.blueberrymc.server.main.ServerMain;
@@ -129,6 +131,26 @@ public class Blueberry {
         if (side == Side.SERVER) runnable.run();
     }
 
+    @Nullable
+    public static <T> T safeGetOnClient(@NotNull Supplier<SafeExecutor<T>> supplier) {
+        if (side == Side.CLIENT) return supplier.get().execute();
+        return null;
+    }
+
+    @Nullable
+    public static <T> T safeGetOnServer(@NotNull Supplier<SafeExecutor<T>> supplier) {
+        if (side == Side.SERVER) return supplier.get().execute();
+        return null;
+    }
+
+    public static void safeRunOnClient(@NotNull Supplier<VoidSafeExecutor> runnable) {
+        if (side == Side.CLIENT) runnable.get().execute();
+    }
+
+    public static void safeRunOnServer(@NotNull Supplier<VoidSafeExecutor> runnable) {
+        if (side == Side.SERVER) runnable.get().execute();
+    }
+
     @Contract(pure = true)
     @NotNull
     public static BlueberryUtil getUtil() {
@@ -140,20 +162,15 @@ public class Blueberry {
         return Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
     }
 
-    public static void preBootstrap(@NotNull Side side, @NotNull File gameDir) {
-        Preconditions.checkArgument(Blueberry.side == null, "Blueberry is already pre-bootstrapped!");
-        Blueberry.side = side;
-        Blueberry.gameDir = gameDir;
-        Preconditions.checkArgument(side != Side.BOTH, "Invalid Side: " + side.name());
-        Preconditions.checkNotNull(gameDir, "gameDir cannot be null");
+    public static void preBootstrap() {
+        Blueberry.side = Side.valueOf((String) Objects.requireNonNull(ServerMain.blackboard.get("side"), "side is null"));
+        Blueberry.gameDir = (File) Objects.requireNonNull(ServerMain.blackboard.get("universe"), "universe is null");
         modLoader = new BlueberryModLoader();
-        modLoader.init();
     }
 
     public static void bootstrap(@Nullable BlueberryUtil utilImpl) {
         Preconditions.checkArgument(util == null, "Blueberry is already initialized!");
-        Blueberry.side = Side.valueOf((String) Objects.requireNonNull(ServerMain.blackboard.get("side"), "side is null"));
-        Blueberry.gameDir = (File) Objects.requireNonNull(ServerMain.blackboard.get("universe"), "universe is null");
+        Preconditions.checkArgument(side != null && gameDir != null && modLoader != null, "Blueberry#preBootstrap was not called");
         if (Boolean.parseBoolean(ServerMain.blackboard.get("debug").toString())) SharedConstants.IS_RUNNING_IN_IDE = true;
         Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
         if (isClient()) {
@@ -164,7 +181,6 @@ public class Blueberry {
             util = new BlueberryNope();
         }
         try {
-            modLoader = new BlueberryModLoader();
             BlueberryVersion version = getVersion();
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             registerInternalMod();

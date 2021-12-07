@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.launch.BlueberryPreBootstrap;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
@@ -13,7 +14,6 @@ import net.blueberrymc.common.util.ClasspathUtil;
 import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.common.util.ListUtils;
 import net.blueberrymc.common.util.UniversalClassLoader;
-import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.common.util.tools.JavaTools;
 import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.config.ModDescriptionFile;
@@ -38,16 +38,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -91,91 +88,10 @@ public class BlueberryModLoader implements ModLoader {
         return id2ModMap.get(modId);
     }
 
-    @NotNull
-    public Deque<File> lookForMods() {
-        LOGGER.info("Looking for mods in " + this.getModsDir().getAbsolutePath());
-        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Looking for mods in " + this.getModsDir().getAbsolutePath()));
-        Deque<File> toLoad = new ConcurrentLinkedDeque<>();
-        if (ServerMain.tempModDir != null) toLoad.add(ServerMain.tempModDir);
-        int dirCount = 0;
-        int fileCount = 0;
-        File[] files = this.getModsDir().listFiles();
-        for (File file : Objects.requireNonNull(files)) {
-            if (file.isDirectory()) {
-                if (file.getName().equals(Versioning.getVersion().getGameVersion())) {
-                    for (File f : Objects.requireNonNull(file.listFiles())) {
-                        if (f.isDirectory()) {
-                            File descriptionFile = new File(f, "mod.yml");
-                            if (descriptionFile.exists()) {
-                                if (descriptionFile.isDirectory()) {
-                                    LOGGER.error(descriptionFile.getAbsolutePath() + " exists but is not a file");
-                                    continue;
-                                }
-                            }
-                            dirCount++;
-                            toLoad.add(f);
-                        } else {
-                            if (f.getName().equals(".zip") || f.getName().equals(".jar")) {
-                                fileCount++;
-                                toLoad.add(f);
-                            }
-                        }
-                    }
-                }
-                File descriptionFile = new File(file, "mod.yml");
-                if (descriptionFile.exists()) {
-                    if (descriptionFile.isDirectory()) {
-                        LOGGER.error(descriptionFile.getAbsolutePath() + " exists but is not a file");
-                        continue;
-                    }
-                }
-                dirCount++;
-                toLoad.add(file);
-            } else {
-                if (file.getName().endsWith(".zip") || file.getName().endsWith(".jar")) {
-                    fileCount++;
-                    toLoad.add(file);
-                }
-            }
-        }
-        LOGGER.info("Found {} files to load (files: {}, directories: {})", toLoad.size(), fileCount, dirCount);
-        int finalFileCount = fileCount;
-        int finalDirCount = dirCount;
-        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("Found " + toLoad.size() + " files to load (files: " + finalFileCount + ", directories: " + finalDirCount + ")"));
-        return toLoad;
-    }
-
-    public void init() {
-        for (File file : lookForMods()) {
-            try {
-                addToUniversalClassLoader(file.toURI().toURL());
-            } catch (Throwable e) {
-                LOGGER.warn("Could not add into the classpath: {}", file.getAbsolutePath(), e);
-            }
-        }
-    }
-
-    public void destroyUniversalClassLoader() {
-        if (universalClassLoader != null) {
-            try {
-                universalClassLoader.close();
-            } catch (IOException e) {
-                LOGGER.warn("Failed to destroy UniversalClassLoader", e);
-            }
-        }
-        universalClassLoader = null;
-    }
-
-    public void addURLsToSet(@NotNull Set<URL> urlSet) {
-        if (universalClassLoader != null) {
-            urlSet.addAll(Arrays.asList(universalClassLoader.getURLs()));
-        }
-    }
-
     @Override
     public void loadMods() {
         ServerMain.blackboard.put("bml", this);
-        Deque<File> toLoad = lookForMods();
+        Deque<File> toLoad = BlueberryPreBootstrap.lookForMods(modsDir);
         Map<String, File> fromSource = new HashMap<>();
         List<File> toAdd = new ArrayList<>();
         toLoad.forEach(file -> {

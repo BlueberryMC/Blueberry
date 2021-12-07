@@ -1,6 +1,21 @@
 package net.minecraft.launchwrapper;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import net.blueberrymc.common.launch.BlueberryPreBootstrap;
+import net.blueberrymc.common.util.ClasspathUtil;
+import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.server.main.ServerMain;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,17 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
-import net.blueberrymc.common.Blueberry;
-import net.blueberrymc.common.bml.BlueberryModLoader;
-import net.blueberrymc.common.util.ClasspathUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
-// TODO: fix classes are not loading using LaunchClassLoader
 public class Launch {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
@@ -41,18 +46,51 @@ public class Launch {
         if (cl instanceof URLClassLoader ucl) {
             classLoader = new LaunchClassLoader(ucl.getURLs(), null);
         } else {
+            Set<URL> cp;
             try {
-                Set<URL> cp = ClasspathUtil.collectClasspathAsURL();
-                if (Blueberry.getModLoader() instanceof BlueberryModLoader bml) {
-                    bml.addURLsToSet(cp);
-                }
-                classLoader = new LaunchClassLoader(cp.toArray(new URL[0]), cl);
+                cp = new HashSet<>(List.of(
+                        ClasspathUtil.getClasspathAsURL(ServerMain.class)
+                ));
+                cp.addAll(Arrays.asList(tryGetURLsFromAppClassLoader(cl)));
             } catch (MalformedURLException e) {
-                LOGGER.warn("Failed to create LaunchClassLoader with path: {}", ClasspathUtil.getClasspath(Launch.class), e);
-                classLoader = new LaunchClassLoader(new URL[0], cl);
+                throw new AssertionError(e);
             }
+            BlueberryPreBootstrap.addURLsToSet(cp);
+            classLoader = new LaunchClassLoader(cp.toArray(new URL[0]), cl);
         }
         Thread.currentThread().setContextClassLoader(classLoader);
+    }
+
+    @Contract(value = "null -> new", pure = true)
+    @NotNull
+    private static URL@NotNull[] tryGetURLsFromAppClassLoader(@Nullable ClassLoader cl) {
+        if (cl == null) return new URL[0];
+        Field field;
+        try {
+            field = cl.getClass().getDeclaredField("ucp");
+        } catch (NoSuchFieldException e) {
+            try {
+                field = cl.getClass().getSuperclass().getDeclaredField("ucp");
+            } catch (NoSuchFieldException | NullPointerException ex) {
+                return new URL[0];
+            }
+        }
+        Object ucp = NativeUtil.getObject(field, cl);
+        if (ucp == null) return new URL[0];
+        Method getURLs;
+        try {
+            getURLs = ucp.getClass().getMethod("getURLs");
+        } catch (NoSuchMethodException e) {
+            return new URL[0];
+        }
+        Object urls;
+        try {
+            urls = getURLs.invoke(cl);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            return new URL[0];
+        }
+        if (urls == null) return new URL[0];
+        return (URL[]) urls;
     }
 
     private void launch(String[] args) {
@@ -104,9 +142,7 @@ public class Launch {
 
             allTweakers.forEach(tweaker -> argumentList.addAll(Arrays.asList(tweaker.getLaunchArguments())));
 
-            if (Blueberry.getModLoader() instanceof BlueberryModLoader bml) {
-                bml.destroyUniversalClassLoader();
-            }
+            BlueberryPreBootstrap.destroyUniversalClassLoader();
             String launchTarget = Objects.requireNonNull(primaryTweaker).getLaunchTarget();
             Class<?> clazz = Class.forName(launchTarget, false, classLoader);
             Method mainMethod = clazz.getMethod("main", String[].class);

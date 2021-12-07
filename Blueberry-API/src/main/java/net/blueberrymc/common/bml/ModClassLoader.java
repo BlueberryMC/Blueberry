@@ -5,6 +5,8 @@ import com.google.common.io.ByteStreams;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.launchwrapper.Launch;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Manifest;
 
 public class ModClassLoader extends URLClassLoader {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final List<String> classLoaderExclusions = new ArrayList<>();
 
     static {
@@ -78,7 +81,8 @@ public class ModClassLoader extends URLClassLoader {
             try {
                 modClass = mainClass.asSubclass(BlueberryMod.class);
             } catch (ClassCastException ex) {
-                throw new InvalidModException("Main class '" + description.getMainClass() + "' of mod '" + description.getModId() + "' does not extend BlueberryMod");
+                LOGGER.info("BlueberryMod is loaded from {} / {}", BlueberryMod.class.getClassLoader(), BlueberryMod.class.getClassLoader().getClass().getTypeName());
+                throw new InvalidModException("Main class '" + description.getMainClass() + "' of mod '" + description.getModId() + "' does not extend BlueberryMod", ex);
             }
             mod = modClass.getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | NoSuchMethodException ex) {

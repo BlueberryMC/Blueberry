@@ -5,7 +5,7 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 0fc6b79fee397bc32bfef76211a6ce3ef013d939..3a679742eb4c7b7394a9762b585377e884224411 100644
+index f7a9131858da4e841705e78300acbbaabea158cd..bc81554e48dfa68a8e7431d45723752f7f9c7187 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -66,7 +66,7 @@ import net.minecraft.world.scores.Scoreboard;

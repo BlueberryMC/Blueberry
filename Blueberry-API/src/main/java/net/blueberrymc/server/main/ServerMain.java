@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
+import net.blueberrymc.common.launch.BlueberryPreBootstrap;
 import net.blueberrymc.common.launch.BlueberryTweaker;
 import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.util.Util;
@@ -78,7 +78,7 @@ public class ServerMain {
         blackboard.put("side", side.name());
         blackboard.put("universe", universe);
         blackboard.put("debug", set.has("debug"));
-        Blueberry.preBootstrap(side, universe);
+        BlueberryPreBootstrap.preBootstrap(side, universe);
         Launch.main(newArgs);
     }
 }

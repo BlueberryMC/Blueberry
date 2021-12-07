@@ -37,7 +37,7 @@ index 16665847a565356d875b507aecfd01760a82dfb8..81a4871125570d8fe1fb2bc9b8280604
              this.channel.close().awaitUninterruptibly();
              this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index e25a96b13f409a300dcd7cc464367942b894973f..18bf535a589d43f6ca3d9ac6d9ae148085ebb2f6 100644
+index 75b46b71a31d3b73e3f059a0e24f366631a815da..cdb0444bb1bec48c85b365c6f581cf7a82500c5c 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -155,7 +155,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

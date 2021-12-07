@@ -8,8 +8,8 @@ import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
-import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.InvalidModException;
+import net.blueberrymc.server.main.ServerMain;
 import net.blueberrymc.util.OSType;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
@@ -34,7 +34,7 @@ public class ClasspathUtil {
 
     public static @NotNull Set<String> collectClasspath() {
         Set<String> cp = new HashSet<>();
-        cp.add(ClasspathUtil.getClasspath(Blueberry.class)); // Blueberry-API
+        cp.add(ClasspathUtil.getClasspath(ServerMain.class)); // Blueberry-API
         cp.add(ClasspathUtil.getClasspath(MinecraftServer.class)); // Minecraft
         cp.add(ClasspathUtil.getClasspath(Nonnull.class)); // javax
         cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper

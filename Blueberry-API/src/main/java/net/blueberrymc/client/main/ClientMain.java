@@ -5,6 +5,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.util.FileUtil;
+import net.blueberrymc.native_util.NativeUtil;
 import net.blueberrymc.server.main.ServerMain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +20,13 @@ import java.util.List;
 public class ClientMain {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void main(@NotNull String@NotNull[] args) throws IOException {
+    public static void main(@NotNull String@NotNull[] args) throws IOException, NoSuchMethodException {
+        NativeUtil.registerClassLoadHook((classLoader, s, aClass, protectionDomain, bytes) -> {
+            if (s.endsWith("Main")) {
+                LOGGER.warn("Loaded {}", s, new Throwable());
+            }
+            return null;
+        });
         org.lwjgl.glfw.GLFW.glfwInit();
         List<String> arguments = new ArrayList<>();
         arguments.add("--tweakClass=net.blueberrymc.client.main.BlueberryClientTweaker");
