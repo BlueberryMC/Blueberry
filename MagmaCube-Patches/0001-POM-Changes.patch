@@ -13,7 +13,7 @@ index 0000000000000000000000000000000000000000..ffac74e1ed27523eb138fa81d50d4176
 +target/
 +*.iml
 diff --git a/pom.xml b/pom.xml
-index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..2f35c6918925c6a598f1a2bdcc01d5dedcfcd26f 100644
+index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..4351638f37e0c2ec331ec6cebdb70635a450bb71 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -31,7 +31,12 @@ index c26e0b5e50a858bd10a720a38d81ca84e39c1aea..2f35c6918925c6a598f1a2bdcc01d5de
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -17,21 +19,31 @@
+@@ -13,25 +15,35 @@
+         <text2speech.version>1.11.3</text2speech.version>
+         <maven.compiler.source>17</maven.compiler.source>
+         <maven.compiler.target>17</maven.compiler.target>
+-        <log4j.version>2.14.1</log4j.version>
++        <log4j.version>2.15.0</log4j.version>
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  

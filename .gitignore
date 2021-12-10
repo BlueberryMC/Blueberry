@@ -19,3 +19,5 @@ target/
 /blueberry-*.jar
 /*-installer.jar
 *.log
+build/
+.gradle/

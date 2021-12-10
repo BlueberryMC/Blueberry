@@ -1,0 +1,193 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Fri, 10 Dec 2021 13:48:30 +0900
+Subject: [PATCH] Add build.gradle.kts
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+new file mode 100644
+index 0000000000000000000000000000000000000000..48002eb1d4234089211cad582cf6cff021f4da67
+--- /dev/null
++++ b/build.gradle.kts
+@@ -0,0 +1,181 @@
++import net.blueberrymc.gradle.buildSrc.constants.*
++
++version = "$minecraftVersion-$apiVersion"
++
++plugins {
++    id("com.github.johnrengelman.shadow") version "7.0.0"
++}
++
++dependencies {
++    api(project(":blueberry-api"))
++    api(project(":minecraftforge-api"))
++    api("net.minecrell:terminalconsoleappender:1.3.0")
++    api("org.jline:jline-terminal-jansi:3.20.0")
++    implementation("net.blueberrymc.minecraft:minecraft:$minecraftVersion") {
++        exclude("*", "*")
++    }
++    compileOnly("net.java.dev.jna:jna:5.9.0")
++    compileOnly("net.java.dev.jna:jna-platform:5.9.0")
++    compileOnly("net.sf.jopt-simple:jopt-simple:5.0.4")
++    compileOnly("org.lwjgl:lwjgl:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion:natives-windows")
++    compileOnly("com.github.oshi:oshi-core:5.8.2")
++    compileOnly("com.mojang:blocklist:1.0.6")
++    compileOnly("com.mojang:text2speech:1.11.3")
++    compileOnly("com.mojang:text2speech:1.11.3:natives-linux")
++    compileOnly("com.mojang:text2speech:1.11.3:natives-windows")
++    compileOnly("net.java.jutils:jutils:1.0.0")
++    compileOnly("com.ibm.icu:icu4j:69.1")
++    compileOnly("org.apache.commons:commons-lang3:3.12.0")
++    compileOnly("commons-io:commons-io:2.11.0")
++    compileOnly("commons-logging:commons-logging:1.2")
++    compileOnly("org.apache.commons:commons-compress:1.21")
++    compileOnly("org.apache.httpcomponents:httpclient:4.5.13")
++    compileOnly("org.apache.httpcomponents:httpcore:4.4.14")
++    compileOnly("org.apache.logging.log4j:log4j-api:2.15.0")
++    compileOnly("org.apache.logging.log4j:log4j-core:2.15.0")
++    compileOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.15.0")
++    compileOnly("org.slf4j:slf4j-api:1.8.0-beta4")
++}
++
++tasks {
++    val filterDependencies = org.gradle.api.Action<com.github.jengelman.gradle.plugins.shadow.internal.DependencyFilter> {
++        exclude(dependency("org.lwjgl:lwjgl.*:.*"))
++        exclude(dependency("com.mojang:javabridge:.*"))
++        exclude(dependency("com.mojang:brigadier:.*"))
++        exclude(dependency("com.mojang:datafixerupper:.*"))
++        exclude(dependency("com.google.guava:guava:.*"))
++        exclude(dependency("io.netty:netty-.*:.*"))
++        exclude(dependency("com.mojang:authlib:.*"))
++        exclude(dependency("com.google.code.gson:gson:.*"))
++        exclude(dependency("org.apache.commons:commons-lang3:.*"))
++        exclude(dependency("org.yaml:snakeyaml:.*"))
++        exclude(dependency("org.ow2.asm:asm-commons:.*"))
++        exclude(dependency("org.ow2.asm:asm-util:.*"))
++        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib:.*"))
++        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib-common:.*"))
++        exclude(dependency("it.unimi.dsi:fastutil:.*"))
++        exclude(dependency("commons-io:commons-io:.*"))
++        exclude(dependency("org.apache.logging.log4j.*:.*"))
++        exclude(dependency("net.sf.jopt-simple:jopt-simple:.*"))
++    }
++
++    withType<Jar> {
++        manifest {
++            attributes(
++                "Main-Class" to "net.blueberrymc.client.main.ClientMain",
++                "Multi-Release" to true,
++            )
++        }
++    }
++
++    shadowJar {
++        exclude("org/objectweb/asm/**")
++        exclude("**/Log4j2Plugins.dat")
++        exclude("META-INF/*.SF")
++        exclude("META-INF/*.DSA")
++        exclude("META-INF/*.RSA")
++        dependencies(filterDependencies)
++        archiveFileName.set("blueberry-$minecraftVersion-$apiVersion.jar")
++    }
++
++    register("shadowServerJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class.java) {
++        manifest {
++            attributes(
++                "Main-Class" to "net.blueberrymc.server.main.ServerMain",
++                "Multi-Release" to true,
++            )
++        }
++        val shadowJar = project.tasks.getByName<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar")
++        configurations.addAll(shadowJar.configurations)
++        dependsOn(shadowJar.dependsOn)
++        includedDependencies.files.addAll(shadowJar.includedDependencies.files)
++        setExcludes(shadowJar.excludes)
++        dependencies(filterDependencies)
++        includes.addAll(shadowJar.includes)
++        exclude("assets/minecraft/blockstates/**")
++        exclude("assets/minecraft/font/**")
++        exclude("assets/minecraft/models/**")
++        exclude("assets/minecraft/particles/**")
++        exclude("assets/minecraft/shaders/**")
++        exclude("assets/minecraft/texts/**")
++        exclude("assets/minecraft/textures/**")
++        exclude("assets/minecraft/gpu_warnlist.json")
++        exclude("assets/realms/textures/**")
++        exclude("win-x64/*")
++        exclude("win-x86/*")
++        exclude("darwin/*")
++        exclude("linux/*")
++        exclude("net/arikia/dev/drpc/**")
++        exclude("net/blueberrymc/client/**")
++        exclude("net/blueberrymc/common/bml/client/**") // TODO: client package in common package???
++        exclude("net/minecraft/client/**")
++        exclude("net/minecraftforge/client/**")
++        exclude("joptsimple/**")
++        exclude("org/lwjgl/**")
++        exclude("org/slf4j/**")
++        exclude("org/apache/**")
++        exclude("it/unimi/dsi/fastutil/**")
++        exclude("io/netty/**")
++        exclude("com/mojang/authlib/**")
++        exclude("com/mojang/blaze3d/**")
++        exclude("com/mojang/text2speech/**")
++        exclude("com/mojang/realmsclient/**")
++        exclude("com/ibm/icu/**")
++        exclude("com/sun/jna/**")
++        exclude("com/google/common/**")
++        exclude("com/google/gson/**")
++        exclude("oshi/**")
++        exclude("net/java/games/util/**")
++        exclude("ca/weblite/**")
++        exclude("mozilla/**")
++        exclude("META-INF/versions/**")
++        exclude("META-INF/native/**")
++        exclude("META-INF/AL2.0")
++        exclude("META-INF/DEPENDENCIES")
++        exclude("META-INF/LGPL2.1")
++        exclude("META-INF/LICENSE")
++        exclude("META-INF/NOTICE")
++        exclude("META-INF/NOTICE.txt")
++        exclude("META-INF/io.netty.versions.properties")
++        exclude("LICENSE")
++        exclude("lwjgl*")
++        exclude("oshi*.properties")
++        exclude("libopenal*")
++        exclude("liblwjgl*")
++        exclude("libjemalloc*")
++        exclude("libjcocoa*")
++        exclude("libglfw*")
++        exclude("jemalloc*")
++        exclude("glfw*")
++        exclude("OpenAL*")
++        exclude(".netbeans_automatic_build")
++        archiveFileName.set("blueberry-server-$minecraftVersion-$apiVersion.jar")
++    }
++}

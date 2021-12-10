@@ -228,7 +228,7 @@ public class ModConfig {
     }
 
     @NotNull
-    public YamlObject getOrCreateObject(@NotNull("parent") YamlObject parent, @NotNull String path) {
+    public YamlObject getOrCreateObject(@NotNull YamlObject parent, @NotNull String path) {
         YamlObject obj = parent.getObject(path);
         if (obj == null) {
             obj = new YamlObject();
