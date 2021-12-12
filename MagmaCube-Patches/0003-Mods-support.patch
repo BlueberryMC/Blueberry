@@ -381,7 +381,7 @@ index 277fa1da2087d084912b4ff96eaf0602d126678c..8dc0789d7c447030bf7a53e814506f47
                  this.screen.setToolTip(list2);
              }
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 9653ac4b7cd9f69707d1a2614e44fa3b2f4f7d2b..f81e7b900705f086af88d7b04ab229104f775042 100644
+index 961aee70bc8f17134b919f341e76be4b25959764..439bd7fda4c23a9a6509beb56d6e6038151a5193 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
 @@ -46,7 +46,6 @@ public class Main {
@@ -700,7 +700,7 @@ index 43f39473c5ef3de9e53e6722bea6a0a58382526e..f5254cecd40e9d643cb59316e929560a
  
      void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 32412fbbd625b7ae22e62b0f439152187f061f5b..8425b5e84298fefefaec6ad611d16eb2980fc247 100644
+index 3d2b2b9d38ea0ac27edf3c1bc916a33485077537..184be1f061b38b9cd4d4ffa68b100b239e768e9e 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -59,7 +59,6 @@ public class Main {
@@ -789,7 +789,7 @@ index ed335edd87b146c213711d0d770a89b1b668bedc..75b46b71a31d3b73e3f059a0e24f3666
          Util.shutdownExecutors();
          SkullBlockEntity.clear();
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 96da582335b5be5a6367862a036a2b694f02543f..3214e6579896c302b5eefd762f14e4817546d5e8 100644
+index 439ae13702e44950952888098d03cfd427e6f076..5977a9f5f64b9e7766cae44c96f4ee6e225c32ea 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -153,7 +153,7 @@ import org.apache.commons.lang3.StringUtils;
@@ -801,7 +801,7 @@ index 96da582335b5be5a6367862a036a2b694f02543f..3214e6579896c302b5eefd762f14e481
      static final Logger LOGGER = LogManager.getLogger();
      private static final int LATENCY_CHECK_INTERVAL = 15000;
      public final Connection connection;
-@@ -1386,6 +1386,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1387,6 +1387,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
      }
  
      public void handleCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket) {

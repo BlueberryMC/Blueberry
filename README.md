@@ -33,4 +33,4 @@ To start the translation of the project, please follow these steps:
 - Create a PR with your changes.
 
 ## 🔗 Links
-- [Changelogs](https://cl-b.acrylicstyle.xyz/)
+- [Documentation](https://blueberrymc.github.io/Blueberry-docs/)

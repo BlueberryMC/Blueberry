@@ -89,7 +89,7 @@ public class BlueberryVersion {
     private String gameVersion = null;
 
     /**
-     * Returns the game version. (e.g. 1.18, or 21w43a)
+     * Returns the game version. (e.g. 1.18-pre1, 1.18, or 21w43a)
      * @return game version
      */
     @NotNull
