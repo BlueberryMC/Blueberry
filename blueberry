@@ -50,9 +50,13 @@ case "$1" in
   (
     set -e
     cd "$basedir"
-    scripts/build.sh || exit 1
+    BN=$2
+    if [ -z "$BN" ]; then
+      BN="0"
+    fi
+    scripts/build.sh $BN || exit 1
     scripts/createPatchFile.sh || exit 1
-    scripts/createInstaller.sh || exit 1
+    scripts/createInstaller.sh $BN || exit 1
   )
   ;;
   "b" | "build")
@@ -72,7 +76,7 @@ case "$1" in
     echo "  * rb, rebuild            | Rebuild patches, can be called from anywhere."
     echo "  * p, patch               | Apply all patches to the project without building it."
     echo "  * prb, patchAndRebuild   | Apply all patches to the project and rebuild patches. Useful when you modified the small part of a patch file."
-    echo "  * i, installer           | Creates installer. The project must be patched before doing this."
+    echo "  * i, installer [number]  | Creates installer. The project must be patched before doing this."
     echo "  * b, build               | Builds the project and creates installer."
   ;;
 esac

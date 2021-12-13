@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 basedir="."
+BN=$1
+if [ -z "$BN" ]; then
+  BN="0"
+fi
 source "$basedir/scripts/functions.sh" || exit 1
 git="git -c commit.gpgsign=false"
 apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
@@ -12,7 +16,7 @@ else
   $git checkout origin/main || exit 1
   cd "$basedir" || exit 1
 fi
-name="$version-blueberry-$apiversion"
+name="blueberry-$version-$apiversion.$BN"
 res="$basedir/work/Installer/src/main/resources"
 prop="$res/profile.properties"
 echo "name=$name" > "$prop"

@@ -27,7 +27,7 @@ jobs:
       - name: Apply patches
         run: './blueberry p'
       - name: Bake installer
-        run: './blueberry i'
+        run: './blueberry i ${{ github.run_number }}'
       - name: Retrieve Minecraft version
         run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=minecraft.version -q -DforceStdout)"'
         id: retrieveMcVersion
@@ -37,7 +37,7 @@ jobs:
       - name: Release new build
         uses: softprops/action-gh-release@v0.1.14
         with:
-          tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}-${{ github.run_number }}
+          tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}.${{ github.run_number }}
           files: '*-installer.jar'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

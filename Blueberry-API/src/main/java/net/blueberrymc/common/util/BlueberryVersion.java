@@ -13,13 +13,20 @@ public class BlueberryVersion {
     @NotNull private final String magmaCubeCommit;
     @NotNull private final String commit;
     @NotNull private final String builtAt;
+    private final int buildNumber;
 
-    public BlueberryVersion(@NotNull String name, @NotNull String version, @NotNull String magmaCubeCommit, @NotNull String commit, @NotNull String builtAt) {
+    public BlueberryVersion(@NotNull String name,
+                            @NotNull String version,
+                            @NotNull String magmaCubeCommit,
+                            @NotNull String commit,
+                            @NotNull String builtAt,
+                            int buildNumber) {
         this.name = name;
         this.version = version;
         this.magmaCubeCommit = magmaCubeCommit;
         this.commit = commit;
         this.builtAt = builtAt;
+        this.buildNumber = buildNumber;
     }
 
     /**
@@ -78,12 +85,20 @@ public class BlueberryVersion {
 
     /**
      * Returns the build date.
-     * Example output: 2021-10-30T00:30:44+09:00 (yyyy-mm-ddThh:mm:ss+offset)
+     * Example output: 2021-10-30T00:30:44+00:00 (yyyy-mm-ddThh:mm:ss+offset)
      * @return build date
      */
     @NotNull
     public String getBuiltAt() {
         return builtAt;
+    }
+
+    /**
+     * Returns the build number for the build. Returns 0 if unknown or build number is 0.
+     * @return build number
+     */
+    public int getBuildNumber() {
+        return buildNumber;
     }
 
     private String gameVersion = null;
@@ -101,13 +116,13 @@ public class BlueberryVersion {
     private String fqv = null;
 
     /**
-     * Returns the version string of [game version]-[name]-[api version].
+     * Returns the version string of [game version]-[api version].[build-number].
      * @return [game version]-[name]-[api version]
      */
     @NotNull
     public String getFullyQualifiedVersion() {
         if (fqv != null) return fqv;
-        return fqv = getGameVersion() + "-" + this.name + "-" + this.version;
+        return fqv = getGameVersion() + "-" + this.version + "." + buildNumber;
     }
 
     @Contract(value = "null -> false", pure = true)

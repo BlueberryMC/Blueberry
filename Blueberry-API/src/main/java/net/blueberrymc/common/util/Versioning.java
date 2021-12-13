@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public class Versioning {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final BlueberryVersion UNKNOWN = new BlueberryVersion("blueberry", "unknown", "unknown", "unknown", "unknown");
+    public static final BlueberryVersion UNKNOWN = new BlueberryVersion("blueberry", "1.0.0", "unknown", "unknown", "9999-12-31T23:59:59+00:00", 0);
     // cached version info
     private static BlueberryVersion VERSION = null;
 
@@ -29,6 +29,7 @@ public class Versioning {
         String magmaCubeCommit = "unknown";
         String commit = "unknown";
         String builtAt = "unknown";
+        int buildNumber = 0;
         if (stream != null) {
             try {
                 properties.load(stream);
@@ -37,6 +38,11 @@ public class Versioning {
                 magmaCubeCommit = properties.getProperty("magmaCubeCommit", magmaCubeCommit);
                 commit = properties.getProperty("commit", commit);
                 builtAt = properties.getProperty("builtAt", builtAt);
+                try {
+                    buildNumber = Integer.parseInt(properties.getProperty("buildNumber", "0"));
+                } catch (NumberFormatException e) {
+                    LOGGER.error("buildNumber is not a number: {}", properties.getProperty("buildNumber", "0"), e);
+                }
             } catch (IOException ex) {
                 LOGGER.error("Blueberry API version information is corrupt (api-version.properties)", ex);
             }
@@ -51,7 +57,7 @@ public class Versioning {
                 }
             }
         }
-        VERSION = new BlueberryVersion(name, version, magmaCubeCommit, commit, builtAt);
+        VERSION = new BlueberryVersion(name, version, magmaCubeCommit, commit, builtAt, buildNumber);
         return VERSION;
     }
 }
