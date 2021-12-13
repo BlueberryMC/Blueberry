@@ -1,6 +1,6 @@
 package net.blueberrymc.common.bml.config;
 
-import net.blueberrymc.client.resources.BlueberryText;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.BlueberryMod;

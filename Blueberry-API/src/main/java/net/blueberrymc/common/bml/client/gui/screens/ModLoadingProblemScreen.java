@@ -3,7 +3,7 @@ package net.blueberrymc.common.bml.client.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.BlueberryGuiComponents;
 import net.blueberrymc.client.gui.screens.BlueberryScreen;
-import net.blueberrymc.client.resources.BlueberryText;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;

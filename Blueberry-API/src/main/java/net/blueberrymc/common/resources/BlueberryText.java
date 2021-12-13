@@ -1,4 +1,4 @@
-package net.blueberrymc.client.resources;
+package net.blueberrymc.common.resources;
 
 import net.blueberrymc.common.Blueberry;
 import net.minecraft.client.Minecraft;

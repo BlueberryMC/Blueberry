@@ -311,19 +311,19 @@ index 091b30e0d29b85dd79b473d3419d741238a1f0a2..e191a93e923f8f24e4ce6c8d27277615
              }
          }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
-index 3718f7005844bf6ae52680838ca9f5925c14eecb..7f70bd20be52d13f170a7832236e75d22ed01647 100644
+index 3718f7005844bf6ae52680838ca9f5925c14eecb..f33de420a3c40aef88fb4eb01149eed85403e832 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 @@ -78,6 +78,7 @@ public class PauseScreen extends Screen {
              }
  
          }));
-+        this.addRenderableWidget(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
++        this.addRenderableWidget(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, new net.blueberrymc.common.resources.BlueberryText("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
      }
  
      public void tick() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-index 4b8d68438c9ead9ac3306a75ffa19e478882d323..4c0c8b5e718e1bf0f8f42335245f4c5de366cfae 100644
+index 4b8d68438c9ead9ac3306a75ffa19e478882d323..a8579fee234efba75a1c1e8f6e8fe00a088c11a2 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 @@ -146,7 +146,8 @@ public class TitleScreen extends Screen {
@@ -331,7 +331,7 @@ index 4b8d68438c9ead9ac3306a75ffa19e478882d323..4c0c8b5e718e1bf0f8f42335245f4c5d
              this.minecraft.setScreen(screen);
          }, onTooltip))).active = flag;
 -        (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 200, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
-+        (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, new net.blueberrymc.client.resources.BlueberryText("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
++        (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, new net.blueberrymc.common.resources.BlueberryText("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
 +        (this.addRenderableWidget(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
      }
  

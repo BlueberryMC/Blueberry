@@ -10,6 +10,7 @@ import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.ClasspathUtil;
 import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.common.util.ListUtils;
@@ -611,5 +612,6 @@ public class BlueberryModLoader implements ModLoader {
     private static void fillClasses(Map<String, Class<?>> classes) {
         classes.put("net.minecraftforge.fml.relauncher.Side", Side.class);
         classes.put("net.minecraftforge.fml.relauncher.SideOnly", SideOnly.class);
+        classes.put("net.blueberrymc.client.resources.BlueberryText", BlueberryText.class);
     }
 }

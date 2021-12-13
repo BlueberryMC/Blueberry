@@ -1,4 +1,4 @@
-package net.blueberrymc.client.resources;
+package net.blueberrymc.common.resources;
 
 public class BlueberryCommonComponents {
     public static final BlueberryText MULTIPLAYER_COMPATIBLE = new BlueberryText("blueberry", "multiplayer.compatible");

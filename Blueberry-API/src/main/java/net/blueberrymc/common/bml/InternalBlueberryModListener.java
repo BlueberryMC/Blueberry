@@ -27,7 +27,7 @@ public record InternalBlueberryModListener(@NotNull InternalBlueberryMod mod) {
         @EventHandler
         public void onScreenChanged(@NotNull ScreenChangedEvent e) {
             if (Blueberry.getCurrentState() != ModState.AVAILABLE) return;
-            InternalBlueberryModListener.this.mod.refreshDiscordStatus(e.getScreen());
+            InternalClientBlueberryMod.refreshDiscordStatus(e.getScreen());
         }
     }
 }

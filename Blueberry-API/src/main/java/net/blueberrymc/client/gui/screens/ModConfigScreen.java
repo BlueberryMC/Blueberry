@@ -2,7 +2,7 @@ package net.blueberrymc.client.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.components.ScrollableContainer;
-import net.blueberrymc.client.resources.BlueberryText;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.ByteVisualConfig;

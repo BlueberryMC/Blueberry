@@ -2,7 +2,7 @@ package net.blueberrymc.client.gui.screens;
 
 import com.google.common.base.Joiner;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.blueberrymc.client.resources.BlueberryText;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;

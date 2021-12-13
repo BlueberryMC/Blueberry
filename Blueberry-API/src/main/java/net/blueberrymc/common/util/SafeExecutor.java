@@ -2,7 +2,7 @@ package net.blueberrymc.common.util;
 
 import org.jetbrains.annotations.Contract;
 
-public interface SafeExecutor<T> {
+public abstract class SafeExecutor<T> {
     @Contract
-    T execute();
+    public abstract T execute();
 }

@@ -1,5 +1,5 @@
 package net.blueberrymc.common.util;
 
-public interface VoidSafeExecutor {
-    void execute();
+public abstract class VoidSafeExecutor {
+    public abstract void execute();
 }
