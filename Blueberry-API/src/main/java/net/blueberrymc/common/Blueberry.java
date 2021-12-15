@@ -45,6 +45,7 @@ public class Blueberry {
     /**
      * Do not change the value please
      */
+    //@Deprecated
     public static boolean stopping = false;
 
     @Contract(pure = true)
@@ -53,6 +54,10 @@ public class Blueberry {
         return modLoader;
     }
 
+    /**
+     * Returns the blueberry version
+     * @return blueberry version
+     */
     @Contract(pure = true)
     @NotNull
     public static BlueberryVersion getVersion() {
@@ -71,18 +76,32 @@ public class Blueberry {
         return modManager;
     }
 
+    /**
+     * Returns the "physical" side of Blueberry. If called on integrated server which is included in client, this method
+     * would return <code>CLIENT</code>. However, if called on dedicated server, this method would return
+     * <code>SERVER</code>. In short, if you've used
+     * @return the "physical" side of Blueberry
+     */
     @Contract(pure = true)
     @NotNull
     public static Side getSide() {
         return side;
     }
 
+    /**
+     * Returns the game directory (universe in server)
+     * @return game (root) directory
+     */
     @Contract(pure = true)
     @NotNull
     public static File getGameDir() {
         return gameDir;
     }
 
+    /**
+     * Returns the logs/latest.log file.
+     * @return latest.log file
+     */
     @Contract(" -> new")
     @NotNull
     public static File getLogFile() {
@@ -151,17 +170,28 @@ public class Blueberry {
         if (side == Side.SERVER) runnable.get().execute();
     }
 
+    /**
+     * Returns the side-dependant utility class which contains the side-specific methods.
+     * @return side-dependant utility class
+     */
     @Contract(pure = true)
     @NotNull
     public static BlueberryUtil getUtil() {
         return Objects.requireNonNull(util);
     }
 
+    /**
+     * Returns the mod state of blueberry mod. It should reflect the current state of the game.
+     * @return current state
+     */
     @NotNull
     public static ModState getCurrentState() {
         return Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
     }
 
+    /**
+     * Pre-bootstrap to load some classes.
+     */
     public static void preBootstrap() {
         Blueberry.side = Side.valueOf((String) Objects.requireNonNull(ServerMain.blackboard.get("side"), "side is null"));
         Blueberry.gameDir = (File) Objects.requireNonNull(ServerMain.blackboard.get("universe"), "universe is null");

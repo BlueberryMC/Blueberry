@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.commands.Commands.literal;
 
+/**
+ * <code>/cblueberry</code> command implementation
+ */
 public class ClientBlueberryCommand implements ClientCommandHandler {
     @Override
     public void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {

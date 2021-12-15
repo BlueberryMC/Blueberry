@@ -26,6 +26,9 @@ public class TextureStitchEvent extends Event {
         return textureAtlas;
     }
 
+    /**
+     * Called when the texture is about to be stitched. You can use this event to register/add sprites.
+     */
     public static class Pre extends TextureStitchEvent {
         private static final HandlerList handlerList = new HandlerList();
         private final Set<ResourceLocation> sprites;

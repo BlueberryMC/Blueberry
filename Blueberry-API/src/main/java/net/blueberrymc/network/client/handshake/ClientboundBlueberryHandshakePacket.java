@@ -28,12 +28,10 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
 
     @Override
     public void write(@NotNull FriendlyByteBuf friendlyByteBuf) {
-        List<ModInfo> modInfoList = modInfos;
-        friendlyByteBuf.writeInt(modInfoList.size());
-        for (ModInfo modInfo : modInfoList) {
-            friendlyByteBuf.writeUtf(modInfo.modId);
-            friendlyByteBuf.writeUtf(modInfo.version);
-        }
+        friendlyByteBuf.writeCollection(modInfos, (buf, modInfo) -> {
+            buf.writeUtf(modInfo.modId);
+            buf.writeUtf(modInfo.version);
+        });
     }
 
     @Override

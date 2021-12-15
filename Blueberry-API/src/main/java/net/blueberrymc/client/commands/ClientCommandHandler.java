@@ -11,8 +11,17 @@ import java.util.Objects;
 
 @FunctionalInterface
 public interface ClientCommandHandler {
+    /**
+     * Registers a command. Client command will not work if you register a command under different/wrong name here.
+     * @param dispatcher command dispatcher
+     */
     void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher);
 
+    /**
+     * Returns the mod for the client command handler
+     * @param handler command handler
+     * @return the mod; returns blueberry mod if the mod could not be determined
+     */
     @NotNull
     static BlueberryMod getMod(@NotNull ClientCommandHandler handler) {
         if (handler.getClass().getClassLoader() instanceof ModClassLoader mcl) {

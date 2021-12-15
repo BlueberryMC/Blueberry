@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+/**
+ * A class used to preload mods. This cannot be used to load mods, it is meant to load mixins before the bootstrap phase.
+ */
 public class BlueberryPreBootstrap {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean bootstrapped = false;

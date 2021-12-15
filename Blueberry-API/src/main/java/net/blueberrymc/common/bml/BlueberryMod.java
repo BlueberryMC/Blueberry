@@ -2,8 +2,6 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
-import net.blueberrymc.common.Side;
-import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
@@ -28,10 +26,10 @@ public class BlueberryMod implements ModInfo {
     private ModDescriptionFile description;
     private ClassLoader classLoader;
     private ModConfig config;
-    private Object visualConfig;
+    private RootCompoundVisualConfig visualConfig;
     private File file;
     private BlueberryResourceManager resourceManager;
-    boolean first = true;
+    boolean first = Blueberry.getCurrentState() != ModState.AVAILABLE;
     boolean fromSource = false;
     @Nullable File sourceDir = null;
 
@@ -48,6 +46,13 @@ public class BlueberryMod implements ModInfo {
         }
     }
 
+    /**
+     * This constructor normally cannot be used by mods, don't use it.
+     * @param modLoader mod loader
+     * @param description mod description file
+     * @param classLoader actual class loader
+     * @param file mod file (.jar file or directory)
+     */
     @SuppressWarnings("unused")
     protected BlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
         if (!ClassLoader.getSystemClassLoader().equals(this.getClass().getClassLoader()) && !(this.getClass().getClassLoader() instanceof LaunchClassLoader))
@@ -94,6 +99,11 @@ public class BlueberryMod implements ModInfo {
         return first;
     }
 
+    /**
+     * Add a URL to ModClassLoader.
+     * @param url url to add
+     * @throws UnsupportedOperationException if mod's classLoader is not instance of ModClassLoader
+     */
     protected void addURLToClassLoader(@NotNull URL url) {
         if (classLoader instanceof ModClassLoader mcl) {
             mcl.addURL(url);
@@ -102,6 +112,10 @@ public class BlueberryMod implements ModInfo {
         }
     }
 
+    /**
+     * Checks if the mod is unloaded. This method is equivalent to: <code>getStateList().getCurrentState() == ModState.UNLOADED;</code>
+     * @return true if mod is unloaded
+     */
     public final boolean isUnloaded() {
         return getStateList().getCurrentState() == ModState.UNLOADED;
     }
@@ -134,6 +148,10 @@ public class BlueberryMod implements ModInfo {
         return this.description.getModId();
     }
 
+    /**
+     * Returns the logger for the mod.
+     * @return logger
+     */
     @NotNull
     public final Logger getLogger() {
         return logger;
@@ -144,6 +162,10 @@ public class BlueberryMod implements ModInfo {
         return stateList;
     }
 
+    /**
+     * Returns the mod config.
+     * @return mod config
+     */
     @NotNull
     public final ModConfig getConfig() {
         return config;
@@ -154,13 +176,11 @@ public class BlueberryMod implements ModInfo {
         return file;
     }
 
-    @SideOnly(Side.CLIENT)
     @NotNull
     public final RootCompoundVisualConfig getVisualConfig() {
-        return (RootCompoundVisualConfig) visualConfig;
+        return visualConfig;
     }
 
-    @SideOnly(Side.CLIENT)
     public final void setVisualConfig(@NotNull RootCompoundVisualConfig visualConfig) {
         Preconditions.checkNotNull(visualConfig, "cannot set null VisualConfig");
         this.visualConfig = visualConfig;
@@ -226,12 +246,12 @@ public class BlueberryMod implements ModInfo {
     public void onLoad() {}
 
     /**
-     * Called after the window is created. Do register items, blocks etc here.
+     * Called after the window is created. Do register items, blocks etc.
      */
     public void onPreInit() {}
 
     /**
-     * Called when the minecraft is initializing. (After started the rendering of LoadingOverlay)
+     * Called when the minecraft is initializing. (Called at the beginning of rendering of LoadingOverlay)
      */
     public void onInit() {}
 
@@ -241,7 +261,7 @@ public class BlueberryMod implements ModInfo {
     public void onPostInit() {}
 
     /**
-     * Called when the mod is being unloaded. Use {@link Blueberry#stopping} to distinguish between reloading and shutdown.
+     * Called when the mod is being unloaded. Use {@link Blueberry#stopping} to distinguish between recompile and shutdown.
      */
     public void onUnload() {}
 

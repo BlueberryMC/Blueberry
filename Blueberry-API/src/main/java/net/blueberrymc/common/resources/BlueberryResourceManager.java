@@ -33,7 +33,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                     return "Mod Resources for " + mod.getName() + " (Folder)";
                 }
 
-                @Nullable
+                @NotNull
                 @Override
                 protected InputStream getResource(@NotNull String s) throws IOException {
                     if (s.equals("pack.mcmeta")) {
@@ -59,7 +59,8 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                 @Override
                 public boolean hasResource(@NotNull String s) {
                     try {
-                        return getResource(s) != null;
+                        getResource(s);
+                        return true;
                     } catch (IOException exception) {
                         return false;
                     }
@@ -73,7 +74,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                     return "Mod Resources for " + mod.getName() + " (File)";
                 }
 
-                @Nullable
+                @NotNull
                 @Override
                 protected InputStream getResource(@NotNull String s) throws IOException {
                     if (s.equals("pack.mcmeta")) {
@@ -88,7 +89,8 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                 @Override
                 public boolean hasResource(@NotNull String s) {
                     try {
-                        return getResource(s) != null;
+                        getResource(s);
+                        return true;
                     } catch (IOException exception) {
                         return false;
                     }

@@ -38,27 +38,51 @@ public class ClientCommandManager {
     private static final Object2ObjectMap<String, ClientCommandHandler> COMMANDS = new Object2ObjectOpenHashMap<>();
     private static final CommandDispatcher<CommandSourceStack> DISPATCHER = new CommandDispatcher<>();
 
+    /**
+     * Strips the leading slash if present.
+     * @param s string which might contain leading slash
+     * @return stripped string
+     */
     @NotNull
     public static String strip(@NotNull String s) {
         s = s.split(" ")[0];
         return s.startsWith("/") ? s.substring(1) : s;
     }
 
+    /**
+     * Checks if a client command is registered. Similar to {@link #has(String)}, but this method can have a leading
+     * slash in parameter <code>s</code>. If leading slash is present, this method will automatically strip one slash.
+     * @param s the command name with or without leading slash (/)
+     * @return true if registered, false otherwise
+     * @see #has(String)
+     */
     public static boolean hasCommand(@NotNull String s) {
         return has(strip(s));
     }
 
+    /**
+     * Checks if a client command is registered.
+     * @param name the command name without leading slash (/)
+     * @return true if registered, false otherwise
+     * @see #hasCommand(String)
+     */
     public static boolean has(@NotNull String name) {
         return COMMANDS.containsKey(name);
     }
 
+    /**
+     * Finds the client command handler by name.
+     * @param name the command name without leading slash (/)
+     * @return registered command handler, null if not registered
+     */
     @Nullable
     public static ClientCommandHandler get(@NotNull String name) {
         return COMMANDS.get(name);
     }
 
     /**
-     * Registers client command handler.
+     * Registers client command handler. Will log a message if there is a conflict. You can check whether the command
+     * exists via {@link #has(String)}.
      * @param name command name without leading slash (/).
      * @param handler command handler to register command
      */
@@ -74,11 +98,20 @@ public class ClientCommandManager {
         handler.register(DISPATCHER);
     }
 
+    /**
+     * Returns command dispatcher.
+     * @return command dispatcher
+     */
     @NotNull
     public static CommandDispatcher<CommandSourceStack> getDispatcher() {
         return DISPATCHER;
     }
 
+    /**
+     * Returns baked command dispatcher that can be merged with vanilla command dispatcher.
+     * @param player local player
+     * @return command dispatcher
+     */
     @NotNull
     public static CommandDispatcher<SharedSuggestionProvider> getRoot(@NotNull Player player) {
         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
@@ -93,7 +126,7 @@ public class ClientCommandManager {
         for(CommandNode<CommandSourceStack> commandNode3 : commandNode.getChildren()) {
             if (commandNode3.canUse(commandSourceStack)) {
                 ArgumentBuilder<SharedSuggestionProvider, ?> argumentBuilder = (ArgumentBuilder) commandNode3.createBuilder();
-                argumentBuilder.requires((sharedSuggestionProvider) -> true);
+                argumentBuilder.requires((sharedSuggestionProvider) -> true); // Client commands are always available
                 if (argumentBuilder.getCommand() != null) {
                     argumentBuilder.executes((commandContext) -> 0);
                 }
@@ -117,6 +150,12 @@ public class ClientCommandManager {
 
     }
 
+    /**
+     * Executes a command.
+     * @param commandSourceStack command source
+     * @param input input string which can contain leading slash
+     * @return command result
+     */
     public static int performCommand(@NotNull CommandSourceStack commandSourceStack, @NotNull String input) {
         StringReader reader = new StringReader(input);
         if (reader.canRead() && reader.peek() == '/') {

@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when a user tries to reload a mod using ModListScreen or via command.
+ * Fired when a user tries to reload a mod using ModListScreen or via command. Cancelling the event will prevent the
+ * mod from being reloaded.
  */
 public class ModReloadEvent extends CancellableEvent {
     private static final HandlerList handlerList = new HandlerList();

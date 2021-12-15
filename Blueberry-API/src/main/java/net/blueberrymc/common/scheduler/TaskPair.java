@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A class used to hold the pair of client/server tasks.
+ * A record that holds the pair of client/server tasks.
  */
 public record TaskPair(@Nullable BlueberryTask clientTask, @Nullable BlueberryTask serverTask) {
     @NotNull

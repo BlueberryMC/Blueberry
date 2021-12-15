@@ -4,6 +4,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: unused class
 public class BlueberryClassTransformer implements IClassTransformer {
     @Override
     public byte@Nullable[] transform(@NotNull String className, @NotNull String transformedName, byte@Nullable[] bytes) {

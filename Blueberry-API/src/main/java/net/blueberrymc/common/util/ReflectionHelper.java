@@ -22,8 +22,14 @@ import java.util.NoSuchElementException;
 public final class ReflectionHelper {
     private ReflectionHelper() {}
 
+    /**
+     * Creates a new instance of class using NativeUtil.
+     * @param clazz the class
+     * @throws RuntimeException if class or constructor was not found
+     * @return new instance
+     */
     @NotNull
-    public static Object newInstance(@NotNull String clazz) {
+    public static Object newInstance(@NotNull String clazz) throws ClassNotFoundException {
         return NativeUtil.newInstance(Ref.forName(clazz).getDeclaredConstructor().getConstructor());
     }
 

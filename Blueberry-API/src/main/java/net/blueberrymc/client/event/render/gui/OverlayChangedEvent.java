@@ -7,6 +7,11 @@ import net.minecraft.client.gui.screens.Overlay;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Fired when the overlay was changed via {@link net.minecraft.client.Minecraft#setOverlay(Overlay)}. This event may be
+ * called from any thread. Use {@link Event#isAsynchronous()} to distinguish between them. This event is not fired
+ * when the overlay was changed via reflection etc.
+ */
 public class OverlayChangedEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     protected final Overlay overlay;

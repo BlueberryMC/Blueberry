@@ -20,7 +20,7 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 ## 📝 Todo
 - multiplayer support
   - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
-- write a ton of [docs](https://github.com/BlueberryMC/Blueberry-docs)
+- write a ton of [docs](https://github.com/BlueberryMC/Blueberry-docs) and javadoc
 - Migrate to gradle
 
 ## ✏️ Translations

@@ -1,6 +1,7 @@
 package net.blueberrymc.common.resources;
 
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.util.SafeExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.util.GsonHelper;
@@ -40,11 +41,18 @@ public class BlueberryText extends BaseComponent {
 
     @NotNull
     public static String getLanguageCode() {
-        Minecraft mc = Minecraft.getInstance();
-        if (Blueberry.isServer()) return "en_us";
-        //noinspection ConstantConditions
-        if (mc == null) return "en_us";
-        return mc.options.languageCode;
+        String locale = Blueberry.safeGetOnClient(() -> new SafeExecutor<>() {
+            @NotNull
+            @Override
+            public String execute() {
+                Minecraft mc = Minecraft.getInstance();
+                //noinspection ConstantConditions // it is null before preinit
+                if (mc == null) return "en_us";
+                return mc.options.languageCode;
+            }
+        });
+        if (locale != null) return locale;
+        return "en_us";
     }
 
     @NotNull

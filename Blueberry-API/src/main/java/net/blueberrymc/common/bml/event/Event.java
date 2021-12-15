@@ -40,7 +40,9 @@ public abstract class Event {
 
     /**
      * Calls the event and returns this.
-     *
+     * @param <T> the event type
+     * @param event the event to call
+     * @throws IllegalStateException when an event is fired from wrong thread.
      * @return the event
      */
     @Contract("_ -> param1")

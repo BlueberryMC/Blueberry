@@ -7,14 +7,18 @@ import net.blueberrymc.common.bml.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class RenderEvent extends Event {
-    public RenderEvent() {
+    protected RenderEvent() {
         super();
     }
 
-    public RenderEvent(boolean async) {
+    protected RenderEvent(boolean async) {
         super(async);
     }
 
+    /**
+     * @deprecated this event is never fired
+     */
+    @Deprecated
     public static class Pre extends RenderEvent {
         private static final HandlerList handlerList = new HandlerList();
         private final PoseStack poseStack;
@@ -42,6 +46,10 @@ public abstract class RenderEvent extends Event {
         }
     }
 
+    /**
+     * @deprecated this event is never fired
+     */
+    @Deprecated
     public static class Post extends RenderEvent {
         private static final HandlerList handlerList = new HandlerList();
         private final PoseStack poseStack;

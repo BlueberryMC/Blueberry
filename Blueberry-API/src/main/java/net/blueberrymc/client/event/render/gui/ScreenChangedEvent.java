@@ -3,10 +3,16 @@ package net.blueberrymc.client.event.render.gui;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
+import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Fired when the screen was changed via {@link net.minecraft.client.Minecraft#setOverlay(Overlay)}. This event may be
+ * called from any thread. Use {@link Event#isAsynchronous()} to distinguish between them. This event is not fired
+ * when the screen was changed via reflection etc.
+ */
 public class ScreenChangedEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     protected final Screen screen;

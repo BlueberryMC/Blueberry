@@ -2,6 +2,7 @@ package net.blueberrymc.common.event.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.commands.CommandSourceStack;
@@ -10,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+/**
+ * Fired when the command is about to be registered. <b>Unlike most events, listener of this event must be registered
+ * at {@link BlueberryMod#onLoad()} phase.</b>
+ */
 public class CommandRegistrationEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
 
