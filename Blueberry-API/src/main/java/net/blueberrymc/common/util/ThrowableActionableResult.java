@@ -51,8 +51,10 @@ public class ThrowableActionableResult<T> extends ActionableResult<T> {
         return new ThrowableActionableResult<>(entry.getKey(), entry.getValue());
     }
 
+    @Contract("!null, _ -> new; null, !null -> new")
     @NotNull
     public static <T> ThrowableActionableResult<T> of(@Nullable T value, @Nullable Throwable throwable) {
+        if (value == null && throwable == null) return empty();
         return new ThrowableActionableResult<>(value, throwable);
     }
 
