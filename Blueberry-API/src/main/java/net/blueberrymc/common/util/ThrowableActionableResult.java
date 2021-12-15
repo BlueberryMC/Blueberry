@@ -35,10 +35,6 @@ public class ThrowableActionableResult<T> extends ActionableResult<T> {
         this.throwable = throwable;
     }
 
-    /**
-     * @deprecated less efficient method, consumes more resources than {@link #of(ThrowableSupplier)}
-     */
-    @Deprecated
     protected ThrowableActionableResult(@NotNull ThrowableSupplier<T> supplier) {
         this(DelegatingThrowableSupplier.getInstance(supplier).entry().getKey(), DelegatingThrowableSupplier.getInstance(supplier).entry().getValue());
         DelegatingThrowableSupplier.removeCache(supplier); // remove from cache
