@@ -5,7 +5,7 @@ if [ -z "$BN" ]; then
   BN="0"
 fi
 source ./scripts/functions.sh
-apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout | sed s/-SNAPSHOT//)
 datetime=$(date +%Y-%m-%dT%T%:z)
 commit=$(git rev-parse HEAD)
 cd "$basedir/MagmaCube/Minecraft" || exit 1

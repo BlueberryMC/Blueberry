@@ -6,7 +6,7 @@ if [ -z "$BN" ]; then
 fi
 source "$basedir/scripts/functions.sh" || exit 1
 git="git -c commit.gpgsign=false"
-apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+apiversion=$(mvn -f Blueberry-API/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout | sed s/-SNAPSHOT//)
 datetime=$(date +%Y-%m-%dT%T%:z)
 if [ ! -e "$basedir/work/Installer" ]; then
   $git clone https://github.com/BlueberryMC/Installer "$basedir/work/Installer" || exit 1
