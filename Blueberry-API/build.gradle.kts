@@ -31,3 +31,18 @@ dependencies {
         exclude("org.ow2.asm", "asm-debug-all")
     }
 }
+
+publishing {
+    repositories {
+        maven {
+            name = "blueberryRepo"
+            credentials(PasswordCredentials::class)
+            url = uri(
+                if (project.version.toString().endsWith("-SNAPSHOT"))
+                    "https://repo.blueberrymc.net/repository/maven-snapshots/"
+                else
+                    "https://repo.blueberrymc.net/repository/maven-releases/"
+            )
+        }
+    }
+}
