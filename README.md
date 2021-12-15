@@ -33,4 +33,5 @@ To start the translation of the project, please follow these steps:
 - Create a PR with your changes.
 
 ## 🔗 Links
-- [Documentation](https://blueberrymc.github.io/Blueberry-docs/)
+- [Documentation](https://blueberrymc.net/)
+- [Javadoc](https://jd.blueberrymc.net/)
