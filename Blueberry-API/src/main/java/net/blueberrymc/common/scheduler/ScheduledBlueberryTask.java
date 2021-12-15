@@ -44,7 +44,6 @@ public class ScheduledBlueberryTask implements BlueberryTask {
         return scheduler;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void cancel() {
         cancelled = true;

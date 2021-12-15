@@ -5,7 +5,6 @@ import net.blueberrymc.common.util.ThrowableRunnable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -153,14 +152,8 @@ public abstract class AbstractBlueberryScheduler {
         getTask(id).cancel();
     }
 
-    /**
-     * @deprecated internal usage only
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    @Nullable
-    public BlueberryTask removeTask(long id) {
-        return tasks.remove(id);
+    protected void removeTask(long id) {
+        tasks.remove(id);
     }
 
     public long getTickCount() {
