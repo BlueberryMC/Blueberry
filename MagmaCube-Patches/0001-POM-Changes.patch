@@ -14,7 +14,7 @@ index 0000000000000000000000000000000000000000..65e6bdbaa3a38354f7bc205526355cc3
 +*.iml
 +build/
 diff --git a/pom.xml b/pom.xml
-index 6600788fb4994a12190c78161e44d0b0ebbdee0f..2f35c6918925c6a598f1a2bdcc01d5dedcfcd26f 100644
+index 6600788fb4994a12190c78161e44d0b0ebbdee0f..18294de815061e3b9cb514d56be8ed98d14e9bbb 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -126,7 +126,7 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..2f35c6918925c6a598f1a2bdcc01d5de
 +        <dependency>
 +            <groupId>org.jetbrains.kotlin</groupId>
 +            <artifactId>kotlin-stdlib</artifactId>
-+            <version>1.6.0</version>
++            <version>1.6.10</version>
 +            <scope>provided</scope>
 +        </dependency>
 +        <dependency>

@@ -1,6 +1,6 @@
 plugins {
     java
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.6.10"
     `maven-publish`
     `java-library`
 }
@@ -44,7 +44,7 @@ subprojects {
     }
 
     dependencies {
-        implementation(kotlin("stdlib", "1.6.0"))
+        implementation(kotlin("stdlib", "1.6.10"))
     }
 
     publishing {
@@ -92,7 +92,7 @@ allprojects {
 
 subprojects {
     dependencies {
-        testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.6.0")
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.6.10")
         testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     }
