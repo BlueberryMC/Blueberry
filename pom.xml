@@ -21,4 +21,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <minecraft.version>1.18.1</minecraft.version>
     </properties>
+    <distributionManagement>
+        <repository>
+            <id>blueberrymc-repo</id>
+            <url>https://repo.blueberrymc.net/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>blueberrymc-repo</id>
+            <url>https://repo.blueberrymc.net/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
