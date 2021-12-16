@@ -89,9 +89,13 @@ public class ModClassLoader extends URLClassLoader {
         } catch (IllegalAccessException | NoSuchMethodException ex) {
             throw new InvalidModException("No public constructor", ex);
         } catch (InstantiationException ex) {
-            throw new InvalidModException("Illegal main class type", ex);
+            InvalidModException ex2 = new InvalidModException("Illegal main class type", ex);
+            LOGGER.error("Failed to load mod {} ({})", description.getName(), description.getModId(), ex2);
+            throw ex2;
         } catch (InvocationTargetException ex) {
-            throw new InvalidModException("Constructor threw exception", ex.getCause());
+            InvalidModException ex2 = new InvalidModException("Constructor threw exception", ex.getCause());
+            LOGGER.error("Failed to load mod {} ({})", description.getName(), description.getModId(), ex2);
+            throw ex2;
         }
     }
 
