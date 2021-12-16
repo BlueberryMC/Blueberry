@@ -186,7 +186,9 @@ public class Blueberry {
      */
     @NotNull
     public static ModState getCurrentState() {
-        return Objects.requireNonNull(getModManager().getModById("blueberry")).getStateList().getCurrentState();
+        BlueberryMod mod = getModManager().getModById("blueberry");
+        if (mod != null) mod.getStateList().getCurrentState();
+        return ModState.LOADED;
     }
 
     /**
