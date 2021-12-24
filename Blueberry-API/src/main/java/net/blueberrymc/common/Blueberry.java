@@ -207,6 +207,7 @@ public class Blueberry {
         Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
         if (isClient()) {
             util = safeGetOnClient(() -> new SafeExecutor<>() {
+                @NotNull
                 @Override
                 public BlueberryUtil execute() {
                     return new BlueberryClient((BlueberryClient) utilImpl);
