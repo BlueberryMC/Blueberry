@@ -658,6 +658,54 @@ index 83e00c5d5ec212215274d2e9312df080ea7413a2..62dbed527d21722f0bdec54a97363264
  
      }
  
+diff --git a/src/main/java/net/minecraft/client/resources/model/ModelBakery.java b/src/main/java/net/minecraft/client/resources/model/ModelBakery.java
+index 9a49783602918e8210e625b5df4a55cd988782e6..534e19983f06ceb6922c7b9c8f24199b4b98dcea 100644
+--- a/src/main/java/net/minecraft/client/resources/model/ModelBakery.java
++++ b/src/main/java/net/minecraft/client/resources/model/ModelBakery.java
+@@ -140,6 +140,13 @@ public class ModelBakery {
+     private final Map<ResourceLocation, Pair<TextureAtlas, TextureAtlas.Preparations>> atlasPreparations;
+     private int nextModelGroup = 1;
+     private final Object2IntMap<BlockState> modelGroups = Util.make(new Object2IntOpenHashMap(), (object2IntOpenHashMap) -> object2IntOpenHashMap.defaultReturnValue(-1));
++    // Blueberry start
++    private static final Set<ResourceLocation> specialModels = new java.util.HashSet<>();
++
++    public static void addSpecialModel(ResourceLocation resourceLocation) {
++        specialModels.add(resourceLocation);
++    }
++    // Blueberry end
+ 
+     public ModelBakery(ResourceManager resourceManager, BlockColors blockColors, ProfilerFiller profilerFiller, int i) {
+         this.resourceManager = resourceManager;
+@@ -169,8 +176,10 @@ public class ModelBakery {
+         }
+ 
+         profilerFiller.popPush("special");
++        new net.blueberrymc.client.event.SpecialModelRegistryEvent().callEvent(); // Blueberry
+         this.loadTopLevel(new ModelResourceLocation("minecraft:trident_in_hand#inventory"));
+         this.loadTopLevel(new ModelResourceLocation("minecraft:spyglass_in_hand#inventory"));
++        for (ResourceLocation resourceLocation : getSpecialModels()) this.addModelToCache(resourceLocation); // Blueberry
+         profilerFiller.popPush("textures");
+         Set<Pair<String, String>> set = Sets.newLinkedHashSet();
+         Set<Material> set2 = this.topLevelModels.values().stream().flatMap((unbakedModel) -> unbakedModel.getMaterials(this::getModel, set).stream()).collect(Collectors.toSet());
+@@ -438,6 +447,18 @@ public class ModelBakery {
+         this.topLevelModels.put(modelResourceLocation, unbakedModel);
+     }
+ 
++    // Blueberry start
++    private void addModelToCache(ResourceLocation resourceLocation) {
++        UnbakedModel unbakedModel = this.getModel(resourceLocation);
++        this.unbakedCache.put(resourceLocation, unbakedModel);
++        this.topLevelModels.put(resourceLocation, unbakedModel);
++    }
++
++    public Set<ResourceLocation> getSpecialModels() {
++        return specialModels;
++    }
++    // Blueberry end
++
+     private void registerModelGroup(Iterable<BlockState> iterable) {
+         int i = this.nextModelGroup++;
+         iterable.forEach((blockState) -> this.modelGroups.put(blockState, i));
 diff --git a/src/main/java/net/minecraft/network/ConnectionProtocol.java b/src/main/java/net/minecraft/network/ConnectionProtocol.java
 index db7a24fd73bd40ec1b2a7ed8d1cba8c5863ce2d7..a885cc8e0a193e44d700223a90c39582c20ff46c 100644
 --- a/src/main/java/net/minecraft/network/ConnectionProtocol.java
