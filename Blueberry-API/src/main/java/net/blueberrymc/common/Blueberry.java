@@ -206,12 +206,18 @@ public class Blueberry {
         if (Boolean.parseBoolean(ServerMain.blackboard.get("debug").toString())) SharedConstants.IS_RUNNING_IN_IDE = true;
         Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
         if (isClient()) {
-            util = new BlueberryClient((BlueberryClient) utilImpl);
+            util = safeGetOnClient(() -> new SafeExecutor<>() {
+                @Override
+                public BlueberryUtil execute() {
+                    return new BlueberryClient((BlueberryClient) utilImpl);
+                }
+            });
         } else if (isServer()) {
             util = new BlueberryServer((BlueberryServer) utilImpl);
         } else {
             util = new BlueberryNope();
         }
+        if (util == null) throw new AssertionError("util is null");
         try {
             BlueberryVersion version = getVersion();
             LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");

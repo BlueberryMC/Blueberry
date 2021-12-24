@@ -8,6 +8,7 @@ import net.blueberrymc.common.Side;
 import net.blueberrymc.common.launch.BlueberryPreBootstrap;
 import net.blueberrymc.common.launch.BlueberryTweaker;
 import net.blueberrymc.common.util.FileUtil;
+import net.blueberrymc.native_util.NativeUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.SharedConstants;
 import net.minecraft.launchwrapper.Launch;
@@ -43,6 +44,16 @@ public class ServerMain {
         OptionSpec<File> gameDirOption = optionParser.accepts("universe").withRequiredArg().ofType(File.class).defaultsTo(new File("."));
         OptionSet set = optionParser.parse(args); // use args because we don't need --tweakClass here
         if (set.has("debug")) SharedConstants.IS_RUNNING_IN_IDE = true;
+        List<String> illegalPackages = new ArrayList<>();
+        illegalPackages.add("net/minecraft/client/");
+        illegalPackages.add("net/blueberrymc/client/");
+        illegalPackages.add("net/blueberrymc/common/bml/client/");
+        NativeUtil.registerClassLoadHook((classLoader, name, clazz, protectionDomain, bytes) -> {
+            for (String illegalPackage : illegalPackages) {
+                if (name.startsWith(illegalPackage)) throw new RuntimeException("Trying to load invalid class '" + name + "' from server side");
+            }
+            return null;
+        });
         ServerMain.launch(Side.SERVER, arguments, set, gameDirOption, sourceDirOption, includeDirOption);
     }
 
