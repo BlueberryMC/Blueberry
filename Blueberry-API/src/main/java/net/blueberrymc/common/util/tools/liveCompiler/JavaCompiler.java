@@ -95,8 +95,9 @@ public class JavaCompiler {
             args.add("-d");
             args.add(dest.getAbsolutePath());
         }
+        args.add("-proc:none");
         args.add("-source");
-        args.add("16");
+        args.add("17");
         args.add(file.getAbsolutePath());
         PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true), StandardCharsets.UTF_8));
         javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -117,7 +118,7 @@ public class JavaCompiler {
         tmp.deleteOnExit();
         AtomicReference<Throwable> throwable = new AtomicReference<>();
         int nThreads = Math.max(4, Runtime.getRuntime().availableProcessors());
-        ExecutorService compilerExecutor = Executors.newFixedThreadPool(nThreads, new ThreadFactoryBuilder().setNameFormat("Blueberry Mod Compiler #%d").build());
+        ExecutorService compilerExecutor = Executors.newFixedThreadPool(nThreads, new ThreadFactoryBuilder().setNameFormat("Blueberry Mod Compiler Worker #%d").build());
         LOGGER.info("Compiling the source code using up to " + nThreads + " threads");
         EarlyLoadingMessageManager.logModCompiler("Compiling the source code using up to " + nThreads + " threads");
         AtomicBoolean first = new AtomicBoolean(true);

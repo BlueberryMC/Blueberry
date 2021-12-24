@@ -2,6 +2,7 @@ package net.blueberrymc.config;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.ModInfo;
+import net.blueberrymc.common.bml.VersionedModInfo;
 import net.blueberrymc.config.yaml.YamlArray;
 import net.blueberrymc.config.yaml.YamlObject;
 import net.blueberrymc.util.Util;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class ModDescriptionFile implements ModInfo {
+public class ModDescriptionFile implements VersionedModInfo {
     private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
     private static final Logger LOGGER = LogManager.getLogger();
     @NotNull protected final String modId;
@@ -70,6 +71,7 @@ public class ModDescriptionFile implements ModInfo {
     }
 
     @NotNull
+    @Override
     public String getVersion() {
         return version;
     }

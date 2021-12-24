@@ -217,8 +217,9 @@ public class BlueberryModLoader implements ModLoader {
                 }
                 LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
                 Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModCompiler("Successfully compiled the source of mod " + description.getName() + " (" + description.getModId() + ")"));
-                filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
-                descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                //filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                //descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
+                descriptions.remove(description.getModId());
                 return new AbstractMap.SimpleImmutableEntry<>(description, compiled);
             } catch (RuntimeException ex) {
                 LOGGER.info("Failed to compile the source code of mod {} ({})", description.getName(), description.getModId());

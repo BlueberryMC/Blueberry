@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,7 +82,7 @@ public class YamlArray extends ArrayList<Object> implements YamlMember {
     }
 
     public @NotNull List<String> mapToString() {
-        return mapAsType(o -> o instanceof String ? (String) o : o.toString());
+        return mapAsType(String::valueOf);
     }
 
     @Override

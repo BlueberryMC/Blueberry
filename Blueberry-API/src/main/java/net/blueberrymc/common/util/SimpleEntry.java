@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractMap;
 import java.util.Map;
 
-public class SimpleEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V> {
+public class SimpleEntry<K, V> extends AbstractMap.SimpleImmutableEntry<@Nullable K, @Nullable V> {
     public SimpleEntry(@Nullable K key, @Nullable V value) {
         super(key, value);
     }

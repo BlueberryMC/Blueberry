@@ -1,4 +1,6 @@
 {
+  "selectWorld.backupQuestion.incompatibleMods": "Mods were changed from the previous session",
+  "selectWorld.backupWarning.incompatibleMods": "Blueberry has detected mods have different version or been removed that might cause loss of items/blocks or corrupted data in rare case. Here be dragons!",
   "gui.screens.mods": "Mods",
   "gui.screens.mods.refresh": "Refresh",
   "gui.screens.mods.reload": "Reload",

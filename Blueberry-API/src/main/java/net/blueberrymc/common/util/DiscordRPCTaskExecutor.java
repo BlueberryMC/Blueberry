@@ -17,6 +17,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A class used to enable Discord Rich Presence.
+ */
 public class DiscordRPCTaskExecutor {
     private static final String CLIENT_ID = "814409121255915520";
     private static final Logger LOGGER = LogManager.getLogger();
@@ -32,8 +35,18 @@ public class DiscordRPCTaskExecutor {
     private static boolean init = false;
     public static boolean discordRpcEnabled = false;
 
-    @SuppressWarnings("CodeBlock2Expr")
     public static void init(boolean discordRpc) {
+        init(CLIENT_ID, discordRpc);
+    }
+
+    /**
+     * Initializes the Discord RPC using provided client id. This method will do nothing if already initialized.
+     * @param clientId client id to use
+     * @param discordRpc whether to enable discord rpc (setting to false will cause Discord RPC Task Executor to do
+     *                   almost nothing).
+     */
+    @SuppressWarnings("CodeBlock2Expr")
+    public static void init(@NotNull String clientId, boolean discordRpc) {
         if (init) return;
         init = true;
         DiscordRPCTaskExecutor.discordRpcEnabled = discordRpc;
@@ -70,7 +83,7 @@ public class DiscordRPCTaskExecutor {
             //noinspection InstantiationOfUtilityClass
             new DiscordRPC();
             LOGGER.info("Logging into Discord...");
-            DiscordRPC.discordInitialize(CLIENT_ID, new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
+            DiscordRPC.discordInitialize(clientId, new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
                 LOGGER.info("Successfully logged into Discord: " + user.username + "#" + user.discriminator + " (" + user.userId + ")");
             }).setErroredEventHandler((i, s) -> {
                 LOGGER.error("Encountered error on Discord RPC: " + i + " (" + s + ")");
@@ -80,10 +93,18 @@ public class DiscordRPCTaskExecutor {
         });
     }
 
+    /**
+     * Checks if current thread is on executor thread.
+     * @return true if running in executor thread, false if executor thread is not running or running in different thread
+     */
     public static boolean isOnExecutorThread() {
-        return thread == null || !thread.isAlive() || Thread.currentThread() == thread;
+        return thread != null && thread.isAlive() && Thread.currentThread() == thread;
     }
 
+    /**
+     * Submits the task to Discord RPC Task Executor.
+     * @param runnable the task
+     */
     public static void submit(@NotNull Runnable runnable) {
         if (isOnExecutorThread()) {
             runnable.run();
@@ -92,6 +113,9 @@ public class DiscordRPCTaskExecutor {
         }
     }
 
+    /**
+     * Shutdown the Discord RPC and its executor immediately.
+     */
     public static void shutdownNow() {
         if (Blueberry.getSide() != Side.CLIENT || thread == null || !thread.isAlive()) return;
         try {
@@ -109,6 +133,9 @@ public class DiscordRPCTaskExecutor {
         } catch (Throwable ignore) {}
     }
 
+    /**
+     * Shutdown the Discord RPC and its executor asynchronously.
+     */
     public static void shutdown() {
         submit(DiscordRPCTaskExecutor::shutdownNow);
     }

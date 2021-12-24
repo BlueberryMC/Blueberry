@@ -548,17 +548,19 @@ index 5acafe7d71e6427a48d301fac25f8f387449c04a..346f9ec2d795792c51b3adf9e83fe3b1
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
-index 3cf56c913cd1d1c2a348dd659099e8bac9091cee..ed76d548f191bf2cd0ddb50c1fc664bcec3aa5c4 100644
+index 3cf56c913cd1d1c2a348dd659099e8bac9091cee..43d1cd6b2ca92e583c8e8267b64292de3dc7d24e 100644
 --- a/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
 +++ b/src/main/java/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
-@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
+@@ -11,7 +11,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
  public class BlockEntityRenderers {
      private static final Map<BlockEntityType<?>, BlockEntityRendererProvider<?>> PROVIDERS = Maps.newHashMap();
  
+-    private static <T extends BlockEntity> void register(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
 +    // Blueberry - private -> public
-     private static <T extends BlockEntity> void register(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
++    public static <T extends BlockEntity> void register(BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T> blockEntityRendererProvider) {
          PROVIDERS.put(blockEntityType, blockEntityRendererProvider);
      }
+ 
 diff --git a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java b/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java
 index 8751753b726c78f8ec6c330d1436895b3b99c110..e918f5f17587e3e3c7bfb0e012ce11aa535b5f2c 100644
 --- a/src/main/java/net/minecraft/client/renderer/debug/DebugRenderer.java

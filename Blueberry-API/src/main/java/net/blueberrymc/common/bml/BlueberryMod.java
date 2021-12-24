@@ -19,7 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.function.Function;
 
-public class BlueberryMod implements ModInfo {
+public class BlueberryMod implements VersionedModInfo {
     private Logger logger = LogManager.getLogger();
     private final ModStateList stateList = new ModStateList();
     private BlueberryModLoader modLoader;
@@ -136,16 +136,22 @@ public class BlueberryMod implements ModInfo {
         return classLoader;
     }
 
-    @Override
     @NotNull
+    @Override
     public final String getName() {
         return this.description.getName();
     }
 
-    @Override
     @NotNull
+    @Override
     public final String getModId() {
         return this.description.getModId();
+    }
+
+    @NotNull
+    @Override
+    public final String getVersion() {
+        return this.description.getVersion();
     }
 
     /**

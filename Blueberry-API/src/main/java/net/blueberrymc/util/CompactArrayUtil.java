@@ -28,6 +28,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.IntToLongFunction;
 
+/**
+ * @deprecated Unused class
+ */
+@Deprecated
 public class CompactArrayUtil {
     //Oh no
     private static final int[] MAGIC = {
