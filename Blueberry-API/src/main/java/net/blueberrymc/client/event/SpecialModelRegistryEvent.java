@@ -5,10 +5,9 @@ import net.blueberrymc.common.bml.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * SpecialModelRegistryEvent can be used to call {@link net.minecraft.client.resources.model.ModelBakery#addSpecialModel(ResourceLocation)}.
+ * SpecialModelRegistryEvent can be used to call ModelBakery#addSpecialModel(ResourceLocation).
  * This event is always called asynchronously.
  */
-@SuppressWarnings("JavadocReference")
 public class SpecialModelRegistryEvent extends Event {
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
