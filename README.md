@@ -16,6 +16,7 @@ Whilst I try not to break API compatibility, but things could change at anytime!
 ## ✨ Key features
 - Live Compiler (Automatically compiles the mod from .java files)
   - Reload (You can recompile the mod in-game using "Recompile" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
+- [Mixin](https://github.com/SpongePowered/Mixin) support
 
 ## 📝 Todo
 - multiplayer support
