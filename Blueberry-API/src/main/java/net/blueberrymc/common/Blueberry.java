@@ -17,6 +17,7 @@ import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.server.BlueberryServer;
 import net.blueberrymc.server.main.ServerMain;
+import net.blueberrymc.util.Constants;
 import net.minecraft.CrashReport;
 import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,6 @@ import java.util.function.Supplier;
 
 public class Blueberry {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String name = "Blueberry";
     private static BlueberryModLoader modLoader;
     private static final EventManager eventManager = new EventManager();
     private static final ModManager modManager = new ModManager();
@@ -142,6 +142,11 @@ public class Blueberry {
         return null;
     }
 
+    /**
+     * @deprecated This method can cause unexpected NoClassDefFoundError. Use {@link #safeRunOnClient(Supplier)} instead.
+     * @param runnable function to run
+     */
+    @Deprecated
     public static void runOnClient(@NotNull Runnable runnable) {
         if (side == Side.CLIENT) runnable.run();
     }
@@ -187,7 +192,7 @@ public class Blueberry {
     @NotNull
     public static ModState getCurrentState() {
         BlueberryMod mod = getModManager().getModById("blueberry");
-        if (mod != null) mod.getStateList().getCurrentState();
+        if (mod != null) return mod.getStateList().getCurrentState();
         return ModState.LOADED;
     }
 
@@ -218,10 +223,10 @@ public class Blueberry {
         } else {
             util = new BlueberryNope();
         }
-        if (util == null) throw new AssertionError("util is null");
+        ServerMain.blackboard.put("util", util);
         try {
             BlueberryVersion version = getVersion();
-            LOGGER.info("Loading " + name + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
+            LOGGER.info("Loading " + Constants.CLIENT_NAME + " version " + version.getFullyQualifiedVersion() + " (" + getSide().getName() + ")");
             registerInternalMod();
             if (isClient()) new EarlyLoadingScreen().startRender(true);
             modLoader.loadMods();

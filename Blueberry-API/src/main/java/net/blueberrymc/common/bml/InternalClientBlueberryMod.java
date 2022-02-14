@@ -5,6 +5,7 @@ import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class InternalClientBlueberryMod {
     private static final AtomicReference<String> lastScreen = new AtomicReference<>();
 
-    static void doReload(@NotNull ModStateList modState) {
+    static void doReload(@NotNull ModStateList modState, boolean forceRefreshDiscord) {
         Minecraft mc = Minecraft.getInstance();
         //noinspection ConstantConditions
         if (mc != null) {
@@ -29,7 +30,7 @@ public class InternalClientBlueberryMod {
         }
         ModState currentState = modState.getCurrentState();
         if (currentState == ModState.AVAILABLE || currentState == ModState.UNLOADED) {
-            InternalClientBlueberryMod.refreshDiscordStatus(Minecraft.getInstance().screen);
+            InternalClientBlueberryMod.refreshDiscordStatus(Minecraft.getInstance().screen, forceRefreshDiscord);
         }
     }
 
@@ -75,7 +76,7 @@ public class InternalClientBlueberryMod {
             }
             IntegratedServer integratedServer = minecraft.getSingleplayerServer();
             if (minecraft.isLocalServer() && integratedServer != null) {
-                Blueberry.getUtil().updateDiscordStatus("Playing on Single Player", integratedServer.getWorldData().getLevelName(), BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                Blueberry.getUtil().updateDiscordStatus("Playing on Single Player", integratedServer.getWorldData().getLevelName() + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                 lastScreen.set(null);
                 return;
             }
@@ -90,7 +91,7 @@ public class InternalClientBlueberryMod {
                 } else {
                     String serverIp = null;
                     if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
-                    Blueberry.getUtil().updateDiscordStatus("Playing on 3rd-party server", serverIp, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    Blueberry.getUtil().updateDiscordStatus("Playing on 3rd-party server", serverIp + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                 }
                 lastScreen.set(null);
             }

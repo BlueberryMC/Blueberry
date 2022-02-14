@@ -24,10 +24,10 @@ index b978ac67055c4a5a00f123e35d613f8d0f97caad..c7acfaddbe5542dc3defb6b209a0e4f8
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/Screen.java b/src/main/java/net/minecraft/client/gui/screens/Screen.java
-index a94df3bb3195e631b82cccdb3653be924ffcc35a..99a5de9c078c82c36b812fba1b96479fc24b12c9 100644
+index 3f3bf962b7373747246774fcd4467c39271ddfc4..8e7452d64996494f06f836057208893a396c820e 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/Screen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/Screen.java
-@@ -354,6 +354,12 @@ public abstract class Screen extends AbstractContainerEventHandler implements Wi
+@@ -355,6 +355,12 @@ public abstract class Screen extends AbstractContainerEventHandler implements Wi
              this.minecraft.gui.getChat().addRecentChat(s);
          }
  

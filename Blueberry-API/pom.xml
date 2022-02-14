@@ -108,8 +108,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>net.blueberrymc.minecraft</groupId>
-            <artifactId>minecraft</artifactId>
+            <groupId>net.blueberrymc.magmacube</groupId>
+            <artifactId>magmacube</artifactId>
             <version>${minecraft.version}</version>
             <scope>provided</scope>
         </dependency>

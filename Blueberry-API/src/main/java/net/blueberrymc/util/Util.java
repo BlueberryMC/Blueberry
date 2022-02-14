@@ -1,5 +1,6 @@
 package net.blueberrymc.util;
 
+import com.mojang.datafixers.DataFixUtils;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -12,10 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Util {
     @Contract(value = "null, null -> null; null, _ -> param2; _, !null -> !null", pure = true)
@@ -199,5 +202,10 @@ public class Util {
             }
             throw throwable;
         }
+    }
+
+    @NotNull
+    public static <T> Stream<T> toStream(@NotNull @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<? extends T> optional) {
+        return DataFixUtils.orElseGet(optional.map(Stream::of), Stream::empty);
     }
 }

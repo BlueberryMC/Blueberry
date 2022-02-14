@@ -15,11 +15,11 @@
     </modules>
     <name>Blueberry-Parent</name>
     <properties>
-        <api.version>0.2.2-SNAPSHOT</api.version>
+        <api.version>1.0.0-SNAPSHOT</api.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <minecraft.version>1.18.1</minecraft.version>
+        <minecraft.version>22w06a</minecraft.version>
     </properties>
     <distributionManagement>
         <repository>

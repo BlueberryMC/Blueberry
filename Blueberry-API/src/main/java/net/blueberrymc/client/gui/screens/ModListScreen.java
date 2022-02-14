@@ -137,9 +137,10 @@ public class ModListScreen extends BlueberryScreen {
             if (entry != null) {
                 if (entry.mod.isFromSource()) {
                     if (this.minecraft.level != null) {
-                        renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.reload.in_world_tooltip"), i, i1);
+                        renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.recompile.in_world_tooltip"), i, i1);
+                        return;
                     }
-                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.reload.recompile_tooltip"), i, i1);
+                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.recompile.recompile_tooltip"), i, i1);
                 } else {
                     renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.recompile.unsupported"), i, i1);
                 }
@@ -171,7 +172,7 @@ public class ModListScreen extends BlueberryScreen {
         if (method != null
                 && method.getReturnType().equals(boolean.class)
                 && !method.getDeclaringClass().equals(BlueberryMod.class)) return true;
-        return !ModReloadEvent.getHandlerList().isEmpty(); // ModReloadEvent.getHandlerList().anyContains(mod);
+        return !ModReloadEvent.getHandlerList().isEmpty();
     }
 
     private static final Joiner JOINER = Joiner.on(", ");

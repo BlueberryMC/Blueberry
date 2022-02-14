@@ -5,7 +5,7 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index 323c53b0ed729a83047bc5c3840766b7fae78320..8b5b1c7249dd404b0eaa64fb6921eec307320070 100644
+index 41b7e30ce8cf2ce5408d98802cc5d973567db8d3..1e9bf815790c7ff1d87fc3e925a95d247bf78e6d 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 @@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -16,7 +16,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..8b5b1c7249dd404b0eaa64fb6921eec3
  import net.minecraft.world.entity.ai.gossip.GossipType;
  import net.minecraft.world.entity.ai.memory.ExpirableValue;
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-@@ -90,8 +91,19 @@ public class DebugPackets {
+@@ -89,8 +90,19 @@ public class DebugPackets {
      private static void sendVillageSectionsPacket(ServerLevel serverLevel, BlockPos blockPos) {
      }
  
@@ -37,7 +37,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..8b5b1c7249dd404b0eaa64fb6921eec3
  
      public static void sendNeighborsUpdatePacket(Level level, BlockPos blockPos) {
      }
-@@ -99,11 +111,23 @@ public class DebugPackets {
+@@ -98,11 +110,23 @@ public class DebugPackets {
      public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart<?> structureStart) {
      }
  
@@ -62,7 +62,7 @@ index 323c53b0ed729a83047bc5c3840766b7fae78320..8b5b1c7249dd404b0eaa64fb6921eec3
  
      public static void sendRaids(ServerLevel serverLevel, Collection<Raid> collection) {
      }
-@@ -111,8 +135,38 @@ public class DebugPackets {
+@@ -110,8 +134,38 @@ public class DebugPackets {
      public static void sendEntityBrain(LivingEntity livingEntity) {
      }
  

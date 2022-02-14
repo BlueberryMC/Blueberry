@@ -13,6 +13,7 @@ public class BlueberryVersion {
     @NotNull private final String magmaCubeCommit;
     @NotNull private final String commit;
     @NotNull private final String builtAt;
+    @NotNull private final String branch;
     private final int buildNumber;
 
     public BlueberryVersion(@NotNull String name,
@@ -20,12 +21,14 @@ public class BlueberryVersion {
                             @NotNull String magmaCubeCommit,
                             @NotNull String commit,
                             @NotNull String builtAt,
+                            @NotNull String branch,
                             int buildNumber) {
         this.name = name;
         this.version = version;
         this.magmaCubeCommit = magmaCubeCommit;
         this.commit = commit;
         this.builtAt = builtAt;
+        this.branch = branch;
         this.buildNumber = buildNumber;
     }
 
@@ -131,11 +134,18 @@ public class BlueberryVersion {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BlueberryVersion that = (BlueberryVersion) o;
-        return name.equals(that.name) && version.equals(that.version) && magmaCubeCommit.equals(that.magmaCubeCommit) && commit.equals(that.commit) && builtAt.equals(that.builtAt) && Objects.equals(gameVersion, that.gameVersion);
+        return name.equals(that.name) &&
+                version.equals(that.version) &&
+                magmaCubeCommit.equals(that.magmaCubeCommit) &&
+                commit.equals(that.commit) &&
+                builtAt.equals(that.builtAt) &&
+                Objects.equals(gameVersion, that.gameVersion) &&
+                Objects.equals(branch, that.branch) &&
+                buildNumber == that.buildNumber;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, version, magmaCubeCommit, commit, builtAt, gameVersion);
+        return Objects.hash(name, version, magmaCubeCommit, commit, builtAt, gameVersion, branch, buildNumber);
     }
 }

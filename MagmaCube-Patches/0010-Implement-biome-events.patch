@@ -5,10 +5,10 @@ Subject: [PATCH] Implement biome events
 
 
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index 939893d2ad4fcabc083b0aa41966169e62d482e5..94537ae1dd0518ca2ccca02be005a1c8e20457f8 100644
+index 4b1cf765c1001ad159d0c01c0c954d2d29446734..5ac2deef576605bfd3b3129f8ddbb96505c5eb8e 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
-@@ -313,7 +313,8 @@ public final class Biome {
+@@ -314,7 +314,8 @@ public final class Biome {
  
          public Biome build() {
              if (this.precipitation != null && this.biomeCategory != null && this.temperature != null && this.downfall != null && this.specialEffects != null && this.mobSpawnSettings != null && this.generationSettings != null) {
@@ -19,16 +19,16 @@ index 939893d2ad4fcabc083b0aa41966169e62d482e5..94537ae1dd0518ca2ccca02be005a1c8
                  throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
              }
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index 47e0c96fff7690c27fa14fb5a1cda24563718aa0..7bcaa43f272aed6ff77d57984a5a5e97094ce1fd 100644
+index ddf30459c3b7e03fd2d872d46fe3eaa5aa9d78de..9b8fab6e326e35769bd05c8fc8efd5923145ed3e 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-@@ -85,7 +85,8 @@ public class BiomeGenerationSettings {
+@@ -86,7 +86,8 @@ public class BiomeGenerationSettings {
          }
  
          public BiomeGenerationSettings build() {
--            return new BiomeGenerationSettings(this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ImmutableList.copyOf(entry.getValue()))), this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList()));
+-            return new BiomeGenerationSettings(this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> HolderSet.direct(entry.getValue()))), this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList()));
 +            // Blueberry - call BiomeGenerationSettingsInitEvent
-+            return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeGenerationSettingsInitEvent(this, () -> new BiomeGenerationSettings(this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> ImmutableList.copyOf(entry.getValue()))), this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList())))).getBiomeGenerationSettings().get();
++            return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeGenerationSettingsInitEvent(this, () -> new BiomeGenerationSettings(this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> HolderSet.direct(entry.getValue()))), this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList())))).getBiomeGenerationSettings().get();
          }
      }
  }

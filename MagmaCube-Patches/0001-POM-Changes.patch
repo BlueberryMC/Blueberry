@@ -14,16 +14,16 @@ index 0000000000000000000000000000000000000000..65e6bdbaa3a38354f7bc205526355cc3
 +*.iml
 +build/
 diff --git a/pom.xml b/pom.xml
-index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f46913959f31 100644
+index 83c3ad5beb9f7187344d8e5a898b2f3a0d9719f4..6ab994803f4ce3de2ba8deea686a1835be8a4d47 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <parent>
--        <artifactId>minecraft-parent</artifactId>
--        <groupId>net.blueberrymc.minecraft</groupId>
--        <version>1.18.1</version>
+-        <artifactId>magmacube-parent</artifactId>
+-        <groupId>net.blueberrymc.magmacube</groupId>
+-        <version>22w06a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -32,16 +32,11 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f469
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -13,25 +15,35 @@
-         <text2speech.version>1.11.3</text2speech.version>
-         <maven.compiler.source>17</maven.compiler.source>
-         <maven.compiler.target>17</maven.compiler.target>
--        <log4j.version>2.14.1</log4j.version>
-+        <log4j.version>2.17.0</log4j.version>
+@@ -17,21 +19,31 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
--    <artifactId>minecraft</artifactId>
+-    <artifactId>magmacube</artifactId>
 +    <!-- Blueberry start -->
 +    <artifactId>blueberry</artifactId>
 +    <version>${minecraft.version}-${api.version}</version>
@@ -49,7 +44,7 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f469
 +    <!-- Blueberry end -->
  
      <build>
--        <finalName>Minecraft</finalName>
+-        <finalName>MagmaCube</finalName>
 +        <finalName>${project.artifactId}-${minecraft.version}</finalName>
          <plugins>
 +            <!-- Blueberry start -->
@@ -176,18 +171,18 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f469
          <dependency>
              <groupId>com.google.code.gson</groupId>
              <artifactId>gson</artifactId>
-             <version>2.8.8</version>
+             <version>2.8.9</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>authlib</artifactId>
-             <version>3.2.38</version>
+             <version>3.3.39</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -106,237 +200,302 @@
+@@ -106,242 +200,308 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
              <version>4.1.68.Final</version>
@@ -202,7 +197,7 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f469
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>datafixerupper</artifactId>
-             <version>4.0.26</version>
+             <version>4.1.27</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
@@ -451,19 +446,25 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f469
          <dependency>
              <groupId>com.ibm.icu</groupId>
              <artifactId>icu4j</artifactId>
-             <version>69.1</version>
+             <version>70.1</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.github.oshi</groupId>
              <artifactId>oshi-core</artifactId>
-             <version>5.8.2</version>
+             <version>5.8.5</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
              <groupId>com.mojang</groupId>
              <artifactId>blocklist</artifactId>
-             <version>1.0.6</version>
+             <version>1.0.10</version>
++            <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.mojang</groupId>
+             <artifactId>logging</artifactId>
+             <version>1.0.0</version>
 +            <scope>provided</scope>
          </dependency>
          <dependency>
@@ -490,7 +491,7 @@ index 6600788fb4994a12190c78161e44d0b0ebbdee0f..59a7ba0eb1483282041671e1a7c7f469
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -345,25 +504,38 @@
+@@ -350,25 +510,38 @@
          </dependency>
  
          <!-- Logger -->
@@ -543,10 +544,10 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 2495572ee0b0dce2beb87d1c612ad2965e1af99c..cd8e5afc3601391e0f427504b8f8055e4f585cb0 100644
+index 43456fd567efa6c99c9bd46cbfa3de4db8bb4115..e02169dc0160aca698aeda2e14a0a470a6baacc6 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -922,7 +922,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -953,7 +953,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

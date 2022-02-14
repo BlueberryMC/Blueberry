@@ -22,12 +22,12 @@ class BlueberryShutdownHookThread extends Thread {
         executed = true;
         LOGGER.info("Shutting down Discord RPC Task Executor");
         DiscordRPCTaskExecutor.shutdownNow();
-        LOGGER.info("Deleting temp directory");
         if (ServerMain.tempModDir != null) {
+            LOGGER.info("Deleting temp directory " + ServerMain.tempModDir.getAbsolutePath());
             try {
                 FileUtil.delete(ServerMain.tempModDir);
             } catch (IOException e) {
-                LOGGER.warn("Failed to delete temp directory", e);
+                LOGGER.warn("Failed to delete temp directory " + ServerMain.tempModDir, e);
             }
         }
     }

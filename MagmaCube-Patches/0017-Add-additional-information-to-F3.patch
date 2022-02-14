@@ -9,10 +9,10 @@ Added to game information:
 - Client Protocol Version
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index 3fd0bbea5fd984e3d1b32f95c7aa7dc4ddc4d69f..907622ef6e7b61b3d544b6938b178396243ad997 100644
+index 69ccea5ee4982f7698fdcfd31d6c288a39432939..a838784cf148ab71e676e073139ef5b2deae176e 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-@@ -175,8 +175,9 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -176,8 +176,9 @@ public class DebugScreenOverlay extends GuiComponent {
          }
  
          BlockPos blockPos = this.minecraft.getCameraEntity().blockPosition();
@@ -23,7 +23,7 @@ index 3fd0bbea5fd984e3d1b32f95c7aa7dc4ddc4d69f..907622ef6e7b61b3d544b6938b178396
          } else {
              Entity entity = this.minecraft.getCameraEntity();
              Direction direction = entity.getDirection();
-@@ -206,7 +207,7 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -207,7 +208,7 @@ public class DebugScreenOverlay extends GuiComponent {
  
              Level level = this.getLevel();
              LongSet longSet = (LongSet)(level instanceof ServerLevel ? ((ServerLevel)level).getForcedChunks() : LongSets.EMPTY_SET);
@@ -32,7 +32,7 @@ index 3fd0bbea5fd984e3d1b32f95c7aa7dc4ddc4d69f..907622ef6e7b61b3d544b6938b178396
              String s8 = this.getServerChunkStats();
              if (s8 != null) {
                  list.add(s8);
-@@ -288,8 +289,8 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -289,8 +290,8 @@ public class DebugScreenOverlay extends GuiComponent {
              }
  
              list.add(this.minecraft.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.minecraft.player.getCurrentMood() * 100.0F)));
@@ -41,4 +41,4 @@ index 3fd0bbea5fd984e3d1b32f95c7aa7dc4ddc4d69f..907622ef6e7b61b3d544b6938b178396
 +        return list; // Blueberry
      }
  
-     @Nullable
+     private static String printBiome(Holder<Biome> holder) {

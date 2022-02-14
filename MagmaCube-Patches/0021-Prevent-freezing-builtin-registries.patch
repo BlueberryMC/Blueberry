@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Tue, 15 Feb 2022 02:15:35 +0900
+Subject: [PATCH] Prevent freezing builtin registries
+
+I still haven't found a way around this
+
+diff --git a/src/main/java/net/minecraft/server/Bootstrap.java b/src/main/java/net/minecraft/server/Bootstrap.java
+index 6cd0de2d292e4b8d06b3c9599ba13296951e96c1..f5a6f38fe9f1753b8b3b6d76c29274c8ca6bab43 100644
+--- a/src/main/java/net/minecraft/server/Bootstrap.java
++++ b/src/main/java/net/minecraft/server/Bootstrap.java
+@@ -54,7 +54,7 @@ public class Bootstrap {
+                     DispenseItemBehavior.bootStrap();
+                     CauldronInteraction.bootStrap();
+                     ArgumentTypes.bootStrap();
+-                    Registry.freezeBuiltins();
++                    // Registry.freezeBuiltins(); // Blueberry
+                     wrapStreams();
+                 }
+             }

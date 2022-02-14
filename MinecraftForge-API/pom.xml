@@ -58,7 +58,9 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M2</version>
                 <executions>
                     <execution>
                         <id>default-deploy</id>
@@ -80,8 +82,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.blueberrymc.minecraft</groupId>
-            <artifactId>minecraft</artifactId>
+            <groupId>net.blueberrymc.magmacube</groupId>
+            <artifactId>magmacube</artifactId>
             <version>${minecraft.version}</version>
             <scope>provided</scope>
         </dependency>

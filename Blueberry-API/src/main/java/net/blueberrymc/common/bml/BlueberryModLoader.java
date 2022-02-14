@@ -14,6 +14,7 @@ import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.ClasspathUtil;
 import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.common.util.ListUtils;
+import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.common.util.UniversalClassLoader;
 import net.blueberrymc.common.util.tools.JavaTools;
 import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
@@ -23,9 +24,12 @@ import net.blueberrymc.server.main.ServerMain;
 import net.blueberrymc.server.packs.resources.BlueberryResourceProvider;
 import net.blueberrymc.util.Util;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -508,8 +512,15 @@ public class BlueberryModLoader implements ModLoader {
         BlueberryResourceManager blueberryResourceManager = new BlueberryResourceManager(mod);
         mod.setResourceManager(blueberryResourceManager);
         ResourceManager resourceManager = Blueberry.getUtil().getResourceManager();
-        if (resourceManager instanceof SimpleReloadableResourceManager rm) {
-            rm.add(blueberryResourceManager.getPackResources());
+        if (resourceManager instanceof ReloadableResourceManager rm) {
+            CloseableResourceManager crm = (CloseableResourceManager) ReflectionHelper.getFieldWithoutException(ReloadableResourceManager.class, rm, "resources");
+            if (crm instanceof MultiPackResourceManager) {
+                List<PackResources> packs = (List<PackResources>) ReflectionHelper.getFieldWithoutException(MultiPackResourceManager.class, crm, "packs");
+                packs.add(blueberryResourceManager.getPackResources());
+            }
+        } else if (resourceManager instanceof MultiPackResourceManager rm) {
+            List<PackResources> packs = (List<PackResources>) ReflectionHelper.getFieldWithoutException(MultiPackResourceManager.class, rm, "packs");
+            packs.add(blueberryResourceManager.getPackResources());
         } else if (resourceManager instanceof FallbackResourceManager rm) {
             rm.add(blueberryResourceManager.getPackResources());
         } else {

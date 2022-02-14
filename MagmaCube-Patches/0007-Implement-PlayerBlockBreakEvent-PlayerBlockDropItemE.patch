@@ -5,10 +5,10 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0e78337cf 100644
+index 4a8c0081b83d78b81d496779c5aa9fc53b5d9aff..5191bf42522498c9f5df3a162581be5cf91e81b3 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -215,9 +215,39 @@ public class ServerPlayerGameMode {
+@@ -224,9 +224,39 @@ public class ServerPlayerGameMode {
  
      public boolean destroyBlock(BlockPos blockPos) {
          BlockState blockState = this.level.getBlockState(blockPos);
@@ -49,7 +49,7 @@ index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0
              BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
              Block block = blockState.getBlock();
              if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks()) {
-@@ -226,6 +256,7 @@ public class ServerPlayerGameMode {
+@@ -235,6 +265,7 @@ public class ServerPlayerGameMode {
              } else if (this.player.blockActionRestricted(this.level, blockPos, this.gameModeForPlayer)) {
                  return false;
              } else {
@@ -57,7 +57,7 @@ index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0
                  block.playerWillDestroy(this.level, blockPos, blockState, this.player);
                  boolean flag = this.level.removeBlock(blockPos, false);
                  if (flag) {
-@@ -233,7 +264,7 @@ public class ServerPlayerGameMode {
+@@ -242,7 +273,7 @@ public class ServerPlayerGameMode {
                  }
  
                  if (this.isCreative()) {
@@ -66,7 +66,7 @@ index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0
                  } else {
                      ItemStack itemStack = this.player.getMainHandItem();
                      ItemStack itemStack2 = itemStack.copy();
-@@ -243,8 +274,18 @@ public class ServerPlayerGameMode {
+@@ -252,8 +283,18 @@ public class ServerPlayerGameMode {
                          block.playerDestroy(this.level, this.player, blockPos, blockState, blockEntity, itemStack2);
                      }
  
@@ -87,22 +87,22 @@ index e8e8dff0d2551ca3e19f9a899f84063c57b23c48..f976ce3c442dda538b81dd97b8f290d0
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index bc81554e48dfa68a8e7431d45723752f7f9c7187..1eb3d310cf3fdde2f9fd830478978137c6b47093 100644
+index 6e11735916e9ee48b40ecc8c3b2a1ad28841be6e..c7101b3baf46eac4709e8d4c80bde8281dd7c348 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -101,6 +101,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
+@@ -99,6 +99,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
      private final BiomeManager biomeManager;
      private final ResourceKey<Level> dimension;
      private long subTickCount;
 +    public final ThreadLocal<List<net.minecraft.world.entity.item.ItemEntity>> captureDrops = new ThreadLocal<>(); // Blueberry
  
-     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, final DimensionType dimensionType, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
+     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index d5b471b64a4d78c6c8217d82b8a2d07446de6fb9..f21e970a8a6b2d3d1fa569a1165cedbee3fa0ce1 100644
+index 33c3ca8398c5167994adb7715d93d8f979a58cb5..92e20ac30e8bcdb5309f33d8dcc4b065eba7cd6b 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -313,11 +313,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -315,11 +315,13 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ItemEntity itemEntity = (ItemEntity)supplier.get();
              itemEntity.setDefaultPickUpDelay();
@@ -117,13 +117,13 @@ index d5b471b64a4d78c6c8217d82b8a2d07446de6fb9..f21e970a8a6b2d3d1fa569a1165cedbe
          if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
          }
-@@ -474,6 +476,12 @@ public class Block extends BlockBehaviour implements ItemLike {
-         return (ImmutableMap)this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
+@@ -482,6 +484,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+         return this.builtInRegistryHolder;
      }
  
 +    // Blueberry start
 +    public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-+       return 0;
++        return 0;
 +    }
 +    // Blueberry end
 +

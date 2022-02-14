@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import net.blueberrymc.util.WeakList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -136,7 +136,7 @@ public abstract class RecipeBuilder {
         }
 
         @NotNull
-        public Shaped define(char character, @NotNull Tag<Item> tag) {
+        public Shaped define(char character, @NotNull TagKey<Item> tag) {
             return this.define(character, Ingredient.of(tag));
         }
 
@@ -242,7 +242,7 @@ public abstract class RecipeBuilder {
         }
 
         @NotNull
-        public Shapeless requires(@NotNull Tag<Item> tag) {
+        public Shapeless requires(@NotNull TagKey<Item> tag) {
             ingredients.add(Ingredient.of(tag));
             return this;
         }

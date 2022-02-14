@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.WorldStem;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -154,12 +155,12 @@ public class BlueberryClient extends BlueberryUtil {
      * Shows warning screen about mod incompatibility (client is trying to join the world without previously installed mods)
      * @return false if world loading should be cancelled; true otherwise
      */
-    public static boolean showIncompatibleWorldModScreen(@NotNull String levelId, @NotNull LevelStorageSource.LevelStorageAccess levelStorageAccess, @NotNull Minecraft.ServerStem serverStem, @NotNull Runnable runnable) {
-        if (!ListUtils.isCompatibleVersionedModInfo(((InstalledModsContainer) serverStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods())) {
+    public static boolean showIncompatibleWorldModScreen(@NotNull String levelId, @NotNull LevelStorageSource.LevelStorageAccess levelStorageAccess, @NotNull WorldStem worldStem, @NotNull Runnable runnable) {
+        if (!ListUtils.isCompatibleVersionedModInfo(((InstalledModsContainer) worldStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods())) {
             Component title = new BlueberryText("blueberry", "selectWorld.backupQuestion.incompatibleMods").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD);
             Component description = new BlueberryText("blueberry", "selectWorld.backupWarning.incompatibleMods");
             List<Component> lines = new ArrayList<>();
-            Set<SimpleEntry<VersionedModInfo, VersionedModInfo>> set = TinyTime.measureTime("getIncompatibleVersionedModInfo", () -> ListUtils.getIncompatibleVersionedModInfo(((InstalledModsContainer) serverStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods()));
+            Set<SimpleEntry<VersionedModInfo, VersionedModInfo>> set = TinyTime.measureTime("getIncompatibleVersionedModInfo", () -> ListUtils.getIncompatibleVersionedModInfo(((InstalledModsContainer) worldStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods()));
             LOGGER.info("Mod incompatibility detected:");
             for (SimpleEntry<VersionedModInfo, VersionedModInfo> entry : set) {
                 String key = Optional.ofNullable(entry.getKey()).map(i -> i.getName() + " [" + i.getModId() + "] @ " + i.getVersion()).orElse("");
@@ -173,7 +174,7 @@ public class BlueberryClient extends BlueberryUtil {
                 }
                 runnable.run();
             }, title, description, false, lines));
-            serverStem.close();
+            worldStem.close();
             try {
                 levelStorageAccess.close();
             } catch (IOException e) {

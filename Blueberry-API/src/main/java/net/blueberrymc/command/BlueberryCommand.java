@@ -15,6 +15,7 @@ import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.VersionChecker;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.server.BlueberryServer;
+import net.blueberrymc.util.Constants;
 import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
@@ -103,9 +104,24 @@ public class BlueberryCommand {
         double l20t = round(getLowestTPS(Arrays.stream(tickTimes).limit(20)));
         double last10t = round(getAverageTPS(Arrays.stream(tickTimes).limit(10)));
         double l10t = round(getLowestTPS(Arrays.stream(tickTimes).limit(10)));
-        source.sendSuccess(new TextComponent("Average TPS in last 100 ticks (5 seconds): ").append(new TextComponent(Double.toString(last100t)).withStyle(getTPSColor(last100t))).append(" (Lowest: ").append(new TextComponent(Double.toString(l100t)).withStyle(getTPSColor(l100t))).append(")"), false);
-        source.sendSuccess(new TextComponent("Average TPS in last 20 ticks (1 second): ").append(new TextComponent(Double.toString(last20t)).withStyle(getTPSColor(last20t))).append(" (Lowest: ").append(new TextComponent(Double.toString(l20t)).withStyle(getTPSColor(l20t))).append(")"), false);
-        source.sendSuccess(new TextComponent("Average TPS in last 10 ticks (500 ms): ").append(new TextComponent(Double.toString(last10t)).withStyle(getTPSColor(last10t))).append(" (Lowest: ").append(new TextComponent(Double.toString(l10t)).withStyle(getTPSColor(l10t))).append(")"), false);
+        source.sendSuccess(
+                new TextComponent("Average TPS in last 100 ticks (5 seconds): ")
+                        .append(new TextComponent(Double.toString(last100t)).withStyle(getTPSColor(last100t))).append(" (Lowest: ")
+                        .append(new TextComponent(Double.toString(l100t)).withStyle(getTPSColor(l100t)))
+                        .append(")"),
+                false);
+        source.sendSuccess(
+                new TextComponent("Average TPS in last 20 ticks (1 second): ")
+                        .append(new TextComponent(Double.toString(last20t)).withStyle(getTPSColor(last20t))).append(" (Lowest: ")
+                        .append(new TextComponent(Double.toString(l20t)).withStyle(getTPSColor(l20t)))
+                        .append(")"),
+                false);
+        source.sendSuccess(
+                new TextComponent("Average TPS in last 10 ticks (500 ms): ")
+                        .append(new TextComponent(Double.toString(last10t)).withStyle(getTPSColor(last10t))).append(" (Lowest: ")
+                        .append(new TextComponent(Double.toString(l10t)).withStyle(getTPSColor(l10t)))
+                        .append(")"),
+                false);
         return 1;
     }
 
@@ -133,10 +149,37 @@ public class BlueberryCommand {
                 LOGGER.warn("Version checker threw exception when fetching cached result", e);
             }
         }
-        source.sendSuccess(new TextComponent(" |  ").append(new TextComponent(Util.capitalize(v.getName())).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD)).append(" ").append(new TextComponent((Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion() + "." + v.getBuildNumber()).withStyle(ChatFormatting.LIGHT_PURPLE)).append(new TextComponent(" (").withStyle(ChatFormatting.DARK_GRAY)).append(new TextComponent("API " + (Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion()).withStyle(ChatFormatting.DARK_GREEN)).append(new TextComponent(") (").withStyle(ChatFormatting.DARK_GRAY)).append(new TextComponent("Minecraft " + SharedConstants.getCurrentVersion().getId()).withStyle(ChatFormatting.GRAY)).append(new TextComponent(")").withStyle(ChatFormatting.DARK_GRAY)), false);
-        source.sendSuccess(new TextComponent(" |  ").append(new BlueberryText("blueberry", "blueberry.mod.command.version.built_at").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)).append(new TextComponent(v.getBuiltAt())), false);
-        source.sendSuccess(new TextComponent(" |  ").append(new BlueberryText("blueberry", "blueberry.mod.command.version.commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)).append(new TextComponent(v.getShortCommit()).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to copy"))).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, v.getCommit())))).append(versionDiff), false);
-        source.sendSuccess(new TextComponent(" |  ").append(new BlueberryText("blueberry", "blueberry.mod.command.version.magmacube_commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)).append(new TextComponent(v.getShortMagmaCubeCommit()).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to copy"))).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, v.getMagmaCubeCommit())))), false);
+        source.sendSuccess(
+                new TextComponent(" |  ")
+                        .append(new TextComponent(Util.capitalize(v.getName())).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
+                        .append(" ")
+                        .append(new TextComponent((Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion() + "." + v.getBuildNumber()).withStyle(ChatFormatting.LIGHT_PURPLE))
+                        .append(new TextComponent(" (").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(new TextComponent("API " + (Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion()).withStyle(ChatFormatting.DARK_GREEN))
+                        .append(new TextComponent(") (").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(new TextComponent("Minecraft " + SharedConstants.getCurrentVersion().getId()).withStyle(ChatFormatting.GRAY))
+                        .append(new TextComponent(")").withStyle(ChatFormatting.DARK_GRAY)),
+                false);
+        source.sendSuccess(
+                new TextComponent(" |  ")
+                        .append(new BlueberryText("blueberry", "blueberry.mod.command.version.built_at").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                        .append(new TextComponent(v.getBuiltAt())),
+                false);
+        source.sendSuccess(
+                new TextComponent(" |  ")
+                        .append(new BlueberryText("blueberry", "blueberry.mod.command.version.commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                        .append(new TextComponent(v.getShortCommit()).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to open GitHub"))).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_REPO + "/commit/" + v.getCommit()))))
+                        .append(versionDiff),
+                false);
+        source.sendSuccess(
+                new TextComponent(" |  ")
+                        .append(new BlueberryText("blueberry", "blueberry.mod.command.version.magmacube_commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                        .append(new TextComponent(v.getShortMagmaCubeCommit())
+                                .withStyle(style ->
+                                        style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to open GitHub")))
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_MAGMA_CUBE_REPO + "/commit/" + v.getMagmaCubeCommit())))
+                        ),
+                false);
         if (!cached) {
             source.sendSuccess(new TextComponent("").append(new BlueberryText("blueberry", "blueberry.mod.command.version.checking_for_new_version").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)), false);
             VersionChecker.check().thenAccept(result -> {

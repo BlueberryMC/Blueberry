@@ -5,23 +5,23 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index 60142dfb9590f291a29078c9085d8bf033898a80..6494ddd928bc3ee81d24dabea017df5053a76aea 100644
+index 0eb1f9c2d6ed00047b410e350eb0cfa8a889fc3a..21506c512b5f08a03d8791772fc0c443fab950ee 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -32,10 +32,10 @@ import net.minecraft.world.level.Level;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
+@@ -31,10 +31,10 @@ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
+ import org.slf4j.Logger;
  
 -public class RecipeManager extends SimpleJsonResourceReloadListener {
 +public class RecipeManager extends SimpleJsonResourceReloadListener implements net.blueberrymc.world.item.crafting.BlueberryRecipeManager { // Blueberry
      private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-     private static final Logger LOGGER = LogManager.getLogger();
+     private static final Logger LOGGER = LogUtils.getLogger();
 -    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = ImmutableMap.of();
 +    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = Maps.newHashMap(); // Blueberry - use HashMap instead
      private Map<ResourceLocation, Recipe<?>> byName = ImmutableMap.of();
      private boolean hasErrors;
  
-@@ -60,8 +60,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -59,8 +59,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
              }
          }
  
@@ -32,7 +32,7 @@ index 60142dfb9590f291a29078c9085d8bf033898a80..6494ddd928bc3ee81d24dabea017df50
          LOGGER.info("Loaded {} recipes", map2.size());
      }
  
-@@ -133,4 +134,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -132,4 +133,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
          this.recipes = ImmutableMap.copyOf(map);
          this.byName = builder.build();
      }

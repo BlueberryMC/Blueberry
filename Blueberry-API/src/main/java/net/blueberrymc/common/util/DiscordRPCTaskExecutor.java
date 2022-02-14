@@ -6,6 +6,7 @@ import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
+import net.blueberrymc.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,6 @@ import java.util.concurrent.TimeUnit;
  * A class used to enable Discord Rich Presence.
  */
 public class DiscordRPCTaskExecutor {
-    private static final String CLIENT_ID = "814409121255915520";
     private static final Logger LOGGER = LogManager.getLogger();
     private static ScheduledExecutorService executor;
 
@@ -36,7 +36,7 @@ public class DiscordRPCTaskExecutor {
     public static boolean discordRpcEnabled = false;
 
     public static void init(boolean discordRpc) {
-        init(CLIENT_ID, discordRpc);
+        init(Constants.DISCORD_CLIENT_ID, discordRpc);
     }
 
     /**
