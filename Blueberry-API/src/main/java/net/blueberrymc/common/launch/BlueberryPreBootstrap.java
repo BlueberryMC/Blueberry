@@ -91,7 +91,7 @@ public class BlueberryPreBootstrap {
                             dirCount++;
                             toLoad.add(f);
                         } else {
-                            if (f.getName().equals(".zip") || f.getName().equals(".jar")) {
+                            if (f.getName().endsWith(".zip") || f.getName().endsWith(".jar")) {
                                 fileCount++;
                                 toLoad.add(f);
                             }
@@ -104,6 +104,9 @@ public class BlueberryPreBootstrap {
                         LOGGER.error(descriptionFile.getAbsolutePath() + " exists but is not a file");
                         continue;
                     }
+                } else {
+                    LOGGER.info("{} does not exist", descriptionFile.getAbsolutePath());
+                    continue;
                 }
                 dirCount++;
                 toLoad.add(file);
