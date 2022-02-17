@@ -5,10 +5,10 @@ Subject: [PATCH] Save/Use InstalledMods to/from level.dat
 
 
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 45524db74aa399b790b28b93f4dfc4064f589993..68ba31e3643689a3c70bbd7b6c11eabba480711e 100644
+index 2af6f693e350dc6a80326fcd36e4398d836988f5..bac5c413f3af884b6d1a66c92bdf95acb8a34ebc 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -1822,6 +1822,12 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -1831,6 +1831,12 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
              return;
          }
  

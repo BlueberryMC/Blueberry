@@ -97,6 +97,15 @@ public class BlueberryVersion {
     }
 
     /**
+     * Returns the branch where the jar was built at.
+     * @return branch
+     */
+    @NotNull
+    public String getBranch() {
+        return branch;
+    }
+
+    /**
      * Returns the build number for the build. Returns 0 if unknown or build number is 0.
      * @return build number
      */

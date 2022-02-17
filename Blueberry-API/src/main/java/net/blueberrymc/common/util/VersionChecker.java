@@ -48,7 +48,7 @@ public class VersionChecker {
     public static CompletableFuture<@NotNull Result> check(boolean forceUseCachedData) {
         return CompletableFuture.supplyAsync(getOrRecord(forceUseCachedData, () -> {
             try {
-                String url = "https://api.github.com/repos/" + Constants.GITHUB_REPO + "/compare/HEAD..." + Versioning.getVersion().getCommit();
+                String url = "https://api.github.com/repos/" + Constants.GITHUB_REPO + "/compare/" + Versioning.getVersion().getBranch() + "..." + Versioning.getVersion().getCommit();
                 LOGGER.info("Opening connection to {}", url);
                 URLConnection connection = new URL(url).openConnection();
                 if (connection instanceof HttpURLConnection conn) {

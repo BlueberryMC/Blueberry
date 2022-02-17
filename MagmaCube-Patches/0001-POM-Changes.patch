@@ -14,7 +14,7 @@ index 0000000000000000000000000000000000000000..65e6bdbaa3a38354f7bc205526355cc3
 +*.iml
 +build/
 diff --git a/pom.xml b/pom.xml
-index 83c3ad5beb9f7187344d8e5a898b2f3a0d9719f4..6ab994803f4ce3de2ba8deea686a1835be8a4d47 100644
+index 16b4cca2b677a46080e7c082ee4c22c91f71d893..6ab994803f4ce3de2ba8deea686a1835be8a4d47 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -23,7 +23,7 @@ index 83c3ad5beb9f7187344d8e5a898b2f3a0d9719f4..6ab994803f4ce3de2ba8deea686a1835
      <parent>
 -        <artifactId>magmacube-parent</artifactId>
 -        <groupId>net.blueberrymc.magmacube</groupId>
--        <version>22w06a</version>
+-        <version>22w07a</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>

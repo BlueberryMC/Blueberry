@@ -8,6 +8,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.ModClassLoader;
+import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -38,7 +39,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,14 +52,14 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraft.world.level.levelgen.feature.StructurePieceType;
 import net.minecraft.world.level.levelgen.feature.featuresize.FeatureSizeType;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
-import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElementType;
-import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
@@ -225,7 +225,12 @@ public final class BlueberryRegistries<T> {
         Preconditions.checkNotNull(object, "value cannot be null");
         String message = "Registering " + object.getClass().getCanonicalName() + ": " + location;
         LOGGER.info(message);
-        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logMinecraft(message));
+        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+            @Override
+            public void execute() {
+                EarlyLoadingMessageManager.logMinecraft(message);
+            }
+        });
         if (object instanceof BlockItem) {
             ((BlockItem) object).registerBlocks(Item.BY_BLOCK, (Item) object);
         }

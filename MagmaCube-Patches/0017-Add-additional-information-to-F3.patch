@@ -9,7 +9,7 @@ Added to game information:
 - Client Protocol Version
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index 69ccea5ee4982f7698fdcfd31d6c288a39432939..a838784cf148ab71e676e073139ef5b2deae176e 100644
+index 5fe4d4fcbf2ec2eb56940f540f1a182082184f62..2f7d10cf6d45bf05eb262135d3a2fa93ef3c863a 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -176,8 +176,9 @@ public class DebugScreenOverlay extends GuiComponent {
@@ -32,7 +32,7 @@ index 69ccea5ee4982f7698fdcfd31d6c288a39432939..a838784cf148ab71e676e073139ef5b2
              String s8 = this.getServerChunkStats();
              if (s8 != null) {
                  list.add(s8);
-@@ -289,8 +290,8 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -290,8 +291,8 @@ public class DebugScreenOverlay extends GuiComponent {
              }
  
              list.add(this.minecraft.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.minecraft.player.getCurrentMood() * 100.0F)));
