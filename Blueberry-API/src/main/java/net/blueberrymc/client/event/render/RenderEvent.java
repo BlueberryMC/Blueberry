@@ -3,7 +3,6 @@ package net.blueberrymc.client.event.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class RenderEvent extends Event {
@@ -20,7 +19,6 @@ public abstract class RenderEvent extends Event {
      */
     @Deprecated
     public static class Pre extends RenderEvent {
-        private static final HandlerList handlerList = new HandlerList();
         private final PoseStack poseStack;
         private final RenderType renderType;
 
@@ -39,11 +37,6 @@ public abstract class RenderEvent extends Event {
         public RenderType getRenderType() {
             return renderType;
         }
-
-        @NotNull
-        public static HandlerList getHandlerList() {
-            return handlerList;
-        }
     }
 
     /**
@@ -51,7 +44,6 @@ public abstract class RenderEvent extends Event {
      */
     @Deprecated
     public static class Post extends RenderEvent {
-        private static final HandlerList handlerList = new HandlerList();
         private final PoseStack poseStack;
         private final RenderType renderType;
 
@@ -69,11 +61,6 @@ public abstract class RenderEvent extends Event {
         @NotNull
         public RenderType getRenderType() {
             return renderType;
-        }
-
-        @NotNull
-        public static HandlerList getHandlerList() {
-            return handlerList;
         }
     }
 

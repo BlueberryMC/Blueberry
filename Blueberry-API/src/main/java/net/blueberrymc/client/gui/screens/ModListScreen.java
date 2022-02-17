@@ -2,6 +2,7 @@ package net.blueberrymc.client.gui.screens;
 
 import com.google.common.base.Joiner;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
@@ -47,6 +48,7 @@ public class ModListScreen extends BlueberryScreen {
     }
 
     protected void init() {
+        assert this.minecraft != null;
         this.modsList = new ModsList(this.minecraft);
         this.children().add(this.modsList);
         this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 38, 98, 20, new BlueberryText("blueberry", "gui.screens.mods.refresh"), (button) -> {
@@ -172,7 +174,7 @@ public class ModListScreen extends BlueberryScreen {
         if (method != null
                 && method.getReturnType().equals(boolean.class)
                 && !method.getDeclaringClass().equals(BlueberryMod.class)) return true;
-        return !ModReloadEvent.getHandlerList().isEmpty();
+        return !EventManager.getHandlerList(ModReloadEvent.class).isEmpty();
     }
 
     private static final Joiner JOINER = Joiner.on(", ");
@@ -184,6 +186,7 @@ public class ModListScreen extends BlueberryScreen {
         if (entry != null) {
             BlueberryMod mod = entry.mod;
             this.reloadButton.active = isReloadSupported(mod);
+            assert this.minecraft != null;
             this.recompileButton.active = this.minecraft.level == null && mod.isFromSource();
             this.unloadButton.active = this.minecraft.level == null && mod.getDescription().isUnloadable();
             this.configButton.active = mod.getVisualConfig().isNotEmpty();

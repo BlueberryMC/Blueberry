@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +15,6 @@ import java.util.function.Consumer;
  * at {@link BlueberryMod#onLoad()} phase.</b>
  */
 public class CommandRegistrationEvent extends Event {
-    private static final HandlerList handlerList = new HandlerList();
-
     protected final CommandDispatcher<CommandSourceStack> dispatcher;
     protected final Commands.CommandSelection commandSelection;
 
@@ -43,10 +40,5 @@ public class CommandRegistrationEvent extends Event {
 
     public void register(@NotNull Consumer<CommandDispatcher<CommandSourceStack>> registerer) {
         registerer.accept(dispatcher);
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

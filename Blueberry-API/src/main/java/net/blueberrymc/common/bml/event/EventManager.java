@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class EventManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ConcurrentHashMap<Class<? extends Event>, HandlerList> handlerMap = new ConcurrentHashMap<>();
 
-    private void logInvalidHandler(Method method, String message, BlueberryMod mod) {
+    private static void logInvalidHandler(Method method, String message, BlueberryMod mod) {
         LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod.getModId());
         ModLoadingErrors.add(new ModLoadingError(mod, String.format("Invalid EventHandler: %s at %s in mod %s", message, method.toGenericString(), mod.getModId()), true));
     }
@@ -33,10 +32,9 @@ public class EventManager {
      * Register a listener. To qualify a method for listener, the method would need to meet all these requirements:
      * <ul>
      *     <li>Parameter count is 1</li>
-     *     <li>Parameter #1 is a event (like PlayerBlockBreakEvent)</li>
-     *     <li>Event class must have a {@link Event valid getHandlerList() method} and public modifier</li>
-     *     <li>Method is accessible from EventManager (usually method should be <code>public</code>)</li>
-     *     <li>Must not be abstract</li>
+     *     <li>First parameter is a event (like PlayerBlockBreakEvent)</li>
+     *     <li>Event class must not be abstract</li>
+     *     <li>Method should be public</li>
      *     <li>Return type should be void (return value isn't used for now)</li>
      *     <li>Method can be static or instance method</li>
      * </ul>
@@ -66,15 +64,19 @@ public class EventManager {
                 logInvalidHandler(method, "parameter type is not assignable from " + Event.class.getCanonicalName(), mod);
                 continue;
             }
-            boolean isStatic = Modifier.isStatic(method.getModifiers());
-            if (!method.canAccess(isStatic ? null : listener)) {
-                logInvalidHandler(method, "method is inaccessible from EventManager", mod);
+            if (!Modifier.isPublic(method.getModifiers())) {
+                logInvalidHandler(method, "method is not public", mod);
                 continue;
             }
             Class<? extends Event> eventClass = clazz.asSubclass(Event.class);
+            if (Modifier.isAbstract(eventClass.getModifiers())) {
+                logInvalidHandler(method, "event class is abstract", mod);
+                continue;
+            }
             HandlerList handlerList = getHandlerList(eventClass);
-            ThrowableConsumer<Event> consumer = isStatic ? event -> method.invoke(null, event) : event -> method.invoke(listener, event);
-            handlerList.add(consumer, eventHandler.priority(), listener, mod);
+            boolean isStatic = Modifier.isStatic(method.getModifiers());
+            ThrowableConsumer<Event> eventExecutor = isStatic ? event -> method.invoke(null, event) : event -> method.invoke(listener, event);
+            handlerList.add(eventExecutor, eventHandler.priority(), listener, mod);
         }
     }
 
@@ -149,34 +151,15 @@ public class EventManager {
      * Returns a handler list for an event class.
      * @param event the class of an event
      * @return handler list
-     * @throws IllegalArgumentException getHandlerList method is not static
-     * @throws IllegalArgumentException getHandlerList method returned null
-     * @throws IllegalArgumentException getHandlerList method is inaccessible
-     * @throws IllegalArgumentException getHandlerList method threw exception
+     * @throws IllegalArgumentException if event class is abstract
      */
     @NotNull
     public static HandlerList getHandlerList(@NotNull Class<? extends Event> event) {
         Preconditions.checkNotNull(event, "event cannot be null");
-        if (handlerMap.containsKey(event)) return handlerMap.get(event);
-        try {
-            Method method = event.getMethod("getHandlerList");
-            if (!method.getReturnType().equals(HandlerList.class)) throw throwNoHandlerListError(event);
-            if (!Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " is not static method");
-            HandlerList handlerList = (HandlerList) method.invoke(null);
-            if (handlerList == null) throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " returned null");
-            handlerMap.put(event, handlerList);
-            return handlerList;
-        } catch (NoSuchMethodException ex) {
-            throw throwNoHandlerListError(event);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " is not accessible (make sure your method has 'public' modifier");
-        } catch (InvocationTargetException e) {
-            throw new IllegalArgumentException("getHandlerList method on " + event.getCanonicalName() + " threw exception", e.getTargetException());
+        if (Modifier.isAbstract(event.getModifiers())) {
+            throw new IllegalArgumentException(event.getTypeName() + " is abstract");
         }
-    }
-
-    private static RuntimeException throwNoHandlerListError(Class<? extends Event> event) {
-        return new IllegalArgumentException(event.getCanonicalName() + " does not implement a static getHandlerList() method that does not have any parameters and returns HandlerList as a result");
+        return handlerMap.computeIfAbsent(event, e -> new HandlerList());
     }
 
     static void printStackTrace(@NotNull Throwable throwable) {

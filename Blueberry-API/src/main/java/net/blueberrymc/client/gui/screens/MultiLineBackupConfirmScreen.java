@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class MultiLineBackupConfirmScreen extends Screen {
     @Nullable
@@ -52,7 +53,7 @@ public class MultiLineBackupConfirmScreen extends Screen {
         }
         this.addRenderableWidget(new Button(this.width / 2 - 155, 100 + y, 150, 20, new TranslatableComponent("selectWorld.backupJoinConfirmButton"), (button) -> this.listener.proceed(true, this.eraseCache.selected())));
         this.addRenderableWidget(new Button(this.width / 2 - 155 + 160, 100 + y, 150, 20, new TranslatableComponent("selectWorld.backupJoinSkipButton"), (button) -> this.listener.proceed(false, this.eraseCache.selected())));
-        this.addRenderableWidget(new Button(this.width / 2 - 155 + 80, 124 + y, 150, 20, CommonComponents.GUI_CANCEL, (button) -> this.minecraft.setScreen(this.lastScreen)));
+        this.addRenderableWidget(new Button(this.width / 2 - 155 + 80, 124 + y, 150, 20, CommonComponents.GUI_CANCEL, (button) -> Objects.requireNonNull(this.minecraft).setScreen(this.lastScreen)));
         this.eraseCache = new Checkbox(this.width / 2 - 155 + 80, 76 + y, 150, 20, new TranslatableComponent("selectWorld.backupEraseCache"), false);
         if (this.promptForCacheErase) {
             this.addRenderableWidget(this.eraseCache);
@@ -77,7 +78,7 @@ public class MultiLineBackupConfirmScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.lastScreen);
+        Objects.requireNonNull(this.minecraft).setScreen(this.lastScreen);
     }
 
     public interface Listener {

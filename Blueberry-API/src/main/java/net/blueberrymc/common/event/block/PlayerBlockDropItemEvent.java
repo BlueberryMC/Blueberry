@@ -1,7 +1,6 @@
 package net.blueberrymc.common.event.block;
 
 import net.blueberrymc.common.bml.event.Cancellable;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.blueberrymc.world.level.block.Block;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -15,7 +14,6 @@ import java.util.List;
  * list of items will also prevent from dropping items. Cancelling the event will prevent the items from dropping.
  */
 public class PlayerBlockDropItemEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlerList = new HandlerList();
     private final ServerPlayer player;
     private final List<ItemEntity> items;
     private boolean cancelled = false;
@@ -52,10 +50,5 @@ public class PlayerBlockDropItemEvent extends BlockEvent implements Cancellable 
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

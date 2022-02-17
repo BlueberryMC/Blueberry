@@ -1,7 +1,6 @@
 package net.blueberrymc.config;
 
 import com.google.common.base.Preconditions;
-import net.blueberrymc.common.bml.ModInfo;
 import net.blueberrymc.common.bml.VersionedModInfo;
 import net.blueberrymc.config.yaml.YamlArray;
 import net.blueberrymc.config.yaml.YamlObject;

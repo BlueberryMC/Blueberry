@@ -2,7 +2,6 @@ package net.blueberrymc.common.event.mod;
 
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.event.CancellableEvent;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
  * mod from being reloaded.
  */
 public class ModReloadEvent extends CancellableEvent {
-    private static final HandlerList handlerList = new HandlerList();
     private final ServerPlayer player;
     private final BlueberryMod mod;
 
@@ -45,10 +43,5 @@ public class ModReloadEvent extends CancellableEvent {
     @NotNull
     public BlueberryMod getMod() {
         return mod;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

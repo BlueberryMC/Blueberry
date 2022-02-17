@@ -2,7 +2,6 @@ package net.blueberrymc.common.event.network;
 
 import io.netty.channel.Channel;
 import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.network.protocol.PacketFlow;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
  * point. Protocol is set to {@link net.minecraft.network.ConnectionProtocol#HANDSHAKING} when the event is fired.
  */
 public class ConnectionInitEvent extends Event {
-    private static final HandlerList handlerList = new HandlerList();
     protected final Channel channel;
     protected final PacketFlow flow;
 
@@ -33,10 +31,5 @@ public class ConnectionInitEvent extends Event {
     @NotNull
     public PacketFlow getFlow() {
         return flow;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

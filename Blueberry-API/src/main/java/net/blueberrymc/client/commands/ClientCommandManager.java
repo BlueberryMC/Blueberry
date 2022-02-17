@@ -33,6 +33,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A class responsible for registering client-side commands.
+ */
 public class ClientCommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Object2ObjectMap<String, ClientCommandHandler> COMMANDS = new Object2ObjectOpenHashMap<>();

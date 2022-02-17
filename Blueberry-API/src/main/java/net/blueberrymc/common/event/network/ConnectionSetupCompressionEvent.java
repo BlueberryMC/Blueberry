@@ -2,7 +2,6 @@ package net.blueberrymc.common.event.network;
 
 import io.netty.channel.Channel;
 import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.network.protocol.PacketFlow;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
  * Called when the compression level was set by the server.
  */
 public class ConnectionSetupCompressionEvent extends Event {
-    private static final HandlerList handlerList = new HandlerList();
     protected final Channel channel;
     protected final PacketFlow flow;
     protected final int compressionThreshold;
@@ -38,10 +36,5 @@ public class ConnectionSetupCompressionEvent extends Event {
 
     public int getCompressionThreshold() {
         return compressionThreshold;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

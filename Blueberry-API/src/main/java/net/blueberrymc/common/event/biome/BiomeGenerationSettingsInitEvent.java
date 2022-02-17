@@ -2,7 +2,6 @@ package net.blueberrymc.common.event.biome;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +11,6 @@ import java.util.function.Supplier;
  * Called when the biome generation settings is being created from the builder.
  */
 public class BiomeGenerationSettingsInitEvent extends Event {
-    private static final HandlerList handlerList = new HandlerList();
     private final BiomeGenerationSettings.Builder builder;
     private Supplier<BiomeGenerationSettings> biomeGenerationSettings;
 
@@ -42,10 +40,5 @@ public class BiomeGenerationSettingsInitEvent extends Event {
     public void setBiomeGenerationSettings(@NotNull Supplier<BiomeGenerationSettings> biomeGenerationSettings) {
         Preconditions.checkNotNull(biomeGenerationSettings, "biomeGenerationSettings cannot be null");
         this.biomeGenerationSettings = biomeGenerationSettings;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

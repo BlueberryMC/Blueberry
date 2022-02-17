@@ -1,9 +1,8 @@
 package net.blueberrymc.common.event.block;
 
 import net.blueberrymc.common.bml.event.Cancellable;
-import net.blueberrymc.common.bml.event.HandlerList;
-import net.minecraft.server.level.ServerPlayer;
 import net.blueberrymc.world.level.block.Block;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * with cancelled state.
  */
 public class PlayerBlockBreakEvent extends BlockExpEvent implements Cancellable {
-    private static final HandlerList handlerList = new HandlerList();
     protected final ServerPlayer player;
     protected boolean cancelled = false;
     protected boolean dropItems = true;
@@ -43,10 +41,5 @@ public class PlayerBlockBreakEvent extends BlockExpEvent implements Cancellable 
 
     public boolean isDropItems() {
         return dropItems;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }

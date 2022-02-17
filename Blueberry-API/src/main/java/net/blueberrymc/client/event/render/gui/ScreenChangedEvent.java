@@ -2,10 +2,8 @@ package net.blueberrymc.client.event.render.gui;
 
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
-import net.blueberrymc.common.bml.event.HandlerList;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -14,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
  * when the screen was changed via reflection etc.
  */
 public class ScreenChangedEvent extends Event {
-    private static final HandlerList handlerList = new HandlerList();
     protected final Screen screen;
 
     public ScreenChangedEvent(@Nullable Screen screen) {
@@ -29,10 +26,5 @@ public class ScreenChangedEvent extends Event {
     @Nullable
     public Screen getScreen() {
         return screen;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 }
