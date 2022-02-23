@@ -109,7 +109,7 @@ index da5ac7b22dd629ec1fffcdabc35743c161c5d611..89ff780da13eb16eb1a06fa4652c8604
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index e4838e82b6fea147cd02dcee66604e90c0bc748f..2af6f693e350dc6a80326fcd36e4398d836988f5 100644
+index a73f2528d78602c704ad0f81c7ffdee79efc7840..dfa62ea78d1db7d722c9a1d08cba0b9659568941 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -451,7 +451,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -323,10 +323,10 @@ index 3718f7005844bf6ae52680838ca9f5925c14eecb..f33de420a3c40aef88fb4eb01149eed8
  
      public void tick() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-index 114ebe087cca8b8457dd0e03dd7ddd8fd06f937f..78b5e757ce2cd29eff01f01be524c02148868a08 100644
+index 5b124c326c64542ced70ad043473edc0cda74786..0b2d913dc6f29022e1615f868a9a074baf2c7388 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -146,7 +146,8 @@ public class TitleScreen extends Screen {
+@@ -184,7 +184,8 @@ public class TitleScreen extends Screen {
              Screen screen = (Screen)(this.minecraft.options.skipMultiplayerWarning ? new JoinMultiplayerScreen(this) : new SafetyScreen(this));
              this.minecraft.setScreen(screen);
          }, onTooltip))).active = flag;
@@ -336,7 +336,7 @@ index 114ebe087cca8b8457dd0e03dd7ddd8fd06f937f..78b5e757ce2cd29eff01f01be524c021
      }
  
      private void createDemoMenuOptions(int i, int i2) {
-@@ -291,8 +292,10 @@ public class TitleScreen extends Screen {
+@@ -334,8 +335,10 @@ public class TitleScreen extends Screen {
                  s = s + I18n.get("menu.modded");
              }
  
@@ -346,9 +346,9 @@ index 114ebe087cca8b8457dd0e03dd7ddd8fd06f937f..78b5e757ce2cd29eff01f01be524c021
 +            drawString(poseStack, this.font, "MagmaCube " + net.blueberrymc.common.util.Versioning.getVersion().getShortMagmaCubeCommit(), 2, this.height - 30, 0xFFFFFF | i6); // MagmaCube // Blueberry - offset 20 -> 30
 +            drawString(poseStack, this.font, s, 2, this.height - 20, 16777215 | i6); // Blueberry - offset 10 -> 20
 +            drawString(poseStack, this.font, net.blueberrymc.common.Blueberry.getModLoader().getLoadedMods().size() + " mods loaded, " + net.blueberrymc.common.Blueberry.getModLoader().getActiveMods().size() + " mods active", 2, this.height - 10, 0xFFFFFF | i6); // Blueberry
-             drawString(poseStack, this.font, COPYRIGHT_TEXT, this.copyrightX, this.height - 10, 16777215 | i6);
-             if (i > this.copyrightX && i < this.copyrightX + this.copyrightWidth && i2 > this.height - 10 && i2 < this.height) {
-                 fill(poseStack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | i6);
+ 
+             for(GuiEventListener guiEventListener : this.children()) {
+                 if (guiEventListener instanceof AbstractWidget) {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
 index 591e43c33f2e0a0dd19f75cb0f846f1356f89350..5bf86699e24c39a60bae19147359594eeabf2375 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
@@ -729,7 +729,7 @@ index 43f39473c5ef3de9e53e6722bea6a0a58382526e..f5254cecd40e9d643cb59316e929560a
  
      void handlePongResponse(ClientboundPongResponsePacket var1);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 54a03b7dc7b332651f91ca40bf72127a15fdb122..2c959b16ccbf2df233c470e5029bc978edf5ff8e 100644
+index c4742a0799531fd9f5653d9907e23aba2d8b56f3..ebee8bd8bd06ad836eae9417c1f9016b85512671 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -60,7 +60,6 @@ public class Main {

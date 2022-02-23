@@ -33,6 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Mod list screen, accessible via main menu.
+ */
 public class ModListScreen extends BlueberryScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private ModsList modsList;

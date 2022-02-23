@@ -67,6 +67,9 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL14.GL_CONSTANT_ALPHA;
 import static org.lwjgl.opengl.GL14.GL_ONE_MINUS_CONSTANT_ALPHA;
 
+/**
+ * This is a screen but not a screen. This is a window.
+ */
 public class EarlyLoadingScreen {
     public static final boolean DISABLED = Boolean.parseBoolean(System.getProperty("net.blueberrymc.client.disableEarlyLoadingScreen", "true"));
     private static final int width = 854;

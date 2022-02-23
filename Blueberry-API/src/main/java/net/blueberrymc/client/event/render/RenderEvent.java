@@ -5,6 +5,9 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Fired when the client renders something.
+ */
 public abstract class RenderEvent extends Event {
     protected RenderEvent() {
         super();
@@ -15,10 +18,11 @@ public abstract class RenderEvent extends Event {
     }
 
     /**
-     * @deprecated this event is never fired
+     * Fired before the client renders something.
+     * @deprecated unimplemented event
      */
     @Deprecated
-    public static class Pre extends RenderEvent {
+    public static abstract class Pre extends RenderEvent {
         private final PoseStack poseStack;
         private final RenderType renderType;
 
@@ -40,10 +44,11 @@ public abstract class RenderEvent extends Event {
     }
 
     /**
-     * @deprecated this event is never fired
+     * Fired after the client renders something.
+     * @deprecated unimplemented event
      */
     @Deprecated
-    public static class Post extends RenderEvent {
+    public static abstract class Post extends RenderEvent {
         private final PoseStack poseStack;
         private final RenderType renderType;
 

@@ -38,6 +38,9 @@ import java.util.stream.LongStream;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
+/**
+ * <code>/blueberry</code> command (server-side command)
+ */
 public class BlueberryCommand {
     private static final SimpleCommandExceptionType UNAVAILABLE_IN_THIS_ENVIRONMENT = new SimpleCommandExceptionType(new TextComponent("This command is not available in this environment.").withStyle(ChatFormatting.RED));
     private static final Logger LOGGER = LogManager.getLogger();

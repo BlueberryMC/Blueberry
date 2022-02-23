@@ -5,7 +5,7 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index 41b7e30ce8cf2ce5408d98802cc5d973567db8d3..1e9bf815790c7ff1d87fc3e925a95d247bf78e6d 100644
+index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc16940d94739a 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 @@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -38,7 +38,7 @@ index 41b7e30ce8cf2ce5408d98802cc5d973567db8d3..1e9bf815790c7ff1d87fc3e925a95d24
      public static void sendNeighborsUpdatePacket(Level level, BlockPos blockPos) {
      }
 @@ -98,11 +110,23 @@ public class DebugPackets {
-     public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart<?> structureStart) {
+     public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart structureStart) {
      }
  
 +    // Blueberry start - implement debug packets

@@ -28,7 +28,7 @@ public class EarlyLoadingMessageManager {
                 .collect(Collectors.toList());
     }
 
-    public static record Message(@NotNull String text, @NotNull MessageType type, long timestamp) {}
+    public record Message(@NotNull String text, @NotNull MessageType type, long timestamp) {}
 
     public enum MessageType {
         ERROR(0.4f, 0.0f, 0.0f),

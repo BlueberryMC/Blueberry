@@ -19,16 +19,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModIdArgument implements ArgumentType<BlueberryMod> {
+public record ModIdArgument(@NotNull Mode mode) implements ArgumentType<BlueberryMod> {
     private static final List<String> EXAMPLES = Collections.singletonList("blueberry");
     // private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod");
     private static final DynamicCommandExceptionType INVALID_MOD_ID = new DynamicCommandExceptionType(o -> new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod", o));
-
-    @NotNull private final Mode mode;
-
-    private ModIdArgument(@NotNull Mode mode) {
-        this.mode = mode;
-    }
 
     @Contract(value = "-> new", pure = true)
     @NotNull
@@ -47,6 +41,10 @@ public class ModIdArgument implements ArgumentType<BlueberryMod> {
         return commandContext.getArgument(s, BlueberryMod.class);
     }
 
+    /**
+     * @deprecated Use {@link #mode()} instead.
+     */
+    @Deprecated
     @NotNull
     public Mode getMode() {
         return mode;

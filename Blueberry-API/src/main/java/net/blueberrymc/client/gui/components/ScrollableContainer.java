@@ -18,11 +18,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A scrollable screen
+ */
 public class ScrollableContainer<E extends GuiEventListener & Widget> extends AbstractContainerEventHandler implements Widget {
     public static final ResourceLocation WHITE_TEXTURE_LOCATION = new ResourceLocation("textures/misc/white.png");
     protected final Minecraft minecraft;

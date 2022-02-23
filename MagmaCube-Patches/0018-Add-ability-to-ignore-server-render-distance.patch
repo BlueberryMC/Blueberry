@@ -5,10 +5,10 @@ Subject: [PATCH] Add ability to ignore server render distance
 
 
 diff --git a/src/main/java/net/minecraft/client/Options.java b/src/main/java/net/minecraft/client/Options.java
-index a65643f052be5919667a53e74784b36a04ebee1a..2b13c2e2f7b5432869477952af77f41decc7a459 100644
+index 77b71788ce7c006d58bb52efb86aa25c13859e83..8327413ee44d20362ad2990a581e37239e03dd26 100644
 --- a/src/main/java/net/minecraft/client/Options.java
 +++ b/src/main/java/net/minecraft/client/Options.java
-@@ -696,7 +696,8 @@ public class Options {
+@@ -698,7 +698,8 @@ public class Options {
      }
  
      public int getEffectiveRenderDistance() {

@@ -44,6 +44,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+/**
+ * Mod config screen, accessible via mod list screen.
+ */
 @SuppressWarnings("PatternVariableCanBeUsed") // maven is still 8
 public class ModConfigScreen extends BlueberryScreen {
     private static final Component UNKNOWN_TEXT = new TextComponent("<unknown>").withStyle(ChatFormatting.GRAY);

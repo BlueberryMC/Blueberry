@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Base class of the screen.
+ */
 public abstract class BlueberryScreen extends Screen {
     protected BlueberryScreen(@NotNull Component title) {
         super(title);

@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * Interface for registering single client command.
+ */
 @FunctionalInterface
 public interface ClientCommandHandler {
     /**
