@@ -14,7 +14,7 @@ index 0000000000000000000000000000000000000000..65e6bdbaa3a38354f7bc205526355cc3
 +*.iml
 +build/
 diff --git a/pom.xml b/pom.xml
-index 868ee63363e29ea381854c1218b743ed64aada21..6ab994803f4ce3de2ba8deea686a1835be8a4d47 100644
+index 86056a811c6bdc86e62be43ba7356ced19e60f9c..6ab994803f4ce3de2ba8deea686a1835be8a4d47 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -23,7 +23,7 @@ index 868ee63363e29ea381854c1218b743ed64aada21..6ab994803f4ce3de2ba8deea686a1835
      <parent>
 -        <artifactId>magmacube-parent</artifactId>
 -        <groupId>net.blueberrymc.magmacube</groupId>
--        <version>1.18.2-pre3</version>
+-        <version>1.18.2-rc1</version>
 +        <!-- Blueberry start -->
 +        <artifactId>blueberry-parent</artifactId>
 +        <groupId>net.blueberrymc</groupId>
@@ -544,7 +544,7 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 43456fd567efa6c99c9bd46cbfa3de4db8bb4115..e02169dc0160aca698aeda2e14a0a470a6baacc6 100644
+index a7f173ac8f3880f3970b071319636f57bca716fa..97ce9cf16bd034635490b614bb034a5dd6c85a4c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -953,7 +953,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
