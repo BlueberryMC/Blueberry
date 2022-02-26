@@ -68,6 +68,11 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     }
 
     @NotNull
+    public List<T> getList() {
+        return list;
+    }
+
+    @NotNull
     public String getCurrentName() {
         return getName(get());
     }

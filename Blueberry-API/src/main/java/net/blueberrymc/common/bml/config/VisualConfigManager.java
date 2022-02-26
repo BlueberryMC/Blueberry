@@ -94,17 +94,18 @@ public class VisualConfigManager {
      * </ol>
      * Supported field types:
      * <ul>
-     *     <li>boolean</li>
-     *     <li>AtomicBoolean</li>
-     *     <li>int</li>
-     *     <li>AtomicInteger</li>
+     *     <li>boolean, int, long, double, float, byte, short, and its atomic types (like AtomicBoolean)</li>
+     *     <li>Class</li>
+     *     <li>String</li>
      *     <li>Enum</li>
+     *     <li>CycleVisualConfig</li>
      * </ul>
      * @param clazz the class (must be annotated with @Config)
      * @return created compound config
      * @throws IllegalArgumentException when class is not public
      */
     @NotNull
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static RootCompoundVisualConfig createFromClass(@Nullable BlueberryMod mod, @NotNull Component name, @NotNull Class<?> clazz) {
         if (!Modifier.isPublic(clazz.getModifiers())) throw new IllegalArgumentException("Class must be public");
         List<Runnable> saveHandlers = new ArrayList<>();
@@ -303,6 +304,14 @@ public class VisualConfigManager {
                     root.add(cfg);
                 } else if (field.getType().isEnum()) {
                     var cfg = CycleVisualConfig.fromEnumUnchecked(tryGetComponent(mod, config), field.getType(), getField(Object.class, field), getDefaultValue(field))
+                            .reverse(shouldReverse(field))
+                            .id(getKey(field))
+                            .description(getDescription(field))
+                            .requiresRestart(requiresMCRestart(field));
+                    visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
+                    root.add(cfg);
+                } else if (field.getType() == CycleVisualConfig.class) {
+                    var cfg = new CycleVisualConfig<>(tryGetComponent(mod, config), Objects.requireNonNull(getField(CycleVisualConfig.class, field)).getList())
                             .reverse(shouldReverse(field))
                             .id(getKey(field))
                             .description(getDescription(field))
