@@ -10,6 +10,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -30,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -83,6 +86,18 @@ public class ClientCommandManager {
         return COMMANDS.get(name);
     }
 
+    public static void unregisterAll(BlueberryMod mod) {
+        List<String> toRemove = new ArrayList<>();
+        COMMANDS.forEach((name, handler) -> {
+            if (ClientCommandHandler.getMod(handler) == mod) {
+                toRemove.add(name);
+            }
+        });
+        for (String s : toRemove) {
+            COMMANDS.remove(s);
+        }
+    }
+
     /**
      * Registers client command handler. Will log a message if there is a conflict. You can check whether the command
      * exists via {@link #has(String)}.
@@ -91,9 +106,9 @@ public class ClientCommandManager {
      */
     public static void register(@NotNull String name, @NotNull ClientCommandHandler handler) {
         if (has(name)) {
-            ClientCommandHandler theirs = Objects.requireNonNull(get(name));
+            ClientCommandHandler existingHandler = Objects.requireNonNull(get(name));
             String provided = ClientCommandHandler.getMod(handler).getModId();
-            String existing = ClientCommandHandler.getMod(theirs).getModId();
+            String existing = ClientCommandHandler.getMod(existingHandler).getModId();
             LOGGER.warn("Client command conflict (/{}): {} (provided) and {} (existing)", name, provided, existing);
             LOGGER.warn("Replacing {}'s client command (/{}) with {}'s ClientCommandHandler.", existing, name, provided);
         }

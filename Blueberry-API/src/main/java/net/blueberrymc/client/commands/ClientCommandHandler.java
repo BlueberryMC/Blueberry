@@ -28,7 +28,9 @@ public interface ClientCommandHandler {
     @NotNull
     static BlueberryMod getMod(@NotNull ClientCommandHandler handler) {
         if (handler.getClass().getClassLoader() instanceof ModClassLoader mcl) {
-            return mcl.getMod();
+            BlueberryMod mod = mcl.getMod();
+            //noinspection ConstantConditions // for some reason, the mod becomes null after ModClassLoader is closed
+            if (mod != null) return mod;
         }
         return Objects.requireNonNull(Blueberry.getModManager().getModById("blueberry"));
     }

@@ -3,6 +3,7 @@ package net.blueberrymc.common.bml;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
+import net.blueberrymc.client.commands.ClientCommandManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.launch.BlueberryPreBootstrap;
 import net.blueberrymc.common.Side;
@@ -16,6 +17,7 @@ import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.common.util.ListUtils;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.common.util.UniversalClassLoader;
+import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.common.util.tools.JavaTools;
 import net.blueberrymc.common.util.tools.liveCompiler.JavaCompiler;
 import net.blueberrymc.config.ModDescriptionFile;
@@ -368,6 +370,12 @@ public class BlueberryModLoader implements ModLoader {
             mod.onUnload();
             mod.getStateList().add(ModState.UNLOADED);
             Blueberry.getEventManager().unregisterEvents(mod);
+            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                @Override
+                public void execute() {
+                    ClientCommandManager.unregisterAll(mod);
+                }
+            });
         } catch (Throwable throwable) {
             LOGGER.error("Failed to unload a mod {} ({}) [{}]", mod.getName(), mod.getDescription().getModId(), mod.getDescription().getVersion(), throwable);
         }
