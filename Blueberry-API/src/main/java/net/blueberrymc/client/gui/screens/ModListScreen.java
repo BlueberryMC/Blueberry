@@ -7,7 +7,6 @@ import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
-import net.blueberrymc.common.bml.InvalidModException;
 import net.blueberrymc.common.bml.SimpleModInfo;
 import net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
@@ -109,6 +108,7 @@ public class ModListScreen extends BlueberryScreen {
                             description = e.getKey();
                             if (e.getKey().isSource() && e.getValue() != null) {
                                 compiled = e.getValue();
+                                ((BlueberryModLoader) Blueberry.getModLoader()).preprocess(compiled);
                             }
                         } catch (Throwable throwable) {
                             LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
@@ -118,7 +118,7 @@ public class ModListScreen extends BlueberryScreen {
                         BlueberryMod mod;
                         try {
                             mod = ((BlueberryModLoader) Blueberry.getModLoader()).loadMod(compiled != null ? compiled : file, compiled == null ? null : file);
-                        } catch (InvalidModException ex) {
+                        } catch (Exception ex) {
                             LOGGER.error("Could not load a mod", ex);
                             ModLoadingErrors.add(new ModLoadingError(description, "Could not load a mod: " + ex.getMessage(), false));
                             return;

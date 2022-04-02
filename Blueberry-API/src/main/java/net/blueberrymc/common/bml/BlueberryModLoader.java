@@ -169,6 +169,12 @@ public class BlueberryModLoader implements ModLoader {
     @NotNull
     public Map.Entry<@NotNull ModDescriptionFile, @Nullable File> preprocess(@NotNull File file) throws IOException {
         ModDescriptionFile description = preloadMod(file);
+        var entry = compileSource(file, description);
+        if (entry != null) return entry;
+        return new AbstractMap.SimpleImmutableEntry<>(description, null);
+    }
+
+    public Map.Entry<ModDescriptionFile, File> compileSource(@NotNull File file, @NotNull ModDescriptionFile description) throws IOException {
         if (description.isSource()) {
             LOGGER.warn("Live Compiler is EXPERIMENTAL! Do not expect it to work.");
             if (!file.isDirectory()) {
@@ -231,7 +237,7 @@ public class BlueberryModLoader implements ModLoader {
                 Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Failed to compile the source code of mod " + description.getName() + " (" + description.getModId() + ")"));
             }
         }
-        return new AbstractMap.SimpleImmutableEntry<>(description, null);
+        return null;
     }
 
     @Override
@@ -276,6 +282,9 @@ public class BlueberryModLoader implements ModLoader {
         Preconditions.checkNotNull(file, "file cannot be null");
         Preconditions.checkArgument(file.exists(), file.getAbsolutePath() + " does not exist");
         Map.Entry<ModDescriptionFile, File> entry = filePath2descriptionMap.get(file.getAbsolutePath());
+        if (entry == null) {
+            throw new InvalidModException("The mod " + file.getAbsolutePath() + " has no preloaded data exists");
+        }
         ModDescriptionFile description = entry.getKey();
         if (description == null) throw new InvalidModException(new AssertionError("ModDescriptionFile of " + file.getAbsolutePath() + " could not be found"));
         if (circularDependency.contains(description.getModId())) throw new InvalidModException("Mod '" + description.getModId() + "' has circular dependency");

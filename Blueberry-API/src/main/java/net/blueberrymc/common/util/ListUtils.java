@@ -65,7 +65,7 @@ public class ListUtils {
         return matches == server.size()/* && matches >= client.size()*/;
     }
 
-    // TODO: really inefficient (client * server * 2 + client + server, so for loops 80400 if client and server has 200 mods)
+    // TODO: really inefficient (client * server * 2 + client + server, so 'for' loops 80400 times if client and server has 200 mods)
     @NotNull
     public static Set<SimpleEntry<VersionedModInfo, VersionedModInfo>> getIncompatibleVersionedModInfo(@NotNull Collection<? extends VersionedModInfo> server, @NotNull Collection<? extends VersionedModInfo> client) {
         if (server.size() > client.size()) return Collections.emptySet();
