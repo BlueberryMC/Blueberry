@@ -174,6 +174,7 @@ public class BlueberryModLoader implements ModLoader {
         return new AbstractMap.SimpleImmutableEntry<>(description, null);
     }
 
+    @Nullable
     public Map.Entry<ModDescriptionFile, File> compileSource(@NotNull File file, @NotNull ModDescriptionFile description) throws IOException {
         if (description.isSource()) {
             LOGGER.warn("Live Compiler is EXPERIMENTAL! Do not expect it to work.");
