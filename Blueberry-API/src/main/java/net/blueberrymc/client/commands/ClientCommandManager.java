@@ -86,7 +86,7 @@ public class ClientCommandManager {
         return COMMANDS.get(name);
     }
 
-    public static void unregisterAll(BlueberryMod mod) {
+    public static void unregisterAll(@NotNull BlueberryMod mod) {
         List<String> toRemove = new ArrayList<>();
         COMMANDS.forEach((name, handler) -> {
             if (ClientCommandHandler.getMod(handler) == mod) {
