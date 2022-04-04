@@ -9,8 +9,11 @@ import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.ModLoader;
 import net.blueberrymc.common.bml.ModManager;
 import net.blueberrymc.common.bml.ModState;
+import net.blueberrymc.common.permission.DefaultPermissionProvider;
+import net.blueberrymc.common.permission.PermissionProvider;
 import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
+import net.blueberrymc.common.util.NonNullObject;
 import net.blueberrymc.common.util.SafeExecutor;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.common.util.VoidSafeExecutor;
@@ -38,6 +41,7 @@ public class Blueberry {
     private static BlueberryModLoader modLoader;
     private static final EventManager eventManager = new EventManager();
     private static final ModManager modManager = new ModManager();
+    private static final NonNullObject<PermissionProvider> permissionProvider = new NonNullObject<>(DefaultPermissionProvider.INSTANCE);
     private static Side side;
     private static BlueberryUtil util;
     private static File gameDir;
@@ -194,6 +198,23 @@ public class Blueberry {
         BlueberryMod mod = getModManager().getModById("blueberry");
         if (mod != null) return mod.getStateList().getCurrentState();
         return ModState.LOADED;
+    }
+
+    /**
+     * Returns the current permission provider.
+     * @return current permission provider
+     */
+    @NotNull
+    public static PermissionProvider getPermissionProvider() {
+        return permissionProvider.get();
+    }
+
+    /**
+     * Sets the permission provider.
+     * @param permissionProvider new permission provider
+     */
+    public static void setPermissionProvider(@NotNull PermissionProvider permissionProvider) {
+        Blueberry.permissionProvider.set(permissionProvider);
     }
 
     /**

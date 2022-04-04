@@ -9,6 +9,7 @@ import net.blueberrymc.common.util.SimpleEntry;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.server.BlueberryServer;
 import net.minecraft.CrashReport;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,6 +111,21 @@ public abstract class BlueberryUtil {
             LOGGER.error("Could not convert {}", path, ex);
         }
         return b;
+    }
+
+    /**
+     * Gets the minecraft server instance (integrated or dedicated).
+     * @return the server
+     */
+    @Nullable
+    public MinecraftServer getMinecraftServer() {
+        if (Blueberry.isClient()) {
+            return asClient().getIntegratedServer();
+        } else if (Blueberry.isServer()) {
+            return asServer().getServer();
+        } else {
+            return null;
+        }
     }
 
     @NotNull
