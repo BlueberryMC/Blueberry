@@ -15,6 +15,10 @@ public abstract class BlueberryScreen extends Screen {
         super(title);
     }
 
+    /**
+     * Gets the children of this screen.
+     * @return children
+     */
     @SuppressWarnings("unchecked")
     @Override
     public @NotNull List<GuiEventListener> children() {

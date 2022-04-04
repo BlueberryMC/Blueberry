@@ -6,6 +6,8 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Fired when a user tries to reload a mod using ModListScreen or via command. Cancelling the event will prevent the
  * mod from being reloaded.
@@ -15,6 +17,8 @@ public class ModReloadEvent extends CancellableEvent {
     private final BlueberryMod mod;
 
     public ModReloadEvent(@Nullable ServerPlayer player, @NotNull BlueberryMod mod) {
+        Objects.requireNonNull(player, "player cannot be null");
+        Objects.requireNonNull(mod, "mod cannot be null");
         this.player = player;
         this.mod = mod;
     }

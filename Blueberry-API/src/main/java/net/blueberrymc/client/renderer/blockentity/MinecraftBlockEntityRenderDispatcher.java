@@ -8,5 +8,10 @@ import org.jetbrains.annotations.NotNull;
  * An interface for registering special block entity renderer.
  */
 public interface MinecraftBlockEntityRenderDispatcher {
+    /**
+     * Registers the renderer for given block entity type.
+     * @param blockEntityType block entity type
+     * @param blockEntityRenderer renderer
+     */
     void registerSpecialRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer);
 }

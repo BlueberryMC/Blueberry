@@ -143,6 +143,11 @@ public class BlueberryClient extends BlueberryUtil {
         return impl;
     }
 
+    /**
+     * Registers the renderer for given block entity type.
+     * @param blockEntityType block entity type
+     * @param blockEntityRenderer renderer
+     */
     public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
         ((MinecraftBlockEntityRenderDispatcher) Minecraft.getInstance().getBlockEntityRenderDispatcher()).registerSpecialRenderer(blockEntityType, blockEntityRenderer);
     }

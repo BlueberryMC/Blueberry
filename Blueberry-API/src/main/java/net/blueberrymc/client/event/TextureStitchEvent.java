@@ -20,6 +20,10 @@ public abstract class TextureStitchEvent extends Event {
         this.textureAtlas = textureAtlas;
     }
 
+    /**
+     * Gets the texture atlas that is being stitched.
+     * @return the texture
+     */
     @NotNull
     public TextureAtlas getTextureAtlas() {
         return textureAtlas;
@@ -36,6 +40,11 @@ public abstract class TextureStitchEvent extends Event {
             this.sprites = sprites;
         }
 
+        /**
+         * Registers a sprite.
+         * @param spriteLocation the location of the sprite
+         * @return true if added; false otherwise
+         */
         public boolean addSprite(@NotNull ResourceLocation spriteLocation) {
             return this.sprites.add(spriteLocation);
         }

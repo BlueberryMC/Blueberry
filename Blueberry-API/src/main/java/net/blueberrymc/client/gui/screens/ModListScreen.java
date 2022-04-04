@@ -49,6 +49,7 @@ public class ModListScreen extends BlueberryScreen {
         this.previousScreen = screen;
     }
 
+    // TODO: clean-up
     protected void init() {
         assert this.minecraft != null;
         this.modsList = new ModsList(this.minecraft);

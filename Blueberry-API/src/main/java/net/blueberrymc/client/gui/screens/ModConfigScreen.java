@@ -78,6 +78,7 @@ public class ModConfigScreen extends BlueberryScreen {
         this.children().forEach(listener -> listener.mouseMoved(x, y));
     }
 
+    // TODO: clean-up
     protected void init() {
         this.children().clear();
         callbacks.clear();

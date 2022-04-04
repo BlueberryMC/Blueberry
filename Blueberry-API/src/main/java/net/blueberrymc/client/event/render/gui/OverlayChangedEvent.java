@@ -22,6 +22,10 @@ public class OverlayChangedEvent extends Event {
         this.overlay = overlay;
     }
 
+    /**
+     * Gets the new overlay.
+     * @return the overlay
+     */
     @Nullable
     public Overlay getOverlay() {
         return overlay;

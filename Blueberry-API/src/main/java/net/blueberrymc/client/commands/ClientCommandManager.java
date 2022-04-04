@@ -86,7 +86,12 @@ public class ClientCommandManager {
         return COMMANDS.get(name);
     }
 
+    /**
+     * Unregisters all client commands.
+     * @param mod the mod
+     */
     public static void unregisterAll(@NotNull BlueberryMod mod) {
+        // TODO: remove command from dispatcher?
         List<String> toRemove = new ArrayList<>();
         COMMANDS.forEach((name, handler) -> {
             if (ClientCommandHandler.getMod(handler) == mod) {

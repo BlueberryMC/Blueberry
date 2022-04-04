@@ -64,52 +64,104 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         }
     }
 
+    /**
+     * Gets the width of the row.
+     * @return width
+     */
     public int getRowWidth() {
         return this.width / 5 * 4;
     }
 
+    /**
+     * Sets whether the background should be rendered.
+     * @param flag true if background should be rendered; false otherwise
+     */
     public void setRenderBackground(boolean flag) {
         this.renderBackground = flag;
     }
 
+    /**
+     * Sets whether the top and bottom should be rendered.
+     * @param flag true if top and bottom should be rendered; false otherwise
+     */
     public void setRenderTopAndBottom(boolean flag) {
         this.renderTopAndBottom = flag;
     }
 
+    /**
+     * Gets the children of this container that have been added to the container.
+     * @return children
+     */
     @NotNull
     public final List<E> children() {
         return this.children;
     }
 
+    /**
+     * Removes all children from this container.
+     */
     protected final void clearEntries() {
         this.children.clear();
     }
 
+    /**
+     * Removes all children from this container and adds the given children.
+     * @param collection collection of children to add
+     */
     protected void replaceEntries(@NotNull Collection<E> collection) {
         this.children.clear();
         this.children.addAll(collection);
     }
 
+    /**
+     * Gets the children by index.
+     * @param i index
+     * @return children at index
+     * @throws NullPointerException if children is null
+     * @throws IndexOutOfBoundsException if index is out of bounds
+     */
     @NotNull
     protected E getEntry(int i) {
         return Objects.requireNonNull(this.children().get(i));
     }
 
+    /**
+     * Adds a child to this container.
+     * @param entry child to add
+     * @return max index of children (children.length - 1)
+     */
     protected int addEntry(@NotNull E entry) {
         this.children.add(entry);
         return this.children.size() - 1;
     }
 
+    /**
+     * Gets the number of children in this container.
+     * @return number of children
+     */
     protected int getItemCount() {
         return this.children().size();
     }
 
+    /**
+     * Gets the children at given x and y position.
+     * @param x x position
+     * @param y y position
+     * @return children at x and y position; null if no children at x and y position
+     */
     @Nullable
     protected final E getEntryAtPosition(double x, double y) {
         for (E e : this.children()) if (e.isMouseOver(x, y)) return e;
         return null;
     }
 
+    /**
+     * Updates the size of this container.
+     * @param width width
+     * @param height height
+     * @param top top
+     * @param bottom bottom
+     */
     public void updateSize(int width, int height, int top, int bottom) {
         this.width = width;
         this.height = height;
@@ -124,6 +176,10 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         this.right = i + this.width;
     }
 
+    /**
+     * Gets the maximum height of the container.
+     * @return maximum height
+     */
     protected int getMaxPosition() {
         return this.getItemCount() * this.itemHeight + this.headerHeight;
     }
@@ -140,10 +196,17 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
     protected void renderDecorations(@NotNull PoseStack poseStack, int i, int i2) {
     }
 
-    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
+    /**
+     * Renders the container.
+     * @param poseStack pose stack
+     * @param mouseX mouse x position
+     * @param mouseY mouse y position
+     * @param deltaFrameTime delta frame time
+     */
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
         this.renderBackground(poseStack);
-        int i3 = this.getScrollbarPosition();
-        int i4 = i3 + 6;
+        int scrollbarPosition = this.getScrollbarPosition();
+        int i4 = scrollbarPosition + 6;
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
         if (this.renderBackground) {
@@ -164,7 +227,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
             this.renderHeader(poseStack, rowLeft, i6, tesselator);
         }
 
-        this.renderList(poseStack, rowLeft, i6, i, i2, f);
+        this.renderList(poseStack, rowLeft, i6, mouseX, mouseY, deltaFrameTime);
         if (this.renderTopAndBottom) {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
@@ -199,37 +262,37 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
             tesselator.end();
         }
 
-        int i9 = this.getMaxScroll();
-        if (i9 > 0) {
+        int maxScroll = this.getMaxScroll();
+        if (maxScroll > 0) {
             RenderSystem.disableTexture();
             int i10 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
             i10 = Mth.clamp(i10, 32, this.bottom - this.top - 8);
-            int i11 = (int)this.getScrollAmount() * (this.bottom - this.top - i10) / i9 + this.top;
+            int i11 = (int)this.getScrollAmount() * (this.bottom - this.top - i10) / maxScroll + this.top;
             if (i11 < this.top) {
                 i11 = this.top;
             }
 
             bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.vertex(i3, this.bottom, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+            bufferBuilder.vertex(scrollbarPosition, this.bottom, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
             bufferBuilder.vertex(i4, this.bottom, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
             bufferBuilder.vertex(i4, this.top, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(i3, this.top, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(i3, i11 + i10, 0.0D).uv(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+            bufferBuilder.vertex(scrollbarPosition, this.top, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
+            bufferBuilder.vertex(scrollbarPosition, i11 + i10, 0.0D).uv(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
             bufferBuilder.vertex(i4, i11 + i10, 0.0D).uv(1.0F, 1.0F).color(128, 128, 128, 255).endVertex();
             bufferBuilder.vertex(i4, i11, 0.0D).uv(1.0F, 0.0F).color(128, 128, 128, 255).endVertex();
-            bufferBuilder.vertex(i3, i11, 0.0D).uv(0.0F, 0.0F).color(128, 128, 128, 255).endVertex();
-            bufferBuilder.vertex(i3, i11 + i10 - 1, 0.0D).uv(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+            bufferBuilder.vertex(scrollbarPosition, i11, 0.0D).uv(0.0F, 0.0F).color(128, 128, 128, 255).endVertex();
+            bufferBuilder.vertex(scrollbarPosition, i11 + i10 - 1, 0.0D).uv(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
             bufferBuilder.vertex(i4 - 1, i11 + i10 - 1, 0.0D).uv(1.0F, 1.0F).color(192, 192, 192, 255).endVertex();
             bufferBuilder.vertex(i4 - 1, i11, 0.0D).uv(1.0F, 0.0F).color(192, 192, 192, 255).endVertex();
-            bufferBuilder.vertex(i3, i11, 0.0D).uv(0.0F, 0.0F).color(192, 192, 192, 255).endVertex();
+            bufferBuilder.vertex(scrollbarPosition, i11, 0.0D).uv(0.0F, 0.0F).color(192, 192, 192, 255).endVertex();
             tesselator.end();
         }
 
-        this.renderDecorations(poseStack, i, i2);
+        this.renderDecorations(poseStack, mouseX, mouseY);
         children.forEach(e -> {
             if (e instanceof AbstractWidget) {
                 if (((AbstractWidget) e).isHoveredOrFocused()) {
-                    ((AbstractWidget) e).renderToolTip(poseStack, i, i2);
+                    ((AbstractWidget) e).renderToolTip(poseStack, mouseX, mouseY);
                 }
             }
         });
@@ -364,7 +427,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         return y >= (double)this.top && y <= (double)this.bottom && x >= (double)this.left && x <= (double)this.right;
     }
 
-    protected void renderList(@NotNull PoseStack poseStack, int rowLeft, int adjustedScrollAmount, int i3, int i4, float f) {
+    protected void renderList(@NotNull PoseStack poseStack, int rowLeft, int adjustedScrollAmount, int i3, int i4, float deltaFrameTime) {
         int itemCount = this.getItemCount();
         int offset = 38;
         int prevY = Integer.MIN_VALUE;
@@ -374,7 +437,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
             int rowBottom = this.getRowBottom(i);
             if (rowBottom >= this.top && rowTop <= this.bottom) {
                 E entry = this.getEntry(i);
-                entry.render(poseStack, i3, i4, f);
+                entry.render(poseStack, i3, i4, deltaFrameTime);
                 if (entry instanceof AbstractWidget aw) {
                     if (prevY == aw.y) {
                         offset -= 22;

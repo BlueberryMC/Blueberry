@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when the screen was changed via {@link net.minecraft.client.Minecraft#setOverlay(Overlay)}. This event may be
+ * Fired when the screen was changed via {@link net.minecraft.client.Minecraft#setScreen(Screen)}. This event may be
  * called from any thread. Use {@link Event#isAsynchronous()} to distinguish between them. This event is not fired
  * when the screen was changed via reflection etc.
  */
@@ -23,6 +23,10 @@ public class ScreenChangedEvent extends Event {
         this.screen = screen;
     }
 
+    /**
+     * Gets the new screen.
+     * @return the screen
+     */
     @Nullable
     public Screen getScreen() {
         return screen;
