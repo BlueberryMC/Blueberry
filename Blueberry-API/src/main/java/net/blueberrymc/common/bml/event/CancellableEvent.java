@@ -7,6 +7,14 @@ package net.blueberrymc.common.bml.event;
 public abstract class CancellableEvent extends Event implements Cancellable {
     protected boolean cancelled = false;
 
+    protected CancellableEvent() {
+        super();
+    }
+
+    protected CancellableEvent(boolean async) {
+        super(async);
+    }
+
     @Override
     public boolean isCancelled() {
         return cancelled;

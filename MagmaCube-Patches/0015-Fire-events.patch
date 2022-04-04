@@ -1,9 +1,28 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: acrylic-style <me@acrylicstyle.xyz>
-Date: Wed, 10 Nov 2021 14:38:53 +0900
-Subject: [PATCH] Fire network events
+Date: Mon, 4 Apr 2022 13:59:39 +0900
+Subject: [PATCH] Fire events
 
 
+diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
+index 78e1e2a3e068a38a406619cf3d9a17ad677b2835..5244eb5acb4b793fa07e90a4f7f113ace1ae432c 100644
+--- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
++++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
+@@ -269,7 +269,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+     }
+ 
+     public void chat(String s) {
+-        this.connection.send(new ServerboundChatPacket(s));
++        // Blueberry start - fire ClientLocalPlayerChatEvent
++        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
++        if (!event.callEvent()) {
++            return;
++        }
++        this.connection.send(new ServerboundChatPacket(event.getMessage()));
++        // Blueberry end - fire ClientLocalPlayerChatEvent
+     }
+ 
+     public void swing(InteractionHand interactionHand) {
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index dba3ba3bd696eb6707f9f5670f42e318561cc1df..f93f1dc7c545a164d3e500da57c1326cff9f01f2 100644
 --- a/src/main/java/net/minecraft/network/Connection.java

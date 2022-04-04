@@ -115,7 +115,12 @@ public class BlueberryModLoader implements ModLoader {
             } catch (Throwable throwable) {
                 LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
                 ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
-                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Error during preprocessing " + file.getName() + " (loaded from: " + file.getAbsolutePath() + ")"));
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logError("Error during preprocessing " + file.getName() + " (loaded from: " + file.getAbsolutePath() + ")");
+                    }
+                });
                 toLoad.remove(file);
             }
         });
@@ -136,7 +141,12 @@ public class BlueberryModLoader implements ModLoader {
                     String message = "Required dependency \"" + depend + "\" is missing";
                     LOGGER.error(modId + ": " + message);
                     ModLoadingErrors.add(new ModLoadingError(entry.getKey(), new UnknownModDependencyException(message), false));
-                    Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError(modId + ": " + message));
+                    Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                        @Override
+                        public void execute() {
+                            EarlyLoadingMessageManager.logError(modId + ": " + message);
+                        }
+                    });
                     continue;
                 }
                 if (!entry.getKey().getDepends().contains(dependDesc.getKey().getModId())) continue;
@@ -144,13 +154,23 @@ public class BlueberryModLoader implements ModLoader {
                 circularDependency.add(modId);
                 toLoad.remove(entry.getValue());
                 ModLoadingErrors.add(new ModLoadingError(entry.getKey(), new InvalidModException("Circular dependency detected with " + depend), false));
-                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Circular dependency detected with " + depend));
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logError("Circular dependency detected with " + depend);
+                    }
+                });
             }
         });
         if (!circularDependency.isEmpty()) {
             String deps = ListUtils.join(circularDependency, ", ");
             LOGGER.error("Following mods has circular dependency, cannot load: {}", deps);
-            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Following mods has circular dependency, cannot load: " + deps));
+            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                @Override
+                public void execute() {
+                    EarlyLoadingMessageManager.logError("Following mods has circular dependency, cannot load: " + deps);
+                }
+            });
         }
         toLoad.forEach(file -> {
             try {
@@ -163,7 +183,12 @@ public class BlueberryModLoader implements ModLoader {
                 ModDescriptionFile desc = filePath2descriptionMap.get(file.getAbsolutePath()).getKey();
                 LOGGER.error("Could not load a mod (" + desc.getModId() + "): " + ex);
                 ModLoadingErrors.add(new ModLoadingError(desc, "Could not load a mod: " + ex.getMessage(), false));
-                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Could not load a mod (" + desc.getModId() + "): " + ex.getMessage()));
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logError("Could not load a mod (" + desc.getModId() + "): " + ex.getMessage());
+                    }
+                });
             }
         });
     }
@@ -193,11 +218,21 @@ public class BlueberryModLoader implements ModLoader {
                         JavaTools.UNAVAILABLE_REASON.getMessage()
                 );
                 ModLoadingErrors.add(new ModLoadingError(description, "Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage(), true));
-                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logWarning("Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage()));
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logWarning("Live compiler is unavailable: " + JavaTools.UNAVAILABLE_REASON.getMessage());
+                    }
+                });
                 return new AbstractMap.SimpleImmutableEntry<>(description, null);
             }
             LOGGER.info("Compiling the source code of mod {} ({}) [{}]", description.getName(), description.getModId(), description.getVersion());
-            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader(String.format("Compiling the source code of mod %s (%s) [%s]", description.getName(), description.getModId(), description.getVersion())));
+            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                @Override
+                public void execute() {
+                    EarlyLoadingMessageManager.logModLoader(String.format("Compiling the source code of mod %s (%s) [%s]", description.getName(), description.getModId(), description.getVersion()));
+                }
+            });
             File src = description.getSourceDir() != null ? new File(description.getSourceDir()) : file;
             if (!src.exists() || !src.isDirectory()) {
                 src = new File(file, description.getSourceDir());
@@ -221,7 +256,12 @@ public class BlueberryModLoader implements ModLoader {
                         include = new File(file, description.getInclude());
                         if (!include.exists() || !src.isDirectory()) {
                             LOGGER.warn("Include dir does not exist or not a directory, skipping");
-                            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logWarning("Include directory is missing or not a directory"));
+                            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                @Override
+                                public void execute() {
+                                    EarlyLoadingMessageManager.logWarning("Include directory is missing or not a directory");
+                                }
+                            });
                         }
                     }
                     if (include.exists()) {
@@ -229,7 +269,12 @@ public class BlueberryModLoader implements ModLoader {
                     }
                 }
                 LOGGER.info("Successfully compiled the source code of mod {} ({})", description.getName(), description.getModId());
-                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModCompiler("Successfully compiled the source of mod " + description.getName() + " (" + description.getModId() + ")"));
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logModCompiler("Successfully compiled the source of mod " + description.getName() + " (" + description.getModId() + ")");
+                    }
+                });
                 //filePath2descriptionMap.put(compiled.getAbsolutePath(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
                 //descriptions.put(description.getModId(), new AbstractMap.SimpleImmutableEntry<>(description, compiled));
                 descriptions.remove(description.getModId());
@@ -237,7 +282,12 @@ public class BlueberryModLoader implements ModLoader {
             } catch (RuntimeException ex) {
                 LOGGER.info("Failed to compile the source code of mod {} ({})", description.getName(), description.getModId());
                 ModLoadingErrors.add(new ModLoadingError(description, "Failed to compile the source code", false));
-                Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logError("Failed to compile the source code of mod " + description.getName() + " (" + description.getModId() + ")"));
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logError("Failed to compile the source code of mod " + description.getName() + " (" + description.getModId() + ")");
+                    }
+                });
             }
         }
         return null;
@@ -319,7 +369,12 @@ public class BlueberryModLoader implements ModLoader {
         }
         try {
             LOGGER.info("Loading mod {} ({}) version {}", description.getName(), description.getModId(), description.getVersion());
-            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader(String.format("Loading mod %s (%s) version %s", description.getName(), description.getModId(), description.getVersion())));
+            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                @Override
+                public void execute() {
+                    EarlyLoadingMessageManager.logModLoader(String.format("Loading mod %s (%s) version %s", description.getName(), description.getModId(), description.getVersion()));
+                }
+            });
             ModClassLoader modClassLoader = new ModClassLoader(this, this.getClass().getClassLoader(), description, file);
             loaders.add(modClassLoader);
             BlueberryMod mod = modClassLoader.mod;
@@ -330,7 +385,12 @@ public class BlueberryModLoader implements ModLoader {
                 mod.sourceDir = sourceDir;
             }
             LOGGER.info("Loaded mod {} ({}) version {}", description.getName(), description.getModId(), description.getVersion());
-            Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader(String.format("Loaded mod %s (%s) version %s", description.getName(), description.getModId(), description.getVersion())));
+            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                @Override
+                public void execute() {
+                    EarlyLoadingMessageManager.logModLoader(String.format("Loaded mod %s (%s) version %s", description.getName(), description.getModId(), description.getVersion()));
+                }
+            });
             return mod;
         } catch (IOException ex) {
             throw new InvalidModException(ex);
@@ -525,6 +585,7 @@ public class BlueberryModLoader implements ModLoader {
         return mod;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void initModResources(@NotNull BlueberryMod mod) {
         BlueberryResourceManager blueberryResourceManager = new BlueberryResourceManager(mod);
@@ -534,10 +595,12 @@ public class BlueberryModLoader implements ModLoader {
             CloseableResourceManager crm = (CloseableResourceManager) ReflectionHelper.getFieldWithoutException(ReloadableResourceManager.class, rm, "resources");
             if (crm instanceof MultiPackResourceManager) {
                 List<PackResources> packs = (List<PackResources>) ReflectionHelper.getFieldWithoutException(MultiPackResourceManager.class, crm, "packs");
+                assert packs != null;
                 packs.add(blueberryResourceManager.getPackResources());
             }
         } else if (resourceManager instanceof MultiPackResourceManager rm) {
             List<PackResources> packs = (List<PackResources>) ReflectionHelper.getFieldWithoutException(MultiPackResourceManager.class, rm, "packs");
+            assert packs != null;
             packs.add(blueberryResourceManager.getPackResources());
         } else if (resourceManager instanceof FallbackResourceManager rm) {
             rm.add(blueberryResourceManager.getPackResources());
@@ -549,7 +612,12 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void callPreInit() {
         LOGGER.info("Entered Pre-init phase");
-        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("# Pre-init"));
+        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+            @Override
+            public void execute() {
+                EarlyLoadingMessageManager.logModLoader("# Pre-init");
+            }
+        });
         getActiveMods().forEach(mod -> {
             try {
                 mod.getStateList().add(ModState.PRE_INIT);
@@ -565,7 +633,12 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void callInit() {
         LOGGER.info("Entered Init phase");
-        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("# Init"));
+        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+            @Override
+            public void execute() {
+                EarlyLoadingMessageManager.logModLoader("# Init");
+            }
+        });
         getActiveMods().forEach(mod -> {
             try {
                 mod.getStateList().add(ModState.INIT);
@@ -580,7 +653,12 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void callPostInit() {
         LOGGER.info("Entered Post-init phase");
-        Blueberry.runOnClient(() -> EarlyLoadingMessageManager.logModLoader("# Post-init"));
+        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+            @Override
+            public void execute() {
+                EarlyLoadingMessageManager.logModLoader("# Post-init");
+            }
+        });
         getActiveMods().forEach(mod -> {
             if (mod.getStateList().contains(ModState.AVAILABLE)) return;
             try {
