@@ -50,7 +50,7 @@ public class ClasspathUtil {
         cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
         cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         try {
-            // these class are not in classpath of Blueberry-API, so we need to do this
+            // these classes are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
         } catch (ClassNotFoundException e) {
             LOGGER.warn("Could not find class of MinecraftForge-API", e);

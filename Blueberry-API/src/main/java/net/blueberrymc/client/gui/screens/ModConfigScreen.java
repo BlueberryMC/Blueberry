@@ -47,7 +47,6 @@ import java.util.regex.Pattern;
 /**
  * Mod config screen, accessible via mod list screen.
  */
-@SuppressWarnings("PatternVariableCanBeUsed") // maven is still 8
 public class ModConfigScreen extends BlueberryScreen {
     private static final Component UNKNOWN_TEXT = new TextComponent("<unknown>").withStyle(ChatFormatting.GRAY);
     private static final Component BOOLEAN_TRUE = new TextComponent("true").withStyle(ChatFormatting.GREEN);
@@ -130,10 +129,7 @@ public class ModConfigScreen extends BlueberryScreen {
             }
             // min/max value of number
             if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
-                boolean shouldShowMinMax = true;
-                if (config instanceof IntegerVisualConfig cfg && cfg.getMin() == Integer.MIN_VALUE && cfg.getMax() == Integer.MAX_VALUE) {
-                    shouldShowMinMax = false;
-                }
+                boolean shouldShowMinMax = !(config instanceof IntegerVisualConfig cfg) || cfg.getMin() != Integer.MIN_VALUE || cfg.getMax() != Integer.MAX_VALUE;
                 if (config instanceof LongVisualConfig cfg && cfg.getMin() == Long.MIN_VALUE && cfg.getMax() == Long.MAX_VALUE) {
                     shouldShowMinMax = false;
                 }
@@ -148,13 +144,11 @@ public class ModConfigScreen extends BlueberryScreen {
                 }
             }
             // pattern
-            if (config instanceof StringVisualConfig) {
-                StringVisualConfig stringVisualConfig = (StringVisualConfig) config;
+            if (config instanceof StringVisualConfig stringVisualConfig) {
                 Pattern pattern = stringVisualConfig.getPattern();
                 if (pattern != null) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
-            if (config instanceof ClassVisualConfig) {
-                ClassVisualConfig classVisualConfig = (ClassVisualConfig) config;
+            if (config instanceof ClassVisualConfig classVisualConfig) {
                 Pattern pattern = classVisualConfig.getPattern();
                 if (pattern != null) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
@@ -185,9 +179,8 @@ public class ModConfigScreen extends BlueberryScreen {
                     booleanVisualConfig.clicked(button);
                 }, onTooltip));
                 addLabel.accept(config, offset);
-            } else if (config instanceof CycleVisualConfig) {
+            } else if (config instanceof CycleVisualConfig<?> cycleVisualConfig) {
                 final int buttonY = offset += 22;
-                CycleVisualConfig<?> cycleVisualConfig = (CycleVisualConfig<?>) config;
                 Button btn;
                 container.children().add(
                         btn = new Button(
@@ -249,8 +242,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 editBox.setValue(defValue.toString());
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
-            } else if (config instanceof StringVisualConfig) {
-                StringVisualConfig stringVisualConfig = (StringVisualConfig) config;
+            } else if (config instanceof StringVisualConfig stringVisualConfig) {
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
@@ -273,8 +265,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 editBox.setValue(defValue);
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
-            } else if (config instanceof ClassVisualConfig) {
-                ClassVisualConfig classVisualConfig = (ClassVisualConfig) config;
+            } else if (config instanceof ClassVisualConfig classVisualConfig) {
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {

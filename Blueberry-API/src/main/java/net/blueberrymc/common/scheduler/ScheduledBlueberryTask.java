@@ -20,14 +20,15 @@ public class ScheduledBlueberryTask implements BlueberryTask {
     boolean executedDelayedTask = false;
     final AtomicLong cycle = new AtomicLong();
 
-    public ScheduledBlueberryTask(@NotNull AbstractBlueberryScheduler scheduler,
-                                  long taskId,
-                                  @NotNull BlueberryMod mod,
-                                  @NotNull Runnable runnable,
-                                  boolean sync,
-                                  boolean repeatable,
-                                  long delay,
-                                  long intervalPeriod) {
+    public ScheduledBlueberryTask(
+            @NotNull AbstractBlueberryScheduler scheduler,
+            long taskId,
+            @NotNull BlueberryMod mod,
+            @NotNull Runnable runnable,
+            boolean sync,
+            boolean repeatable,
+            long delay,
+            long intervalPeriod) {
         this.scheduler = scheduler;
         this.taskId = taskId;
         this.owner = mod;

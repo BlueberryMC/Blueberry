@@ -110,7 +110,7 @@ public abstract class BlueberryRunnable implements Runnable {
     }
 
     @NotNull
-    private <T> TaskPair setupId(@NotNull T task) {
+    private TaskPair setupId(@NotNull Object task) {
         if (task instanceof BlueberryTask blueberryTask) {
             if (side == Side.CLIENT) {
                 this.clientId = blueberryTask.getTaskId();

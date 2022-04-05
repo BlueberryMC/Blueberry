@@ -17,6 +17,7 @@ public interface PermissionHolder {
      * @param permission the permission
      * @return TRUE if holder has permission, FALSE otherwise. UNDEFINED if result is not defined for provided permission.
      */
+    @SuppressWarnings("NullableProblems")
     @NotNull
     default PermissionState getPermissionState(@NotNull String permission) {
         return PermissionState.UNDEFINED;

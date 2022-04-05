@@ -1,0 +1,129 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Tue, 5 Apr 2022 15:14:42 +0900
+Subject: [PATCH] Implement permissions API
+
+
+diff --git a/src/main/java/net/minecraft/commands/CommandSource.java b/src/main/java/net/minecraft/commands/CommandSource.java
+index 74bfa63f31d52b715a392fbd61d2c9412b154230..3fe14ec4f36afbf0b925d81d43c53bf1ab3a55b9 100644
+--- a/src/main/java/net/minecraft/commands/CommandSource.java
++++ b/src/main/java/net/minecraft/commands/CommandSource.java
+@@ -3,7 +3,7 @@ package net.minecraft.commands;
+ import java.util.UUID;
+ import net.minecraft.network.chat.Component;
+ 
+-public interface CommandSource {
++public interface CommandSource extends net.blueberrymc.common.permission.PermissionHolder { // Blueberry
+     CommandSource NULL = new CommandSource() {
+         public void sendMessage(Component component, UUID uuid) {
+         }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index e47b98b1bea91f26f54bd348ed9115c5e1f4002b..9a33e4a81a42bc3f5e2fa525ece16902390fec92 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1816,4 +1816,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             };
+         }
+     }
++
++    // Blueberry start
++    @Override
++    public boolean hasPermission(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().hasPermissionForConsole(permission);
++    }
++
++    @Override
++    public net.blueberrymc.common.permission.PermissionState getPermissionState(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForConsole(permission);
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
+index 21854378317152cb5ac0d7d3a7bceb134e00466a..7c82dc06901b731d62bb2b66d39f7375eacf6f3e 100644
+--- a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
++++ b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
+@@ -49,4 +49,16 @@ public class RconConsoleSource implements CommandSource {
+     public boolean shouldInformAdmins() {
+         return this.server.shouldRconBroadcast();
+     }
++
++    // Blueberry start
++    @Override
++    public boolean hasPermission(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().hasPermissionForRcon(permission);
++    }
++
++    @Override
++    public net.blueberrymc.common.permission.PermissionState getPermissionState(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForRcon(permission);
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index d79167b7bcc82455d26725aa8d8640d43ddcc544..1e2a7ca8b95383a5c22cb064480d867aa090011f 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -3101,4 +3101,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+             return this.save;
+         }
+     }
++
++    // Blueberry start
++    @Override
++    public boolean hasPermission(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().hasPermissionForEntity(this, permission);
++    }
++
++    @Override
++    public net.blueberrymc.common.permission.PermissionState getPermissionState(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForEntity(this, permission);
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 56486bd8ad083292058ae1eb68d28cee0ce9280a..f2cbaee075129bbb44c50e471c208b0492d48c23 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -1986,4 +1986,16 @@ public abstract class Player extends LivingEntity {
+             return this.message;
+         }
+     }
++
++    // Blueberry start
++    @Override
++    public boolean hasPermission(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().hasPermissionForPlayer(getUUID(), permission);
++    }
++
++    @Override
++    public net.blueberrymc.common.permission.PermissionState getPermissionState(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForPlayer(getUUID(), permission);
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
+index f9b0f569f5396cecee72f72c314a6823c341f5c5..5da858fe4903b8c020cde05805f8cd17988f2765 100644
+--- a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
++++ b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
+@@ -208,4 +208,16 @@ public abstract class BaseCommandBlock implements CommandSource {
+     public boolean shouldInformAdmins() {
+         return this.getLevel().getGameRules().getBoolean(GameRules.RULE_COMMANDBLOCKOUTPUT);
+     }
++
++    // Blueberry start
++    @Override
++    public boolean hasPermission(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().hasPermissionForCommandBlock(this, permission);
++    }
++
++    @Override
++    public net.blueberrymc.common.permission.PermissionState getPermissionState(String permission) {
++        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForCommandBlock(this, permission);
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
