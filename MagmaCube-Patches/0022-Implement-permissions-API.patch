@@ -17,6 +17,37 @@ index 74bfa63f31d52b715a392fbd61d2c9412b154230..3fe14ec4f36afbf0b925d81d43c53bf1
      CommandSource NULL = new CommandSource() {
          public void sendMessage(Component component, UUID uuid) {
          }
+diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
+index aeaca23ccce42121c8aa9c90c2f91c49ca118e22..2ad2e7132bca2ee1afe8b3e5cf579b3568a1f2a4 100644
+--- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
++++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
+@@ -35,7 +35,7 @@ import net.minecraft.world.level.dimension.DimensionType;
+ import net.minecraft.world.phys.Vec2;
+ import net.minecraft.world.phys.Vec3;
+ 
+-public class CommandSourceStack implements SharedSuggestionProvider {
++public class CommandSourceStack implements SharedSuggestionProvider, net.blueberrymc.common.permission.PermissionHolder { // Blueberry
+     public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(new TranslatableComponent("permissions.requires.player"));
+     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(new TranslatableComponent("permissions.requires.entity"));
+     private final CommandSource source;
+@@ -267,4 +267,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
+     public RegistryAccess registryAccess() {
+         return this.server.registryAccess();
+     }
++
++    // Blueberry start
++    @Override
++    public boolean hasPermission(String permission) {
++        return source.hasPermission(permission);
++    }
++
++    @Override
++    public net.blueberrymc.common.permission.PermissionState getPermissionState(String permission) {
++        return source.getPermissionState(permission);
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 index e47b98b1bea91f26f54bd348ed9115c5e1f4002b..9a33e4a81a42bc3f5e2fa525ece16902390fec92 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
