@@ -2,15 +2,18 @@ package net.blueberrymc.command;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.blueberrymc.client.BlueberryClient;
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.event.mod.ModReloadEvent;
+import net.blueberrymc.common.permission.PermissionHolder;
+import net.blueberrymc.common.permission.PermissionState;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.VersionChecker;
 import net.blueberrymc.common.util.Versioning;
@@ -21,17 +24,22 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.LongStream;
 
@@ -44,10 +52,11 @@ import static net.minecraft.commands.Commands.literal;
 public class BlueberryCommand {
     private static final SimpleCommandExceptionType UNAVAILABLE_IN_THIS_ENVIRONMENT = new SimpleCommandExceptionType(new TextComponent("This command is not available in this environment.").withStyle(ChatFormatting.RED));
     private static final Logger LOGGER = LogManager.getLogger();
+
     public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 literal("blueberry")
-                        .requires(source -> source.hasPermission(4))
+                        .requires(source -> ((PermissionHolder) source).hasPermission("blueberry.command"))
                         .then(literal("mod")
                                 .then(argument("mod", ModIdArgument.modId())
                                         .then(literal("status").executes(context -> executeModStatusCommand(context.getSource(), ModIdArgument.get(context, "mod"))))
@@ -59,6 +68,16 @@ public class BlueberryCommand {
                         )
                         .then(literal("version")
                                 .executes(context -> executeVersionCommand(context.getSource()))
+                        )
+                        .then(literal("permission")
+                                .then(literal("check")
+                                        .then(argument("node", StringArgumentType.string())
+                                                .executes(context -> executePermissionCheckCommand(context.getSource(), StringArgumentType.getString(context, "node"), null))
+                                                .then(argument("player", EntityArgument.player())
+                                                        .executes(context -> executePermissionCheckCommand(context.getSource(), StringArgumentType.getString(context, "node"), EntityArgument.getPlayer(context, "player")))
+                                                )
+                                        )
+                                )
                         )
         );
     }
@@ -202,6 +221,27 @@ public class BlueberryCommand {
             });
         }
         return 1;
+    }
+
+    public static int executePermissionCheckCommand(@NotNull CommandSourceStack source, @NotNull String permission, @Nullable Player player) {
+        PermissionHolder holder = (PermissionHolder) Objects.requireNonNullElse(player, source);
+        PermissionState state = holder.getPermissionState(permission);
+        source.sendSuccess(new TextComponent("")
+                .append(new TextComponent("Permission check for ").withStyle(ChatFormatting.AQUA))
+                .append(new TextComponent(permission).withStyle(ChatFormatting.GOLD)), false);
+        source.sendSuccess(new TextComponent("")
+                .append(new TextComponent("  Result: ").withStyle(ChatFormatting.AQUA))
+                .append(new TextComponent(state.name().toLowerCase()).withStyle(getChatFormattingForPermissionState(state))), false);
+        return 0;
+    }
+
+    @Contract(pure = true)
+    private static ChatFormatting getChatFormattingForPermissionState(PermissionState state) {
+        return switch (state) {
+            case TRUE -> ChatFormatting.GREEN;
+            case FALSE -> ChatFormatting.RED;
+            case UNDEFINED -> ChatFormatting.GRAY;
+        };
     }
 
     private static ChatFormatting getChatFormattingForVersionCheckerKey(String key) {
