@@ -5,7 +5,7 @@ Subject: [PATCH] Save/Use InstalledMods to/from level.dat
 
 
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 2af6f693e350dc6a80326fcd36e4398d836988f5..bac5c413f3af884b6d1a66c92bdf95acb8a34ebc 100644
+index dfa62ea78d1db7d722c9a1d08cba0b9659568941..4dcde737c242390bca863d5763c0c63e6c6f9e5b 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -1831,6 +1831,12 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -22,7 +22,7 @@ index 2af6f693e350dc6a80326fcd36e4398d836988f5..bac5c413f3af884b6d1a66c92bdf95ac
          boolean flag2 = worldData.worldGenSettings().isOldCustomizedWorld();
          boolean flag3 = worldData.worldGenSettingsLifecycle() != Lifecycle.stable();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9d82c3ccdf93e566822bf4b0fc82a97c599eb654..b8b95b36881ee9ed507c786d551c0d6f20c4f98a 100644
+index 38d50104ed496a9dad574c3bd37c3986472491a4..e47b98b1bea91f26f54bd348ed9115c5e1f4002b 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -314,6 +314,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

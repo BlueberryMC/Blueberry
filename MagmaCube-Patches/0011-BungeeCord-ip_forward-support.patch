@@ -5,7 +5,7 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index d877fe924c93ccd88275fe680a0e205266ccbd72..dba3ba3bd696eb6707f9f5670f42e318561cc1df 100644
+index 5f990b808fb1c74790c430618c486adfe0862627..f93f1dc7c545a164d3e500da57c1326cff9f01f2 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -65,6 +65,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -28,7 +28,7 @@ index d877fe924c93ccd88275fe680a0e205266ccbd72..dba3ba3bd696eb6707f9f5670f42e318
  
          try {
              this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -253,6 +259,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -254,6 +260,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void disconnect(Component component) {

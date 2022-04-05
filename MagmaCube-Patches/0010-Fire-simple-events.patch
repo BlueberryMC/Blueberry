@@ -1,9 +1,60 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: acrylic-style <me@acrylicstyle.xyz>
 Date: Fri, 5 Mar 2021 21:38:13 +0900
-Subject: [PATCH] Implement biome events
+Subject: [PATCH] Fire simple events
 
 
+diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
+index 78e1e2a3e068a38a406619cf3d9a17ad677b2835..5244eb5acb4b793fa07e90a4f7f113ace1ae432c 100644
+--- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
++++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
+@@ -269,7 +269,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+     }
+ 
+     public void chat(String s) {
+-        this.connection.send(new ServerboundChatPacket(s));
++        // Blueberry start - fire ClientLocalPlayerChatEvent
++        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
++        if (!event.callEvent()) {
++            return;
++        }
++        this.connection.send(new ServerboundChatPacket(event.getMessage()));
++        // Blueberry end - fire ClientLocalPlayerChatEvent
+     }
+ 
+     public void swing(InteractionHand interactionHand) {
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index d877fe924c93ccd88275fe680a0e205266ccbd72..5f990b808fb1c74790c430618c486adfe0862627 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -91,6 +91,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to change protocol to handshake", var3);
+         }
+ 
++        new net.blueberrymc.common.event.network.ConnectionInitEvent(this.channel, this.receiving).callEvent(); // Blueberry
+     }
+ 
+     public void setProtocol(ConnectionProtocol connectionProtocol) {
+@@ -361,6 +362,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+             }
+         }
+ 
++        new net.blueberrymc.common.event.network.ConnectionSetupCompressionEvent(this.channel, this.receiving, i).callEvent(); // Blueberry
+     }
+ 
+     public void handleDisconnection() {
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 012bb6ff70800cc9bad4818d250de004381ad432..68e8e3e176ae2343ed78a8b4b5dfb527e6eed93b 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -186,6 +186,7 @@ public abstract class PlayerList {
+         }
+ 
+         serverLevel2.addNewPlayer(serverPlayer);
++        new net.blueberrymc.common.event.player.PlayerJoinEvent(serverPlayer).callEvent(); // Blueberry
+         this.server.getCustomBossEvents().onPlayerConnect(serverPlayer);
+         this.sendLevelInfo(serverPlayer, serverLevel2);
+         if (!this.server.getResourcePack().isEmpty()) {
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
 index 4b1cf765c1001ad159d0c01c0c954d2d29446734..5ac2deef576605bfd3b3129f8ddbb96505c5eb8e 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java

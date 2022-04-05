@@ -6,7 +6,7 @@ Subject: [PATCH] Add workaround for race condition
 CrudeIncrementalIntIdentityHashBiMap#byId returns null... for some reason
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java b/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
-index f03f3cac0815d17ff9e1153e43a2bfc0a9def504..9fdaa8f55f2d16884596b455fb03dd6132710389 100644
+index 02dbc3888b7c0f7a2d84636574c09c91c03d0bcd..7bf544cfc8ec91ab7edfc2780e8f26f5a81d62a6 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
 @@ -58,6 +58,17 @@ public class HashMapPalette<T> implements Palette<T> {
