@@ -1,7 +1,7 @@
 package net.minecraft.launchwrapper;
 
 import net.blueberrymc.common.bml.ModClassLoader;
-import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.server.main.ServerMain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

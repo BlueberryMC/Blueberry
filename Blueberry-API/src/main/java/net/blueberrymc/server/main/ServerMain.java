@@ -8,7 +8,7 @@ import net.blueberrymc.common.Side;
 import net.blueberrymc.common.launch.BlueberryPreBootstrap;
 import net.blueberrymc.common.launch.BlueberryTweaker;
 import net.blueberrymc.common.util.FileUtil;
-import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.SharedConstants;
 import net.minecraft.launchwrapper.Launch;
@@ -48,12 +48,18 @@ public class ServerMain {
         illegalPackages.add("net/minecraft/client/");
         illegalPackages.add("net/blueberrymc/client/");
         illegalPackages.add("net/blueberrymc/common/bml/client/");
-        NativeUtil.registerClassLoadHook((classLoader, name, clazz, protectionDomain, bytes) -> {
-            for (String illegalPackage : illegalPackages) {
-                if (name.startsWith(illegalPackage)) throw new RuntimeException("Trying to load invalid class '" + name + "' from server side");
-            }
-            return null;
-        });
+        try {
+            NativeUtil.registerClassLoadHook((classLoader, name, clazz, protectionDomain, bytes) -> {
+                for (String illegalPackage : illegalPackages) {
+                    if (name.startsWith(illegalPackage)) {
+                        throw new RuntimeException("Trying to load invalid class '" + name + "' from server side");
+                    }
+                }
+                return null;
+            });
+        } catch (Throwable t) {
+            LOGGER.error("Failed to register class load hook; illegal packages will be able to load", t);
+        }
         ServerMain.launch(Side.SERVER, arguments, set, gameDirOption, sourceDirOption, includeDirOption);
     }
 

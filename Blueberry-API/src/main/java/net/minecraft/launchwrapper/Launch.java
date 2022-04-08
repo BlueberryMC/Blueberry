@@ -5,7 +5,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.blueberrymc.common.launch.BlueberryPreBootstrap;
 import net.blueberrymc.common.util.ClasspathUtil;
-import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.server.main.ServerMain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,6 +71,7 @@ public class Launch {
     @Contract(value = "null -> new", pure = true)
     @NotNull
     private static URL@NotNull[] tryGetURLsFromAppClassLoader(@Nullable ClassLoader cl) {
+        // ton of hacks to get the classpath from the AppClassLoader
         if (cl == null) {
             lastError = new RuntimeException("cl is null");
             return new URL[0];

@@ -1,7 +1,7 @@
 package net.blueberrymc.common.util;
 
 import net.blueberrymc.common.util.reflect.Ref;
-import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.nativeutil.NativeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

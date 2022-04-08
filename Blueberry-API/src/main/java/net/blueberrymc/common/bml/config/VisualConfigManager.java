@@ -6,7 +6,7 @@ import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.yaml.YamlObject;
-import net.blueberrymc.native_util.NativeUtil;
+import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
