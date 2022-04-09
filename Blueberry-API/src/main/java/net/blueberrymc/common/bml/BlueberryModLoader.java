@@ -280,7 +280,7 @@ public class BlueberryModLoader implements ModLoader {
                 descriptions.remove(description.getModId());
                 return new AbstractMap.SimpleImmutableEntry<>(description, compiled);
             } catch (RuntimeException ex) {
-                LOGGER.info("Failed to compile the source code of mod {} ({})", description.getName(), description.getModId());
+                LOGGER.error("Failed to compile the source code of mod {} ({})", description.getName(), description.getModId());
                 ModLoadingErrors.add(new ModLoadingError(description, "Failed to compile the source code", false));
                 Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
                     @Override
@@ -288,6 +288,7 @@ public class BlueberryModLoader implements ModLoader {
                         EarlyLoadingMessageManager.logError("Failed to compile the source code of mod " + description.getName() + " (" + description.getModId() + ")");
                     }
                 });
+                ex.printStackTrace();
             }
         }
         return null;

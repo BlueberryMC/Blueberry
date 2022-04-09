@@ -100,7 +100,8 @@ public class JavaCompiler {
         PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(new LoggedPrintStream("Blueberry Live Compiler", System.err), true), StandardCharsets.UTF_8));
         javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) throw new RuntimeException("JavaCompiler is not available");
-        compiler.run(System.in, ps, ps, args.toArray(new String[0]));
+        int result = compiler.run(System.in, ps, ps, args.toArray(new String[0]));
+        if (result != 0) LOGGER.warn("Compiler (for file {}) exited with code: {}", file.getAbsolutePath(), result);
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
 
@@ -143,6 +144,7 @@ public class JavaCompiler {
                                 if (!new File(tmp, rel).exists()) {
                                     throwable.set(new RuntimeException("Compilation failed: " + rel));
                                     EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                    LOGGER.error("Failed to compile: " + rel);
                                     return;
                                 }
                                 LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
