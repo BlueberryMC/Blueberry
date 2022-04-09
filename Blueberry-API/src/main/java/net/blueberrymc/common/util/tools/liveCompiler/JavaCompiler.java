@@ -13,8 +13,6 @@ import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
-import net.blueberrymc.util.NoopPrintStream;
-import net.minecraft.SharedConstants;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.LoggedPrintStream;
 import net.minecraft.server.MinecraftServer;
@@ -99,10 +97,10 @@ public class JavaCompiler {
         args.add("-source");
         args.add("17");
         args.add(file.getAbsolutePath());
-        PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(SharedConstants.IS_RUNNING_IN_IDE ? new LoggedPrintStream("Blueberry Live Compiler", System.err) : new NoopPrintStream(), true), StandardCharsets.UTF_8));
+        PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(new LoggedPrintStream("Blueberry Live Compiler", System.err), true), StandardCharsets.UTF_8));
         javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) throw new RuntimeException("JavaCompiler is not available");
-        compiler.run(System.in, ps, new LoggedPrintStream("Blueberry Live Compiler", System.err), args.toArray(new String[0]));
+        compiler.run(System.in, ps, ps, args.toArray(new String[0]));
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
 
