@@ -68,13 +68,8 @@ public class ModConfigScreen extends BlueberryScreen {
 
     @Override
     public void onClose() {
+        assert this.minecraft != null;
         this.minecraft.setScreen(this.previousScreen);
-    }
-
-    @Override
-    public void mouseMoved(double x, double y) {
-        super.mouseMoved(x, y);
-        this.children().forEach(listener -> listener.mouseMoved(x, y));
     }
 
     // TODO: clean-up

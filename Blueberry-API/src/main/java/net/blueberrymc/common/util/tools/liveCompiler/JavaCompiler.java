@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
+import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.ThreadLocalLoggedBufferedOutputStream;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
@@ -69,6 +70,7 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(NotNull.class)); // jetbrains annotations
         cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
         cp.add(ClasspathUtil.getClasspath(ByteBuf.class)); // netty
+        cp.add(ClasspathUtil.getClasspath(NativeUtil.class)); // NativeUtil
         try {
             // these class are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API

@@ -7,7 +7,7 @@ Open-source modding API for Minecraft
 ## 🤔 Why?
 - Faster update (since it uses mojang mapping, no need to make our mapping)
   - it does not mean "fast update", because sometimes i don't have enough time to work on this project :(
-- Deobfuscated code (classes, fields, methods)
+- Deobfuscated code (classes, fields, methods, and sometimes local variables)
 - Simple steps to get started making mods
 
 ## ⚠️ Important Warning
@@ -15,15 +15,11 @@ Open-source modding API for Minecraft
 Whilst I try not to break API compatibility, but things could change at anytime!
 
 ## ✨ Key features
-- Live Compiler (Automatically compiles the mod from .java files)
-  - Reload (You can recompile the mod in-game using "Recompile" button on the mod list menu, if the mod was compiled by live compiler... but buggy for now.)
+- Live Compiler (compiles the mod from .java files when loading a mod)
+  - `Recompile` button on the mod list menu to recompile and reload the mod (see issues for known issues)
+  - See the [documentation](https://www.blueberrymc.net/reference/source-mod/) for more details and how to use it properly
 - [Mixin](https://github.com/SpongePowered/Mixin) support
-
-## 📝 Todo
-- multiplayer support
-  - "deny" incompatible clients, it just shows "incompatible" in client/server menu and users can connect
-- write a ton of [docs](https://github.com/BlueberryMC/Blueberry-docs) and javadoc
-- Migrate to gradle
+- File selection screen within the client (FileDialogScreen)
 
 ## ✏️ Translations
 All translation PRs are welcome!

@@ -8,16 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.service.IMixinService;
-import org.spongepowered.asm.service.IMixinServiceBootstrap;
-import org.spongepowered.asm.service.MixinService;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ServiceLoader;
 
 public abstract class BlueberryTweaker implements ITweaker {
     private static final Logger LOGGER = LogManager.getLogger();

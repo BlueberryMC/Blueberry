@@ -8,6 +8,7 @@
   "gui.screens.mods.enable": "Enable",
   "gui.screens.mods.disable": "Disable",
   "gui.screens.mods.config": "Config",
+  "gui.screens.mods.load.title": "Select a mod to load",
   "gui.screens.mods.recompile.unsupported": "Recompile not supported on this mod",
   "gui.screens.mods.recompile.in_world_tooltip": "This mod can only be recompiled when on the title screen",
   "gui.screens.mods.recompile.recompile_tooltip": "Recompile and reload the mod",

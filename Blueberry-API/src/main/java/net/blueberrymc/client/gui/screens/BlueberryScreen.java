@@ -24,4 +24,10 @@ public abstract class BlueberryScreen extends Screen {
     public @NotNull List<GuiEventListener> children() {
         return (List<GuiEventListener>) super.children();
     }
+
+    @Override
+    public void mouseMoved(double x, double y) {
+        super.mouseMoved(x, y);
+        this.children().forEach(listener -> listener.mouseMoved(x, y));
+    }
 }

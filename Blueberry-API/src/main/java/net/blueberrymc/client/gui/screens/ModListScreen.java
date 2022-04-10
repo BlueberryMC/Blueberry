@@ -2,16 +2,16 @@ package net.blueberrymc.client.gui.screens;
 
 import com.google.common.base.Joiner;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.blueberrymc.common.bml.event.EventManager;
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
 import net.blueberrymc.common.bml.SimpleModInfo;
 import net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen;
+import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.blueberrymc.common.event.mod.ModReloadEvent;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.client.Minecraft;
@@ -54,11 +54,36 @@ public class ModListScreen extends BlueberryScreen {
         assert this.minecraft != null;
         this.modsList = new ModsList(this.minecraft);
         this.children().add(this.modsList);
-        this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 38, 98, 20, new BlueberryText("blueberry", "gui.screens.mods.refresh"), (button) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 150, this.height - 38, 96, 20, new BlueberryText("blueberry", "gui.screens.mods.refresh"), (button) -> {
             this.minecraft.setScreen(this.previousScreen);
             this.minecraft.setScreen(new ModListScreen(this.previousScreen));
         }));
-        this.addRenderableWidget(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
+        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, new TranslatableComponent("structure_block.mode.load"), (button) -> {
+            this.minecraft.setScreen(FileDialogScreen.create(
+                    this,
+                    FileDialogScreenOptions
+                            .builder()
+                            //.boundary(Blueberry.getGameDir()) // we probably don't need boundary
+                            .fileType(FileDialogScreenOptions.FileType.ALL)
+                            .initialDirectory(Blueberry.getModsDir())
+                            .title(new BlueberryText("blueberry", "gui.screens.mods.load.title"))
+                            .callback(file -> {
+                                if (file != null) {
+                                    File actualFileToLoad = file;
+                                    if (actualFileToLoad.getName().equals("mod.yml")) {
+                                        actualFileToLoad = file.getParentFile();
+                                    }
+                                    LOGGER.info("Trying to load mod from: {} (original path: {})", actualFileToLoad, file);
+                                    tryLoadMod(actualFileToLoad);
+                                    if (ModLoadingErrors.hasErrorOrWarning()) {
+                                        this.minecraft.setScreen(new ModLoadingProblemScreen(this));
+                                    }
+                                }
+                            })
+                            .build()
+            ));
+        }));
+        this.addRenderableWidget(new Button(this.width / 2 + 50, this.height - 38, 96, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
         (this.reloadButton = this.addRenderableWidget(new Button(10, this.height - 78, this.width / 5 / 2 - 11, 20, new BlueberryText("blueberry", "gui.screens.mods.reload"), button -> {
             try {
                 ModsList.Entry entry = this.modsList.getSelected();
@@ -67,10 +92,7 @@ public class ModListScreen extends BlueberryScreen {
                         LOGGER.info("Reloading mod: {} ({})", entry.mod.getName(), entry.mod.getModId());
                         try {
                             if (entry.mod.onReload()) {
-                                this.minecraft.reloadResourcePacks().thenAccept(v -> {
-                                    this.minecraft.setScreen(this.previousScreen);
-                                    this.minecraft.setScreen(new ModListScreen(this.previousScreen));
-                                });
+                                this.minecraft.reloadResourcePacks().thenAccept(v -> this.minecraft.setScreen(new ModListScreen(this.previousScreen)));
                             }
                         } catch (RuntimeException ex) {
                             LOGGER.error("Failed to reload mod", ex);
@@ -79,8 +101,8 @@ public class ModListScreen extends BlueberryScreen {
                     }
                 }
             } finally {
-                if (ModLoadingErrors.hasErrors()) {
-                    ModLoadingErrors.add(new ModLoadingError(null, "One or more warning/error was detected. It is recommended to restart your Minecraft to prevent further issues.", true));
+                if (ModLoadingErrors.hasErrorOrWarning()) {
+                    ModLoadingErrors.add(new ModLoadingError(null, "One or more warnings/errors were detected. It is recommended to restart your Minecraft to prevent further issues.", true));
                     this.minecraft.setScreen(new ModLoadingProblemScreen(this));
                 }
             }
@@ -102,38 +124,11 @@ public class ModListScreen extends BlueberryScreen {
                         File file = entry.mod.getSourceDir();
                         if (file == null) throw new AssertionError("Source dir should not be null");
                         Blueberry.getModLoader().disableMod(entry.mod, true);
-                        ModDescriptionFile description;
-                        File compiled = null;
-                        try {
-                            Map.Entry<ModDescriptionFile, File> e = ((BlueberryModLoader) Blueberry.getModLoader()).preprocess(file);
-                            description = e.getKey();
-                            if (e.getKey().isSource() && e.getValue() != null) {
-                                compiled = e.getValue();
-                                ((BlueberryModLoader) Blueberry.getModLoader()).preprocess(compiled);
-                            }
-                        } catch (Throwable throwable) {
-                            LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
-                            ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
-                            return;
-                        }
-                        BlueberryMod mod;
-                        try {
-                            mod = ((BlueberryModLoader) Blueberry.getModLoader()).loadMod(compiled != null ? compiled : file, compiled == null ? null : file);
-                        } catch (Exception ex) {
-                            LOGGER.error("Could not load a mod", ex);
-                            ModLoadingErrors.add(new ModLoadingError(description, "Could not load a mod: " + ex.getMessage(), false));
-                            return;
-                        }
-                        Blueberry.getModLoader().initModResources(mod);
-                        Blueberry.getModLoader().enableMod(mod);
-                        this.minecraft.reloadResourcePacks().thenAccept(v -> {
-                            this.minecraft.setScreen(this.previousScreen);
-                            this.minecraft.setScreen(new ModListScreen(this.previousScreen));
-                        });
+                        tryLoadMod(file);
                     }
                 }
             } finally {
-                if (ModLoadingErrors.hasErrors()) {
+                if (ModLoadingErrors.hasErrorOrWarning()) {
                     ModLoadingErrors.add(new ModLoadingError(null, "One or more warning/error was detected. It is recommended to restart your Minecraft to prevent further issues.", true));
                     this.minecraft.setScreen(new ModLoadingProblemScreen(this));
                 }
@@ -171,6 +166,39 @@ public class ModListScreen extends BlueberryScreen {
             }
         }))).active = false;
         super.init();
+    }
+
+    private void tryLoadMod(File file) {
+        assert this.minecraft != null;
+        try {
+            ModDescriptionFile description;
+            File compiled = null;
+            try {
+                Map.Entry<ModDescriptionFile, File> e = ((BlueberryModLoader) Blueberry.getModLoader()).preprocess(file);
+                description = e.getKey();
+                if (e.getKey().isSource() && e.getValue() != null) {
+                    compiled = e.getValue();
+                    ((BlueberryModLoader) Blueberry.getModLoader()).preprocess(compiled);
+                }
+            } catch (Throwable throwable) {
+                LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
+                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
+                return;
+            }
+            try {
+                BlueberryMod mod = ((BlueberryModLoader) Blueberry.getModLoader()).loadMod(compiled != null ? compiled : file, compiled == null ? null : file);
+                Blueberry.getModLoader().initModResources(mod);
+                Blueberry.getModLoader().enableMod(mod);
+            } catch (Exception ex) {
+                LOGGER.error("Could not load a mod", ex);
+                ModLoadingErrors.add(new ModLoadingError(description, "Could not load a mod: " + ex.getMessage(), false));
+                return;
+            }
+            this.minecraft.reloadResourcePacks().thenAccept(v -> this.minecraft.setScreen(new ModListScreen(this.previousScreen)));
+        } catch (Exception ex) {
+            LOGGER.error("Could not load a mod", ex);
+            ModLoadingErrors.add(new ModLoadingError(null, "Could not load a mod: " + ex.getMessage(), false));
+        }
     }
 
     private static boolean isReloadSupported(@NotNull BlueberryMod mod) {

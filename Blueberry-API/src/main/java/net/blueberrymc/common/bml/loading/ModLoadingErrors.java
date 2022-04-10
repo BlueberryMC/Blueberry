@@ -41,4 +41,8 @@ public class ModLoadingErrors {
         LOGGER.error(error.throwable);
         errors.add(error);
     }
+
+    public static boolean hasErrorOrWarning() {
+        return !errors.isEmpty();
+    }
 }
