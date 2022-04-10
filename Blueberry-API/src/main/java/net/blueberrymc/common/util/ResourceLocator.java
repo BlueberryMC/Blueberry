@@ -8,11 +8,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ResourceLocator {
+public record ResourceLocator(@NotNull Class<?> clazz) {
     private static final ConcurrentHashMap<Class<?>, ResourceLocator> classMap = new ConcurrentHashMap<>();
-    private final Class<?> clazz;
 
-    private ResourceLocator(@NotNull Class<?> clazz) {
+    public ResourceLocator(@NotNull Class<?> clazz) {
         Preconditions.checkNotNull(clazz, "class cannot be null");
         this.clazz = clazz;
     }
