@@ -495,8 +495,8 @@ public class BlueberryModLoader implements ModLoader {
     public ModDescriptionFile getModDescription(@NotNull File file) throws InvalidModDescriptionException {
         Preconditions.checkNotNull(file, "file cannot be null");
         try {
-            ModFile modFile = new ModFile(file);
-            try (InputStream in = modFile.getResourceAsStream("mod.yml")) {
+            try (ModFile modFile = new ModFile(file);
+                 InputStream in = modFile.getResourceAsStream("mod.yml")) {
                 if (in == null) throw new ModDescriptionNotFoundException(file.getName() + " does not contain mod.yml");
                 return ModDescriptionFile.read(new YamlConfiguration(in).asObject());
             }
