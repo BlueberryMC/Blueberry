@@ -51,21 +51,20 @@ public class VersionChecker {
                 String url = "https://api.github.com/repos/" + Constants.GITHUB_REPO + "/compare/" + Versioning.getVersion().getBranch() + "..." + Versioning.getVersion().getCommit();
                 LOGGER.info("Opening connection to {}", url);
                 URLConnection connection = new URL(url).openConnection();
-                if (connection instanceof HttpURLConnection conn) {
-                    connection.setDoInput(true);
-                    connection.connect();
-                    if (conn.getResponseCode() != 200) {
-                        throw new IllegalStateException("GitHub API returned non-OK response code: " + conn.getResponseCode());
-                    }
-                    JsonObject obj = new Gson().fromJson(String.join("", IOUtils.readLines(conn.getInputStream(), StandardCharsets.UTF_8)), JsonObject.class);
-                    if (!obj.has("ahead_by") || !obj.has("behind_by")) {
-                        throw new IllegalStateException("GitHub API returned invalid response");
-                    }
-                    return new Result(obj.get("ahead_by").getAsInt(), obj.get("behind_by").getAsInt());
-                } else {
+                if (!(connection instanceof HttpURLConnection conn)) {
                     throw new AssertionError("URLConnection is not instance of HttpURLConnection: " + connection.getClass().getTypeName());
                 }
-            } catch (Exception e) {
+                connection.setDoInput(true);
+                connection.connect();
+                if (conn.getResponseCode() != 200) {
+                    throw new IllegalStateException("GitHub API returned non-OK response code: " + conn.getResponseCode());
+                }
+                JsonObject obj = new Gson().fromJson(String.join("", IOUtils.readLines(conn.getInputStream(), StandardCharsets.UTF_8)), JsonObject.class);
+                if (!obj.has("ahead_by") || !obj.has("behind_by")) {
+                    throw new IllegalStateException("GitHub API returned invalid response");
+                }
+                return new Result(obj.get("ahead_by").getAsInt(), obj.get("behind_by").getAsInt());
+            } catch (Exception | AssertionError e) {
                 LOGGER.warn("Could not check for new version", e);
             }
             return Result.ERROR;

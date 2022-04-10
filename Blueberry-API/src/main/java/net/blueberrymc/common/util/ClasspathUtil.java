@@ -32,6 +32,7 @@ import java.util.Set;
 public class ClasspathUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    @Deprecated
     public static @NotNull Set<String> collectClasspath() {
         Set<String> cp = new HashSet<>();
         cp.add(ClasspathUtil.getClasspath(ServerMain.class)); // Blueberry-API
@@ -58,6 +59,7 @@ public class ClasspathUtil {
         return cp;
     }
 
+    @Deprecated
     public static @NotNull Set<URL> collectClasspathAsURL() throws MalformedURLException {
         Set<URL> urls = new HashSet<>();
         for (String s : collectClasspath()) {
