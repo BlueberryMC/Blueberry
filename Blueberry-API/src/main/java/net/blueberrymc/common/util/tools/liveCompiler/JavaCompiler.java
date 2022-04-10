@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
@@ -67,6 +68,7 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         cp.add(ClasspathUtil.getClasspath(NotNull.class)); // jetbrains annotations
         cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
+        cp.add(ClasspathUtil.getClasspath(ByteBuf.class)); // netty
         try {
             // these class are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
