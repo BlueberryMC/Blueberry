@@ -162,6 +162,7 @@ public class JavaCompiler {
                                         String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
                                         throwable.set(new RuntimeException("Compilation failed: " + rel, throwable1));
                                         EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                        LOGGER.error("Failed to compile: " + rel);
                                     }
                                 });
                             }
