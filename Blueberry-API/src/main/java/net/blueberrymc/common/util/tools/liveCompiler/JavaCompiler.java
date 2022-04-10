@@ -13,11 +13,12 @@ import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
+import net.blueberrymc.util.ThreadLocalLoggedBufferedOutputStream;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.server.LoggedPrintStream;
 import net.minecraft.server.MinecraftServer;
-import org.apache.commons.io.output.WriterOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -30,9 +31,7 @@ import javax.annotation.Nonnull;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -66,6 +65,8 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(Type.class)); // DataFixerUpper
         cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
         cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
+        cp.add(ClasspathUtil.getClasspath(NotNull.class)); // jetbrains annotations
+        cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
         try {
             // these class are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
@@ -97,10 +98,10 @@ public class JavaCompiler {
         args.add("-source");
         args.add("17");
         args.add(file.getAbsolutePath());
-        PrintStream ps = new PrintStream(new WriterOutputStream(new PrintWriter(new LoggedPrintStream("Blueberry Live Compiler", System.err), true), StandardCharsets.UTF_8));
+        OutputStream out = new ThreadLocalLoggedBufferedOutputStream("Blueberry Live Compiler", Level.WARN);
         javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) throw new RuntimeException("JavaCompiler is not available");
-        int result = compiler.run(System.in, ps, ps, args.toArray(new String[0]));
+        int result = compiler.run(System.in, out, out, args.toArray(new String[0]));
         if (result != 0) LOGGER.warn("Compiler (for file {}) exited with code: {}", file.getAbsolutePath(), result);
         return new File(file.getAbsolutePath().replaceAll("(.*)\\.java", "$1.class"));
     }
