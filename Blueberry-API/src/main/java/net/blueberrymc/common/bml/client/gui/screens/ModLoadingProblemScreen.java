@@ -112,7 +112,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
             }
 
             public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
-                String modName = this.error.modInfo != null ? this.error.modInfo.getName() + ": " : null;
+                String modName = this.error.modInfo != null ? this.error.modInfo.getName() + ": " : "";
                 String s = modName + this.error.getMessage();
                 ModLoadingProblemScreen.this.font.drawShadow(poseStack, s, (float)(ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2), (float)(i2 + 2), this.error.isWarning ? 0xFFFF55 : 0xFF5555, true);
             }
