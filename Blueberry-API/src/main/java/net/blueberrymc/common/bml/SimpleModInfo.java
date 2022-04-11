@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public record SimpleModInfo(String name, String modId) implements ModInfo {
+public record SimpleModInfo(@NotNull String name, @NotNull String modId) implements ModInfo {
     /**
      * @deprecated Use {@link #name()} instead.
      */
