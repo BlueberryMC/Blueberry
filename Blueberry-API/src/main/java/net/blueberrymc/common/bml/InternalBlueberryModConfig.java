@@ -1,7 +1,14 @@
 package net.blueberrymc.common.bml;
 
 import net.blueberrymc.common.Side;
-import net.blueberrymc.common.bml.config.VisualConfigManager.*;
+import net.blueberrymc.common.bml.config.VisualConfigManager.Config;
+import net.blueberrymc.common.bml.config.VisualConfigManager.DefaultValue;
+import net.blueberrymc.common.bml.config.VisualConfigManager.Description;
+import net.blueberrymc.common.bml.config.VisualConfigManager.HideOn;
+import net.blueberrymc.common.bml.config.VisualConfigManager.Key;
+import net.blueberrymc.common.bml.config.VisualConfigManager.Name;
+import net.blueberrymc.common.bml.config.VisualConfigManager.Order;
+import net.blueberrymc.common.bml.config.VisualConfigManager.RequiresMCRestart;
 
 @Config
 @Name("Blueberry")
@@ -151,6 +158,11 @@ public class InternalBlueberryModConfig {
         @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.ignore_server_view_distance")
         @Key("ignoreServerViewDistance")
         public static boolean ignoreServerViewDistance = false;
+
+        @Order(10001)
+        @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.render_terrain_immediately")
+        @Key("renderTerrainImmediately")
+        public static boolean renderTerrainImmediately = false;
     }
 
     @Order(-1)

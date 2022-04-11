@@ -14,7 +14,7 @@ index 0000000000000000000000000000000000000000..65e6bdbaa3a38354f7bc205526355cc3
 +*.iml
 +build/
 diff --git a/pom.xml b/pom.xml
-index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835be8a4d47 100644
+index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..28a4f632fdd10b750a3fa2d993ec019cf497fd2e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,9 +3,11 @@
@@ -32,7 +32,7 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
      </parent>
      <modelVersion>4.0.0</modelVersion>
      
-@@ -17,21 +19,31 @@
+@@ -17,21 +19,33 @@
          <lwjgl.version>3.2.2</lwjgl.version>
      </properties>
  
@@ -60,6 +60,8 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
 +                        <manifestEntries>
 +                            <Main-Class>net.blueberrymc.client.main.ClientMain</Main-Class>
 +                            <Multi-Release>true</Multi-Release>
++                            <TweakClass>org.spongepowered.asm.launch.MixinTweaker</TweakClass>
++                            <MixinConfigs>mixins.blueberry.json</MixinConfigs>
 +                        </manifestEntries>
                      </archive>
                  </configuration>
@@ -68,7 +70,7 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-shade-plugin</artifactId>
-@@ -51,7 +63,13 @@
+@@ -51,7 +65,13 @@
                          <filter>
                              <artifact>*:*</artifact>
                              <excludes>
@@ -82,7 +84,7 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
                              </excludes>
                          </filter>
                      </filters>
-@@ -72,6 +90,79 @@
+@@ -72,6 +92,79 @@
      </repositories>
  
      <dependencies>
@@ -162,7 +164,7 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
          <dependency>
              <groupId>com.google.code.findbugs</groupId>
              <artifactId>jsr305</artifactId>
-@@ -81,16 +172,19 @@
+@@ -81,16 +174,19 @@
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
              <version>5.0.4</version>
@@ -182,7 +184,7 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
          </dependency>
          <dependency>
              <groupId>net.minecrell</groupId>
-@@ -106,242 +200,308 @@
+@@ -106,242 +202,308 @@
              <groupId>io.netty</groupId>
              <artifactId>netty-all</artifactId>
              <version>4.1.68.Final</version>
@@ -491,7 +493,7 @@ index 71cb6494983c49cfcf0587b14f6b37c6ba6d99ec..6ab994803f4ce3de2ba8deea686a1835
          </dependency>
          <dependency>
              <groupId>net.java.jutils</groupId>
-@@ -350,25 +510,38 @@
+@@ -350,25 +512,38 @@
          </dependency>
  
          <!-- Logger -->

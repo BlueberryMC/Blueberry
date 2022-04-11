@@ -48,6 +48,7 @@ public class ServerMain {
         illegalPackages.add("net/minecraft/client/");
         illegalPackages.add("net/blueberrymc/client/");
         illegalPackages.add("net/blueberrymc/common/bml/client/");
+        illegalPackages.add("net/blueberrymc/mixin/client/");
         try {
             NativeUtil.registerClassLoadHook((classLoader, name, clazz, protectionDomain, bytes) -> {
                 for (String illegalPackage : illegalPackages) {
