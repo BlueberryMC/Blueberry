@@ -40,11 +40,11 @@ subprojects {
         maven { url = uri("https://repo.spongepowered.org/maven/"); name = "Sponge Powered" }
         maven { url = uri("https://jitpack.io"); name = "Jitpack" }
         maven { url = uri("https://libraries.minecraft.net/"); name = "Minecraft" }
-        maven { url = uri("https://repo2.acrylicstyle.xyz/"); name = "acrylic-repo" }
+        maven { url = uri("https://repo.blueberrymc.net/repository/maven-public/"); name = "blueberrymc-repo" }
     }
 
     dependencies {
-        implementation(kotlin("stdlib", "1.6.10"))
+        implementation(kotlin("stdlib", "1.6.20"))
     }
 
     publishing {

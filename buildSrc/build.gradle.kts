@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.20"
 }
 
 repositories {
@@ -8,5 +8,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", "1.6.10"))
+    implementation(kotlin("stdlib", "1.6.20"))
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r")
 }

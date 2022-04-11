@@ -13,5 +13,7 @@ project(":minecraftforge-api").projectDir = File("MinecraftForge-API")
 include("blueberry-api")
 project(":blueberry-api").projectDir = File("Blueberry-API")
 
-include("blueberry")
-project(":blueberry").projectDir = File("Blueberry-Client")
+if (File("Blueberry-Client").exists()) {
+    include("blueberry")
+    project(":blueberry").projectDir = File("Blueberry-Client")
+}

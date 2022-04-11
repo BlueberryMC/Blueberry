@@ -1,13 +1,13 @@
 # Contributing to Blueberry
 
-If you have been contributed to PaperMC/Paper, these steps may be familiar to you.
-
 ## Requirements
-To get started with PRing changes, you'll need the following software:
+To get started with PRing changes, you'll need the following software (for now, at least):
+- IDE (not required but highly recommended)
 - git
 - patch
-- JDK 8+ (You can also use [AdoptOpenJDK](https://adoptopenjdk.net/))
+- JDK 17+ (If you do not have one, you can download from here: [Adoptium](https://adoptium.net/))
 - maven
+- Bash
 
 ## Directories (Subprojects)
 - `Blueberry-API` - APIs for Blueberry-Client (Includes `MagmaCube`)
@@ -34,13 +34,15 @@ Assuming you have already forked the repository:
 4. Run `./blueberry rebuild` (or `./blueberry rb`) in the main directory to convert commits into patches.
 5. PR the generated patch file(s) back to this repository.
 
+(To reset everything, simply run: `./scripts/applyPatches.sh`)
+
 > ❗ Please note that if you have some specific implementation detail you'd like to document, you should do so in the patch message or in comments.
 
 ## Modifying patches
 
 You can modify patches in some ways, they are complicated though.
 
-Editing the patch files by hand should be avoided, as they will most likely cause problems. (Greatest care should be taken if you do so, and make sure the patches applies without ANY problems.)
+Editing the patch files by hand should be avoided, as they will most likely cause problems. (Great care should be taken if you do so, and make sure the patches applies without ANY problems.)
 
 ### Method 1
 This method works by temporarily resetting your `HEAD` to the desired commit to edit it using `git rebase`.
@@ -90,21 +92,22 @@ All modifications to non-Blueberry files should be marked.
   - Absolutely no wildcard imports.
 
 Here's an example of how to mark changes by Blueberry:
-```java
-// Minecraft.getInstance().destroyPC(); // Blueberry - don't destroy PC
-entity.getServer().getAdmins().forEach(Entity::explode);
-int i = 0;
-while (true) {
-    if (i == 5) {
-        entity.explode();
-        break;
-    }
-    i++;
-}
-// Blueberry start - decompile error
-// entity.getWorld().explode((Object) entity.getLocation());
-// ((Person) entity).commitChanges((Object) changes);
-entity.getWorld().explode(entity.getLocation());
-((Person) entity).commitChanges(changes);
-// Blueberry end - decompile error
+```diff
+- Minecraft.getInstance().destroyPC();
++ // Minecraft.getInstance().destroyPC(); // Blueberry - don't destroy PC
+  entity.getServer().getAdmins().forEach(Entity::explode);
+  int i = 0;
+  while (true) {
+      if (i == 5) {
+          entity.explode();
+          break;
+      }
+      i++;
+  }
+- entity.getWorld().explode((Object) entity.getLocation());
+- ((Person) entity).commitChanges((Object) changes);
++ // Blueberry start - decompile error
++ entity.getWorld().explode(entity.getLocation());
++ ((Person) entity).commitChanges(changes);
++ // Blueberry end - decompile error
 ```

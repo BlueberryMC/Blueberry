@@ -4,8 +4,8 @@ version = apiVersion
 
 dependencies {
     compileOnly(project(":blueberry-api"))
-    compileOnly("net.blueberrymc.minecraft:minecraft:$minecraftVersion")
-    compileOnly("org.jetbrains:annotations:22.0.0")
+    compileOnly("net.blueberrymc.magmacube:magmacube:$minecraftVersion")
+    compileOnly("org.jetbrains:annotations:23.0.0")
 }
 
 publishing {
