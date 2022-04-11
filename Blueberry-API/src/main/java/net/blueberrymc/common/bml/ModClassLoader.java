@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.config.ModDescriptionFile;
+import net.blueberrymc.util.Util;
 import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -172,7 +173,7 @@ public class ModClassLoader extends URLClassLoader {
             ModFileEntry entry = this.modFile.getEntry(path);
             if (entry != null) {
                 byte[] bytes;
-                try (InputStream in = entry.getInputStream()) {
+                try (InputStream in = entry.inputStream()) {
                     bytes = ByteStreams.toByteArray(in);
                 } catch (IOException ex) {
                     throw new ClassNotFoundException(name, ex);
@@ -181,7 +182,7 @@ public class ModClassLoader extends URLClassLoader {
                 int dot = name.lastIndexOf('.');
                 if (dot != -1) {
                     String pkgName = name.substring(0, dot);
-                    if (getPackageRecursively(pkgName) == null) {
+                    if (Util.getPackageRecursively(this, pkgName) == null) {
                         try {
                             if (manifest != null) {
                                 definePackage(pkgName, manifest, url);
@@ -189,13 +190,13 @@ public class ModClassLoader extends URLClassLoader {
                                 definePackage(pkgName, null, null, null, null, null, null, null);
                             }
                         } catch (IllegalArgumentException ex) {
-                            if (getPackageRecursively(pkgName) == null) {
+                            if (Util.getPackageRecursively(this, pkgName) == null) {
                                 throw new IllegalStateException("Cannot find package " + pkgName);
                             }
                         }
                     }
                 }
-                CodeSigner[] signers = entry.getCodeSigners();
+                CodeSigner[] signers = entry.codeSigners();
                 CodeSource source = new CodeSource(url, signers);
                 result = defineClass(name, bytes, 0, bytes.length, source);
             }
@@ -209,21 +210,6 @@ public class ModClassLoader extends URLClassLoader {
         }
         if (result == null) throw new ClassNotFoundException(name);
         return result;
-    }
-
-    @Nullable
-    protected Package getPackageRecursively(@NotNull String name) {
-        Package pkg = getDefinedPackage(name);
-        if (pkg == null) {
-            ClassLoader parent = getParent();
-            while (pkg == null && parent != null) {
-                pkg = parent.getDefinedPackage(name);
-                parent = parent.getParent();
-            }
-            if (pkg == null) pkg = ClassLoader.getSystemClassLoader().getDefinedPackage(name);
-            if (pkg == null) pkg = ClassLoader.getPlatformClassLoader().getDefinedPackage(name);
-        }
-        return pkg;
     }
 
     public boolean isClosed() {

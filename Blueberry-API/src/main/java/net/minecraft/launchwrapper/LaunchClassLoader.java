@@ -3,6 +3,7 @@ package net.minecraft.launchwrapper;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.server.main.ServerMain;
+import net.blueberrymc.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -237,7 +238,7 @@ public class LaunchClassLoader extends URLClassLoader {
                         final Manifest manifest = jarFile.getManifest();
                         final JarEntry entry = jarFile.getJarEntry(fileName);
 
-                        Package pkg = getPackage(packageName);
+                        Package pkg = Util.getPackageRecursively(this, packageName);
                         getClassBytes(untransformedName);
                         signers = entry.getCodeSigners();
                         if (pkg == null) {
@@ -250,7 +251,7 @@ public class LaunchClassLoader extends URLClassLoader {
                         }
                     }
                 } else {
-                    Package pkg = getPackage(packageName);
+                    Package pkg = Util.getPackageRecursively(this, packageName);
                     if (pkg == null) {
                         pkg = definePackage(packageName, null, null, null, null, null, null, null);
                     }

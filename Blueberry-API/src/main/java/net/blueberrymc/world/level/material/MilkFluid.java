@@ -23,6 +23,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 import java.util.Random;
 
@@ -90,6 +91,7 @@ public abstract class MilkFluid extends FlowingFluid {
    }
 
    public boolean canBeReplacedWith(@NotNull FluidState fluidState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull Fluid fluid, @NotNull Direction direction) {
+      // TODO: it uses deprecated method
       return direction == Direction.DOWN && !fluid.is(FluidTags.WATER);
    }
 

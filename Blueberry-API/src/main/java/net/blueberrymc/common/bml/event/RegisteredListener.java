@@ -5,38 +5,42 @@ import net.blueberrymc.common.util.ThrowableConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RegisteredListener {
-    @NotNull private final ThrowableConsumer<@NotNull Event> executor;
-    @NotNull private final EventPriority priority;
-    @Nullable private final Listener listener;
-    @NotNull private final BlueberryMod mod;
-
-    public RegisteredListener(
-            @NotNull ThrowableConsumer<@NotNull Event> executor,
-            @NotNull EventPriority priority,
-            @Nullable Listener listener,
-            @NotNull BlueberryMod mod) {
-        this.executor = executor;
-        this.priority = priority;
-        this.listener = listener;
-        this.mod = mod;
-    }
-
+public record RegisteredListener(
+        @NotNull ThrowableConsumer<Event> executor,
+        @NotNull EventPriority priority,
+        @Nullable Listener listener,
+        @NotNull BlueberryMod mod) {
+    /**
+     * @deprecated Use {@link #executor()} instead.
+     */
+    @Deprecated
     @NotNull
     public ThrowableConsumer<Event> getExecutor() {
         return executor;
     }
 
+    /**
+     * @deprecated Use {@link #priority()} instead.
+     */
+    @Deprecated
     @NotNull
     public EventPriority getPriority() {
         return priority;
     }
 
+    /**
+     * @deprecated Use {@link #listener()} instead.
+     */
+    @Deprecated
     @Nullable
     public Listener getListener() {
         return listener;
     }
 
+    /**
+     * @deprecated Use {@link #mod()} instead.
+     */
+    @Deprecated
     @NotNull
     public BlueberryMod getMod() {
         return mod;

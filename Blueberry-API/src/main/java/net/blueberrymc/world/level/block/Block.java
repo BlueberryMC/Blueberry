@@ -141,6 +141,7 @@ public class Block {
             return level.setBlock(pos, blockState, flags);
         } else {
             BlockState old = getBlockState();
+            Objects.requireNonNull(old, "old block state cannot be null");
             int flags = SetBlockFlags.SEND_BLOCK_UPDATE | SetBlockFlags.NO_OBSERVER;
             boolean success = level.setBlock(pos, blockState, flags);
             if (success) {

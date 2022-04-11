@@ -2,7 +2,6 @@ package net.blueberrymc.client.event.render.gui;
 
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.Event;
-import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 

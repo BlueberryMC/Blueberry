@@ -28,7 +28,7 @@ public abstract class LoggedBufferedOutputStream extends OutputStream {
     }
 
     @Override
-    public void flush() throws IOException {
+    public void flush() {
         String buf = getBuffer();
         if (buf.trim().isBlank()) {
             return;

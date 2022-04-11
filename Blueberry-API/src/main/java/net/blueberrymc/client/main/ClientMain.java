@@ -19,15 +19,7 @@ import java.util.List;
 public class ClientMain {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void main(@NotNull String@NotNull[] args) throws IOException, NoSuchMethodException {
-        /*
-        net.blueberrymc.native_util.NativeUtil.registerClassLoadHook((classLoader, s, aClass, protectionDomain, bytes) -> {
-            if (s.contains("BlueberryMod") || s.endsWith("Main")) {
-                LOGGER.warn("Loaded {}", s, new Throwable());
-            }
-            return null;
-        });
-        */
+    public static void main(@NotNull String@NotNull[] args) throws IOException {
         org.lwjgl.glfw.GLFW.glfwInit();
         List<String> arguments = new ArrayList<>();
         arguments.add("--tweakClass=net.blueberrymc.client.main.BlueberryClientTweaker");

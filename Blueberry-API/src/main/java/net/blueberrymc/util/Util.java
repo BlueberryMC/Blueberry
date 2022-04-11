@@ -208,4 +208,19 @@ public class Util {
     public static <T> Stream<T> toStream(@NotNull @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<? extends T> optional) {
         return DataFixUtils.orElseGet(optional.map(Stream::of), Stream::empty);
     }
+
+    @Nullable
+    public static Package getPackageRecursively(@NotNull ClassLoader cl, @NotNull String name) {
+        Package pkg = cl.getDefinedPackage(name);
+        if (pkg == null) {
+            ClassLoader parent = cl.getParent();
+            while (pkg == null && parent != null) {
+                pkg = parent.getDefinedPackage(name);
+                parent = parent.getParent();
+            }
+            if (pkg == null) pkg = ClassLoader.getSystemClassLoader().getDefinedPackage(name);
+            if (pkg == null) pkg = ClassLoader.getPlatformClassLoader().getDefinedPackage(name);
+        }
+        return pkg;
+    }
 }

@@ -58,31 +58,30 @@ public class ModListScreen extends BlueberryScreen {
             this.minecraft.setScreen(this.previousScreen);
             this.minecraft.setScreen(new ModListScreen(this.previousScreen));
         }));
-        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, new TranslatableComponent("structure_block.mode.load"), (button) -> {
-            this.minecraft.setScreen(FileDialogScreen.create(
-                    this,
-                    FileDialogScreenOptions
-                            .builder()
-                            //.boundary(Blueberry.getGameDir()) // we probably don't need boundary
-                            .fileType(FileDialogScreenOptions.FileType.ALL)
-                            .initialDirectory(Blueberry.getModsDir())
-                            .title(new BlueberryText("blueberry", "gui.screens.mods.load.title"))
-                            .callback(file -> {
-                                if (file != null) {
-                                    File actualFileToLoad = file;
-                                    if (actualFileToLoad.getName().equals("mod.yml")) {
-                                        actualFileToLoad = file.getParentFile();
+        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, new TranslatableComponent("structure_block.mode.load"), (button) ->
+                this.minecraft.setScreen(FileDialogScreen.create(
+                        this,
+                        FileDialogScreenOptions
+                                .builder()
+                                //.boundary(Blueberry.getGameDir()) // we probably don't need boundary
+                                .fileType(FileDialogScreenOptions.FileType.ALL)
+                                .initialDirectory(Blueberry.getModsDir())
+                                .title(new BlueberryText("blueberry", "gui.screens.mods.load.title"))
+                                .callback(file -> {
+                                    if (file != null) {
+                                        File actualFileToLoad = file;
+                                        if (actualFileToLoad.getName().equals("mod.yml")) {
+                                            actualFileToLoad = file.getParentFile();
+                                        }
+                                        LOGGER.info("Trying to load mod from: {} (original path: {})", actualFileToLoad, file);
+                                        tryLoadMod(actualFileToLoad);
+                                        if (ModLoadingErrors.hasErrorOrWarning()) {
+                                            this.minecraft.setScreen(new ModLoadingProblemScreen(this));
+                                        }
                                     }
-                                    LOGGER.info("Trying to load mod from: {} (original path: {})", actualFileToLoad, file);
-                                    tryLoadMod(actualFileToLoad);
-                                    if (ModLoadingErrors.hasErrorOrWarning()) {
-                                        this.minecraft.setScreen(new ModLoadingProblemScreen(this));
-                                    }
-                                }
-                            })
-                            .build()
-            ));
-        }));
+                                })
+                                .build()
+                ))));
         this.addRenderableWidget(new Button(this.width / 2 + 50, this.height - 38, 96, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
         (this.reloadButton = this.addRenderableWidget(new Button(10, this.height - 78, this.width / 5 / 2 - 11, 20, new BlueberryText("blueberry", "gui.screens.mods.reload"), button -> {
             try {

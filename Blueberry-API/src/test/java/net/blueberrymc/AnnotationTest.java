@@ -172,11 +172,7 @@ public class AnnotationTest {
         }
 
         // Anonymous classes have generated constructors, which can't be annotated nor invoked
-        if ("<init>".equals(method.name) && isAnonymous(clazz)) {
-            return false;
-        }
-
-        return true;
+        return !"<init>".equals(method.name) || !isAnonymous(clazz);
     }
 
     private static boolean isWellAnnotated(@Nullable List<AnnotationNode> annotations) {
@@ -196,8 +192,8 @@ public class AnnotationTest {
     }
 
     private static boolean mustBeAnnotated(@NotNull Type type) {
-        // TODO: return false if type is array of primitive type
-        return /*type.getSort() == Type.ARRAY || */ type.getSort() == Type.OBJECT;
+        if (type.getSort() == Type.ARRAY)  return type.getElementType().getSort() == Type.OBJECT;
+        return type.getSort() == Type.OBJECT;
     }
 
     private static boolean is(@NotNull MethodNode method, @NotNull String name, int parameters) {

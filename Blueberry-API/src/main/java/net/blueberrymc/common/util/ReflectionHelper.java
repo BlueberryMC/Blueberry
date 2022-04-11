@@ -29,7 +29,7 @@ public final class ReflectionHelper {
      * @return new instance
      */
     @NotNull
-    public static Object newInstance(@NotNull String clazz) throws ClassNotFoundException {
+    public static Object newInstance(@NotNull String clazz) {
         return NativeUtil.newInstance(Ref.forName(clazz).getDeclaredConstructor().getConstructor());
     }
 

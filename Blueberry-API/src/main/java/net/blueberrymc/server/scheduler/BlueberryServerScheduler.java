@@ -10,9 +10,4 @@ public class BlueberryServerScheduler extends AbstractBlueberryScheduler {
         super.tick();
         Blueberry.getEventManager().callEvent(ServerTickEvent.INSTANCE);
     }
-
-    @Override
-    public void tickAsync() {
-        super.tickAsync();
-    }
 }

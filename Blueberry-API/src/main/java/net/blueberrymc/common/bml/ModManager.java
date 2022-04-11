@@ -67,9 +67,8 @@ public class ModManager {
     @NotNull
     public List<ModInfo> getModInfos() {
         List<ModInfo> modInfos = new ArrayList<>();
-        Blueberry.getModLoader().getLoadedMods().forEach(mod -> {
-            modInfos.add(new ModInfo(mod.getDescription().getModId(), mod.getDescription().getVersion()));
-        });
+        Blueberry.getModLoader().getLoadedMods().forEach(mod ->
+                modInfos.add(new ModInfo(mod.getDescription().getModId(), mod.getDescription().getVersion())));
         return ImmutableList.copyOf(modInfos);
     }
 

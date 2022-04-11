@@ -7,7 +7,6 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class BlueberryBucketItem extends BucketItem {
     private final BlueberryMod mod;
@@ -23,7 +22,7 @@ public abstract class BlueberryBucketItem extends BucketItem {
         return mod;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public abstract Component getName(@NotNull ItemStack itemStack);
 }

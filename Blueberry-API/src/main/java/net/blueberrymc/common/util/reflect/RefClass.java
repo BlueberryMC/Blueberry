@@ -81,7 +81,7 @@ public record RefClass<T>(@NotNull Class<T> clazz) {
     @Contract(pure = true)
     @Nullable
     public RefConstructor<T> getDeclaredConstructorMaybe(@NotNull Class<?> @NotNull ... classes) {
-        return ThrowableActionableResult.of(() -> getDeclaredConstructor(classes)).nullableValue();
+        return ThrowableActionableResult.of(() -> getDeclaredConstructor(classes)).orElse(null);
     }
 
     @Contract(pure = true)

@@ -2,15 +2,7 @@ package net.blueberrymc.network.mod;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ModInfo {
-    public final String modId;
-    public final String version;
-
-    public ModInfo(@NotNull String modId, @NotNull String version) {
-        this.modId = modId;
-        this.version = version;
-    }
-
+public record ModInfo(@NotNull String modId, @NotNull String version) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

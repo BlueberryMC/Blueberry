@@ -37,7 +37,7 @@ public abstract class DelegatingThrowableSupplier<T> implements ThrowableSupplie
     @NotNull
     public static <T> DelegatingThrowableSupplier<T> getInstance(@NotNull ThrowableSupplier<T> supplier) {
         if (cache.containsKey(supplier)) return (DelegatingThrowableSupplier<T>) cache.get(supplier);
-        DelegatingThrowableSupplier<T> instance = new DelegatingThrowableSupplier<T>() {
+        DelegatingThrowableSupplier<T> instance = new DelegatingThrowableSupplier<>() {
             @Override
             protected @NotNull ThrowableSupplier<T> delegate() {
                 return supplier;

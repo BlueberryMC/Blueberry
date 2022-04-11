@@ -168,12 +168,7 @@ public class ModDescriptionFile implements VersionedModInfo {
         Preconditions.checkNotNull(mainClass, "mainClass (main) is missing");
         if (name == null) {
             name = modId;
-            // TODO: remove log message, probably
-            LOGGER.info("Mod name for " + name + " is missing, using modId instead");
-        }
-        if (description == null) {
-            // TODO: remove log message, probably
-            LOGGER.info("Mod description for " + name + " is missing");
+            LOGGER.debug("Mod name for " + name + " is missing, using modId instead");
         }
         return new ModDescriptionFile(
                 modId,

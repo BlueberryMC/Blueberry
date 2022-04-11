@@ -82,9 +82,7 @@ public class BlueberryMod implements VersionedModInfo {
             this.config = new ModConfig(this.description);
             this.logger = LogManager.getLogger(this.description.getName());
             this.file = file;
-            Blueberry.runOnClient(() -> {
-                this.visualConfig = new RootCompoundVisualConfig(new TextComponent(this.description.getName()));
-            });
+            this.visualConfig = new RootCompoundVisualConfig(new TextComponent(this.description.getName()));
             this.onLoad();
         } catch (Throwable throwable) {
             this.stateList.add(ModState.ERRORED);

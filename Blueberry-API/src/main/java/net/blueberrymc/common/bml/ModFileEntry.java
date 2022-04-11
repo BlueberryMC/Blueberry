@@ -6,20 +6,20 @@ import org.jetbrains.annotations.Nullable;
 import java.io.InputStream;
 import java.security.CodeSigner;
 
-public class ModFileEntry {
-    @NotNull private final InputStream inputStream;
-    @Nullable private final CodeSigner[] codeSigners;
-
-    public ModFileEntry(@NotNull InputStream inputStream, @Nullable CodeSigner[] codeSigners) {
-        this.inputStream = inputStream;
-        this.codeSigners = codeSigners;
-    }
-
+public record ModFileEntry(@NotNull InputStream inputStream, @Nullable CodeSigner[] codeSigners) {
+    /**
+     * @deprecated Use {@link #inputStream()} instead.
+     */
+    @Deprecated
     @NotNull
     public InputStream getInputStream() {
         return inputStream;
     }
 
+    /**
+     * @deprecated Use {@link #codeSigners()} instead.
+     */
+    @Deprecated
     @Nullable
     public CodeSigner[] getCodeSigners() {
         return codeSigners;

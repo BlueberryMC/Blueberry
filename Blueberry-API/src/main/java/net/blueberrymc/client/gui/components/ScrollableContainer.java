@@ -300,6 +300,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         RenderSystem.disableBlend();
     }
 
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     protected void centerScrollOn(@NotNull E entry) {
         this.setScrollAmount(this.children().indexOf(entry) * this.itemHeight + this.itemHeight / 2 - (this.bottom - this.top) / 2);
     }

@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -17,7 +16,7 @@ public class SimpleBlueberryBucketItem extends BlueberryBucketItem {
         this.toNameFunction = toNameFunction;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Component getName(@NotNull ItemStack itemStack) {
         return toNameFunction.apply(itemStack);

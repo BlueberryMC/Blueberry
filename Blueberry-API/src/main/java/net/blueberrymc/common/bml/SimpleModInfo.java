@@ -1,29 +1,28 @@
 package net.blueberrymc.common.bml;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class SimpleModInfo implements ModInfo {
-    private final String name;
-    private final String modId;
-
-    public SimpleModInfo(@NotNull String name, @NotNull String modId) {
-        Preconditions.checkNotNull(name, "name cannot be null");
-        Preconditions.checkNotNull(modId, "modId cannot be null");
-        this.name = name;
-        this.modId = modId;
-    }
-
+public record SimpleModInfo(String name, String modId) implements ModInfo {
+    /**
+     * @deprecated Use {@link #name()} instead.
+     */
+    @Deprecated
+    @NotNull
     @Override
-    public @NotNull String getName() {
+    public String getName() {
         return name;
     }
 
+    /**
+     * @deprecated Use {@link #modId()} instead.
+     */
+    @Deprecated
+    @NotNull
     @Override
-    public @NotNull String getModId() {
+    public String getModId() {
         return modId;
     }
 

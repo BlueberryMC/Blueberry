@@ -1,6 +1,8 @@
 package net.blueberrymc.common.bml.loading;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.event.mod.ModLoadingErrorAddEvent;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -15,7 +17,13 @@ import java.util.function.Consumer;
 public class ModLoadingErrors {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final List<ModLoadingError> errors = Collections.synchronizedList(new ArrayList<>());
-    @Nullable public static Consumer<ModLoadingError> hook = null;
+
+    /**
+     * @deprecated Use {@link ModLoadingErrorAddEvent} instead
+     */
+    @Deprecated
+    @Nullable
+    public static Consumer<ModLoadingError> hook = null;
 
     public static void clear() {
         errors.clear();
@@ -37,8 +45,8 @@ public class ModLoadingErrors {
 
     public static void add(@NotNull("modLoadingError") ModLoadingError error) {
         Preconditions.checkNotNull(error, "modLoadingError cannot be null");
-        if (errors.isEmpty() && hook != null) hook.accept(error);
-        LOGGER.error(error.throwable);
+        new ModLoadingErrorAddEvent(error).callEvent();
+        LOGGER.catching(Level.ERROR, error.throwable);
         errors.add(error);
     }
 

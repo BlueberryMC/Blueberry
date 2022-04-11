@@ -1,10 +1,10 @@
 package net.blueberrymc.common.util;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.util.function.ThrowableSupplier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import net.blueberrymc.common.util.function.ThrowableSupplier;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -48,28 +48,61 @@ public class ActionableResult<T> {
     @NotNull
     public static <V> ActionableResult<V> ofNullable(@Nullable V value) { return value == null ? empty() : new ActionableResult<>(value); }
 
+    // TODO: remove this method in 2.0.0
+    /**
+     * @deprecated Use {@link #getOrThrow()} instead
+     */
+    @Deprecated
     @NotNull
-    public T value() { return get(); }
+    public T value() {
+        return get();
+    }
 
+    // TODO: remove this method in 2.0.0
+    /**
+     * @deprecated Warning: this method will be removed and {@link #get()} will return nullable value in a future
+     * version.
+     */
+    @Deprecated
     @Nullable
-    public T nullableValue() { return value; }
+    public T nullableValue() {
+        return value;
+    }
 
+    // TODO: make it return nullable value in 2.0.0
+    /**
+     * Gets the value if present, otherwise throws {@link NoSuchElementException}.
+     * Warning: this method will return nullable value in a future version.
+     * @return the value
+     */
     @NotNull
     public T get() {
         if (value == null) throw new NoSuchElementException("No value present");
         return value;
     }
 
+    /**
+     * Gets the value if present, otherwise throws {@link NoSuchElementException}.
+     * @return the value
+     */
     @NotNull
     public T getOrThrow() {
         if (value == null) throw new NoSuchElementException("No value present");
         return value;
     }
 
-    public boolean isPresent() { return value != null; }
+    public boolean isPresent() {
+        return value != null;
+    }
+
+    public boolean isEmpty() {
+        return value == null;
+    }
 
     @NotNull
-    public ConditionalInvocableResult<T> invoke() { return new ConditionalInvocableResult<>(value); }
+    public ConditionalInvocableResult<T> invoke() {
+        return new ConditionalInvocableResult<>(value);
+    }
 
     @NotNull
     public ActionableResult<T> then(@NotNull Consumer<? super T> action) {
@@ -98,19 +131,19 @@ public class ActionableResult<T> {
     @NotNull
     public ActionableResult<T> filter(@NotNull Predicate<? super T> predicate) {
         Preconditions.checkNotNull(predicate, "predicate cannot be null");
-        return !isPresent() || predicate.test(value) ? this : empty();
+        return isEmpty() || predicate.test(value) ? this : empty();
     }
 
     @NotNull
     public <U> ActionableResult<U> map(@NotNull Function<? super T, ? extends U> function) {
         Preconditions.checkNotNull(function, "function cannot be null");
-        return !isPresent() ? empty() : ActionableResult.ofNullable(function.apply(value));
+        return isEmpty() ? empty() : ActionableResult.ofNullable(function.apply(value));
     }
 
     @NotNull
     public <U> ActionableResult<U> flatMap(@NotNull Function<? super T, ActionableResult<U>> function) {
         Preconditions.checkNotNull(function, "function cannot be null");
-        return !isPresent() ? empty() : Objects.requireNonNull(function.apply(value));
+        return isEmpty() ? empty() : Objects.requireNonNull(function.apply(value));
     }
 
     @Contract("!null -> !null; null -> _")
@@ -141,17 +174,14 @@ public class ActionableResult<T> {
         return value == null ? "ActionableResult{empty}" : "ActionableResult{value=" + value + '}';
     }
 
-    public static class ConditionalInvocableResult<E> {
+    public record ConditionalInvocableResult<E>(@Nullable E value) {
         private static final ConditionalInvocableResult<?> EMPTY = new ConditionalInvocableResult<>(null);
-
-        @Nullable
-        private final E value;
-
-        public ConditionalInvocableResult(@Nullable E value) { this.value = value; }
 
         @NotNull
         @SuppressWarnings("unchecked")
-        public static <E> ConditionalInvocableResult<E> empty() { return (ConditionalInvocableResult<E>) EMPTY; }
+        public static <E> ConditionalInvocableResult<E> empty() {
+            return (ConditionalInvocableResult<E>) EMPTY;
+        }
 
         @NotNull
         public ConditionalInvocableResult<E> ifPresent(@NotNull Consumer<? super E> consumer) {
