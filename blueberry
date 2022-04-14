@@ -77,6 +77,6 @@ case "$1" in
     echo "  * p, patch               | Apply all patches to the project without building it."
     echo "  * prb, patchAndRebuild   | Apply all patches to the project and rebuild patches. Useful when you modified the small part of a patch file."
     echo "  * i, installer [number]  | Creates installer. The project must be patched before doing this."
-    echo "  * b, build               | Builds the project and creates installer."
+    echo "  * b, build               | Builds the project and creates installer (equivalent as patch & installer)."
   ;;
 esac
