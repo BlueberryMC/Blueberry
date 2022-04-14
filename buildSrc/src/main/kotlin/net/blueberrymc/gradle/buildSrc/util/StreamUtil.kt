@@ -18,4 +18,10 @@ object StreamUtil {
             }
         }.apply { isDaemon = true }.start()
     }
+
+    fun Process.setupPrinter(): Process {
+        setupPrinter(this.inputStream)
+        setupPrinter(this.errorStream)
+        return this
+    }
 }
