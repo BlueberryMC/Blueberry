@@ -6,9 +6,15 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.transport.URIish
 import java.io.File
+import java.net.URL
+import java.net.URLClassLoader
 import java.util.Objects
 
 object Util {
+    fun downloadFile(url: String, destination: File) {
+        URL(url).openStream().use { it.transferTo(destination.outputStream()) }
+    }
+
     fun applyPatches(baseDir: File, targetDirName: String, patchesDirName: String, upstreamPath: File) {
         val repositoryDir = File(baseDir, targetDirName)
         if (!repositoryDir.exists()) {
@@ -53,4 +59,9 @@ object Util {
 
     private fun getFilesInDirectory(dir: File): List<File> =
         Objects.requireNonNull(dir.listFiles()).filter { it.isFile }.sorted().toList()
+
+    fun runMain(classpath: List<File>, mainClass: String, args: Array<String>) {
+        val ucl = URLClassLoader(classpath.map { it.toURI().toURL() }.toTypedArray())
+        ucl.loadClass(mainClass).getMethod("main", Array<String>::class.java).invoke(null, args)
+    }
 }

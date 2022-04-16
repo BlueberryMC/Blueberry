@@ -97,10 +97,3 @@ subprojects {
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     }
 }
-
-tasks {
-    withType<net.blueberrymc.gradle.buildSrc.tasks.PatchMinecraft> {
-        clientJar = "https://launcher.mojang.com/v1/objects/d49eb6caed53d23927648c97451503442f9e26fd/client.jar"
-        clientObfuscationMap = "https://launcher.mojang.com/v1/objects/e824c89c612c0b9cb438ef739c44726c59bbf679/client.txt"
-    }
-}
