@@ -8,18 +8,17 @@ import java.util.zip.ZipInputStream
 
 object FileUtil {
     fun unzip(zipFile: String, outputDirectory: String) {
-        val buffer = ByteArray(1024 * 32) // 32kb
         ZipInputStream(FileInputStream(zipFile)).use { zip ->
             var zipEntry: ZipEntry? = zip.nextEntry
             while (zipEntry != null) {
                 val fileName = zipEntry.name
                 val newFile = File(outputDirectory + File.separator + fileName)
-                newFile.parentFile.mkdirs()
-                FileOutputStream(newFile).use { fos ->
-                    var len: Int
-                    while (zip.read(buffer).also { len = it } > 0) {
-                        fos.write(buffer, 0, len)
-                    }
+                //println("Extracting: $newFile${if (zipEntry.isDirectory) "/" else ""}")
+                if (zipEntry.isDirectory) {
+                    newFile.mkdirs()
+                } else {
+                    newFile.parentFile.mkdirs()
+                    FileOutputStream(newFile).use { zip.transferTo(it) }
                 }
                 zipEntry = zip.nextEntry
             }

@@ -10,6 +10,7 @@ import net.blueberrymc.gradle.buildSrc.constants.*
 import net.minecraftforge.accesstransformer.TransformerProcessor
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 class PatchMinecraftAction : Action<PatchMinecraft> {
     override fun execute(task: PatchMinecraft) {
@@ -45,7 +46,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         // run remap
         println("Remap jar")
         Util.runMain(
-            File(magmaCubeDir, "work/MC-Remapper").listFiles()!!.toList(),
+            File(magmaCubeDir, "work/MC-Remapper/lib").listFiles()!!.toList(),
             "io.heartpattern.mcremapper.commandline.MCRemapperAppKt",
             arrayOf(
                 "--fixlocalvar=rename",
@@ -56,24 +57,26 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         )
         // run PR
         Util.runMain(
-            File(magmaCubeDir, "work/ParameterRemapper/ParameterRemapper-1.0.3.jar").listFiles()!!.toList(),
+            listOf(File(magmaCubeDir, "work/ParameterRemapper/ParameterRemapper-1.0.4.jar")),
             "xyz.acrylicstyle.parameterRemapper.ParameterRemapperApp",
             arrayOf(
                 "--input-file=$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped.jar",
                 "--output-file=$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped-2.jar",
-                "--mapping-file=$magmaCubeDir/work/mappings/mappings/$mappingVersion.pr\""
+                "--mapping-file=$magmaCubeDir/work/mappings/mappings/$mappingVersion.pr"
             )
         )
         // run AT
+        File("$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped.jar").delete()
         TransformerProcessor.main(
             "--inJar",
             "$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped-2.jar",
             "--outJar",
-            "$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped.jar",
+            "$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped-at.jar",
             "--atFile",
             "$magmaCubeDir/work/mappings/mappings/$mappingVersion.at",
         )
         File("$magmaCubeDir/work/Minecraft/$minecraftVersion/client-remapped-2.jar").delete()
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/client-remapped-at.jar"), magmaCubePath.resolve("work/Minecraft/$minecraftVersion/client-remapped.jar"), StandardCopyOption.REPLACE_EXISTING)
         // unzip remapped jar
         println("Unzip client-remapped.jar")
         FileUtil.unzip(
@@ -123,7 +126,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/data"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/data"))
         Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/META-INF"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/META-INF"))
         Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/assets"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/assets"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/log4j2.xml"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/log4j2.xml"))
+        //Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/log4j2.xml"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/log4j2.xml"))
         Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/pack.png"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/pack.png"))
         Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/version.json"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/version.json"))
         Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/flightrecorder-config.jfc"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/flightrecorder-config.jfc"))
@@ -133,7 +136,11 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         // setup git
         val upstreamGit = Git.init().setDirectory(File("$magmaCubeDir/work/Minecraft/$minecraftVersion/source")).call()
         upstreamGit.add().addFilepattern("src").call()
-        upstreamGit.commit().setMessage("Vanilla $ ${System.currentTimeMillis()}").setAuthor("Vanilla", "auto@mated.null").call()
+        upstreamGit.commit()
+            .setSign(false)
+            .setMessage("Vanilla $ ${System.currentTimeMillis()}")
+            .setAuthor("Vanilla", "auto@mated.null")
+            .call()
         upstreamGit.checkout().setCreateBranch(true).setName("master").call()
     }
 }

@@ -62,6 +62,10 @@ object Util {
 
     fun runMain(classpath: List<File>, mainClass: String, args: Array<String>) {
         val ucl = URLClassLoader(classpath.map { it.toURI().toURL() }.toTypedArray())
-        ucl.loadClass(mainClass).getMethod("main", Array<String>::class.java).invoke(null, args)
+        try {
+            Class.forName(mainClass, true, ucl).getMethod("main", Array<String>::class.java).invoke(null, args)
+        } catch (e: ClassNotFoundException) {
+            throw RuntimeException("Class $mainClass not found.\nclasspath:\n  ${classpath.joinToString("\n  ")}", e)
+        }
     }
 }
