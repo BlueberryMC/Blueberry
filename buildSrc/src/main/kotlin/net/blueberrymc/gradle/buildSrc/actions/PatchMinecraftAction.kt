@@ -21,7 +21,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
             if (!magmaCubeDir.isDirectory) {
                 throw IllegalStateException("MagmaCube directory not found")
             }
-            val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).call()
+            val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).setGitDir(File(baseDir, ".git/modules/MagmaCube")).call()
             magmaCubeGit.submoduleUpdate().setFetch(true).call()
             initMagmaCube(baseDir)
         }
@@ -33,7 +33,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
             throw IllegalStateException("MagmaCube directory not found")
         }
         val magmaCubePath = magmaCubeDir.toPath()
-        val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).call()
+        val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).setGitDir(File(baseDir, ".git/modules/MagmaCube")).call()
         magmaCubeGit.submoduleUpdate().setFetch(true).call()
         val clientJarFile = File(magmaCubeDir, "work/Minecraft/$minecraftVersion/client.jar")
         val clientMappingFile = File(magmaCubeDir, "work/Minecraft/$minecraftVersion/mapping.txt")
