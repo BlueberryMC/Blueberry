@@ -148,6 +148,10 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
             .setMessage("Vanilla $ ${System.currentTimeMillis()}")
             .setAuthor("Vanilla", "auto@mated.null")
             .call()
-        upstreamGit.checkout().setCreateBranch(true).setName("master").call()
+        try {
+            upstreamGit.checkout().setCreateBranch(true).setName("master").call()
+        } catch (_: Exception) {
+            // we can just ignore
+        }
     }
 }
