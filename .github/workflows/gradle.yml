@@ -24,6 +24,8 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: temurin
           cache: 'maven'
+      - name: Update submodules
+        run: "git submodule update --init && cd MagmaCube && git submodule update --init && cd .."
       - name: "Apply patches (MagmaCube)"
         run: './gradlew patchMinecraft --info --stacktrace'
       - name: "Apply patches (Blueberry)"
