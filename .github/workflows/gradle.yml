@@ -25,9 +25,9 @@ jobs:
           distribution: temurin
           cache: 'maven'
       - name: "Apply patches (MagmaCube)"
-        run: './gradlew patchMinecraft'
+        run: './gradlew patchMinecraft --info --stacktrace'
       - name: "Apply patches (Blueberry)"
-        run: './gradlew applyBlueberryPatches'
+        run: './gradlew applyBlueberryPatches --info --stacktrace'
       - name: Cache
         uses: actions/cache@v2.1.6
         with:
