@@ -27,7 +27,12 @@ object Util {
         try {
             git.checkout().setName("master").call()
         } catch (e: Exception) {
-            git.checkout().setCreateBranch(true).setStartPoint("upstream/master").setName("master").call()
+            try {
+                git.checkout().setCreateBranch(true).setStartPoint("upstream/master").setName("master").call()
+            } catch (e2: Exception) {
+                e2.addSuppressed(e)
+                throw e2
+            }
         }
         git.reset().setMode(ResetCommand.ResetType.HARD).setRef("upstream/master").call()
         val patchesDir = File(baseDir, patchesDirName)

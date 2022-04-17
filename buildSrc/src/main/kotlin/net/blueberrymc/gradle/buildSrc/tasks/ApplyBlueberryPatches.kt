@@ -1,10 +1,7 @@
 package net.blueberrymc.gradle.buildSrc.tasks
 
-import org.gradle.api.DefaultTask
-
-open class ApplyBlueberryPatches : DefaultTask() {
+open class ApplyBlueberryPatches : BaseBlueberryTask() {
     init {
-        group = "blueberry"
         description = "Applies the patches to the project"
     }
 }

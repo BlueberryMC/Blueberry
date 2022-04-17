@@ -4,9 +4,11 @@ import net.blueberrymc.gradle.buildSrc.Util
 import org.gradle.api.Action
 import net.blueberrymc.gradle.buildSrc.tasks.PatchMinecraft
 import net.blueberrymc.gradle.buildSrc.util.FileUtil
+import net.blueberrymc.gradle.buildSrc.util.FileUtil.forEachFile
 import org.eclipse.jgit.api.Git
 import java.io.File
 import net.blueberrymc.gradle.buildSrc.constants.*
+import net.blueberrymc.gradle.buildSrc.util.MiniUnusedCommentRemover
 import net.minecraftforge.accesstransformer.TransformerProcessor
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler
 import java.nio.file.Files
@@ -25,6 +27,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
             val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).setGitDir(File(baseDir, ".git/modules/MagmaCube")).call()
             magmaCubeGit.submoduleUpdate().setFetch(true).call()
             initMagmaCube(baseDir)
+            Util.applyPatches(magmaCubeDir, "Minecraft", "patches", File(magmaCubeDir, "work/Minecraft/$minecraftVersion/source"))
         }
     }
 
@@ -87,7 +90,8 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         File("$magmaCubeDir/work/Minecraft/$minecraftVersion/unpacked/META-INF/MANIFEST.MF").writeText(
             """
             |Manifest-Version: 1.0
-            |Main-Class: net.minecraft.client.main.Main
+            |Main-Class: net.minecraft.client.Main
+            |
             |
             """.trimMargin()
         )
@@ -102,37 +106,40 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
             arrayOf(
                 "-dgs=1",
                 "-rsy=1",
-                "-ind=\"    \"",
-                "-log=\"WARN\"",
+                "-ind=    ",
+                "-log=WARN",
                 "-mpm=30",
                 "$magmaCubeDir/work/Minecraft/$minecraftVersion/unpacked",
                 "$magmaCubeDir/work/Minecraft/$minecraftVersion/source"
             )
         )
         // post process decompiled jar (postDownload.sh)
-        Util.runMain(
-            listOf(File("$magmaCubeDir/work/UnusedCommentRemover/UnusedCommentRemover-1.0.10.jar")),
-            "xyz.acrylicstyle.unusedCommentRemover.Main",
-            arrayOf("--output-dir=$magmaCubeDir/work/Minecraft/$minecraftVersion/source"),
-        )
+        MiniUnusedCommentRemover.walk(File(magmaCubeDir, "work/Minecraft/$minecraftVersion/source"))
         // copy files (copyFiles.sh)
         println("Copy files")
-        File("$magmaCubeDir/Minecraft/src/main/java").deleteRecursively()
-        File("$magmaCubeDir/Minecraft/src/main/resources").deleteRecursively()
         File("$magmaCubeDir/work/Minecraft/$minecraftVersion/source/src/main/java").mkdirs()
         File("$magmaCubeDir/work/Minecraft/$minecraftVersion/source/src/main/resources").mkdirs()
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/source/net"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/java/net"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/source/com"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/java/com"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/data"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/data"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/META-INF"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/META-INF"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/assets"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/assets"))
-        //Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/log4j2.xml"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/log4j2.xml"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/pack.png"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/pack.png"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/version.json"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/version.json"))
-        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/flightrecorder-config.jfc"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/flightrecorder-config.jfc"))
-        File("$magmaCubeDir/work/Minecraft/$minecraftVersion/unpacked").deleteRecursively()
-        File(magmaCubeDir, "work/Minecraft/$minecraftVersion/source/src/main/java").copyRecursively(File(magmaCubeDir, "Minecraft/src/main/java"))
-        File(magmaCubeDir, "work/Minecraft/$minecraftVersion/source/src/main/resources").copyRecursively(File(magmaCubeDir, "Minecraft/src/main/resources"))
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/source/net"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/java/net"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/source/com"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/java/com"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/data"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/data"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/META-INF"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/META-INF"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/assets"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/assets"), StandardCopyOption.ATOMIC_MOVE)
+        //Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/log4j2.xml"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/log4j2.xml"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/pack.png"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/pack.png"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/version.json"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/version.json"), StandardCopyOption.ATOMIC_MOVE)
+        Files.move(magmaCubePath.resolve("work/Minecraft/$minecraftVersion/unpacked/flightrecorder-config.jfc"), magmaCubePath.resolve("work/Minecraft/${minecraftVersion}/source/src/main/resources/flightrecorder-config.jfc"), StandardCopyOption.ATOMIC_MOVE)
+        println("Delete unused files")
+        FileUtil.deleteRecursively(File("$magmaCubeDir/work/Minecraft/$minecraftVersion/unpacked"))
+        println("Remove trailing newlines")
+        val cs = if (System.getProperty("os.name").lowercase().contains("win")) charset("SJIS") else charset("UTF-8")
+        File(magmaCubeDir, "work/Minecraft/$minecraftVersion/source").forEachFile { file ->
+            if (!file.isFile) return@forEachFile
+            if (!file.name.endsWith(".java")) return@forEachFile
+            val text = file.readText(cs)
+            file.writeText(text.trimEnd())
+        }
+        // TODO: slow
+        println("Setup up git")
         // setup git
         val upstreamGit = Git.init().setDirectory(File("$magmaCubeDir/work/Minecraft/$minecraftVersion/source")).call()
         upstreamGit.add().addFilepattern("src").call()
