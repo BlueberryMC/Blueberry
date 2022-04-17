@@ -35,6 +35,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         val magmaCubePath = magmaCubeDir.toPath()
         val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).setGitDir(File(baseDir, ".git/modules/MagmaCube")).call()
         magmaCubeGit.submoduleUpdate().setFetch(true).call()
+        File(magmaCubeDir, "work/Minecraft/$minecraftVersion").mkdirs()
         val clientJarFile = File(magmaCubeDir, "work/Minecraft/$minecraftVersion/client.jar")
         val clientMappingFile = File(magmaCubeDir, "work/Minecraft/$minecraftVersion/mapping.txt")
         // download files
@@ -93,6 +94,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
         // decompile unzipped remapped jar
         println("Decompile client-remapped.jar")
         File("$magmaCubeDir/work/Minecraft/$minecraftVersion/source").deleteRecursively()
+        File("$magmaCubeDir/work/Minecraft/$minecraftVersion/source").mkdirs()
         ConsoleDecompiler.main(
             arrayOf(
                 "-dgs=1",
