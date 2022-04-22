@@ -5,7 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.minecraftforge.net/"); name = "minecraftforge" }
-    maven { url = uri("https://repo.blueberrymc.net/"); name = "blueberrymc" }
+    maven { url = uri("https://repo.blueberrymc.net/repository/maven-public/"); name = "blueberrymc" }
 }
 
 dependencies {
