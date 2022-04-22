@@ -5,7 +5,10 @@ import io.sigpipe.jbsdiff.Diff
 import net.blueberrymc.gradle.buildSrc.Util
 import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.CLIENT_JAR_URL
+import net.blueberrymc.gradle.buildSrc.constants.SERVER_JAR_URL
 import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
+import net.blueberrymc.gradle.buildSrc.constants.SERVER_REPOSITORIES_LIST
+import net.blueberrymc.gradle.buildSrc.constants.SERVER_LIBRARIES_LIST
 import net.blueberrymc.gradle.buildSrc.tasks.BaseBlueberryTask
 import net.blueberrymc.gradle.buildSrc.util.ClasspathUtil
 import net.blueberrymc.gradle.buildSrc.util.FileUtil
@@ -18,6 +21,7 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import java.io.File
 import java.nio.file.Paths
+import kotlin.io.path.readBytes
 
 class BakeInstallerAction : Action<BaseBlueberryTask> {
     override fun execute(task: BaseBlueberryTask) {
@@ -39,7 +43,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
     // https://github.com/BlueberryMC/Blueberry/blob/2f498220ce1f6df16cef959f6420fe0e9fe8ef99/scripts/createPatchFile.sh
     // in: project
     // out: patcher jar
-    private fun createPatchFile(project: Project): File {
+    private fun createPatchFile(project: Project): PatcherJar {
         val baseDir = project.projectDir
         val jbsdiffPatcherDir = File(baseDir, "work/jbsdiffPatcher")
         val git = if (jbsdiffPatcherDir.exists()) {
@@ -53,6 +57,11 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         }
         git.fetch().call()
         git.reset().setRef("origin/main").setMode(ResetCommand.ResetType.HARD).call()
+        return PatcherJar(createClientPatcherJar(project), createServerPatcherJar(project))
+    }
+
+    private fun createClientPatcherJar(project: Project): File {
+        val baseDir = project.projectDir
         val clientJarBytes = File(baseDir, "MagmaCube/work/Minecraft/$MINECRAFT_VERSION/client.jar").readBytes()
         val patchedClientJarBytes =
             project.subprojects
@@ -65,7 +74,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
                 .readBytes()
         val patchFilePath = File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.bz2")
         patchFilePath.delete()
-        println("Creating patch")
+        println("Creating patch (client)")
         patchFilePath.outputStream().use { stream ->
             Diff.diff(
                 clientJarBytes,
@@ -81,6 +90,42 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
             name=blueberry
             version=$MINECRAFT_VERSION
             vanillaUrl=$CLIENT_JAR_URL
+            vanillaHash=$vanillaHash
+            patchedHash=$patchedHash
+        """.trimIndent())
+        return compilePatcherJar(project)
+    }
+
+    private fun createServerPatcherJar(project: Project): File {
+        val baseDir = project.projectDir
+        println("Downloading server jar")
+        val serverJarBytes = Util.downloadFile(SERVER_JAR_URL).use { it.path.readBytes() }
+        val patchedServerJarBytes =
+            project.subprojects
+                .find { it.name == "blueberry" }!!
+                .tasks
+                .getByName("shadowServerJar")
+                .outputs
+                .files
+                .singleFile
+                .readBytes()
+        val patchFilePath = File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.bz2")
+        patchFilePath.delete()
+        println("Creating patch (server)")
+        patchFilePath.outputStream().use { stream ->
+            Diff.diff(
+                serverJarBytes,
+                patchedServerJarBytes,
+                stream,
+            )
+        }
+        println("Creating patcher jar")
+        val vanillaHash = Util.sha256sum(serverJarBytes)
+        val patchedHash = Util.sha256sum(patchedServerJarBytes)
+        File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.properties").writeText("""
+            name=blueberry
+            version=$MINECRAFT_VERSION
+            vanillaUrl=$SERVER_JAR_URL
             vanillaHash=$vanillaHash
             patchedHash=$patchedHash
         """.trimIndent())
@@ -115,7 +160,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         return patcherJar
     }
 
-    private fun bakeInstaller(project: Project, patcherJar: File): File {
+    private fun bakeInstaller(project: Project, patcherJar: PatcherJar): File {
         val baseDir = project.projectDir
         val installerDir = File(baseDir, "work/Installer")
         val git = if (installerDir.exists()) {
@@ -134,10 +179,15 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         val datetime = Util.getMojangDateTime()
         File(installerDir, "src/main/resources/profile.properties").writeText("""
             name=$name
-            hideServer=true
-            extractFiles=client.jar,client.json,profile.properties
+            serverFiles=server.jar
+            serverRepositories=/server_repositories.list
+            serverLibraries=/server_libraries.list
+            extractFiles=server.jar,client.jar,client.json,profile.properties
         """.trimIndent())
-        patcherJar.copyTo(File(installerDir, "src/main/resources/client.jar"), true)
+        patcherJar.client.copyTo(File(installerDir, "src/main/resources/client.jar"), true)
+        patcherJar.server.copyTo(File(installerDir, "src/main/resources/server.jar"), true)
+        File(installerDir, "src/main/resources/server_repositories.list").writeText(SERVER_REPOSITORIES_LIST.joinToString("\n"))
+        File(installerDir, "src/main/resources/server_libraries.list").writeText(SERVER_LIBRARIES_LIST.joinToString("\n"))
         File(baseDir, "scripts/files/version.json").copyTo(File(installerDir, "src/main/resources/client.json"), true)
         File(installerDir, "src/main/resources/client.json").appendText("""
                 "releaseTime": "$datetime",
@@ -159,4 +209,6 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         FileUtil.deleteRecursively(compiled, deleteRoot = true)
         return installerJar
     }
+
+    private data class PatcherJar(val client: File, val server: File)
 }

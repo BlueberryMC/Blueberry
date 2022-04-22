@@ -6,7 +6,7 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..c71307abacd9a0fa065afcfebaf4a445fd591120
+index 0000000000000000000000000000000000000000..9db8234527836dc89651ce5b6a42f66498a8a178
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,226 @@
@@ -162,7 +162,7 @@ index 0000000000000000000000000000000000000000..c71307abacd9a0fa065afcfebaf4a445
 +    register("shadowServerJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class.java) {
 +        manifest {
 +            attributes(
-+                "Main-Class" to "net.blueberrymc.server.main.ServerMain",
++                "Main-Class" to "net.blueberrymc.server.main.DedicatedServerMain",
 +                "Multi-Release" to true,
 +                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
 +                "MixinConfigs" to "mixins.blueberry.json",
