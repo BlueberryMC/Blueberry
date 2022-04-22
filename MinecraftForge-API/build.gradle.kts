@@ -1,10 +1,10 @@
 import net.blueberrymc.gradle.buildSrc.constants.*
 
-version = apiVersion
+version = API_VERSION
 
 dependencies {
     compileOnly(project(":blueberry-api"))
-    compileOnly("net.blueberrymc.magmacube:magmacube:$minecraftVersion")
+    compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
     compileOnly("org.jetbrains:annotations:23.0.0")
 }
 

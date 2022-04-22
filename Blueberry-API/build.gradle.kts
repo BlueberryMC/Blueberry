@@ -1,9 +1,9 @@
 import net.blueberrymc.gradle.buildSrc.constants.*
 
-version = apiVersion
+version = API_VERSION
 
 dependencies {
-    compileOnly("net.blueberrymc.magmacube:magmacube:$minecraftVersion")
+    compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
     compileOnly("org.jetbrains:annotations:23.0.0")
     api("net.arikia.dev:discord-rpc-without-jna:1.7.0")
     api("com.google.code.findbugs:jsr305:3.0.2")

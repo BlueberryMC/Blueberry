@@ -6,16 +6,16 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..6ed0aa65c4e5b19be4c246616d8502c7b2d6e193
+index 0000000000000000000000000000000000000000..7da62b5e3f08696b42a487745840fd6d5217ffd1
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,189 @@
-+import net.blueberrymc.gradle.buildSrc.constants.apiVersion
-+import net.blueberrymc.gradle.buildSrc.constants.log4jVersion
-+import net.blueberrymc.gradle.buildSrc.constants.lwjglVersion
-+import net.blueberrymc.gradle.buildSrc.constants.minecraftVersion
+@@ -0,0 +1,191 @@
++import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
++import net.blueberrymc.gradle.buildSrc.constants.LOG4J_VERSION
++import net.blueberrymc.gradle.buildSrc.constants.LWJGL_VERSION
++import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
 +
-+version = "$minecraftVersion-$apiVersion"
++version = "$MINECRAFT_VERSION-$API_VERSION"
 +
 +plugins {
 +    id("com.github.johnrengelman.shadow") version "7.0.0"
@@ -26,40 +26,40 @@ index 0000000000000000000000000000000000000000..6ed0aa65c4e5b19be4c246616d8502c7
 +    api(project(":minecraftforge-api"))
 +    api("net.minecrell:terminalconsoleappender:1.3.0")
 +    api("org.jline:jline-terminal-jansi:3.20.0")
-+    implementation("net.blueberrymc.magmacube:magmacube:$minecraftVersion") {
++    implementation("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION") {
 +        exclude("*", "*")
 +    }
 +    compileOnly("net.java.dev.jna:jna:5.9.0")
 +    compileOnly("net.java.dev.jna:jna-platform:5.9.0")
 +    compileOnly("net.sf.jopt-simple:jopt-simple:5.0.4")
-+    compileOnly("org.lwjgl:lwjgl:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-windows")
-+    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-windows")
-+    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-windows")
-+    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-windows")
-+    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:natives-windows")
-+    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows")
-+    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion")
-+    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion:natives-linux")
-+    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion:natives-macos")
-+    compileOnly("org.lwjgl:lwjgl-jemalloc:$lwjglVersion:natives-windows")
++    compileOnly("org.lwjgl:lwjgl:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl:$LWJGL_VERSION:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-stb:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl-stb:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-stb:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-stb:$LWJGL_VERSION:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-glfw:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl-glfw:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-glfw:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-glfw:$LWJGL_VERSION:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-opengl:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl-opengl:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-opengl:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-opengl:$LWJGL_VERSION:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-openal:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl-openal:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-openal:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-openal:$LWJGL_VERSION:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-tinyfd:$LWJGL_VERSION:natives-windows")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-linux")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-macos")
++    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-windows")
 +    compileOnly("com.github.oshi:oshi-core:5.8.2")
 +    compileOnly("com.mojang:blocklist:1.0.6")
 +    compileOnly("com.mojang:text2speech:1.11.3")
@@ -73,9 +73,9 @@ index 0000000000000000000000000000000000000000..6ed0aa65c4e5b19be4c246616d8502c7
 +    compileOnly("org.apache.commons:commons-compress:1.21")
 +    compileOnly("org.apache.httpcomponents:httpclient:4.5.13")
 +    compileOnly("org.apache.httpcomponents:httpcore:4.4.14")
-+    compileOnly("org.apache.logging.log4j:log4j-api:$log4jVersion")
-+    compileOnly("org.apache.logging.log4j:log4j-core:$log4jVersion")
-+    compileOnly("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
++    compileOnly("org.apache.logging.log4j:log4j-api:$LOG4J_VERSION")
++    compileOnly("org.apache.logging.log4j:log4j-core:$LOG4J_VERSION")
++    compileOnly("org.apache.logging.log4j:log4j-slf4j18-impl:$LOG4J_VERSION")
 +    compileOnly("org.slf4j:slf4j-api:1.8.0-beta4")
 +}
 +
@@ -112,6 +112,7 @@ index 0000000000000000000000000000000000000000..6ed0aa65c4e5b19be4c246616d8502c7
 +        }
 +    }
 +
++    // client jar
 +    shadowJar {
 +        exclude("org/objectweb/asm/**")
 +        exclude("**/Log4j2Plugins.dat")
@@ -119,9 +120,10 @@ index 0000000000000000000000000000000000000000..6ed0aa65c4e5b19be4c246616d8502c7
 +        exclude("META-INF/*.DSA")
 +        exclude("META-INF/*.RSA")
 +        dependencies(filterDependencies)
-+        archiveFileName.set("blueberry-$minecraftVersion-$apiVersion.jar")
++        archiveFileName.set("blueberry-$MINECRAFT_VERSION-$API_VERSION.jar")
 +    }
 +
++    // server jar
 +    register("shadowServerJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class.java) {
 +        manifest {
 +            attributes(
@@ -196,6 +198,6 @@ index 0000000000000000000000000000000000000000..6ed0aa65c4e5b19be4c246616d8502c7
 +        exclude("glfw*")
 +        exclude("OpenAL*")
 +        exclude(".netbeans_automatic_build")
-+        archiveFileName.set("blueberry-server-$minecraftVersion-$apiVersion.jar")
++        archiveFileName.set("blueberry-server-$MINECRAFT_VERSION-$API_VERSION.jar")
 +    }
 +}

@@ -1,14 +1,22 @@
 package net.blueberrymc.gradle.buildSrc
 
 import net.blueberrymc.gradle.buildSrc.util.ArrayUtil
+import net.blueberrymc.gradle.buildSrc.util.TempFile
 import net.blueberrymc.gradle.buildSrc.util.StreamUtil.setupPrinter
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.transport.URIish
+import org.gradle.api.Project
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.net.URL
 import java.net.URLClassLoader
+import java.security.MessageDigest
 import java.util.Objects
+import java.util.jar.JarEntry
+import java.util.jar.JarOutputStream
+import kotlin.io.path.outputStream
 
 object Util {
     fun downloadFile(url: String, destination: File) {
@@ -72,5 +80,78 @@ object Util {
         } catch (e: ClassNotFoundException) {
             throw RuntimeException("Class $mainClass not found.\nclasspath:\n  ${classpath.joinToString("\n  ")}", e)
         }
+    }
+
+    fun getBuildNumber(project: Project): Long = project.properties["BUILD_NUMBER"].toString().toLongOrNull().let {
+        if (it == null) {
+            project.logger.warn("Invalid BUILD_NUMBER: ${project.properties["BUILD_NUMBER"]}. Using 0 instead.")
+            0
+        } else {
+            it
+        }
+    }
+
+    fun sha256sum(bytes: ByteArray): String /* 64 characters */ {
+        val digest = MessageDigest.getInstance("SHA-256")
+        return bytesToHex(digest.digest(bytes)).substring(0, 64)
+    }
+
+    private fun bytesToHex(hash: ByteArray): String {
+        val hexString = StringBuilder(2 * hash.size)
+        for (i in hash.indices) {
+            val hex = Integer.toHexString(0xff and hash[i].toInt())
+            if (hex.length == 1) {
+                hexString.append('0')
+            }
+            hexString.append(hex)
+        }
+        return hexString.toString()
+    }
+
+    // archive all files into .jar file
+    fun jar(archiveFile: File, fileOrDirectory: File) {
+        JarOutputStream(FileOutputStream(archiveFile)).use { jar ->
+            jar(jar, fileOrDirectory, null)
+        }
+    }
+
+    fun jar(jar: JarOutputStream, fileOrDirectory: File, prefix: String?) {
+        if (fileOrDirectory.isFile) {
+            val entry = JarEntry((prefix ?: "") + fileOrDirectory.name)
+            entry.size = fileOrDirectory.length()
+            jar.putNextEntry(entry)
+            FileInputStream(fileOrDirectory).use {
+                it.copyTo(jar)
+            }
+            jar.closeEntry()
+        } else {
+            val newPrefix = if (prefix == null) {
+                ""
+            } else {
+                "$prefix${fileOrDirectory.name}/"
+            }
+            for (file in fileOrDirectory.listFiles()!!) {
+                jar(jar, file, newPrefix)
+            }
+        }
+    }
+
+    /**
+     * Downloads the file from the given URL to temporary file and returns it. If not closed, the file will not be
+     * deleted.
+     * @param url URL to download
+     * @return temporary file
+     */
+    fun downloadFile(url: String): TempFile {
+        val tempFile = TempFile(File.createTempFile("download", ".tmp").toPath())
+        val connection = URL(url).openConnection()
+        connection.setRequestProperty("User-Agent", "BlueberryMC/Blueberry (buildSrc)")
+        connection.connect()
+        connection.getInputStream().use { input ->
+            tempFile.path.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return tempFile
     }
 }

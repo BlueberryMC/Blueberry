@@ -3,6 +3,10 @@ package net.blueberrymc.gradle.buildSrc.util
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.ForkJoinTask
 import java.util.zip.ZipEntry
@@ -27,7 +31,7 @@ object FileUtil {
         }
     }
 
-    fun deleteRecursively(file: File, depth: Int = 0) {
+    fun deleteRecursively(file: File, depth: Int = 0, deleteRoot: Boolean = false) {
         if (file.isFile) {
             file.delete()
         } else {
@@ -42,7 +46,9 @@ object FileUtil {
                 }
             }
             tasks.forEach { it.join() }
-            file.delete()
+            if (deleteRoot) {
+                file.delete()
+            }
         }
     }
 
@@ -52,6 +58,34 @@ object FileUtil {
             listFiles()?.forEach {
                 it.forEachFile(action)
             }
+        }
+    }
+
+    /**
+     * Copy the files/directories inside `from` to the `to`.
+     */
+    fun copy(from: Path, to: Path) {
+        Files.walk(from).use {
+            it.forEach { path ->
+                val target = to.resolve(from.relativize(path).toString())
+                if (Files.isDirectory(path)) {
+                    // if dir
+                    Files.createDirectories(target)
+                } else {
+                    // if file
+                    try {
+                        Files.copy(path, target)
+                    } catch (ignored: IOException) {
+                    }
+                }
+            }
+        }
+    }
+
+    fun shade(jar: Path, to: Path) {
+        val fs = FileSystems.newFileSystem(jar)
+        fs.rootDirectories.forEach {
+            copy(it, to)
         }
     }
 }

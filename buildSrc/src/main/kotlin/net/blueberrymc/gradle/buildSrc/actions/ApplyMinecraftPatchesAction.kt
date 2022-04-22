@@ -1,7 +1,7 @@
 package net.blueberrymc.gradle.buildSrc.actions
 
 import net.blueberrymc.gradle.buildSrc.Util
-import net.blueberrymc.gradle.buildSrc.constants.minecraftVersion
+import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
 import net.blueberrymc.gradle.buildSrc.tasks.BaseBlueberryTask
 import org.gradle.api.Action
 import java.io.File
@@ -17,7 +17,7 @@ class ApplyMinecraftPatchesAction : Action<BaseBlueberryTask> {
                 magmaCubeDir,
                 "Minecraft",
                 "patches",
-                File(magmaCubeDir, "work/Minecraft/$minecraftVersion/source"),
+                File(magmaCubeDir, "work/Minecraft/$MINECRAFT_VERSION/source"),
             )
         }
     }
