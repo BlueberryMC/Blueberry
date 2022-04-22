@@ -5,6 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.minecraftforge.net/"); name = "minecraftforge" }
+    maven { url = uri("https://repo.blueberrymc.net/"); name = "blueberrymc" }
 }
 
 dependencies {
@@ -13,4 +14,8 @@ dependencies {
     // TODO: update forgeflower
     implementation("net.minecraftforge:forgeflower:1.5.498.14")
     implementation("net.minecraftforge:accesstransformers:8.0.4")
+
+    // ingredients for baking installer
+    implementation("io.sigpipe:jbsdiff:1.0")
+    implementation("net.blueberrymc:native-util:2.1.0")
 }
