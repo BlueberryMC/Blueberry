@@ -23,7 +23,7 @@ dependencies {
     api("org.ow2.asm:asm-commons:9.2")
     api("org.ow2.asm:asm-util:9.2")
     api("org.spongepowered:mixin:0.8.5")
-    api("net.blueberrymc:native-util:1.2.6")
+    api("net.blueberrymc:native-util:2.1.0")
     api("net.minecraft:launchwrapper:1.12") {
         exclude("org.lwjgl.lwjgl", "lwjgl")
         exclude("org.lwjgl", "lwjgl")
