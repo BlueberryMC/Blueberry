@@ -1,6 +1,7 @@
 package net.blueberrymc.server.main;
 
 import net.blueberrymc.nativeutil.NativeUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class DedicatedServerMain {
-    public static void main(String[] args) throws IOException, ReflectiveOperationException {
+    public static void main(@NotNull String@NotNull[] args) throws IOException, ReflectiveOperationException {
         File libraries = new File("libraries");
         if (libraries.exists()) {
             findJarFiles(libraries, file -> {
