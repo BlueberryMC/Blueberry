@@ -6,10 +6,10 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..7da62b5e3f08696b42a487745840fd6d5217ffd1
+index 0000000000000000000000000000000000000000..c71307abacd9a0fa065afcfebaf4a445fd591120
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,191 @@
+@@ -0,0 +1,226 @@
 +import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LOG4J_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LWJGL_VERSION
@@ -119,6 +119,41 @@ index 0000000000000000000000000000000000000000..7da62b5e3f08696b42a487745840fd6d
 +        exclude("META-INF/*.SF")
 +        exclude("META-INF/*.DSA")
 +        exclude("META-INF/*.RSA")
++        exclude("joptsimple/**")
++        exclude("org/lwjgl/**")
++        exclude("org/slf4j/**")
++        exclude("org/apache/**")
++        exclude("it/unimi/dsi/fastutil/**")
++        exclude("io/netty/**")
++        exclude("com/mojang/authlib/**")
++        //exclude("com/mojang/blaze3d/**")
++        exclude("com/mojang/text2speech/**")
++        //exclude("com/mojang/realmsclient/**")
++        exclude("com/ibm/icu/**")
++        exclude("com/sun/jna/**")
++        exclude("com/google/common/**")
++        exclude("com/google/gson/**")
++        exclude("oshi/**")
++        exclude("lwjgl*")
++        exclude("oshi*.properties")
++        exclude("libopenal*")
++        exclude("liblwjgl*")
++        exclude("libjemalloc*")
++        exclude("libjcocoa*")
++        exclude("libglfw*")
++        exclude("jemalloc*")
++        exclude("glfw*")
++        exclude("OpenAL*")
++        exclude(".netbeans_automatic_build")
++        exclude("META-INF/versions/**")
++        exclude("META-INF/native/**")
++        exclude("META-INF/AL2.0")
++        exclude("META-INF/DEPENDENCIES")
++        exclude("META-INF/LGPL2.1")
++        exclude("META-INF/LICENSE")
++        exclude("META-INF/NOTICE")
++        exclude("META-INF/NOTICE.txt")
++        exclude("META-INF/io.netty.versions.properties")
 +        dependencies(filterDependencies)
 +        archiveFileName.set("blueberry-$MINECRAFT_VERSION-$API_VERSION.jar")
 +    }

@@ -1,5 +1,6 @@
 package net.blueberrymc.gradle.buildSrc.actions
 
+import io.sigpipe.jbsdiff.DefaultDiffSettings
 import io.sigpipe.jbsdiff.Diff
 import net.blueberrymc.gradle.buildSrc.Util
 import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
@@ -10,6 +11,7 @@ import net.blueberrymc.gradle.buildSrc.util.ClasspathUtil
 import net.blueberrymc.gradle.buildSrc.util.FileUtil
 import net.blueberrymc.gradle.buildSrc.util.tools.JavaCompiler
 import org.apache.commons.compress.compressors.CompressorException
+import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
 import org.gradle.api.Action
@@ -69,6 +71,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
                 clientJarBytes,
                 patchedClientJarBytes,
                 stream,
+                DefaultDiffSettings(CompressorStreamFactory.XZ),
             )
         }
         println("Creating patcher jar")
