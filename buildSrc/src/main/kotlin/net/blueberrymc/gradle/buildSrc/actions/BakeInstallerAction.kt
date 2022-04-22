@@ -75,6 +75,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         val patchFilePath = File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.bz2")
         patchFilePath.delete()
         println("Creating patch (client)")
+        patchFilePath.parentFile.mkdirs()
         patchFilePath.outputStream().use { stream ->
             Diff.diff(
                 clientJarBytes,
