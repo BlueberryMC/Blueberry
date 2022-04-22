@@ -2,6 +2,7 @@ package net.blueberrymc.gradle.buildSrc.actions
 
 import io.sigpipe.jbsdiff.Diff
 import net.blueberrymc.gradle.buildSrc.Util
+import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.CLIENT_JAR_URL
 import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
 import net.blueberrymc.gradle.buildSrc.tasks.BaseBlueberryTask
@@ -24,7 +25,12 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         }
         task.doLast {
             // create patch + compile jbsdiffPatcher
-            println("Patcher jar is ready: " + createPatchFile(task.project))
+            val patcherJar = createPatchFile(task.project)
+            // prepare files and compile installer
+            val installerJar = bakeInstaller(task.project, patcherJar)
+            println()
+            println("Done! Installer is now located at: ${installerJar.absolutePath}")
+            println()
         }
     }
 
@@ -82,6 +88,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         val jbsdiffPatcherDir = File(project.projectDir, "work/jbsdiffPatcher")
         File(jbsdiffPatcherDir, "src/main/resources/META-INF").mkdir()
         File(jbsdiffPatcherDir, "src/main/resources/META-INF/MANIFEST.MF").writeText("""
+            |Manifest-Version: 1.0
             |Main-Class: net.blueberrymc.jbsdiffPatcher.Patcher
             |
             """.trimMargin())
@@ -103,5 +110,50 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         Util.jar(patcherJar, compiled)
         FileUtil.deleteRecursively(compiled, deleteRoot = true)
         return patcherJar
+    }
+
+    private fun bakeInstaller(project: Project, patcherJar: File): File {
+        val baseDir = project.projectDir
+        val installerDir = File(baseDir, "work/Installer")
+        val git = if (installerDir.exists()) {
+            Git.open(installerDir)
+        } else {
+            Git.cloneRepository()
+                .setDirectory(installerDir)
+                .setBranch("main")
+                .setURI("https://github.com/BlueberryMC/Installer")
+                .call()
+        }
+        git.fetch().call()
+        git.reset().setRef("origin/main").setMode(ResetCommand.ResetType.HARD).call()
+        val apiVersionWithoutSnapshot = API_VERSION.replace("-SNAPSHOT", "")
+        val name = "blueberry-$MINECRAFT_VERSION-$apiVersionWithoutSnapshot.${Util.getBuildNumber(project)}"
+        val datetime = Util.getMojangDateTime()
+        File(installerDir, "src/main/resources/profile.properties").writeText("""
+            name=$name
+            hideServer=true
+            extractFiles=client.jar,client.json,profile.properties
+        """.trimIndent())
+        patcherJar.copyTo(File(installerDir, "src/main/resources/client.jar"), true)
+        File(baseDir, "scripts/files/version.json").copyTo(File(installerDir, "src/main/resources/client.json"), true)
+        File(installerDir, "src/main/resources/client.json").appendText("""
+                "releaseTime": "$datetime",
+                "time": "$datetime",
+                "mainClass": "net.blueberrymc.client.main.ClientMain",
+                "id": "$name"
+            }
+        """.trimIndent())
+        File(installerDir, "src/main/resources/META-INF").mkdir()
+        File(installerDir, "src/main/resources/META-INF/MANIFEST.MF").writeText("""
+            |Manifest-Version: 1.0
+            |Main-Class: net.blueberrymc.installer.Installer
+            |
+        """.trimMargin())
+        val installerJar = File(baseDir, "$name-installer.jar")
+        val compiled = JavaCompiler.compileAll(File(installerDir, "src/main/java"))
+        FileUtil.copy(File(installerDir, "src/main/resources").toPath(), compiled.toPath())
+        Util.jar(installerJar, compiled)
+        FileUtil.deleteRecursively(compiled, deleteRoot = true)
+        return installerJar
     }
 }

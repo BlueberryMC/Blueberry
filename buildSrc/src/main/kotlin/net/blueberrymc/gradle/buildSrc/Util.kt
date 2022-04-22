@@ -13,6 +13,11 @@ import java.io.FileOutputStream
 import java.net.URL
 import java.net.URLClassLoader
 import java.security.MessageDigest
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Calendar
+import java.util.Locale
 import java.util.Objects
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
@@ -82,9 +87,14 @@ object Util {
         }
     }
 
+    private var warnedBuildNumber = false
+
     fun getBuildNumber(project: Project): Long = project.properties["BUILD_NUMBER"].toString().toLongOrNull().let {
         if (it == null) {
-            project.logger.warn("Invalid BUILD_NUMBER: ${project.properties["BUILD_NUMBER"]}. Using 0 instead.")
+            if (!warnedBuildNumber) {
+                warnedBuildNumber = true
+                project.logger.warn("Invalid BUILD_NUMBER: ${project.properties["BUILD_NUMBER"]}. Using 0 instead.")
+            }
             0
         } else {
             it
@@ -153,5 +163,17 @@ object Util {
             }
         }
         return tempFile
+    }
+
+    fun getMojangDateTime(): String {
+        val calendar = Calendar.getInstance()
+        val year = calendar[Calendar.YEAR]
+        val month = calendar[Calendar.MONTH] + 1
+        val day = calendar[Calendar.DAY_OF_MONTH]
+        val hour = calendar[Calendar.HOUR_OF_DAY]
+        val minute = calendar[Calendar.MINUTE]
+        val second = calendar[Calendar.SECOND]
+        val tz = ZoneId.of(calendar.timeZone.id).rules.getOffset(Instant.now()).id // example: +09:00
+        return "$year-$month-${day}T$hour:$minute:$second$tz"
     }
 }
