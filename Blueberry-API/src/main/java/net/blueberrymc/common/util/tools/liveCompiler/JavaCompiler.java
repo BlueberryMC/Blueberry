@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonDeserializer;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
@@ -58,7 +57,6 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper
         cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));// ASM
         cp.add(ClasspathUtil.getClasspath(Mixin.class)); // Mixin
-        cp.add(ClasspathUtil.getClasspath(PoseStack.class)); // Blaze3d
         cp.add(ClasspathUtil.getClasspath(ImmutableMap.class)); // Guava
         cp.add(ClasspathUtil.getClasspath(Float2FloatOpenHashMap.class)); // fastutil
         cp.add(ClasspathUtil.getClasspath(StringUtils.class)); // commons-lang3
@@ -73,6 +71,7 @@ public class JavaCompiler {
         Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
             @Override
             public void execute() {
+                cp.add(ClasspathUtil.getClasspath(com.mojang.blaze3d.vertex.PoseStack.class)); // Blaze3d
                 cp.add(ClasspathUtil.getClasspath(org.lwjgl.glfw.GLFW.class)); // LWJGL
             }
         });
