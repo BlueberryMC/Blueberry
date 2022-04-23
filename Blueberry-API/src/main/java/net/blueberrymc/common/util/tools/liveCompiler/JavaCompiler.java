@@ -68,6 +68,7 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
         cp.add(ClasspathUtil.getClasspath(ByteBuf.class)); // netty
         cp.add(ClasspathUtil.getClasspath(NativeUtil.class)); // NativeUtil
+        cp.add(ClasspathUtil.getClasspath(Logger.class)); // Log4j2
         Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
             @Override
             public void execute() {
@@ -79,7 +80,9 @@ public class JavaCompiler {
             // these class are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            if (Blueberry.isClient()) {
+                e.printStackTrace();
+            }
         }
         classpath = ImmutableSet.copyOf(cp);
         LOGGER.info("Classpath for compiler: " + Joiner.on(";").join(classpath));
