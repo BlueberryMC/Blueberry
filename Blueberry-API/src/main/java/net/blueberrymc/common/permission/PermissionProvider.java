@@ -42,7 +42,7 @@ public interface PermissionProvider {
      */
     @NotNull
     default PermissionState getPermissionStateForCommandBlock(@NotNull BaseCommandBlock commandBlock, @NotNull String permission) {
-        return PermissionState.UNDEFINED;
+        return PermissionState.TRUE;
     }
 
     /**
@@ -61,7 +61,7 @@ public interface PermissionProvider {
      */
     @NotNull
     default PermissionState getPermissionStateForRcon(@NotNull String permission) {
-        return PermissionState.UNDEFINED;
+        return PermissionState.TRUE;
     }
 
     /**
@@ -80,7 +80,7 @@ public interface PermissionProvider {
      */
     @NotNull
     default PermissionState getPermissionStateForConsole(@NotNull String permission) {
-        return PermissionState.UNDEFINED;
+        return PermissionState.TRUE;
     }
 
     /**
