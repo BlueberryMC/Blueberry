@@ -30,6 +30,8 @@ jobs:
         run: './gradlew patchMinecraft --info --stacktrace'
       - name: "Apply patches (Blueberry)"
         run: './gradlew applyBlueberryPatches --info --stacktrace'
+      - name: Install MagmaCube
+        run: 'cd MagmaCube && mvn -B clean install'
       - name: Bake installer
         run: './gradlew bakeInstaller --info --stacktrace'
       - name: Upload a Build Artifact
