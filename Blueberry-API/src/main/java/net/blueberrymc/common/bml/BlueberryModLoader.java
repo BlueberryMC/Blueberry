@@ -106,8 +106,10 @@ public class BlueberryModLoader implements ModLoader {
                 Map.Entry<ModDescriptionFile, File> entry = preprocess(file);
                 if (entry.getKey().isSource() && entry.getValue() != null) {
                     fromSource.put(entry.getKey().getModId(), file);
-                    toLoad.remove(file);
-                    toLoad.add(entry.getValue());
+                    if (!entry.getValue().equals(file)) {
+                        toLoad.remove(file);
+                        toLoad.add(entry.getValue());
+                    }
                 }
             } catch (ModDescriptionNotFoundException ex) {
                 LOGGER.warn("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");

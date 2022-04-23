@@ -85,7 +85,7 @@ public class JavaCompiler {
             }
         }
         classpath = ImmutableSet.copyOf(cp);
-        LOGGER.info("Classpath for compiler: " + Joiner.on(";").join(classpath));
+        LOGGER.info("Classpath for compiler: " + Joiner.on(File.pathSeparator).join(classpath));
     }
 
     /**
