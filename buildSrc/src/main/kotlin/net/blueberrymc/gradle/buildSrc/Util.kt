@@ -1,8 +1,8 @@
 package net.blueberrymc.gradle.buildSrc
 
 import net.blueberrymc.gradle.buildSrc.util.ArrayUtil
-import net.blueberrymc.gradle.buildSrc.util.TempFile
 import net.blueberrymc.gradle.buildSrc.util.StreamUtil.setupPrinter
+import net.blueberrymc.gradle.buildSrc.util.TempFile
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.transport.URIish
@@ -15,9 +15,7 @@ import java.net.URLClassLoader
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.ZoneId
-import java.time.format.TextStyle
 import java.util.Calendar
-import java.util.Locale
 import java.util.Objects
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
