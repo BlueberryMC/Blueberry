@@ -19,7 +19,7 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
     override fun execute(task: PatchMinecraft) {
         task.doLast {
             val baseDir = it.project.projectDir
-            val result = ProcessBuilder("git submodule update --init && cd MagmaCube && git submodule update --init")
+            val result = ProcessBuilder(*"git submodule update --init && cd MagmaCube && git submodule update --init".split(" ").toTypedArray())
                 .start()
                 .setupPrinter()
                 .waitFor()
