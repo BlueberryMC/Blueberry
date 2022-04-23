@@ -33,7 +33,9 @@ jobs:
       - name: Install MagmaCube
         run: 'cd MagmaCube && mvn -B clean install'
       - name: Bake installer
-        run: './gradlew bakeInstaller --info --stacktrace'
+        run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
