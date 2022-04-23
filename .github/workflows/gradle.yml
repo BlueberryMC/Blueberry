@@ -23,7 +23,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: 'maven'
+          cache: 'gradle'
       - name: Update submodules
         run: "git submodule update --init && cd MagmaCube && git submodule update --init && cd .."
       - name: "Apply patches (MagmaCube)"
@@ -32,11 +32,6 @@ jobs:
         run: './gradlew applyBlueberryPatches --info --stacktrace'
       - name: Bake installer
         run: './gradlew bakeInstaller --info --stacktrace'
-      - name: Cache
-        uses: actions/cache@v2.1.6
-        with:
-          path: '~/.m2'
-          key: gradle-cache
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
