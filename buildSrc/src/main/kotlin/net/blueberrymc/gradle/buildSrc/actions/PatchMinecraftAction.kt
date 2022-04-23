@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.Git
 import java.io.File
 import net.blueberrymc.gradle.buildSrc.constants.*
 import net.blueberrymc.gradle.buildSrc.util.MiniUnusedCommentRemover
+import net.blueberrymc.gradle.buildSrc.util.StreamUtil.setupPrinter
 import net.minecraftforge.accesstransformer.TransformerProcessor
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler
 import java.nio.file.Files
@@ -18,14 +19,17 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
     override fun execute(task: PatchMinecraft) {
         task.doLast {
             val baseDir = it.project.projectDir
-            val git = Git.init().setDirectory(baseDir).call()
-            git.submoduleUpdate().setFetch(true).call()
+            val result = ProcessBuilder("git submodule update --init && cd MagmaCube && git submodule update --init")
+                .start()
+                .setupPrinter()
+                .waitFor()
+            if (result != 0) {
+                throw RuntimeException("Failed to update submodules (child process exited with $result)")
+            }
             val magmaCubeDir = File(baseDir, "MagmaCube")
             if (!magmaCubeDir.isDirectory) {
                 throw IllegalStateException("MagmaCube directory not found")
             }
-            val magmaCubeGit = Git.init().setDirectory(magmaCubeDir).setGitDir(File(baseDir, ".git/modules/MagmaCube")).call()
-            magmaCubeGit.submoduleUpdate().setFetch(true).call()
             initMagmaCube(baseDir)
             Util.applyPatches(magmaCubeDir, "Minecraft", "patches", File(magmaCubeDir, "work/Minecraft/$MINECRAFT_VERSION/source"))
         }
