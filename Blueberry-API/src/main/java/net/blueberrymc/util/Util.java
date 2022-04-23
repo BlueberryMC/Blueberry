@@ -4,10 +4,11 @@ import com.mojang.datafixers.DataFixUtils;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.util.VoidSafeExecutor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,14 @@ public class Util {
             }
         }).start();
         while (!done.get()) {
-            if (pollEvents) GLFW.glfwPollEvents();
+            if (pollEvents) {
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        org.lwjgl.glfw.GLFW.glfwPollEvents();
+                    }
+                });
+            }
             synchronized (done) {
                 try {
                     done.wait(50);
