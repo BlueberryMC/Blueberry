@@ -6,10 +6,10 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..9db8234527836dc89651ce5b6a42f66498a8a178
+index 0000000000000000000000000000000000000000..520faa96d4301c3eabc6e119afb5527b5515d4f1
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,226 @@
+@@ -0,0 +1,227 @@
 +import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LOG4J_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LWJGL_VERSION
@@ -81,6 +81,7 @@ index 0000000000000000000000000000000000000000..9db8234527836dc89651ce5b6a42f664
 +
 +tasks {
 +    val filterDependencies = org.gradle.api.Action<com.github.jengelman.gradle.plugins.shadow.internal.DependencyFilter> {
++        exclude(dependency("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION"))
 +        exclude(dependency("org.lwjgl:lwjgl.*:.*"))
 +        exclude(dependency("com.mojang:javabridge:.*"))
 +        exclude(dependency("com.mojang:brigadier:.*"))
