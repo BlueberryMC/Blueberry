@@ -92,7 +92,7 @@ public class JavaCompiler {
         List<String> args = new ArrayList<>();
         if (!classpath.isEmpty()) {
             args.add("-cp");
-            args.add(Joiner.on(";").join(classpath) + ";" + root.getAbsolutePath());
+            args.add(Joiner.on(File.pathSeparator).join(classpath) + File.pathSeparator + root.getAbsolutePath());
         }
         if (dest != null) {
             args.add("-d");

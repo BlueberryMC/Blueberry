@@ -55,7 +55,7 @@ public class JavaCompiler {
         List<String> args = new ArrayList<>();
         if (!classpath.isEmpty()) {
             args.add("-cp");
-            args.add(String.join(";", classpath) + ";" + root.getAbsolutePath());
+            args.add(String.join(File.pathSeparator, classpath) + File.pathSeparator + root.getAbsolutePath());
         }
         if (dest != null) {
             args.add("-d");
