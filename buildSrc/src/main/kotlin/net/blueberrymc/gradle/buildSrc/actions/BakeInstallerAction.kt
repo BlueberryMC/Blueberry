@@ -9,6 +9,7 @@ import net.blueberrymc.gradle.buildSrc.constants.SERVER_JAR_URL
 import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.SERVER_REPOSITORIES_LIST
 import net.blueberrymc.gradle.buildSrc.constants.SERVER_LIBRARIES_LIST
+import net.blueberrymc.gradle.buildSrc.constants.SERVER_LIBRARIES_EXCLUDES_LIST
 import net.blueberrymc.gradle.buildSrc.tasks.BaseBlueberryTask
 import net.blueberrymc.gradle.buildSrc.util.ClasspathUtil
 import net.blueberrymc.gradle.buildSrc.util.FileUtil
@@ -184,12 +185,14 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
             serverFiles=server.jar
             serverRepositories=/server_repositories.list
             serverLibraries=/server_libraries.list
+            serverLibrariesExclude=/server_libraries_excludes.list
             extractFiles=server.jar,client.jar,client.json,profile.properties
         """.trimIndent())
         patcherJar.client.copyTo(File(installerDir, "src/main/resources/client.jar"), true)
         patcherJar.server.copyTo(File(installerDir, "src/main/resources/server.jar"), true)
         File(installerDir, "src/main/resources/server_repositories.list").writeText(SERVER_REPOSITORIES_LIST.joinToString("\n"))
         File(installerDir, "src/main/resources/server_libraries.list").writeText(SERVER_LIBRARIES_LIST.joinToString("\n"))
+        File(installerDir, "src/main/resources/server_libraries_excludes.list").writeText(SERVER_LIBRARIES_EXCLUDES_LIST.joinToString("\n"))
         File(baseDir, "scripts/files/version.json").copyTo(File(installerDir, "src/main/resources/client.json"), true)
         File(installerDir, "src/main/resources/client.json").appendText("""
                 "releaseTime": "$datetime",

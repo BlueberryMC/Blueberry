@@ -48,3 +48,6 @@ val SERVER_LIBRARIES_LIST = listOf(
     "org.apache.logging.log4j:log4j-slf4j18-impl:$LOG4J_VERSION",
     "org.slf4j:slf4j-api:1.8.0-beta4",
 )
+val SERVER_LIBRARIES_EXCLUDES_LIST = listOf(
+    "^asm:asm:.*$",
+)
