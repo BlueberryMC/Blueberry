@@ -19,17 +19,29 @@ class PatchMinecraftAction : Action<PatchMinecraft> {
     override fun execute(task: PatchMinecraft) {
         task.doLast {
             val baseDir = it.project.projectDir
-            val result = ProcessBuilder(*"git submodule update --init && cd MagmaCube && git submodule update --init".split(" ").toTypedArray())
+            ProcessBuilder(*"git submodule update --init".split(" ").toTypedArray())
                 .start()
                 .setupPrinter()
                 .waitFor()
-            if (result != 0) {
-                throw RuntimeException("Failed to update submodules (child process exited with $result)")
-            }
+                .let { result ->
+                    if (result != 0) {
+                        throw RuntimeException("Failed to update submodules (child process exited with $result)")
+                    }
+                }
             val magmaCubeDir = File(baseDir, "MagmaCube")
             if (!magmaCubeDir.isDirectory) {
                 throw IllegalStateException("MagmaCube directory not found")
             }
+            ProcessBuilder(*"git submodule update --init".split(" ").toTypedArray())
+                .directory(magmaCubeDir)
+                .start()
+                .setupPrinter()
+                .waitFor()
+                .let { result ->
+                    if (result != 0) {
+                        throw RuntimeException("Failed to update submodules in MagmaCube (child process exited with $result)")
+                    }
+                }
             initMagmaCube(baseDir)
             Util.applyPatches(magmaCubeDir, "Minecraft", "patches", File(magmaCubeDir, "work/Minecraft/$MINECRAFT_VERSION/source"))
         }
