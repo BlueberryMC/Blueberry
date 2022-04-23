@@ -6,10 +6,10 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..520faa96d4301c3eabc6e119afb5527b5515d4f1
+index 0000000000000000000000000000000000000000..1f2a1fcaecb019068267f01e8140889f95ac5422
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,227 @@
+@@ -0,0 +1,232 @@
 +import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LOG4J_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LWJGL_VERSION
@@ -161,6 +161,11 @@ index 0000000000000000000000000000000000000000..520faa96d4301c3eabc6e119afb5527b
 +
 +    // server jar
 +    register("shadowServerJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class.java) {
++        from(sourceSets.main.get().output)
++        configurations = listOf(project.configurations.runtimeClasspath.get())
++        dependencies {
++            exclude(dependency(project.dependencies.gradleApi()))
++        }
 +        manifest {
 +            attributes(
 +                "Main-Class" to "net.blueberrymc.server.main.DedicatedServerMain",
@@ -170,7 +175,7 @@ index 0000000000000000000000000000000000000000..520faa96d4301c3eabc6e119afb5527b
 +            )
 +        }
 +        val shadowJar = project.tasks.getByName<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar")
-+        configurations.addAll(shadowJar.configurations)
++        //configurations.addAll(shadowJar.configurations)
 +        dependsOn(shadowJar.dependsOn)
 +        includedDependencies.files.addAll(shadowJar.includedDependencies.files)
 +        setExcludes(shadowJar.excludes)
