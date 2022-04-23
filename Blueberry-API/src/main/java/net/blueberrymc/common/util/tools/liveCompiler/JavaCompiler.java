@@ -128,7 +128,12 @@ public class JavaCompiler {
         int nThreads = Math.max(4, Runtime.getRuntime().availableProcessors());
         ExecutorService compilerExecutor = Executors.newFixedThreadPool(nThreads, new ThreadFactoryBuilder().setNameFormat("Blueberry Mod Compiler Worker #%d").build());
         LOGGER.info("Compiling the source code using up to " + nThreads + " threads");
-        EarlyLoadingMessageManager.logModCompiler("Compiling the source code using up to " + nThreads + " threads");
+        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+            @Override
+            public void execute() {
+                EarlyLoadingMessageManager.logModCompiler("Compiling the source code using up to " + nThreads + " threads");
+            }
+        });
         AtomicBoolean first = new AtomicBoolean(true);
         Files.walk(file.toPath())
                 .map(Path::toFile)
@@ -148,16 +153,31 @@ public class JavaCompiler {
                             Runnable doCompile = () -> {
                                 String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
                                 LOGGER.info("Compiling: " + rel);
-                                EarlyLoadingMessageManager.logModCompiler("Compiling: " + rel);
+                                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                    @Override
+                                    public void execute() {
+                                        EarlyLoadingMessageManager.logModCompiler("Compiling: " + rel);
+                                    }
+                                });
                                 compile(file, f, tmp);
                                 if (!new File(tmp, rel).exists()) {
                                     throwable.set(new RuntimeException("Compilation failed: " + rel));
-                                    EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                    Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                        @Override
+                                        public void execute() {
+                                            EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                        }
+                                    });
                                     LOGGER.error("Failed to compile: " + rel);
                                     return;
                                 }
                                 LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
-                                EarlyLoadingMessageManager.logModCompiler("Compiled: " + rel);
+                                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                    @Override
+                                    public void execute() {
+                                        EarlyLoadingMessageManager.logModCompiler("Compiled: " + rel);
+                                    }
+                                });
                             };
                             if (first.get()) { // to prevent race condition
                                 first.set(false);
@@ -170,7 +190,12 @@ public class JavaCompiler {
                                     } catch (Exception throwable1) {
                                         String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
                                         throwable.set(new RuntimeException("Compilation failed: " + rel, throwable1));
-                                        EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                            @Override
+                                            public void execute() {
+                                                EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                            }
+                                        });
                                         LOGGER.error("Failed to compile: " + rel);
                                     }
                                 });
@@ -190,7 +215,12 @@ public class JavaCompiler {
         try {
             if (!compilerExecutor.awaitTermination(5L, TimeUnit.MINUTES)) {
                 LOGGER.warn("Timed out compilation. Some files may be missing.");
-                EarlyLoadingMessageManager.logModCompiler("Timed out compilation. Some files may be missing.");
+                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                    @Override
+                    public void execute() {
+                        EarlyLoadingMessageManager.logModCompiler("Timed out compilation. Some files may be missing.");
+                    }
+                });
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
