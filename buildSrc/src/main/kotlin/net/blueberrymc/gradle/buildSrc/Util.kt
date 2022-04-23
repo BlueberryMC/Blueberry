@@ -55,6 +55,9 @@ object Util {
             arrayOf("git", "am", "--ignore-whitespace", "--3way"), getFilesInDirectory(patchesDir).map { it.absolutePath }.toTypedArray()
         )).directory(repositoryDir).inheritIO().start().setupPrinter().waitFor()
         if (res != 0) {
+            if (res == 128) {
+                println("Process exited with code 128. You probably forgot to set user.email and user.name in your git config.")
+            }
             throw RuntimeException("Failed to apply patches (exited with code $res)")
         }
     }
