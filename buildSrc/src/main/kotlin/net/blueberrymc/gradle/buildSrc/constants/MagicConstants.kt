@@ -29,6 +29,7 @@ val SERVER_LIBRARIES_LIST = listOf(
     "com.mojang:datafixerupper:4.0.26",
     "com.mojang:javabridge:1.2.24",
     "com.mojang:authlib:3.2.38",
+    "com.mojang:logging:1.0.0",
     "net.java.dev.jna:jna:5.9.0",
     "net.java.dev.jna:jna-platform:5.9.0",
     "net.sf.jopt-simple:jopt-simple:5.0.4",
