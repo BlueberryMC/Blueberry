@@ -142,6 +142,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
             |
             """.trimMargin())
         JavaCompiler.logger = project.logger
+        project.logger.info("Classpath of JavaCompiler: ${JavaCompiler.classpath}")
         val compiled = JavaCompiler.compileAll(File(jbsdiffPatcherDir, "src/main/java"))
         val resources = File(jbsdiffPatcherDir, "src/main/resources").toPath()
         val patcherJar = File(project.projectDir, "work/temp/jbsdiffPatcher.jar")
