@@ -5,12 +5,32 @@ on:
       - '*'
   workflow_dispatch:
 jobs:
+  # the problem is that the numbers are going to be masked because of the secrets
+  update-build-number:
+    runs-on: ubuntu-latest
+    name: "Update build number"
+    steps:
+      - name: Generate next build number
+        run: 'echo "::set-output name=value::$(($BN + 1))"'
+        id: generateNextBuildNumber
+        env:
+          BN: ${{ secrets.BUILD_NUMBER }}
+      - uses: hmanzur/actions-set-secret@v2.0.0
+        with:
+          name: 'BUILD_NUMBER'
+          value: ${{ steps.generateNextBuildNumber.outputs.value }}
+          token: ${{ secrets.TOKEN }}
+      - run: "echo Current build number (this number will be masked!): $CBN, next build number: $NBN"
+        env:
+          CBN: ${{ secrets.BUILD_NUMBER }}
+          NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [ '17' ]
-    name: Java ${{ matrix.Java }}
+    name: "Maven (Java ${{ matrix.Java }})"
+    needs: [update-build-number]
     steps:
       - uses: actions/checkout@v2
       - name: Setup git
@@ -24,7 +44,7 @@ jobs:
       - name: Apply patches
         run: './blueberry p'
       - name: Bake installer
-        run: './blueberry i ${{ github.run_number }}'
+        run: './blueberry i ${{ secrets.BUILD_NUMBER }}'
       - name: Retrieve Minecraft version
         run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=minecraft.version -q -DforceStdout)"'
         id: retrieveMcVersion
@@ -34,7 +54,7 @@ jobs:
       - name: Release new build
         uses: softprops/action-gh-release@v0.1.14
         with:
-          tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}.${{ github.run_number }}
+          tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}.${{ secrets.BUILD_NUMBER }}
           files: '*-installer.jar'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -43,6 +63,40 @@ jobs:
         with:
           path: '~/.m2'
           key: maven
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: blueberry-installer-java-${{ matrix.java }}
+          path: '*-installer.jar'
+  gradle-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '17' ]
+    name: "Gradle (Java ${{ matrix.Java }})"
+    needs: [update-build-number]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup git
+        run: 'git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"'
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.1
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: 'gradle'
+      #      - name: Update submodules
+      #        run: "git submodule update --init && cd MagmaCube && git submodule update --init && cd .."
+      - name: "Apply patches (MagmaCube)"
+        run: './gradlew patchMinecraft --info --stacktrace'
+      - name: "Apply patches (Blueberry)"
+        run: './gradlew applyBlueberryPatches --info --stacktrace'
+      - name: Install MagmaCube
+        run: 'cd MagmaCube && mvn -B clean install'
+      - name: Bake installer
+        run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
+        env:
+          BUILD_NUMBER: ${{ secrets.BUILD_NUMBER }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
