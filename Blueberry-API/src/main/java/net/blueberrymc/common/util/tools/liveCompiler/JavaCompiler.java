@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.ClasspathUtil;
+import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.ThreadLocalLoggedBufferedOutputStream;
 import net.minecraft.launchwrapper.Launch;
@@ -25,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import org.objectweb.asm.ClassVisitor;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -56,7 +56,6 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(MinecraftServer.class)); // Minecraft
         cp.add(ClasspathUtil.getClasspath(Nonnull.class)); // javax
         cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper
-        cp.add(ClasspathUtil.getClasspath(GLFW.class)); // OpenGL
         cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));// ASM
         cp.add(ClasspathUtil.getClasspath(Mixin.class)); // Mixin
         cp.add(ClasspathUtil.getClasspath(PoseStack.class)); // Blaze3d
@@ -71,6 +70,12 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
         cp.add(ClasspathUtil.getClasspath(ByteBuf.class)); // netty
         cp.add(ClasspathUtil.getClasspath(NativeUtil.class)); // NativeUtil
+        Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+            @Override
+            public void execute() {
+                cp.add(ClasspathUtil.getClasspath(org.lwjgl.glfw.GLFW.class)); // LWJGL
+            }
+        });
         try {
             // these class are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
