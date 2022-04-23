@@ -20,7 +20,7 @@ jobs:
           name: 'BUILD_NUMBER'
           value: ${{ steps.generateNextBuildNumber.outputs.value }}
           token: ${{ secrets.TOKEN }}
-      - run: "echo Current build number (this number will be masked!): $CBN, next build number: $NBN"
+      - run: "echo 'Current build number (this number will be masked!): $CBN, next build number: $NBN'"
         env:
           CBN: ${{ secrets.BUILD_NUMBER }}
           NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
