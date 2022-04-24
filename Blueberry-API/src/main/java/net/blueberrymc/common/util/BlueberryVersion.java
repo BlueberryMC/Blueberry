@@ -88,7 +88,11 @@ public class BlueberryVersion {
 
     /**
      * Returns the build date.
-     * Example output: 2021-10-30T00:30:44+00:00 (yyyy-mm-ddThh:mm:ss+offset)
+     * Example output:
+     * <ul>
+     *     <li>2021-10-30T00:30:44+00:00 (yyyy-mm-ddThh:mm:ss+offset)</li>
+     *     <li>2022-01-01T00:00:00Z (yyyy-mm-ddThh:mm:ssZ) (Z means UTC)</li>
+     * </ul>
      * @return build date
      */
     @NotNull

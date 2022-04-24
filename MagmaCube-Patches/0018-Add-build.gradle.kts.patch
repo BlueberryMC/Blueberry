@@ -6,10 +6,10 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..1f2a1fcaecb019068267f01e8140889f95ac5422
+index 0000000000000000000000000000000000000000..1ea52e9f05bd5143a1413acd88788006db216e55
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,246 @@
 +import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LOG4J_VERSION
 +import net.blueberrymc.gradle.buildSrc.constants.LWJGL_VERSION
@@ -240,5 +240,19 @@ index 0000000000000000000000000000000000000000..1f2a1fcaecb019068267f01e8140889f
 +        exclude("OpenAL*")
 +        exclude(".netbeans_automatic_build")
 +        archiveFileName.set("blueberry-server-$MINECRAFT_VERSION-$API_VERSION.jar")
++    }
++
++    getByName("processResources").doFirst {
++        val file = File(project.parent!!.projectDir, "Blueberry-API/src/main/resources/api-version.properties")
++        println("Writing $file")
++        file.writeText("""
++            name=blueberry
++            version=${API_VERSION.replace("-SNAPSHOT", "")}
++            magmaCubeCommit=${net.blueberrymc.gradle.buildSrc.Util.getHEAD(File(project.parent!!.projectDir, ".git/modules/MagmaCube"))}
++            commit=${net.blueberrymc.gradle.buildSrc.Util.getHEAD(project.parent!!.projectDir)}
++            builtAt=${net.blueberrymc.gradle.buildSrc.Util.getMojangDateTime()}
++            buildNumber=${net.blueberrymc.gradle.buildSrc.Util.getBuildNumber(project.parent!!)}
++            branch=${net.blueberrymc.gradle.buildSrc.Util.getBranch(project.parent!!.projectDir)}
++        """.trimIndent())
 +    }
 +}

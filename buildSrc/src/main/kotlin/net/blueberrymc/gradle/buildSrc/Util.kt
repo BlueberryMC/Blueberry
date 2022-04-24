@@ -177,4 +177,14 @@ object Util {
         val tz = ZoneId.of(calendar.timeZone.id).rules.getOffset(Instant.now()).id // example: +09:00
         return "$year-$month-${day}T$hour:$minute:$second$tz"
     }
+
+    fun getHEAD(dir: File): String {
+        val git = Git.open(dir)
+        val repo = git.repository
+        val head = repo.resolve("HEAD")
+        val commit = repo.parseCommit(head)
+        return commit.id.name
+    }
+
+    fun getBranch(dir: File): String = Git.open(dir).repository.branch
 }
