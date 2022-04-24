@@ -4,7 +4,8 @@ version = API_VERSION
 
 dependencies {
     compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
-    compileOnly("org.jetbrains:annotations:23.0.0")
+    implementation("org.jetbrains:annotations:23.0.0")
+    compileOnlyApi("org.jetbrains:annotations:23.0.0")
     api("net.arikia.dev:discord-rpc-without-jna:1.7.0")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.google.code.gson:gson:2.8.8")
