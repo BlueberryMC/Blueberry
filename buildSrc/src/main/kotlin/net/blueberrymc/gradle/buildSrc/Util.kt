@@ -169,11 +169,11 @@ object Util {
     fun getMojangDateTime(): String {
         val calendar = Calendar.getInstance()
         val year = calendar[Calendar.YEAR]
-        val month = calendar[Calendar.MONTH] + 1
-        val day = calendar[Calendar.DAY_OF_MONTH]
-        val hour = calendar[Calendar.HOUR_OF_DAY]
-        val minute = calendar[Calendar.MINUTE]
-        val second = calendar[Calendar.SECOND]
+        val month = (calendar[Calendar.MONTH] + 1).toString().padStart(2, '0')
+        val day = calendar[Calendar.DAY_OF_MONTH].toString().padStart(2, '0')
+        val hour = (calendar[Calendar.HOUR_OF_DAY]).toString().padStart(2, '0')
+        val minute = (calendar[Calendar.MINUTE]).toString().padStart(2, '0')
+        val second = (calendar[Calendar.SECOND]).toString().padStart(2, '0')
         val tz = ZoneId.of(calendar.timeZone.id).rules.getOffset(Instant.now()).id // example: +09:00
         return "$year-$month-${day}T$hour:$minute:$second$tz"
     }
