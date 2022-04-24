@@ -57,8 +57,8 @@
   "blueberry.mod.command.version.checking_for_new_version": "新しいバージョンを確認中です...",
   "gui.screens.mod_loading_problem.title": "Modの読み込み中に問題が発生しました",
   "gui.screens.mod_loading_problem.open_log_file": "ログファイルを開く",
-  "multiplayer.compatible": "サーバーと互換性があります (%d 個のModがサーバー側にインストール済み)",
-  "multiplayer.incompatible": "サーバーと互換性がありません (%d 個のModがサーバー側にインストール済み)",
+  "multiplayer.compatible": "サーバーと互換性があります (%s 個のModがサーバー側にインストール済み)",
+  "multiplayer.incompatible": "サーバーと互換性がありません (%s 個のModがサーバー側にインストール済み)",
   "multiplayer.vanilla": "バニラサーバー",
   "command.argument.mod_id.invalid_mod": "不明なMod '%s'"
 }

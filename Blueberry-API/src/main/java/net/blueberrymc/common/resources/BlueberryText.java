@@ -1,7 +1,13 @@
 package net.blueberrymc.common.resources;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.SafeExecutor;
+import net.blueberrymc.network.CustomComponentSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.util.GsonHelper;
@@ -125,5 +131,46 @@ public class BlueberryText extends BaseComponent {
     @NotNull
     public BlueberryText cloneWithArgs(@Nullable Object@Nullable... args) {
         return new BlueberryText(namespace, path, args);
+    }
+
+    static {
+        CustomComponentSerializer.registerSerializer(BlueberryText.class, new Serializer());
+    }
+
+    public static class Serializer implements CustomComponentSerializer<BlueberryText> {
+        @Override
+        public @NotNull JsonElement serialize(@NotNull BlueberryText component, @NotNull JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+            json.addProperty("namespace", component.namespace);
+            json.addProperty("path", component.path);
+            if (component.args != null && component.args.size() > 0) {
+                JsonArray array = new JsonArray();
+                for (Object arg : component.args) {
+                    array.add(context.serialize(arg));
+                }
+                json.add("args", array);
+            }
+            return json;
+        }
+
+        @Override
+        public @NotNull BlueberryText deserialize(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
+            JsonObject json = element.getAsJsonObject();
+            String namespace = json.get("namespace").getAsString();
+            String path = json.get("path").getAsString();
+            JsonArray array;
+            if (json.has("args")) {
+                array = json.get("args").getAsJsonArray();
+            } else {
+                array = null;
+            }
+            Object[] args = array == null ? null : new Object[array.size()];
+            if (args != null) {
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = array.get(i).getAsString();//deserializeGlobal(array.get(i), context);
+                }
+            }
+            return new BlueberryText(namespace, path, args);
+        }
     }
 }
