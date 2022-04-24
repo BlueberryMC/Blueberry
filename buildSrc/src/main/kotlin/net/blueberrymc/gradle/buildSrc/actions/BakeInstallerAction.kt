@@ -27,6 +27,8 @@ import kotlin.io.path.readBytes
 class BakeInstallerAction : Action<BaseBlueberryTask> {
     override fun execute(task: BaseBlueberryTask) {
         task.project.subprojects.find { it.name == "blueberry" }?.also {
+            println(it.tasks.getByName("shadowJar").outputs.files.singleFile)
+            println(it.tasks.getByName("shadowServerJar").outputs.files.singleFile)
             task.dependsOn(it.tasks.getByName("shadowJar"))
             task.dependsOn(it.tasks.getByName("shadowServerJar"))
         }
@@ -146,7 +148,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         project.logger.info("Classpath of JavaCompiler: ${JavaCompiler.classpath}")
         val compiled = JavaCompiler.compileAll(File(jbsdiffPatcherDir, "src/main/java"))
         val resources = File(jbsdiffPatcherDir, "src/main/resources").toPath()
-        val patcherJar = File(project.projectDir, "work/temp/jbsdiffPatcher.jar")
+        val patcherJar = File(project.projectDir, "work/temp/jbsdiffPatcher-${System.nanoTime()}.jar")
         println("Shading commons-compress")
         FileUtil.shade(Paths.get(ClasspathUtil.getClasspath(CompressorException::class.java)), resources)
         println("Shading jbsdiff")
