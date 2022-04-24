@@ -72,11 +72,13 @@ allprojects {
         }
 
         withType<ProcessResources> {
+            /*
             from(sourceSets.main.get().resources.srcDirs) {
                 include("**")
                 val tokenReplacementMap = mapOf("version" to project.version)
                 filter<org.apache.tools.ant.filters.ReplaceTokens>("tokens" to tokenReplacementMap)
             }
+            */
             filteringCharset = "UTF-8"
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
             from(projectDir) { include("LICENSE") }
