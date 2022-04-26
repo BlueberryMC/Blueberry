@@ -32,6 +32,7 @@ public interface CustomComponentSerializer<T extends MutableComponent> {
     @NotNull
     T deserialize(@NotNull JsonElement element, @NotNull JsonDeserializationContext context);
 
+    @NotNull
     default Object deserializeGlobal(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
         return COMPONENT_SERIALIZER.deserialize(element, element.getClass(), context);
     }
