@@ -5,6 +5,7 @@ To get started with PRing changes, you'll need the following software (for now, 
 - IDE (not required but highly recommended)
 - git
 - JDK 17+ (If you do not have one, you can download from here: [Adoptium](https://adoptium.net/))
+- Maven (to build MagmaCube)
 
 ## Directories (Subprojects)
 - `Blueberry-API` - APIs for Blueberry-Client (Includes `MagmaCube`)
@@ -19,9 +20,10 @@ Assuming you have already forked the repository:
 1. Clone your fork to your local machine
 2. Type `gradlew patchMinecraft applyBlueberryPatches` in a terminal to apply the changes from upstream (It takes some time!)
    - Alternatively, you can also do `gradlew applyBlueberryPatches` to just apply patches from MagmaCube-Patches. It can be useful when there are no upstream (MagmaCube) changes, and you don't want to waste time.
-3. Use `gradlew bakeInstaller` to create an installer for the client.
-4. To test changes, you can use "Run" feature in the IDE for now.
-5. cd into `Blueberry-Client` for client changes.
+3. Run `mvn install` inside `MagmaCube` directory to install the MagmaCube into local repository (Maven is required here)
+4. Use `gradlew bakeInstaller` to create an installer for the client.
+5. To test changes, you can use "Run" feature in the IDE for now.
+6. cd into `Blueberry-Client` for client changes.
 
 - Every single commit in `Blueberry-Client` is a patch
 - `upstream/master` points to a directory similar to `MagmaCube/Minecraft`
