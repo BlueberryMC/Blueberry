@@ -24,50 +24,6 @@ jobs:
         env:
           CBN: ${{ secrets.BUILD_NUMBER }}
           NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '17' ]
-    name: "Maven (Java ${{ matrix.Java }})"
-    needs: [update-build-number]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup git
-        run: 'git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"'
-      - name: Setup Java JDK
-        uses: actions/setup-java@v2.3.1
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: temurin
-          cache: 'maven'
-      - name: Apply patches
-        run: './blueberry p'
-      - name: Bake installer
-        run: './blueberry i ${{ secrets.BUILD_NUMBER }}'
-      - name: Retrieve Minecraft version
-        run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=minecraft.version -q -DforceStdout)"'
-        id: retrieveMcVersion
-      - name: Retrieve API version
-        run: 'echo "::set-output name=version::$(mvn -f pom.xml help:evaluate -Dexpression=api.version -q -DforceStdout | sed s/-SNAPSHOT//)"'
-        id: retrieveApiVersion
-      - name: Release new build
-        uses: softprops/action-gh-release@v0.1.14
-        with:
-          tag_name: ${{ steps.retrieveMcVersion.outputs.version }}-${{ steps.retrieveApiVersion.outputs.version }}.${{ secrets.BUILD_NUMBER }}
-          files: '*-installer.jar'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Cache
-        uses: actions/cache@v2.1.6
-        with:
-          path: '~/.m2'
-          key: maven
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: blueberry-installer-java-${{ matrix.java }}
-          path: '*-installer.jar'
   gradle-build:
     runs-on: ubuntu-latest
     strategy:
