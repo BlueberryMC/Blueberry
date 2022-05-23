@@ -37,7 +37,8 @@ Assuming you have already forked the repository:
 
 (To reset everything, simply run: `gradlew applyBlueberryPatches`)
 
-> ❗ Please note that if you have some specific implementation detail you'd like to document, you should do so in the patch message or in comments.
+> **Note**
+> Please note that if you have some specific implementation detail you'd like to document, you should do so in the patch message or in comments.
 
 ## Modifying patches
 
@@ -48,7 +49,8 @@ Editing the patch files by hand should be avoided, as they will most likely caus
 ### Method 1
 This method works by temporarily resetting your `HEAD` to the desired commit to edit it using `git rebase`.
 
-> ❗ While in the middle of a rebase, you might not be able to compile the module (which means you may not be able to test changes in-game until rebase is completed).
+> **Warning**
+> While in the middle of a rebase, you might not be able to compile the module (which means you may not be able to test changes in-game until rebase is completed).
 
 1. cd into `Blueberry-Client`, and run `git rebase -i upstream/master`
   - If your editor does not have a "menu" at the bottom, you're probably using `vim`.
