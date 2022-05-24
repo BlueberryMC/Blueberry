@@ -55,6 +55,18 @@ jobs:
         run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
         env:
           BUILD_NUMBER: ${{ secrets.BUILD_NUMBER }}
+      - name: Retrieve version
+        run: 'echo "::set-output name=version::$(./gradlew -q --console plain -PBUILD_NUMBER=$BUILD_NUMBER printVersion)"'
+        id: retrieveVersion
+        env:
+          BUILD_NUMBER: ${{ secrets.BUILD_NUMBER }}
+      - name: Release new build
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          tag_name: ${{ steps.retrieveVersion.outputs.version }}
+          files: '*-installer.jar'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:

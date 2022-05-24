@@ -1,3 +1,7 @@
+import net.blueberrymc.gradle.buildSrc.Util.getBuildNumber
+import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
+import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
+
 plugins {
     java
     kotlin("jvm") version "1.6.20"
@@ -12,6 +16,16 @@ version = "dev-SNAPSHOT"
 
 repositories {
     mavenCentral()
+}
+
+tasks {
+    register("printVersion") {
+        group = "blueberry"
+
+        doLast {
+            println("$MINECRAFT_VERSION-${API_VERSION.replace("-SNAPSHOT", "")}.${getBuildNumber(project)}")
+        }
+    }
 }
 
 subprojects {
