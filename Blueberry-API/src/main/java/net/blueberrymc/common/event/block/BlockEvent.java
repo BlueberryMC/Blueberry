@@ -9,7 +9,7 @@ public abstract class BlockEvent extends Event {
     protected final Block block;
 
     public BlockEvent(@NotNull Block block) {
-        this(block, !Blueberry.getUtil().isOnGameThread());
+        this(block, !Blueberry.getUtil().isOnGameThread()); // TODO: stop doing this
     }
 
     protected BlockEvent(@NotNull Block block, boolean async) {

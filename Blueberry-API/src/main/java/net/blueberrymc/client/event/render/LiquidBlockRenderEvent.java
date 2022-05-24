@@ -18,7 +18,7 @@ public class LiquidBlockRenderEvent extends RenderEvent {
     private int color;
 
     public LiquidBlockRenderEvent(@NotNull FluidState fluidState, @NotNull BlockPos blockPos, int color) {
-        super(!Blueberry.getUtil().isOnGameThread());
+        super(!Blueberry.getUtil().isOnGameThread()); // this event may be called from any thread because of multi-thread rendering
         Objects.requireNonNull(fluidState, "fluidState cannot be null");
         Objects.requireNonNull(blockPos, "blockPos cannot be null");
         this.fluidState = fluidState;

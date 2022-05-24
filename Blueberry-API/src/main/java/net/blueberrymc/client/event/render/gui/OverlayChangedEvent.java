@@ -14,7 +14,7 @@ public class OverlayChangedEvent extends Event {
     protected final Overlay overlay;
 
     public OverlayChangedEvent(@Nullable Overlay overlay) {
-        this(overlay, !Blueberry.getUtil().isOnGameThread());
+        this(overlay, !Blueberry.getUtil().isOnGameThread()); // TODO: can we remove isOnGameThread() call?
     }
 
     private OverlayChangedEvent(@Nullable Overlay overlay, boolean async) {

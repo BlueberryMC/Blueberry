@@ -15,7 +15,7 @@ public class ModLoadingErrorAddEvent extends Event {
     private final ModLoadingError error;
 
     public ModLoadingErrorAddEvent(@NotNull ModLoadingError error) {
-        super(!Blueberry.getUtil().isOnGameThread());
+        super(!Blueberry.getUtil().isOnGameThread()); // this event may be called from any thread
         this.error = Objects.requireNonNull(error);
     }
 

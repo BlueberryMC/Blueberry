@@ -13,7 +13,7 @@ public class ClientLocalPlayerChatEvent extends CancellableEvent {
     private String message;
 
     public ClientLocalPlayerChatEvent(@NotNull String message) {
-        super(!Blueberry.getUtil().isOnGameThread());
+        super(!Blueberry.getUtil().isOnGameThread()); // TODO: stop doing this
         this.message = message;
     }
 

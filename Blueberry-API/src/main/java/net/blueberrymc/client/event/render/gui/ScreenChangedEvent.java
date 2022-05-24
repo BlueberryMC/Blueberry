@@ -14,7 +14,7 @@ public class ScreenChangedEvent extends Event {
     protected final Screen screen;
 
     public ScreenChangedEvent(@Nullable Screen screen) {
-        this(screen, !Blueberry.getUtil().isOnGameThread());
+        this(screen, !Blueberry.getUtil().isOnGameThread()); // TODO: can we remove isOnGameThread() call?
     }
 
     private ScreenChangedEvent(@Nullable Screen screen, boolean async) {

@@ -19,7 +19,7 @@ public class CommandRegistrationEvent extends Event {
     protected final Commands.CommandSelection commandSelection;
 
     public CommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull Commands.CommandSelection commandSelection) {
-        this(dispatcher, commandSelection, !Blueberry.getUtil().isOnGameThread());
+        this(dispatcher, commandSelection, !Blueberry.getUtil().isOnGameThread()); // TODO: isn't it always the main thread?
     }
 
     protected CommandRegistrationEvent(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull Commands.CommandSelection commandSelection, boolean async) {
