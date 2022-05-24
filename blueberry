@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+echo ""
+echo "WARNING: This tool is deprecated and will be removed in the future."
+echo ""
+
 # resolve shell-specifics
 case "$(echo "$SHELL" | sed -E 's|/usr(/local)?||g')" in
     "/bin/zsh")
