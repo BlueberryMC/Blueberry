@@ -73,7 +73,7 @@ subprojects {
                 name = "blueberryRepo"
                 credentials(PasswordCredentials::class)
                 url = uri(
-                    if (project.version.toString().endsWith("-SNAPSHOT"))
+                    if (API_VERSION.endsWith("-SNAPSHOT"))
                         "https://repo.blueberrymc.net/repository/maven-snapshots/"
                     else
                         "https://repo.blueberrymc.net/repository/maven-releases/"
