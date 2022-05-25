@@ -1,36 +1,16 @@
-name: CI
+name: CI (pre)
 on:
   push:
     branches:
-      - main
+      - 'dev/1.19'
   workflow_dispatch:
 jobs:
-  # the problem is that the numbers are going to be masked because of the secrets
-  update-build-number:
-    runs-on: ubuntu-latest
-    name: "Update build number"
-    steps:
-      - name: Generate next build number
-        run: 'echo "::set-output name=value::$(($BN + 1))"'
-        id: generateNextBuildNumber
-        env:
-          BN: ${{ secrets.BUILD_NUMBER }}
-      - uses: hmanzur/actions-set-secret@v2.0.0
-        with:
-          name: 'BUILD_NUMBER'
-          value: ${{ steps.generateNextBuildNumber.outputs.value }}
-          token: ${{ secrets.TOKEN }}
-      - run: "echo 'Current build number (this number will be masked!): '$CBN', next build number: '$NBN"
-        env:
-          CBN: ${{ secrets.BUILD_NUMBER }}
-          NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
   gradle-build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [ '17' ]
     name: "Gradle (Java ${{ matrix.Java }})"
-    needs: [update-build-number]
     steps:
       - uses: actions/checkout@v2
       - name: Setup git
@@ -52,14 +32,10 @@ jobs:
       - name: Run test
         run: './gradlew test --info --stacktrace'
       - name: Bake installer
-        run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
-        env:
-          BUILD_NUMBER: ${{ secrets.BUILD_NUMBER }}
+        run: './gradlew -PBUILD_NUMBER=0 bakeInstaller --info --stacktrace'
       - name: Retrieve version
-        run: 'echo "::set-output name=version::$(./gradlew -q --console plain -PBUILD_NUMBER=$BUILD_NUMBER printVersion)"'
+        run: 'echo "::set-output name=version::$(./gradlew -q --console plain -PBUILD_NUMBER=0 printVersion)"'
         id: retrieveVersion
-        env:
-          BUILD_NUMBER: ${{ secrets.BUILD_NUMBER }}
       - name: Release new build
         uses: softprops/action-gh-release@v1
         with:
@@ -68,6 +44,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
