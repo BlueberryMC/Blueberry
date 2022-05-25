@@ -10,7 +10,9 @@ import net.blueberrymc.common.util.SafeExecutor;
 import net.blueberrymc.network.CustomComponentSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -133,6 +136,25 @@ public class BlueberryText implements ComponentContents {
     @NotNull
     public BlueberryText cloneWithArgs(@Nullable Object@Nullable... args) {
         return new BlueberryText(namespace, path, args);
+    }
+
+    @Override
+    public <T> @NotNull Optional<T> visit(@NotNull FormattedText.ContentConsumer<T> contentConsumer) {
+        return contentConsumer.accept(getContents());
+    }
+
+    @Override
+    public <T> @NotNull Optional<T> visit(@NotNull FormattedText.StyledContentConsumer<T> styledContentConsumer, @NotNull Style style) {
+        return styledContentConsumer.accept(style, getContents());
+    }
+
+    @Override
+    public String toString() {
+        return "BlueberryText{" +
+                "namespace='" + namespace + '\'' +
+                ", path='" + path + '\'' +
+                ", args=" + args +
+                '}';
     }
 
     static {
