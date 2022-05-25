@@ -183,7 +183,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          this.keyboardHandler.tick();
          this.profiler.pop();
 diff --git a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
-index d625340ebe571852dee8f27f2b21a94d165098bc..df437b617f85efbe0b24df0f311aeac34505dc6e 100644
+index d625340ebe571852dee8f27f2b21a94d165098bc..9ec59c1de0aeb17cec0824d71bfbf8e55855031c 100644
 --- a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
 +++ b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
 @@ -287,15 +287,27 @@ public class ChatComponent extends GuiComponent {
@@ -192,7 +192,7 @@ index d625340ebe571852dee8f27f2b21a94d165098bc..df437b617f85efbe0b24df0f311aeac3
      public static int getWidth(double d) {
 +        // Blueberry start
 +        int width = 320;
-+        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Misc.ChatSettings.extendedWidth) {
++        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Misc.ChatSettings.extendedWidth && Minecraft.getInstance().getWindow() != null) {
 +            width = Minecraft.getInstance().getWindow().getWidth() / 2 - 8;
 +        }
 +        // Blueberry end
@@ -205,7 +205,7 @@ index d625340ebe571852dee8f27f2b21a94d165098bc..df437b617f85efbe0b24df0f311aeac3
      public static int getHeight(double d) {
 +        // Blueberry start
 +        int height = 180;
-+        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Misc.ChatSettings.extendedHeight) {
++        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Misc.ChatSettings.extendedHeight && Minecraft.getInstance().getWindow() != null) {
 +            height = Minecraft.getInstance().getWindow().getHeight() / 2 - 40;
 +        }
 +        // Blueberry end
