@@ -6,6 +6,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.VoidSafeExecutor;
+import net.blueberrymc.common.util.function.ThrowableSupplier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -230,5 +231,17 @@ public class Util {
             if (pkg == null) pkg = ClassLoader.getPlatformClassLoader().getDefinedPackage(name);
         }
         return pkg;
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    public static <T> T required(@NotNull ThrowableSupplier<T> supplier) {
+        try {
+            T value = supplier.get();
+            if (value == null) throw new IllegalStateException("Supplier returned null");
+            return value;
+        } catch (Exception throwable) {
+            throw new RuntimeException(throwable);
+        }
     }
 }

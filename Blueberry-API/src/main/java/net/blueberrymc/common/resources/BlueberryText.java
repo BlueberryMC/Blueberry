@@ -9,8 +9,10 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.SafeExecutor;
 import net.blueberrymc.network.CustomComponentSerializer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,17 +24,23 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlueberryText extends BaseComponent {
+public class BlueberryText implements ComponentContents {
     private static final ConcurrentHashMap<String, Properties> lang = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<>();
     private final String namespace;
     private final String path;
     private final List<Object> args;
 
+    @Contract(pure = true)
     public BlueberryText(@NotNull String namespace, @NotNull String path, @Nullable Object@Nullable... arguments) {
         this.namespace = namespace;
         this.path = path;
         this.args = arguments != null ? Arrays.asList(arguments) : null;
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull MutableComponent text(@NotNull String namespace, @NotNull String path, @Nullable Object... arguments) {
+        return MutableComponent.create(new BlueberryText(namespace, path, arguments));
     }
 
     @NotNull
@@ -108,7 +116,6 @@ public class BlueberryText extends BaseComponent {
     }
 
     @NotNull
-    @Override
     public String getContents() {
         String cachePath = String.format("%s:%s:%s", this.namespace, this.path, getLanguageCode());
         if (!cache.containsKey(cachePath)) {
@@ -122,12 +129,7 @@ public class BlueberryText extends BaseComponent {
         return text;
     }
 
-    @NotNull
-    @Override
-    public BaseComponent plainCopy() {
-        return new BlueberryText(this.namespace, this.path);
-    }
-
+    @Contract(value = "_ -> new", pure = true)
     @NotNull
     public BlueberryText cloneWithArgs(@Nullable Object@Nullable... args) {
         return new BlueberryText(namespace, path, args);

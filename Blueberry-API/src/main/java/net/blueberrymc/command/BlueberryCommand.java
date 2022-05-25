@@ -13,6 +13,7 @@ import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.event.mod.ModReloadEvent;
 import net.blueberrymc.common.permission.PermissionHolder;
 import net.blueberrymc.common.permission.PermissionState;
+import net.blueberrymc.common.resources.BlueberryCommonComponents;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.BlueberryVersion;
 import net.blueberrymc.common.util.VersionChecker;
@@ -26,9 +27,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -50,7 +51,7 @@ import static net.minecraft.commands.Commands.literal;
  * <code>/blueberry</code> command (server-side command)
  */
 public class BlueberryCommand {
-    private static final SimpleCommandExceptionType UNAVAILABLE_IN_THIS_ENVIRONMENT = new SimpleCommandExceptionType(new TextComponent("This command is not available in this environment.").withStyle(ChatFormatting.RED));
+    private static final SimpleCommandExceptionType UNAVAILABLE_IN_THIS_ENVIRONMENT = new SimpleCommandExceptionType(Component.literal("This command is not available in this environment.").withStyle(ChatFormatting.RED));
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -83,7 +84,7 @@ public class BlueberryCommand {
     }
 
     private static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
-        source.sendSuccess(new TextComponent("Mod status of '" + mod.getName() + "': " + mod.getStateList() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
+        source.sendSuccess(Component.literal("Mod status of '" + mod.getName() + "': " + mod.getStateList() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
         return 1;
     }
 
@@ -93,19 +94,19 @@ public class BlueberryCommand {
             player = source.getPlayerOrException();
         } catch (CommandSyntaxException ignore) {}
         if (new ModReloadEvent(player, mod).callEvent()) {
-            source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.reloading", mod.getName()), true);
+            source.sendSuccess(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.reloading", mod.getName()), true);
             try {
                 if (mod.onReload()) {
-                    Minecraft.getInstance().reloadResourcePacks().thenAccept(v -> source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true));
+                    Minecraft.getInstance().reloadResourcePacks().thenAccept(v -> source.sendSuccess(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true));
                 } else {
-                    source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true);
+                    source.sendSuccess(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true);
                 }
             } catch (RuntimeException ex) {
-                source.sendFailure(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.failure.error", mod.getName(), ex.getMessage()));
+                source.sendFailure(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.failure.error", mod.getName(), ex.getMessage()));
                 LOGGER.warn("Failed to reload mod {}", mod.getName(), ex);
             }
         } else {
-            source.sendFailure(new BlueberryText("blueberry", "blueberry.mod.command.mod.reload.failure.cancelled", mod.getName()));
+            source.sendFailure(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.failure.cancelled", mod.getName()));
         }
         return 1;
     }
@@ -127,21 +128,21 @@ public class BlueberryCommand {
         double last10t = round(getAverageTPS(Arrays.stream(tickTimes).limit(10)));
         double l10t = round(getLowestTPS(Arrays.stream(tickTimes).limit(10)));
         source.sendSuccess(
-                new TextComponent("Average TPS in last 100 ticks (5 seconds): ")
-                        .append(new TextComponent(Double.toString(last100t)).withStyle(getTPSColor(last100t))).append(" (Lowest: ")
-                        .append(new TextComponent(Double.toString(l100t)).withStyle(getTPSColor(l100t)))
+                Component.literal("Average TPS in last 100 ticks (5 seconds): ")
+                        .append(Component.literal(Double.toString(last100t)).withStyle(getTPSColor(last100t))).append(" (Lowest: ")
+                        .append(Component.literal(Double.toString(l100t)).withStyle(getTPSColor(l100t)))
                         .append(")"),
                 false);
         source.sendSuccess(
-                new TextComponent("Average TPS in last 20 ticks (1 second): ")
-                        .append(new TextComponent(Double.toString(last20t)).withStyle(getTPSColor(last20t))).append(" (Lowest: ")
-                        .append(new TextComponent(Double.toString(l20t)).withStyle(getTPSColor(l20t)))
+                Component.literal("Average TPS in last 20 ticks (1 second): ")
+                        .append(Component.literal(Double.toString(last20t)).withStyle(getTPSColor(last20t))).append(" (Lowest: ")
+                        .append(Component.literal(Double.toString(l20t)).withStyle(getTPSColor(l20t)))
                         .append(")"),
                 false);
         source.sendSuccess(
-                new TextComponent("Average TPS in last 10 ticks (500 ms): ")
-                        .append(new TextComponent(Double.toString(last10t)).withStyle(getTPSColor(last10t))).append(" (Lowest: ")
-                        .append(new TextComponent(Double.toString(l10t)).withStyle(getTPSColor(l10t)))
+                Component.literal("Average TPS in last 10 ticks (500 ms): ")
+                        .append(Component.literal(Double.toString(last10t)).withStyle(getTPSColor(last10t))).append(" (Lowest: ")
+                        .append(Component.literal(Double.toString(l10t)).withStyle(getTPSColor(l10t)))
                         .append(")"),
                 false);
         return 1;
@@ -150,60 +151,60 @@ public class BlueberryCommand {
     public static int executeVersionCommand(@NotNull CommandSourceStack source) {
         BlueberryVersion v = Versioning.getVersion();
         boolean cached = VersionChecker.isCached();
-        MutableComponent versionDiff = (MutableComponent) TextComponent.EMPTY;
+        MutableComponent versionDiff = BlueberryCommonComponents.EMPTY_TEXT;
         if (cached) {
             try {
                 VersionChecker.Result result = VersionChecker.check(true).get();
                 String key = result.getStatusKey();
                 if (key.equals("diverged") || key.equals("ahead") || key.equals("behind") || key.equals("clean")) {
-                    versionDiff = new TextComponent("");
-                    versionDiff.append(new TextComponent(" (").withStyle(ChatFormatting.GRAY));
+                    versionDiff = Component.literal("");
+                    versionDiff.append(Component.literal(" (").withStyle(ChatFormatting.GRAY));
                     ChatFormatting formatting = getChatFormattingForVersionCheckerKey(key);
                     switch (key) {
-                        case "diverged" -> versionDiff.append(new BlueberryText("blueberry", "blueberry.mod.command.version.checker.diverged", result.ahead(), result.behind()).withStyle(formatting));
-                        case "ahead" -> versionDiff.append(new BlueberryText("blueberry", "blueberry.mod.command.version.checker.ahead", result.ahead()).withStyle(formatting));
-                        case "behind" -> versionDiff.append(new BlueberryText("blueberry", "blueberry.mod.command.version.checker.behind", result.behind()).withStyle(formatting));
-                        case "clean" -> versionDiff.append(new BlueberryText("blueberry", "blueberry.mod.command.version.checker.clean").withStyle(formatting));
+                        case "diverged" -> versionDiff.append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.diverged", result.ahead(), result.behind()).withStyle(formatting));
+                        case "ahead" -> versionDiff.append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.ahead", result.ahead()).withStyle(formatting));
+                        case "behind" -> versionDiff.append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.behind", result.behind()).withStyle(formatting));
+                        case "clean" -> versionDiff.append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.clean").withStyle(formatting));
                     }
-                    versionDiff.append(new TextComponent(")").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.ITALIC);
+                    versionDiff.append(Component.literal(")").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.ITALIC);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.warn("Version checker threw exception when fetching cached result", e);
             }
         }
         source.sendSuccess(
-                new TextComponent(" |  ")
-                        .append(new TextComponent(Util.capitalize(v.getName())).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
+                Component.literal(" |  ")
+                        .append(Component.literal(Util.capitalize(v.getName())).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
                         .append(" ")
-                        .append(new TextComponent((Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion() + "." + v.getBuildNumber()).withStyle(ChatFormatting.LIGHT_PURPLE))
-                        .append(new TextComponent(" (").withStyle(ChatFormatting.DARK_GRAY))
-                        .append(new TextComponent("API " + (Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion()).withStyle(ChatFormatting.DARK_GREEN))
-                        .append(new TextComponent(") (").withStyle(ChatFormatting.DARK_GRAY))
-                        .append(new TextComponent("Minecraft " + SharedConstants.getCurrentVersion().getId()).withStyle(ChatFormatting.GRAY))
-                        .append(new TextComponent(")").withStyle(ChatFormatting.DARK_GRAY)),
+                        .append(Component.literal((Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion() + "." + v.getBuildNumber()).withStyle(ChatFormatting.LIGHT_PURPLE))
+                        .append(Component.literal(" (").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(Component.literal("API " + (Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion()).withStyle(ChatFormatting.DARK_GREEN))
+                        .append(Component.literal(") (").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(Component.literal("Minecraft " + SharedConstants.getCurrentVersion().getId()).withStyle(ChatFormatting.GRAY))
+                        .append(Component.literal(")").withStyle(ChatFormatting.DARK_GRAY)),
                 false);
         source.sendSuccess(
-                new TextComponent(" |  ")
-                        .append(new BlueberryText("blueberry", "blueberry.mod.command.version.built_at").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
-                        .append(new TextComponent(v.getBuiltAt())),
+                Component.literal(" |  ")
+                        .append(BlueberryText.text("blueberry", "blueberry.mod.command.version.built_at").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                        .append(Component.literal(v.getBuiltAt())),
                 false);
         source.sendSuccess(
-                new TextComponent(" |  ")
-                        .append(new BlueberryText("blueberry", "blueberry.mod.command.version.commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
-                        .append(new TextComponent(v.getShortCommit()).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to open GitHub"))).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_REPO + "/commit/" + v.getCommit()))))
+                Component.literal(" |  ")
+                        .append(BlueberryText.text("blueberry", "blueberry.mod.command.version.commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                        .append(Component.literal(v.getShortCommit()).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open GitHub"))).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_REPO + "/commit/" + v.getCommit()))))
                         .append(versionDiff),
                 false);
         source.sendSuccess(
-                new TextComponent(" |  ")
-                        .append(new BlueberryText("blueberry", "blueberry.mod.command.version.magmacube_commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
-                        .append(new TextComponent(v.getShortMagmaCubeCommit())
+                Component.literal(" |  ")
+                        .append(BlueberryText.text("blueberry", "blueberry.mod.command.version.magmacube_commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                        .append(Component.literal(v.getShortMagmaCubeCommit())
                                 .withStyle(style ->
-                                        style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to open GitHub")))
+                                        style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open GitHub")))
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_MAGMA_CUBE_REPO + "/commit/" + v.getMagmaCubeCommit())))
                         ),
                 false);
         if (!cached) {
-            source.sendSuccess(new TextComponent("").append(new BlueberryText("blueberry", "blueberry.mod.command.version.checking_for_new_version").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)), false);
+            source.sendSuccess(Component.literal("").append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checking_for_new_version").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)), false);
             VersionChecker.check().thenAccept(result -> {
                 String key = result.getStatusKey();
                 Object[] args = switch (key) {
@@ -212,11 +213,11 @@ public class BlueberryCommand {
                     case "behind" -> new Object[] { result.behind() };
                     default -> new Object[0];
                 };
-                BlueberryText text = new BlueberryText("blueberry", "blueberry.mod.command.version.checker." + key, args);
+                MutableComponent text = BlueberryText.text("blueberry", "blueberry.mod.command.version.checker." + key, args);
                 if (key.equals("error")) {
                     source.sendSuccess(text.withStyle(ChatFormatting.RED), false);
                 } else {
-                    source.sendSuccess(new BlueberryText("blueberry", "blueberry.mod.command.version.checker.result").append(text).withStyle(getChatFormattingForVersionCheckerKey(key)), false);
+                    source.sendSuccess(BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.result").append(text).withStyle(getChatFormattingForVersionCheckerKey(key)), false);
                 }
             });
         }
@@ -226,12 +227,12 @@ public class BlueberryCommand {
     public static int executePermissionCheckCommand(@NotNull CommandSourceStack source, @NotNull String permission, @Nullable Player player) {
         PermissionHolder holder = (PermissionHolder) Objects.requireNonNullElse(player, source);
         PermissionState state = holder.getPermissionState(permission);
-        source.sendSuccess(new TextComponent("")
-                .append(new TextComponent("Permission check for ").withStyle(ChatFormatting.AQUA))
-                .append(new TextComponent(permission).withStyle(ChatFormatting.GOLD)), false);
-        source.sendSuccess(new TextComponent("")
-                .append(new TextComponent("  Result: ").withStyle(ChatFormatting.AQUA))
-                .append(new TextComponent(state.name().toLowerCase()).withStyle(getChatFormattingForPermissionState(state))), false);
+        source.sendSuccess(Component.literal("")
+                .append(Component.literal("Permission check for ").withStyle(ChatFormatting.AQUA))
+                .append(Component.literal(permission).withStyle(ChatFormatting.GOLD)), false);
+        source.sendSuccess(Component.literal("")
+                .append(Component.literal("  Result: ").withStyle(ChatFormatting.AQUA))
+                .append(Component.literal(state.name().toLowerCase()).withStyle(getChatFormattingForPermissionState(state))), false);
         return 0;
     }
 

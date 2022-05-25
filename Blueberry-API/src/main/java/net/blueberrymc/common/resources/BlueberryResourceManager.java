@@ -96,7 +96,7 @@ public class BlueberryResourceManager extends FallbackResourceManager {
                 }
             };
         }
-        this.add(packResources);
+        this.push(packResources);
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")

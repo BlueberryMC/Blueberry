@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import net.blueberrymc.client.command.ClientBlueberryCommand;
 import net.blueberrymc.client.commands.ClientCommandManager;
+import net.blueberrymc.command.argument.ArgumentTypes;
 import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
@@ -15,8 +16,7 @@ import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.util.NameGetter;
 import net.blueberrymc.world.item.SimpleBlueberryItem;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -121,7 +121,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                                     .stacksTo(1)
                                     .tab(CreativeModeTab.TAB_MISC)
                                     .rarity(Rarity.EPIC),
-                            item -> new BlueberryText("blueberry", "item.blueberry.3d")
+                            item -> BlueberryText.text("blueberry", "item.blueberry.3d")
                     )
             );
         }
@@ -153,7 +153,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     private void registerArgumentTypes() {
-        ArgumentTypes.register("blueberry:modid", ModIdArgument.class, new EmptyArgumentSerializer<>(ModIdArgument::modId));
+        ArgumentTypes.register("blueberry:modid", ModIdArgument.class, SingletonArgumentInfo.contextFree(ModIdArgument::modId));
     }
 
     @Override

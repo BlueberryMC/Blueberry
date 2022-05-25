@@ -23,8 +23,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -193,22 +191,22 @@ public class ClientCommandManager {
             commandSourceStack.sendFailure(ComponentUtils.fromMessage(commandSyntaxException.getRawMessage()));
             if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
                 int i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
-                MutableComponent mutableComponent = new TextComponent("").withStyle(ChatFormatting.GRAY).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)));
+                MutableComponent mutableComponent = Component.literal("").withStyle(ChatFormatting.GRAY).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)));
                 if (i > 10) {
                     mutableComponent.append("...");
                 }
 
                 mutableComponent.append(commandSyntaxException.getInput().substring(Math.max(0, i - 10), i));
                 if (i < commandSyntaxException.getInput().length()) {
-                    Component component = new TextComponent(commandSyntaxException.getInput().substring(i)).withStyle(ChatFormatting.RED, ChatFormatting.UNDERLINE);
+                    Component component = Component.literal(commandSyntaxException.getInput().substring(i)).withStyle(ChatFormatting.RED, ChatFormatting.UNDERLINE);
                     mutableComponent.append(component);
                 }
 
-                mutableComponent.append(new TranslatableComponent("command.context.here").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
+                mutableComponent.append(Component.translatable("command.context.here").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
                 commandSourceStack.sendFailure(mutableComponent);
             }
         } catch (Exception ex) {
-            MutableComponent exceptionComponent = new TextComponent(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
+            MutableComponent exceptionComponent = Component.literal(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.error("Command exception: {}", input, ex);
                 StackTraceElement[] stackTraceElements = ex.getStackTrace();
@@ -224,9 +222,9 @@ public class ClientCommandManager {
                 }
             }
 
-            commandSourceStack.sendFailure(new TranslatableComponent("command.failed").withStyle((style) -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, exceptionComponent))));
+            commandSourceStack.sendFailure(Component.translatable("command.failed").withStyle((style) -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, exceptionComponent))));
             if (SharedConstants.IS_RUNNING_IN_IDE) {
-                commandSourceStack.sendFailure(new TextComponent(Util.describeError(ex)));
+                commandSourceStack.sendFailure(Component.literal(Util.describeError(ex)));
                 LOGGER.error("'" + input + "' threw an exception", ex);
             }
         }

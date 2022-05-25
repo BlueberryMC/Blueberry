@@ -69,7 +69,7 @@ index 13ec000e23b19e877a47244182e62d46bd6b76bd..906aad24d735ec99545d13267ddce4a2
                          connection.handleDisconnection();
                      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index 4a100529fd9180b2701b75111dcdf162dffe4ab9..ed877c9b460d0827d8e5510f9b8010c7ee8cf22d 100644
+index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4840996a0 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -10,6 +10,7 @@ import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
@@ -92,7 +92,7 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..ed877c9b460d0827d8e5510f9b8010c7
 +                        connection.address = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) connection.getRemoteAddress()).getPort());
 +                        connection.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
 +                    } else {
-+                        TextComponent text = new TextComponent("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
++                        Component text = Component.literal("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
 +                        connection.send(new ClientboundLoginDisconnectPacket(text));
 +                        connection.disconnect(text);
 +                        return;
@@ -106,7 +106,7 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..ed877c9b460d0827d8e5510f9b8010c7
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 136d10927e3efabdfe34c189b9d8979f962e55e1..732d584ea2ddfe03cbcf837b540afe2f56b299fb 100644
+index 136d10927e3efabdfe34c189b9d8979f962e55e1..a6b76519fbc30f27d69c8c36ed1125b730280432 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -102,7 +102,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
@@ -124,7 +124,7 @@ index 136d10927e3efabdfe34c189b9d8979f962e55e1..732d584ea2ddfe03cbcf837b540afe2f
  
 +    // Blueberry start
 +    private void initUUID() {
-+        UUID uuid = connection.spoofedUUID != null ? connection.spoofedUUID : Player.createPlayerUUID(this.gameProfile.getName());
++        UUID uuid = connection.spoofedUUID != null ? connection.spoofedUUID : UUIDUtil.createOfflinePlayerUUID(this.gameProfile.getName());
 +        this.gameProfile = new GameProfile(uuid, this.gameProfile.getName());
 +        if (connection.spoofedProfile != null) {
 +            for (com.mojang.authlib.properties.Property property : connection.spoofedProfile) {

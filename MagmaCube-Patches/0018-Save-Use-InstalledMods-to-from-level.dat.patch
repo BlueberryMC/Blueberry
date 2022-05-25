@@ -5,7 +5,7 @@ Subject: [PATCH] Save/Use InstalledMods to/from level.dat
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-index cd5c7cb69ef18fc910928422ceb757b4d4e58de5..be960bd12a7d26e3f8cb29bbaa241cc2a5878eed 100644
+index cd5c7cb69ef18fc910928422ceb757b4d4e58de5..25401af2d3b0d5ceff5022eac4e1ac6a65290723 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 @@ -141,6 +141,12 @@ public class WorldOpenFlows {
@@ -13,8 +13,8 @@ index cd5c7cb69ef18fc910928422ceb757b4d4e58de5..be960bd12a7d26e3f8cb29bbaa241cc2
              }
  
 +            // Blueberry start
-+            if (experimentalDialogType != ExperimentalDialogType.NONE) {
-+                if (!net.blueberrymc.client.BlueberryClient.showIncompatibleWorldModScreen(s, levelStorageAccess, worldStem, () -> this.doLoadLevel(s, function, function2, flag, Minecraft.ExperimentalDialogType.NONE))) return;
++            if (flag2) {
++                if (!net.blueberrymc.client.BlueberryClient.showIncompatibleWorldModScreen(s, levelStorageAccess, worldStem, () -> this.doLoadLevel(screen, s, flag, false))) return;
 +            }
 +            // Blueberry end
 +

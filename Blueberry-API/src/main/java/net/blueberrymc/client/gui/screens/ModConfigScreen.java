@@ -31,7 +31,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,9 +47,9 @@ import java.util.regex.Pattern;
  * Mod config screen, accessible via mod list screen.
  */
 public class ModConfigScreen extends BlueberryScreen {
-    private static final Component UNKNOWN_TEXT = new TextComponent("<unknown>").withStyle(ChatFormatting.GRAY);
-    private static final Component BOOLEAN_TRUE = new TextComponent("true").withStyle(ChatFormatting.GREEN);
-    private static final Component BOOLEAN_FALSE = new TextComponent("false").withStyle(ChatFormatting.RED);
+    private static final Component UNKNOWN_TEXT = Component.literal("<unknown>").withStyle(ChatFormatting.GRAY);
+    private static final Component BOOLEAN_TRUE = Component.literal("true").withStyle(ChatFormatting.GREEN);
+    private static final Component BOOLEAN_FALSE = Component.literal("false").withStyle(ChatFormatting.RED);
     private final List<Consumer<PoseStack>> callbacks = new ArrayList<>();
     private final CompoundVisualConfig compoundVisualConfig;
     private final Screen previousScreen;
@@ -104,7 +103,7 @@ public class ModConfigScreen extends BlueberryScreen {
         for (VisualConfig<?> config : this.compoundVisualConfig) {
             Function<PoseStack, BiConsumer<Integer, Integer>> onTooltipFunction;
             Button.OnTooltip onTooltip;
-            MutableComponent tooltip = new TextComponent("");
+            MutableComponent tooltip = Component.literal("");
             // description
             Component desc = config.getDescription();
             if (desc != null) tooltip.append(desc.plainCopy().withStyle(ChatFormatting.YELLOW)).append("\n");
@@ -120,7 +119,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 }
                 // if (def instanceof Enum<?>) s = ((Enum<?>) def).name();
                 if (def instanceof Class<?> cl) s = cl.getTypeName();
-                tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
+                tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
             // min/max value of number
             if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
@@ -135,20 +134,20 @@ public class ModConfigScreen extends BlueberryScreen {
                     shouldShowMinMax = false;
                 }
                 if (shouldShowMinMax) {
-                    tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
+                    tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
                 }
             }
             // pattern
             if (config instanceof StringVisualConfig stringVisualConfig) {
                 Pattern pattern = stringVisualConfig.getPattern();
-                if (pattern != null) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
+                if (pattern != null) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
             if (config instanceof ClassVisualConfig classVisualConfig) {
                 Pattern pattern = classVisualConfig.getPattern();
-                if (pattern != null) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
+                if (pattern != null) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
             }
             // requiresRestart
-            if (config.isRequiresRestart()) tooltip.append(new BlueberryText("blueberry", "gui.screens.mod_config.requires_restart").withStyle(ChatFormatting.RED)).append("\n");
+            if (config.isRequiresRestart()) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.requires_restart").withStyle(ChatFormatting.RED)).append("\n");
             if (tooltip.getSiblings().size() > 0) tooltip.getSiblings().remove(tooltip.getSiblings().size() - 1); // removes last \n
             if (tooltip.toString().length() > 0) {
                 onTooltipFunction = (poseStack) -> (x, y) -> this.renderTooltip(poseStack, this.minecraft.font.split(addDebugInfo(config, tooltip), Math.max(this.width / 3, 170)), x, y);
@@ -183,8 +182,8 @@ public class ModConfigScreen extends BlueberryScreen {
                                 buttonY,
                                 Math.min(maxWidth, this.width / 6 - (24 * 2)),
                                 20,
-                                new TextComponent(cycleVisualConfig.getCurrentName()),
-                                (button) -> button.setMessage(new TextComponent(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
+                                Component.literal(cycleVisualConfig.getCurrentName()),
+                                (button) -> button.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
                                 onTooltip
                         )
                 );
@@ -194,8 +193,8 @@ public class ModConfigScreen extends BlueberryScreen {
                                 buttonY,
                                 22,
                                 20,
-                                new TextComponent("<-"),
-                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())),
+                                Component.literal("<-"),
+                                (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())),
                                 onTooltip
                         )
                 );
@@ -205,15 +204,15 @@ public class ModConfigScreen extends BlueberryScreen {
                                 buttonY,
                                 22,
                                 20,
-                                new TextComponent("->"),
-                                (button) -> btn.setMessage(new TextComponent(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
+                                Component.literal("->"),
+                                (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
                                 onTooltip
                         )
                 );
                 addLabel.accept(config, offset);
             } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
                 // TODO: slider
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
@@ -238,7 +237,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig stringVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
@@ -261,7 +260,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof ClassVisualConfig classVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, new TextComponent("")) {
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
@@ -291,7 +290,7 @@ public class ModConfigScreen extends BlueberryScreen {
     private static FormattedText addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
         if (!InternalBlueberryModConfig.Debug.debugModConfigScreen) return tooltip;
         MutableComponent copy = tooltip.copy().append("\n");
-        copy.append(new TextComponent("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        copy.append(Component.literal("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]").withStyle(ChatFormatting.GRAY)).append("\n");
         String valueType;
         Object value = config.get();
         if (value == null) {
@@ -299,35 +298,35 @@ public class ModConfigScreen extends BlueberryScreen {
         } else {
             valueType = value.getClass().getTypeName();
         }
-        copy.append(new TextComponent("[Type: " + valueType + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        copy.append(Component.literal("[Type: " + valueType + "]").withStyle(ChatFormatting.GRAY)).append("\n");
         if (config instanceof CompoundVisualConfig compoundVisualConfig) {
-            copy.append(new TextComponent("[Compound size: " + compoundVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+            copy.append(Component.literal("[Compound size: " + compoundVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
         } else {
-            copy.append(new TextComponent("[Raw value: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(String.valueOf(config.get())))
-                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+            copy.append(Component.literal("[Raw value: ").withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal(String.valueOf(config.get())))
+                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
         }
         if (config instanceof CycleVisualConfig<?> cycleVisualConfig && cycleVisualConfig.get() instanceof Enum<?> e) {
-            copy.append(new TextComponent("[List size: " + cycleVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
-            copy.append(new TextComponent("[Enum constant: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(e.name()).withStyle(ChatFormatting.YELLOW))
-                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+            copy.append(Component.literal("[List size: " + cycleVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+            copy.append(Component.literal("[Enum constant: ").withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal(e.name()).withStyle(ChatFormatting.YELLOW))
+                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
-            copy.append(new TextComponent("[Enum ordinal: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(Integer.toString(e.ordinal())).withStyle(ChatFormatting.YELLOW))
-                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+            copy.append(Component.literal("[Enum ordinal: ").withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal(Integer.toString(e.ordinal())).withStyle(ChatFormatting.YELLOW))
+                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
-            copy.append(new TextComponent("[Previous value: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekNext() : cycleVisualConfig.peekPrevious())))
-                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+            copy.append(Component.literal("[Previous value: ").withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekNext() : cycleVisualConfig.peekPrevious())))
+                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
-            copy.append(new TextComponent("[Next value: ").withStyle(ChatFormatting.GRAY))
-                    .append(new TextComponent(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekPrevious() : cycleVisualConfig.peekNext())))
-                    .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+            copy.append(Component.literal("[Next value: ").withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekPrevious() : cycleVisualConfig.peekNext())))
+                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
                     .append("\n");
         }
-        if (copy.getSiblings().get(0).getContents().equals("\n")) copy.getSiblings().remove(0);
+        if (copy.getSiblings().get(0).getContents().toString().equals("\n")) copy.getSiblings().remove(0);
         copy.getSiblings().remove(copy.getSiblings().size() - 1);
         return copy;
     }
@@ -387,8 +386,8 @@ public class ModConfigScreen extends BlueberryScreen {
     }
 
     @NotNull
-    private static BlueberryText title(@NotNull CompoundVisualConfig compoundVisualConfig) {
-        BlueberryText text = new BlueberryText("blueberry", "gui.screens.mod_config.title");
+    private static MutableComponent title(@NotNull CompoundVisualConfig compoundVisualConfig) {
+        MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.title");
         CompoundVisualConfig parent = compoundVisualConfig;
         List<Component> components = new ArrayList<>();
         while ((parent = parent.getParent()) != null) {

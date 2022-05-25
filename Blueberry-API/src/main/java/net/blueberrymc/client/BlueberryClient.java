@@ -24,7 +24,6 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.worldselection.EditWorldScreen;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldStem;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -162,15 +161,15 @@ public class BlueberryClient extends BlueberryUtil {
      */
     public static boolean showIncompatibleWorldModScreen(@NotNull String levelId, @NotNull LevelStorageSource.LevelStorageAccess levelStorageAccess, @NotNull WorldStem worldStem, @NotNull Runnable runnable) {
         if (!ListUtils.isCompatibleVersionedModInfo(((InstalledModsContainer) worldStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods())) {
-            Component title = new BlueberryText("blueberry", "selectWorld.backupQuestion.incompatibleMods").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD);
-            Component description = new BlueberryText("blueberry", "selectWorld.backupWarning.incompatibleMods");
+            Component title = BlueberryText.text("blueberry", "selectWorld.backupQuestion.incompatibleMods").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD);
+            Component description = BlueberryText.text("blueberry", "selectWorld.backupWarning.incompatibleMods");
             List<Component> lines = new ArrayList<>();
             Set<SimpleEntry<VersionedModInfo, VersionedModInfo>> set = TinyTime.measureTime("getIncompatibleVersionedModInfo", () -> ListUtils.getIncompatibleVersionedModInfo(((InstalledModsContainer) worldStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods()));
             LOGGER.info("Mod incompatibility detected:");
             for (SimpleEntry<VersionedModInfo, VersionedModInfo> entry : set) {
                 String key = Optional.ofNullable(entry.getKey()).map(i -> i.getName() + " [" + i.getModId() + "] @ " + i.getVersion()).orElse("");
                 String value = Optional.ofNullable(entry.getValue()).map(i -> i.getName() + " [" + i.getModId() + "] @ " + i.getVersion()).orElse("");
-                lines.add(new TextComponent(key + " -> " + value));
+                lines.add(Component.literal(key + " -> " + value));
                 LOGGER.info("  - {} -> {}", key, value);
             }
             Minecraft.getInstance().setScreen(new MultiLineBackupConfirmScreen(null, (backup, eraseCache) -> {

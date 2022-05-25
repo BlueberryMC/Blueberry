@@ -234,7 +234,7 @@ public class EarlyLoadingScreen {
         float g = 50 / 255f;
         float b = 61 / 255f;
         //noinspection ConstantConditions
-        if (mc != null && mc.options != null && mc.options.darkMojangStudiosBackground) {
+        if (mc != null && mc.options != null && mc.options.darkMojangStudiosBackground().get()) {
             r = g = b = 0;
         }
         GL11.glColor4f(r, g, b, 1);

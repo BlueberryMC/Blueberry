@@ -5,11 +5,15 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index a260340306f4c5d19dcb587a8f09897a11aada06..540b31c4bc7846f59e21d62d87a93fb30133765e 100644
+index a260340306f4c5d19dcb587a8f09897a11aada06..7c29ebf30e61f1e43c030f18fb01cbda94e2ac12 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -36,7 +36,7 @@ import org.slf4j.Logger;
- public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -33,10 +33,10 @@ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
+ import org.slf4j.Logger;
+ 
+-public class RecipeManager extends SimpleJsonResourceReloadListener {
++public class RecipeManager extends SimpleJsonResourceReloadListener implements net.blueberrymc.world.item.crafting.BlueberryRecipeManager { // Blueberry
      private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
      private static final Logger LOGGER = LogUtils.getLogger();
 -    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = ImmutableMap.of();

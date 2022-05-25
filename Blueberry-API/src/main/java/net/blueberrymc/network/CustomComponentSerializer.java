@@ -4,6 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,16 +12,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public interface CustomComponentSerializer<T extends MutableComponent> {
+public interface CustomComponentSerializer<T extends ComponentContents> {
     @NotNull
     Map<Class<?>, CustomComponentSerializer<?>> SERIALIZERS = new ConcurrentHashMap<>();
     Component.Serializer COMPONENT_SERIALIZER = new Component.Serializer();
 
     @NotNull
     @SuppressWarnings("unchecked")
-    private JsonElement serializeUnchecked(@NotNull MutableComponent component, @NotNull JsonSerializationContext context) {
+    private JsonElement serializeUnchecked(@NotNull ComponentContents component, @NotNull JsonSerializationContext context) {
         try {
-            return ((CustomComponentSerializer<MutableComponent>) this).serialize(component, context);
+            return ((CustomComponentSerializer<ComponentContents>) this).serialize(component, context);
         } catch (ClassCastException e) {
             throw new AssertionError("Wrong type of serializer for " + component.getClass().getTypeName(), e);
         }
@@ -37,22 +38,22 @@ public interface CustomComponentSerializer<T extends MutableComponent> {
         return COMPONENT_SERIALIZER.deserialize(element, element.getClass(), context);
     }
 
-    static <T extends MutableComponent> void registerSerializer(@NotNull Class<T> componentClass, @NotNull CustomComponentSerializer<T> componentSerializerClass) {
+    static <T extends ComponentContents> void registerSerializer(@NotNull Class<T> componentClass, @NotNull CustomComponentSerializer<T> componentSerializerClass) {
         SERIALIZERS.put(componentClass, componentSerializerClass);
     }
 
     @NotNull
-    static JsonElement callSerialize(@NotNull Component component, @NotNull JsonSerializationContext context) {
+    static JsonElement callSerialize(@NotNull ComponentContents component, @NotNull JsonSerializationContext context) {
         CustomComponentSerializer<?> serializer = SERIALIZERS.get(component.getClass());
         if (serializer == null) {
             throw new IllegalArgumentException("Don't know how to serialize " + component + " as a Component");
         }
         // this cast should be safe because the serializer requires a MutableComponent as type parameter
-        return serializer.serializeUnchecked((MutableComponent) component, context);
+        return serializer.serializeUnchecked(component, context);
     }
 
     @NotNull
-    static MutableComponent callDeserialize(@NotNull String customComponentType, @NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
+    static ComponentContents callDeserialize(@NotNull String customComponentType, @NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
         CustomComponentSerializer<?> serializer = SERIALIZERS.get(getCustomComponentClass(customComponentType));
         if (serializer == null) {
             throw new IllegalArgumentException("Don't know how to turn " + customComponentType + " into a component\n" +

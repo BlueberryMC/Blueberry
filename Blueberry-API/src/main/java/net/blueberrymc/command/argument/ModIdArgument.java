@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public record ModIdArgument(@NotNull Mode mode) implements ArgumentType<BlueberryMod> {
     private static final List<String> EXAMPLES = Collections.singletonList("blueberry");
     // private static final BlueberryText INVALID_MOD_ID_MESSAGE = new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod");
-    private static final DynamicCommandExceptionType INVALID_MOD_ID = new DynamicCommandExceptionType(o -> new BlueberryText("blueberry", "command.argument.mod_id.invalid_mod", o));
+    private static final DynamicCommandExceptionType INVALID_MOD_ID = new DynamicCommandExceptionType(o -> BlueberryText.text("blueberry", "command.argument.mod_id.invalid_mod", o));
 
     @Contract(value = "-> new", pure = true)
     @NotNull

@@ -270,19 +270,19 @@ index bd568ad18f934b84466054eb97a0fb07dc703b10..159adba112fa43d8e5dabf830babda20
              }
          }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
-index 6536c59f49c115c64aaeed2b33691169ba509bc5..0c0ed4bfe1991c60029fa27079f362be6f4f12c7 100644
+index 6536c59f49c115c64aaeed2b33691169ba509bc5..d610c76bd0cf79ae548727736429a60acc923357 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 @@ -78,6 +78,7 @@ public class PauseScreen extends Screen {
              }
  
          }));
-+        this.addRenderableWidget(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, new net.blueberrymc.common.resources.BlueberryText("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
++        this.addRenderableWidget(new Button(this.width / 2 - 102, this.height / 4 + 144 + -16, 204, 20, net.blueberrymc.common.resources.BlueberryText.text("blueberry", "gui.screens.mods"), (buttonx) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen())); // Blueberry
      }
  
      public void tick() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-index c2b12c1ac9d96aab4878d15013a65fddd601680b..8bf540e3e01acf73d0ab880279d3c4375d870c3c 100644
+index c2b12c1ac9d96aab4878d15013a65fddd601680b..7d62589c65471dbe9f2cc89a12c6cf67758077bc 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 @@ -154,7 +154,8 @@ public class TitleScreen extends Screen {
@@ -290,8 +290,8 @@ index c2b12c1ac9d96aab4878d15013a65fddd601680b..8bf540e3e01acf73d0ab880279d3c437
              this.minecraft.setScreen(screen);
          }, onTooltip))).active = flag;
 -        (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 200, 20, Component.translatable("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
-+        (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, new net.blueberrymc.common.resources.BlueberryText("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
-+        (this.addRenderableWidget(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, new TranslatableComponent("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
++        (this.addRenderableWidget(new Button(this.width / 2 - 100, i + i2 * 2, 98, 20, net.blueberrymc.common.resources.BlueberryText.text("blueberry", "gui.screens.mods"), (button) -> net.blueberrymc.client.gui.screens.ModListScreen.switchToModListScreen(), onTooltip))).active = flag;
++        (this.addRenderableWidget(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, Component.translatable("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
      }
  
      private void createDemoMenuOptions(int i, int i2) {
@@ -311,7 +311,7 @@ index c2b12c1ac9d96aab4878d15013a65fddd601680b..8bf540e3e01acf73d0ab880279d3c437
              for(GuiEventListener guiEventListener : this.children()) {
                  if (guiEventListener instanceof AbstractWidget) {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-index aac499837aba5984508919059b2e775f5c1549e3..4f43aa4df0261d01df73528bb46c96230c5b0e09 100644
+index aac499837aba5984508919059b2e775f5c1549e3..ec74c3840a19b62475ae3e02e2f13d0483c5f502 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
 @@ -282,6 +282,13 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
@@ -336,7 +336,7 @@ index aac499837aba5984508919059b2e775f5c1549e3..4f43aa4df0261d01df73528bb46c9623
 +            } else if (serverData.serverType != null && i19 >= i4 - 18 && i19 <= i4 - 5 && i20 >= 0 && i20 <= 22) {
 +                String text = serverData.serverType.getBlueberryText().getContents();
 +                if (text.contains("%d")) text = String.format(text, serverData.modsCount);
-+                this.screen.setToolTip(Collections.singletonList(new TextComponent(text)));
++                this.screen.setToolTip(Collections.singletonList(Component.literal(text)));
 +                // Blueberry end
              } else if (i19 >= i4 - i9 - 15 - 2 && i19 <= i4 - 15 - 2 && i20 >= 0 && i20 <= 8) {
                  this.screen.setToolTip(list2);
@@ -370,9 +370,18 @@ index 292756bb57e7a72f786cb1448cc2c0bc61b3081c..74536fd5d0f3051af18c512f3b7b2b15
          String s = parseArgument(optionSet, optionSpec7);
          Proxy proxy = Proxy.NO_PROXY;
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index 4377629a887891f7a63177b3f98dacadac9da2f1..7505e8bfd4a1d6f586d6767798bd4dc0c7690cf3 100644
+index 4377629a887891f7a63177b3f98dacadac9da2f1..f38ad6d7f04570e4cf95cd6eb6add6dce2b38b72 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -283,7 +283,7 @@ import net.minecraft.world.scores.Team;
+ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+ import org.slf4j.Logger;
+ 
+-public class ClientPacketListener implements ClientGamePacketListener {
++public class ClientPacketListener implements ClientGamePacketListener, net.blueberrymc.network.client.ClientBlueberryPacketListener { // Blueberry
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final Component GENERIC_DISCONNECT_MESSAGE = Component.translatable("disconnect.lost");
+     private final Connection connection;
 @@ -1632,6 +1632,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
  
          try {
@@ -660,19 +669,6 @@ index 5b3610cf386b10b12c4d7f8d6c08346df450bc70..83fc14c27b1d99c63b801cbb390a0b57
      private static final int MIN_PROTOCOL_ID = -1;
      private static final int MAX_PROTOCOL_ID = 2;
      private static final ConnectionProtocol[] LOOKUP = new ConnectionProtocol[4];
-diff --git a/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java b/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java
-index 848a7404c597a586c987fa072adb8a029b8a0f9b..c9a18a35f09815555134180ac198e1170cde1e63 100644
---- a/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java
-+++ b/src/main/java/net/minecraft/network/protocol/game/ClientboundOpenScreenPacket.java
-@@ -43,6 +43,8 @@ public class ClientboundOpenScreenPacket implements Packet<ClientGamePacketListe
-         return this.type;
-     }
- 
-+    public int getRawType() { return this.type; } // Blueberry
-+
-     public Component getTitle() {
-         return this.title;
-     }
 diff --git a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java b/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
 index 43f39473c5ef3de9e53e6722bea6a0a58382526e..f5254cecd40e9d643cb59316e929560adb08c85d 100644
 --- a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java

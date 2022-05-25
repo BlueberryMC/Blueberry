@@ -99,7 +99,7 @@ index 21a30bbb025b2aed394c777f6644a848d59f61e1..3a8943c1a5fb90bc92d9961f95271127
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index d6858369d215026e37930fb88d6d155fe72a1ed1..0c8c69ee0ecde37920a922cdd3ba75d35c86122a 100644
+index d6858369d215026e37930fb88d6d155fe72a1ed1..251184a89c1b5e9c6eb89cfdef129545411da6c4 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
 @@ -317,11 +317,13 @@ public class Block extends BlockBehaviour implements ItemLike {
@@ -133,9 +133,22 @@ index d6858369d215026e37930fb88d6d155fe72a1ed1..0c8c69ee0ecde37920a922cdd3ba75d3
              int i = intProvider.sample(serverLevel.random);
              if (i > 0) {
                  this.popExperience(serverLevel, blockPos, i);
-@@ -522,4 +530,17 @@ public class Block extends BlockBehaviour implements ItemLike {
-             return 31 * i + this.direction.hashCode();
+diff --git a/src/main/java/net/minecraft/world/level/block/DropExperienceBlock.java b/src/main/java/net/minecraft/world/level/block/DropExperienceBlock.java
+index cbfa3105077e77cf94b18e47be066974afbe3b04..56ef9656e0e2a27fdd3ab4d9fd255ebb4f579cfc 100644
+--- a/src/main/java/net/minecraft/world/level/block/DropExperienceBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/DropExperienceBlock.java
+@@ -5,6 +5,8 @@ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.util.valueproviders.ConstantInt;
+ import net.minecraft.util.valueproviders.IntProvider;
+ import net.minecraft.world.item.ItemStack;
++import net.minecraft.world.item.enchantment.EnchantmentHelper;
++import net.minecraft.world.item.enchantment.Enchantments;
+ import net.minecraft.world.level.block.state.BlockBehaviour;
+ import net.minecraft.world.level.block.state.BlockState;
+ 
+@@ -27,4 +29,17 @@ public class DropExperienceBlock extends Block {
          }
+ 
      }
 +
 +    // Blueberry start

@@ -6,14 +6,11 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..1ea52e9f05bd5143a1413acd88788006db216e55
+index 0000000000000000000000000000000000000000..6bddeb98f658b5c950ef3fec9fea86e1452dc284
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,246 @@
-+import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
-+import net.blueberrymc.gradle.buildSrc.constants.LOG4J_VERSION
-+import net.blueberrymc.gradle.buildSrc.constants.LWJGL_VERSION
-+import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
+@@ -0,0 +1,243 @@
++import net.blueberrymc.gradle.buildSrc.constants.*
 +
 +version = "$MINECRAFT_VERSION-$API_VERSION"
 +
@@ -60,13 +57,13 @@ index 0000000000000000000000000000000000000000..1ea52e9f05bd5143a1413acd88788006
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-linux")
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-macos")
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-windows")
-+    compileOnly("com.github.oshi:oshi-core:5.8.2")
-+    compileOnly("com.mojang:blocklist:1.0.6")
-+    compileOnly("com.mojang:text2speech:1.11.3")
-+    compileOnly("com.mojang:text2speech:1.11.3:natives-linux")
-+    compileOnly("com.mojang:text2speech:1.11.3:natives-windows")
++    compileOnly("com.github.oshi:oshi-core:5.8.5")
++    compileOnly("com.mojang:blocklist:1.0.10")
++    compileOnly("com.mojang:text2speech:$TTS_VERSION")
++    compileOnly("com.mojang:text2speech:$TTS_VERSION:natives-linux")
++    compileOnly("com.mojang:text2speech:$TTS_VERSION:natives-windows")
 +    compileOnly("net.java.jutils:jutils:1.0.0")
-+    compileOnly("com.ibm.icu:icu4j:69.1")
++    compileOnly("com.ibm.icu:icu4j:70.1")
 +    compileOnly("org.apache.commons:commons-lang3:3.12.0")
 +    compileOnly("commons-io:commons-io:2.11.0")
 +    compileOnly("commons-logging:commons-logging:1.2")

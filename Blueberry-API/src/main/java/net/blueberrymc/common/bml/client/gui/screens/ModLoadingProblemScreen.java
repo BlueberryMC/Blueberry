@@ -1,8 +1,8 @@
 package net.blueberrymc.common.bml.client.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.blueberrymc.client.gui.BlueberryGuiComponents;
 import net.blueberrymc.client.gui.screens.BlueberryScreen;
+import net.blueberrymc.common.resources.BlueberryCommonComponents;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
@@ -34,7 +34,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
     }
 
     public ModLoadingProblemScreen(@Nullable Screen screen, @Nullable Runnable callback) {
-        super(new BlueberryText("blueberry", "gui.screens.mod_loading_problem.title").withStyle(ModLoadingErrors.hasErrors() ? ChatFormatting.RED : ChatFormatting.YELLOW));
+        super(BlueberryText.text("blueberry", "gui.screens.mod_loading_problem.title").withStyle(ModLoadingErrors.hasErrors() ? ChatFormatting.RED : ChatFormatting.YELLOW));
         this.screen = screen;
         this.callback = callback;
     }
@@ -57,7 +57,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
     protected void init() {
         this.problemList = new ProblemList(Objects.requireNonNull(this.minecraft));
         this.children().add(this.problemList);
-        this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 38, 98, 20, new BlueberryText("blueberry", "gui.screens.mod_loading_problem.open_log_file"), (button) -> Util.getPlatform().openFile(Blueberry.getLogFile())));
+        this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 38, 98, 20, BlueberryText.text("blueberry", "gui.screens.mod_loading_problem.open_log_file"), (button) -> Util.getPlatform().openFile(Blueberry.getLogFile())));
         this.addRenderableWidget(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> {
             ModLoadingErrors.clear();
             Objects.requireNonNull(this.minecraft).setScreen(screen);
@@ -132,7 +132,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return BlueberryGuiComponents.EMPTY_TEXT;
+                return BlueberryCommonComponents.EMPTY_TEXT;
             }
         }
     }

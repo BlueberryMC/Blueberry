@@ -20,7 +20,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +44,7 @@ public class ModListScreen extends BlueberryScreen {
     private Button configButton;
 
     public ModListScreen(@Nullable Screen screen) {
-        super(new BlueberryText("blueberry", "gui.screens.mods"));
+        super(BlueberryText.text("blueberry", "gui.screens.mods"));
         this.previousScreen = screen;
     }
 
@@ -54,11 +53,12 @@ public class ModListScreen extends BlueberryScreen {
         assert this.minecraft != null;
         this.modsList = new ModsList(this.minecraft);
         this.children().add(this.modsList);
-        this.addRenderableWidget(new Button(this.width / 2 - 150, this.height - 38, 96, 20, new BlueberryText("blueberry", "gui.screens.mods.refresh"), (button) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 150, this.height - 38, 96, 20, BlueberryText.text("blueberry", "gui.screens.mods.refresh"), (button) -> {
             this.minecraft.setScreen(this.previousScreen);
             this.minecraft.setScreen(new ModListScreen(this.previousScreen));
         }));
-        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, new TranslatableComponent("structure_block.mode.load"), (button) ->
+        // TODO: don't use structure block translation
+        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, Component.translatable("structure_block.mode.load"), (button) ->
                 this.minecraft.setScreen(FileDialogScreen.create(
                         this,
                         FileDialogScreenOptions
@@ -66,7 +66,7 @@ public class ModListScreen extends BlueberryScreen {
                                 //.boundary(Blueberry.getGameDir()) // we probably don't need boundary
                                 .fileType(FileDialogScreenOptions.FileType.ALL)
                                 .initialDirectory(Blueberry.getModsDir())
-                                .title(new BlueberryText("blueberry", "gui.screens.mods.load.title"))
+                                .title(BlueberryText.text("blueberry", "gui.screens.mods.load.title"))
                                 .callback(file -> {
                                     if (file != null) {
                                         File actualFileToLoad = file;
@@ -83,7 +83,7 @@ public class ModListScreen extends BlueberryScreen {
                                 .build()
                 ))));
         this.addRenderableWidget(new Button(this.width / 2 + 50, this.height - 38, 96, 20, CommonComponents.GUI_DONE, (button) -> this.minecraft.setScreen(this.previousScreen)));
-        (this.reloadButton = this.addRenderableWidget(new Button(10, this.height - 78, this.width / 5 / 2 - 11, 20, new BlueberryText("blueberry", "gui.screens.mods.reload"), button -> {
+        (this.reloadButton = this.addRenderableWidget(new Button(10, this.height - 78, this.width / 5 / 2 - 11, 20, BlueberryText.text("blueberry", "gui.screens.mods.reload"), button -> {
             try {
                 ModsList.Entry entry = this.modsList.getSelected();
                 if (entry != null) {
@@ -109,13 +109,13 @@ public class ModListScreen extends BlueberryScreen {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null) {
                 if (isReloadSupported(entry.mod)) {
-                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.reload.reload_tooltip"), i, i1);
+                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.reload.reload_tooltip"), i, i1);
                 } else {
-                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.reload.unsupported"), i, i1);
+                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.reload.unsupported"), i, i1);
                 }
             }
         }))).active = false;
-        (this.recompileButton = this.addRenderableWidget(new Button(2 + this.width / 5 / 2, this.height - 78, this.width / 5 / 2 - 11, 20, new BlueberryText("blueberry", "gui.screens.mods.recompile"), button -> {
+        (this.recompileButton = this.addRenderableWidget(new Button(2 + this.width / 5 / 2, this.height - 78, this.width / 5 / 2 - 11, 20, BlueberryText.text("blueberry", "gui.screens.mods.recompile"), button -> {
             try {
                 ModsList.Entry entry = this.modsList.getSelected();
                 if (entry != null) {
@@ -137,28 +137,28 @@ public class ModListScreen extends BlueberryScreen {
             if (entry != null) {
                 if (entry.mod.isFromSource()) {
                     if (this.minecraft.level != null) {
-                        renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.recompile.in_world_tooltip"), i, i1);
+                        renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.recompile.in_world_tooltip"), i, i1);
                         return;
                     }
-                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.recompile.recompile_tooltip"), i, i1);
+                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.recompile.recompile_tooltip"), i, i1);
                 } else {
-                    renderTooltip(poseStack, new BlueberryText("blueberry", "gui.screens.mods.recompile.unsupported"), i, i1);
+                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.recompile.unsupported"), i, i1);
                 }
             }
         }))).active = false;
-        (this.unloadButton = this.addRenderableWidget(new Button(10, this.height - 56, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.disable"), button -> {
+        (this.unloadButton = this.addRenderableWidget(new Button(10, this.height - 56, this.width / 5 - 20, 20, BlueberryText.text("blueberry", "gui.screens.mods.disable"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null) {
                 if (entry.mod.isUnloaded()) {
                     Blueberry.getModLoader().enableMod(entry.mod);
-                    this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.disable"));
+                    this.unloadButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.disable"));
                 } else {
                     Blueberry.getModLoader().disableMod(entry.mod);
-                    this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.enable"));
+                    this.unloadButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.enable"));
                 }
             }
         }))).active = false;
-        (this.configButton = this.addRenderableWidget(new Button(10, this.height - 34, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.config"), button -> {
+        (this.configButton = this.addRenderableWidget(new Button(10, this.height - 34, this.width / 5 - 20, 20, BlueberryText.text("blueberry", "gui.screens.mods.config"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null && entry.mod.getVisualConfig().isNotEmpty()) {
                 this.minecraft.setScreen(new ModConfigScreen(entry.mod.getVisualConfig(), this));
@@ -222,9 +222,9 @@ public class ModListScreen extends BlueberryScreen {
             this.unloadButton.active = this.minecraft.level == null && mod.getDescription().isUnloadable();
             this.configButton.active = mod.getVisualConfig().isNotEmpty();
             if (mod.isUnloaded()) {
-                this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.enable"));
+                this.unloadButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.enable"));
             } else {
-                this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.disable"));
+                this.unloadButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.disable"));
             }
             int y = 40;
             drawString(poseStack, this.font, "Mod Name: " + mod.getName(), this.width / 4, y, 16777215);
@@ -310,7 +310,7 @@ public class ModListScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return new TranslatableComponent("narrator.select", this.mod.getName());
+                return Component.translatable("narrator.select", this.mod.getName());
             }
         }
     }

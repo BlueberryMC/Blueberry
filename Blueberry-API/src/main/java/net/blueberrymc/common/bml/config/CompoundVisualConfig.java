@@ -2,7 +2,6 @@ package net.blueberrymc.common.bml.config;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +32,7 @@ public class CompoundVisualConfig extends VisualConfig<List<VisualConfig<?>>> im
 
     @NotNull
     public CompoundVisualConfig withTitle(@Nullable String title) {
-        this.title = title == null ? null : new TextComponent(title);
+        this.title = title == null ? null : Component.literal(title);
         return this;
     }
 

@@ -5,7 +5,7 @@ Subject: [PATCH] Custom component serializer support
 
 
 diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
-index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..b8ef2202fe6e1d7c0b44884437a2edd304ea34eb 100644
+index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..75fb320db4dd5245a974c749cc997de8271cef00 100644
 --- a/src/main/java/net/minecraft/network/chat/Component.java
 +++ b/src/main/java/net/minecraft/network/chat/Component.java
 @@ -238,7 +238,7 @@ public interface Component extends Message, FormattedText {
@@ -28,7 +28,7 @@ index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..b8ef2202fe6e1d7c0b44884437a2edd3
 +                    if (element == null) {
 +                        throw new JsonParseException("Custom component data is missing despite __blueberry_custom_component__ being set");
 +                    }
-+                    mutableComponent = net.blueberrymc.network.CustomComponentSerializer.callDeserialize(customComponentType, element, jsonDeserializationContext);
++                    mutableComponent = MutableComponent.create(net.blueberrymc.network.CustomComponentSerializer.callDeserialize(customComponentType, element, jsonDeserializationContext));
 +                    // Blueberry end - custom components
 +                } else {
 +                    throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
@@ -40,7 +40,7 @@ index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..b8ef2202fe6e1d7c0b44884437a2edd3
                  KeybindContents keybindContents = (KeybindContents)componentContents;
                  jsonObject.addProperty("keybind", keybindContents.getName());
 -            } else {
-+            } else if (component instanceof NbtComponent) { // Blueberry
++            } else if (component instanceof NbtContents) { // Blueberry
                  if (!(componentContents instanceof NbtContents)) {
                      throw new IllegalArgumentException("Don't know how to serialize " + componentContents + " as a Component");
                  }
@@ -50,8 +50,8 @@ index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..b8ef2202fe6e1d7c0b44884437a2edd3
                  }
 +                // Blueberry start - custom components
 +            } else {
-+                jsonObject.addProperty("__blueberry_custom_component__", component.getClass().getTypeName());
-+                JsonElement element = net.blueberrymc.network.CustomComponentSerializer.callSerialize(component, jsonSerializationContext);
++                jsonObject.addProperty("__blueberry_custom_component__", componentContents.getClass().getTypeName());
++                JsonElement element = net.blueberrymc.network.CustomComponentSerializer.callSerialize(componentContents, jsonSerializationContext);
 +                jsonObject.add("__blueberry_custom_component_data__", element);
 +                // Blueberry end - custom components
              }

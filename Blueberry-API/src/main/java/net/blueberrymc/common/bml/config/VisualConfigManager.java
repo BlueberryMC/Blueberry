@@ -8,9 +8,8 @@ import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.yaml.YamlObject;
 import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.Util;
-import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +42,7 @@ public class VisualConfigManager {
             String path = configName.path();
             String name = configName.value();
             if (namespace.length() > 0 && path.length() > 0) {
-                return new BlueberryText(namespace, path);
+                return BlueberryText.text(namespace, path);
             }
             if (namespace.length() == 0 && path.length() > 0) {
                 String theNamespace;
@@ -52,13 +51,13 @@ public class VisualConfigManager {
                 } else {
                     theNamespace = mod.getModId();
                 }
-                return new BlueberryText(theNamespace, path);
+                return BlueberryText.text(theNamespace, path);
             }
             if (namespace.length() == 0 && name.length() > 0) {
-                return new TextComponent(name);
+                return Component.literal(name);
             }
         }
-        if (mod != null) return new TextComponent(mod.getName());
+        if (mod != null) return Component.literal(mod.getName());
         return null;
     }
 
@@ -81,7 +80,7 @@ public class VisualConfigManager {
         //Config config = clazz.getAnnotation(Config.class);
         BlueberryMod mod = BlueberryMod.detectModFromClass(clazz);
         Component component = tryGetComponent(mod, clazz.getAnnotation(Name.class));
-        if (component == null) component = new TextComponent(clazz.getSimpleName());
+        if (component == null) component = Component.literal(clazz.getSimpleName());
         return createFromClass(mod, component, clazz);
     }
 
@@ -515,7 +514,7 @@ public class VisualConfigManager {
     private static Component getDescription(AnnotatedElement element) {
         Description description = element.getAnnotation(Description.class);
         if (description == null) return null;
-        BaseComponent baseComponent = null;
+        MutableComponent baseComponent = null;
         for (Name name : description.value()) {
             if (baseComponent != null) {
                 baseComponent.append("\n").append(toComponent(element, name));
@@ -526,8 +525,8 @@ public class VisualConfigManager {
         return baseComponent;
     }
 
-    private static BaseComponent toComponent(AnnotatedElement element, Name name) {
-        if (name.path().length() == 0) return new TextComponent(name.value());
+    private static MutableComponent toComponent(AnnotatedElement element, Name name) {
+        if (name.path().length() == 0) return Component.literal(name.value());
         String namespace = name.namespace();
         if (namespace.length() == 0) {
             BlueberryMod mod = null;
@@ -544,7 +543,7 @@ public class VisualConfigManager {
                 namespace = "minecraft";
             }
         }
-        return new BlueberryText(namespace, name.path());
+        return BlueberryText.text(namespace, name.path());
     }
 
     private static boolean shouldSkip(AnnotatedElement element) {
@@ -678,8 +677,8 @@ public class VisualConfigManager {
     /**
      * Specifies the title of config class or friendly name of field. If <code>path</code> (and/or
      * <code>namespace</code>) was provided, {@link BlueberryText} will be used for the text. If <code>path</code> was
-     * not provided but <code>value</code> was provided, {@link TextComponent} will be used for the text. If
-     * <code>value</code> and <code>path</code> was empty,
+     * not provided but <code>value</code> was provided, {@link net.minecraft.network.chat.contents.LiteralContents}
+     * will be used for the text.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})

@@ -1,7 +1,6 @@
 package net.blueberrymc.common.bml.config;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +47,7 @@ public abstract class VisualConfig<T> {
     @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> description(@Nullable String description) {
-        this.description = description != null ? new TextComponent(description) : null;
+        this.description = description != null ? Component.literal(description) : null;
         return this;
     }
 

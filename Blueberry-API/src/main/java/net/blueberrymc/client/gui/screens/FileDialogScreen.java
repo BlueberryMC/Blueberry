@@ -10,8 +10,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -105,7 +103,7 @@ public class FileDialogScreen extends BlueberryScreen {
                 break;
             }
         }
-        return new TextComponent(path.toString());
+        return Component.literal(path.toString());
     }
 
     class FileList extends ObjectSelectionList<FileList.Entry> {
@@ -150,7 +148,7 @@ public class FileDialogScreen extends BlueberryScreen {
             if (this.getSelected() != null) {
                 this.centerScrollOn(this.getSelected());
             }
-            cdButton = new Button(0, 0, 20, 20, new TextComponent(">").withStyle(ChatFormatting.GOLD), (button) -> {
+            cdButton = new Button(0, 0, 20, 20, Component.literal(">").withStyle(ChatFormatting.GOLD), (button) -> {
                 File file = getSelected().file;
                 if (!file.isDirectory()) {
                     LOGGER.warn("Trying to cd to a non-directory: {}", file);
@@ -163,7 +161,7 @@ public class FileDialogScreen extends BlueberryScreen {
                 minecraft.setScreen(FileDialogScreen.create(firstScreen, options.toBuilder().initialDirectory(file).build()));
             });
             cdButton.visible = false;
-            selectButton = new Button(0, 0, 20, 20, new TextComponent("\u2714").withStyle(ChatFormatting.GREEN), (button) -> {
+            selectButton = new Button(0, 0, 20, 20, Component.literal("\u2714").withStyle(ChatFormatting.GREEN), (button) -> {
                 minecraft.setScreen(firstScreen);
                 options.runCallback(getSelected().file);
             });
@@ -267,7 +265,7 @@ public class FileDialogScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return new TranslatableComponent("narrator.select", this.file.getName());
+                return Component.translatable("narrator.select", this.file.getName());
             }
         }
     }

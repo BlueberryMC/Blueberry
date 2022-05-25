@@ -606,7 +606,7 @@ public class BlueberryModLoader implements ModLoader {
             assert packs != null;
             packs.add(blueberryResourceManager.getPackResources());
         } else if (resourceManager instanceof FallbackResourceManager rm) {
-            rm.add(blueberryResourceManager.getPackResources());
+            rm.push(blueberryResourceManager.getPackResources());
         } else {
             LOGGER.warn("Unknown ResourceManager type: " + resourceManager.getClass().getTypeName());
         }

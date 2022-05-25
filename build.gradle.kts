@@ -49,12 +49,12 @@ subprojects {
     }
 
     repositories {
-        mavenLocal() // use mavenLocal to provide net.blueberrymc.minecraft:minecraft, for now.
         mavenCentral()
-        maven { url = uri("https://repo.spongepowered.org/maven/"); name = "Sponge Powered" }
         maven { url = uri("https://jitpack.io"); name = "Jitpack" }
         maven { url = uri("https://libraries.minecraft.net/"); name = "Minecraft" }
+        maven { url = uri("https://repo.spongepowered.org/maven/"); name = "Sponge Powered" }
         maven { url = uri("https://repo.blueberrymc.net/repository/maven-public/"); name = "blueberrymc-repo" }
+        mavenLocal() // use mavenLocal to provide net.blueberrymc.minecraft:minecraft, for now.
     }
 
     dependencies {
@@ -91,14 +91,26 @@ allprojects {
     }
 
     tasks {
-        compileKotlin { kotlinOptions.jvmTarget = "17" }
-        compileTestKotlin { kotlinOptions.jvmTarget = "17" }
+        compileKotlin {
+            kotlinOptions.jvmTarget = "17"
+        }
+
+        compileTestKotlin {
+            kotlinOptions.jvmTarget = "17"
+        }
+
+        compileJava {
+            options.compilerArgs.add("-Xmaxerrs")
+            options.compilerArgs.add("99999")
+            options.encoding = "UTF-8"
+            options.isDeprecation = true
+        }
 
         test {
             useJUnitPlatform()
         }
 
-        withType<ProcessResources> {
+        processResources {
             /*
             from(sourceSets.main.get().resources.srcDirs) {
                 include("**")
@@ -109,12 +121,6 @@ allprojects {
             filteringCharset = "UTF-8"
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
             from(projectDir) { include("LICENSE") }
-        }
-
-        withType<JavaCompile>().configureEach {
-            options.encoding = "UTF-8"
-            options.isDeprecation = true
-            // options.compilerArgs.add("-Xlint:unchecked")
         }
     }
 }
