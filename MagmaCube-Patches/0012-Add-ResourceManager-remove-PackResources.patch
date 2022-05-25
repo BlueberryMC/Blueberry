@@ -5,31 +5,32 @@ Subject: [PATCH] Add ResourceManager#remove(PackResources)
 
 
 diff --git a/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
-index 92476950f3fc8f19b73bbb7d1605161c9c7de971..30349cfad1158b7243c26a9f7234b77a57fc74c1 100644
+index 545dd6362633a1fabf73cbcc68e87bd90df23b17..e2ba61d1ecf81c74bd7be2a4cccd0daf65640a42 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
-@@ -34,6 +34,7 @@ public class FallbackResourceManager implements ResourceManager {
-     public void add(PackResources packResources) {
-         this.fallbacks.add(packResources);
+@@ -57,6 +57,8 @@ public class FallbackResourceManager implements ResourceManager {
+         this.fallbacks.add(new FallbackResourceManager.PackEntry(s, packResources, predicate));
      }
-+    @Override public boolean remove(PackResources packResources) { return this.fallbacks.remove(packResources); } // Blueberry
  
++    @Override public boolean remove(PackResources packResources) { return this.fallbacks.remove(packResources); } // Blueberry
++
      public Set<String> getNamespaces() {
          return ImmutableSet.of(this.namespace);
+     }
 diff --git a/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
-index 2d605fd6e979f1cd7baaa3575108a4df32eb776f..5bf1b951b92ef52ceb0e1cbb73dbd3cd7880c483 100644
+index 2faeab1ffca93dae4357b353dfd671100615926b..a4e414c694239c5e136c4d60b6318e4667d73314 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
-@@ -21,7 +21,7 @@ public class MultiPackResourceManager implements CloseableResourceManager {
+@@ -22,7 +22,7 @@ public class MultiPackResourceManager implements CloseableResourceManager {
      private final List<PackResources> packs;
  
      public MultiPackResourceManager(PackType packType, List<PackResources> list) {
 -        this.packs = List.copyOf(list);
 +        this.packs = new java.util.ArrayList<>(list); // Blueberry
          Map<String, FallbackResourceManager> map = new HashMap();
+         List<String> list2 = list.stream().flatMap((packResourcesx) -> packResourcesx.getNamespaces(packType).stream()).toList();
  
-         for(PackResources packResources : list) {
-@@ -79,4 +79,6 @@ public class MultiPackResourceManager implements CloseableResourceManager {
+@@ -106,4 +106,6 @@ public class MultiPackResourceManager implements CloseableResourceManager {
      public void close() {
          this.packs.forEach(PackResources::close);
      }
@@ -38,30 +39,22 @@ index 2d605fd6e979f1cd7baaa3575108a4df32eb776f..5bf1b951b92ef52ceb0e1cbb73dbd3cd
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java
-index f8616e612b8a1fa41d761844ec3d0281d3f4e03f..ebb3563151164881273c7f41cc6158e40748916b 100644
+index 7896ee38c0a600e126f82a607d7559b92abbdbef..e9ab3be3d475b29e06a9eea6c871fa74c91c02f3 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java
-@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
- import net.minecraft.server.packs.PackResources;
- import net.minecraft.server.packs.PackType;
- import net.minecraft.util.Unit;
-+import org.jetbrains.annotations.NotNull;
- import org.slf4j.Logger;
- 
- public class ReloadableResourceManager implements ResourceManager, AutoCloseable {
-@@ -66,4 +67,6 @@ public class ReloadableResourceManager implements ResourceManager, AutoCloseable
+@@ -66,4 +66,6 @@ public class ReloadableResourceManager implements ResourceManager, AutoCloseable
      public Stream<PackResources> listPacks() {
          return this.resources.listPacks();
      }
 +
-+    @Override public boolean remove(@NotNull PackResources packResources) {return this.resources.remove(packResources); } // Blueberry
++    @Override public boolean remove(PackResources packResources) {return this.resources.remove(packResources); } // Blueberry
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java
-index 80f21163ad6f7ba69ba74ac3899b9a125776dd68..26fd9a73bcfb8baa908542029ccdd9e01df1d90d 100644
+index dc2dcc0936329e5da2ae898ec6c6442cc23ad479..59fe1f014517e1e0dbd1d9fa99b8a9f794eca8cf 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/ResourceManager.java
-@@ -12,7 +12,7 @@ import java.util.stream.Stream;
+@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  import net.minecraft.resources.ResourceLocation;
  import net.minecraft.server.packs.PackResources;
  
@@ -69,4 +62,4 @@ index 80f21163ad6f7ba69ba74ac3899b9a125776dd68..26fd9a73bcfb8baa908542029ccdd9e0
 +public interface ResourceManager extends ResourceProvider, net.blueberrymc.server.packs.resources.BlueberryResourceProvider { // Blueberry
      Set<String> getNamespaces();
  
-     boolean hasResource(ResourceLocation var1);
+     List<Resource> getResourceStack(ResourceLocation var1);

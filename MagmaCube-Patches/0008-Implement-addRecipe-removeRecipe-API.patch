@@ -5,15 +5,11 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index 0eb1f9c2d6ed00047b410e350eb0cfa8a889fc3a..21506c512b5f08a03d8791772fc0c443fab950ee 100644
+index a260340306f4c5d19dcb587a8f09897a11aada06..540b31c4bc7846f59e21d62d87a93fb30133765e 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -31,10 +31,10 @@ import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
- import org.slf4j.Logger;
- 
--public class RecipeManager extends SimpleJsonResourceReloadListener {
-+public class RecipeManager extends SimpleJsonResourceReloadListener implements net.blueberrymc.world.item.crafting.BlueberryRecipeManager { // Blueberry
+@@ -36,7 +36,7 @@ import org.slf4j.Logger;
+ public class RecipeManager extends SimpleJsonResourceReloadListener {
      private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
      private static final Logger LOGGER = LogUtils.getLogger();
 -    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = ImmutableMap.of();
@@ -21,7 +17,7 @@ index 0eb1f9c2d6ed00047b410e350eb0cfa8a889fc3a..21506c512b5f08a03d8791772fc0c443
      private Map<ResourceLocation, Recipe<?>> byName = ImmutableMap.of();
      private boolean hasErrors;
  
-@@ -59,8 +59,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -61,8 +61,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
              }
          }
  
@@ -32,9 +28,9 @@ index 0eb1f9c2d6ed00047b410e350eb0cfa8a889fc3a..21506c512b5f08a03d8791772fc0c443
          LOGGER.info("Loaded {} recipes", map2.size());
      }
  
-@@ -132,4 +133,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
-         this.recipes = ImmutableMap.copyOf(map);
-         this.byName = builder.build();
+@@ -169,4 +170,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+     public interface CachedCheck<C extends Container, T extends Recipe<C>> {
+         Optional<T> getRecipeFor(C var1, Level var2);
      }
 +
 +    // Blueberry start - implement addRecipe/removeRecipe

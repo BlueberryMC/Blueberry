@@ -5,22 +5,22 @@ Subject: [PATCH] Custom component serializer support
 
 
 diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
-index 0a2e9150e71a3f5b2f0b9928c2fd4d6ab3ed5593..2e6e577324fc74ada0d0d89751c821d65f1c2975 100644
+index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..b8ef2202fe6e1d7c0b44884437a2edd304ea34eb 100644
 --- a/src/main/java/net/minecraft/network/chat/Component.java
 +++ b/src/main/java/net/minecraft/network/chat/Component.java
-@@ -204,7 +204,7 @@ public interface Component extends Message, FormattedText {
-                     mutableComponent = new SelectorComponent(GsonHelper.getAsString(jsonObject, "selector"), optional);
+@@ -238,7 +238,7 @@ public interface Component extends Message, FormattedText {
+                     mutableComponent = Component.selector(GsonHelper.getAsString(jsonObject, "selector"), optional);
                  } else if (jsonObject.has("keybind")) {
-                     mutableComponent = new KeybindComponent(GsonHelper.getAsString(jsonObject, "keybind"));
+                     mutableComponent = Component.keybind(GsonHelper.getAsString(jsonObject, "keybind"));
 -                } else {
 +                } else if (jsonObject.has("nbt")) { // Blueberry
                      if (!jsonObject.has("nbt")) {
                          throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
                      }
-@@ -223,6 +223,17 @@ public interface Component extends Message, FormattedText {
- 
-                         mutableComponent = new NbtComponent.StorageNbtComponent(s2, flag, new ResourceLocation(GsonHelper.getAsString(jsonObject, "storage")), optional2);
+@@ -260,6 +260,17 @@ public interface Component extends Message, FormattedText {
                      }
+ 
+                     mutableComponent = Component.nbt(s3, flag, optional2, dataSource);
 +                    // Blueberry start - custom components
 +                } else if (jsonObject.has("__blueberry_custom_component__")) {
 +                    String customComponentType = GsonHelper.getAsString(jsonObject, "__blueberry_custom_component__");
@@ -35,18 +35,18 @@ index 0a2e9150e71a3f5b2f0b9928c2fd4d6ab3ed5593..2e6e577324fc74ada0d0d89751c821d6
                  }
  
                  if (jsonObject.has("extra")) {
-@@ -304,7 +315,7 @@ public interface Component extends Message, FormattedText {
-             } else if (component instanceof KeybindComponent) {
-                 KeybindComponent keybindComponent = (KeybindComponent)component;
-                 jsonObject.addProperty("keybind", keybindComponent.getName());
+@@ -360,7 +371,7 @@ public interface Component extends Message, FormattedText {
+             } else if (componentContents instanceof KeybindContents) {
+                 KeybindContents keybindContents = (KeybindContents)componentContents;
+                 jsonObject.addProperty("keybind", keybindContents.getName());
 -            } else {
 +            } else if (component instanceof NbtComponent) { // Blueberry
-                 if (!(component instanceof NbtComponent)) {
-                     throw new IllegalArgumentException("Don't know how to serialize " + component + " as a Component");
+                 if (!(componentContents instanceof NbtContents)) {
+                     throw new IllegalArgumentException("Don't know how to serialize " + componentContents + " as a Component");
                  }
-@@ -327,6 +338,12 @@ public interface Component extends Message, FormattedText {
-                     NbtComponent.StorageNbtComponent storageNbtComponent = (NbtComponent.StorageNbtComponent)component;
-                     jsonObject.addProperty("storage", storageNbtComponent.getId().toString());
+@@ -384,6 +395,12 @@ public interface Component extends Message, FormattedText {
+                     StorageDataSource storageDataSource = (StorageDataSource)dataSource;
+                     jsonObject.addProperty("storage", storageDataSource.id().toString());
                  }
 +                // Blueberry start - custom components
 +            } else {

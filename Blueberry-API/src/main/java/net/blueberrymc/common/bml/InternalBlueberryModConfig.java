@@ -154,9 +154,13 @@ public class InternalBlueberryModConfig {
     @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.title")
     @Key("multiplayer")
     public static class Multiplayer {
+        /**
+         * @deprecated Not used anymore.
+         */
         @Order(10000)
         @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.ignore_server_view_distance")
         @Key("ignoreServerViewDistance")
+        @Deprecated
         public static boolean ignoreServerViewDistance = false;
 
         @Order(10001)

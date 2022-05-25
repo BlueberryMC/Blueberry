@@ -5,18 +5,10 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc16940d94739a 100644
+index d5cc538384d0ffd156be28dddde674d95bd4fadc..81ce0cc9ad5e690f7cef5dcceebdb7c1f615ffd8 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-@@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
- import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
- import net.minecraft.world.entity.ai.behavior.EntityTracker;
- import net.minecraft.world.entity.ai.goal.GoalSelector;
-+import net.minecraft.world.entity.ai.goal.WrappedGoal;
- import net.minecraft.world.entity.ai.gossip.GossipType;
- import net.minecraft.world.entity.ai.memory.ExpirableValue;
- import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-@@ -89,8 +90,19 @@ public class DebugPackets {
+@@ -92,8 +92,19 @@ public class DebugPackets {
      private static void sendVillageSectionsPacket(ServerLevel serverLevel, BlockPos blockPos) {
      }
  
@@ -37,7 +29,7 @@ index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc1694
  
      public static void sendNeighborsUpdatePacket(Level level, BlockPos blockPos) {
      }
-@@ -98,11 +110,23 @@ public class DebugPackets {
+@@ -101,11 +112,23 @@ public class DebugPackets {
      public static void sendStructurePacket(WorldGenLevel worldGenLevel, StructureStart structureStart) {
      }
  
@@ -50,7 +42,7 @@ index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc1694
 +            friendlyByteBuf.writeBlockPos(mob.blockPosition());
 +            friendlyByteBuf.writeInt(mob.getId());
 +            friendlyByteBuf.writeInt(goalSelector.getAvailableGoals().size());
-+            for (WrappedGoal goal : goalSelector.getAvailableGoals()) {
++            for (net.minecraft.world.entity.ai.goal.WrappedGoal goal : goalSelector.getAvailableGoals()) {
 +                friendlyByteBuf.writeInt(goal.getPriority());
 +                friendlyByteBuf.writeBoolean(goal.isRunning());
 +                friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName(), 255);
@@ -62,7 +54,7 @@ index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc1694
  
      public static void sendRaids(ServerLevel serverLevel, Collection<Raid> collection) {
      }
-@@ -110,8 +134,38 @@ public class DebugPackets {
+@@ -113,8 +136,38 @@ public class DebugPackets {
      public static void sendEntityBrain(LivingEntity livingEntity) {
      }
  
@@ -87,9 +79,9 @@ index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc1694
 +            Path path = bee.getNavigation().getPath();
 +            friendlyByteBuf.writeBoolean(path != null);
 +            if (path != null) path.writeToStream(friendlyByteBuf);
-+            List<WrappedGoal> runningGoals = bee.getGoalSelector().getRunningGoals().collect(Collectors.toList());
++            List<net.minecraft.world.entity.ai.goal.WrappedGoal> runningGoals = bee.getGoalSelector().getRunningGoals().collect(Collectors.toList());
 +            friendlyByteBuf.writeInt(runningGoals.size());
-+            for (WrappedGoal goal : runningGoals) friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName());
++            for (net.minecraft.world.entity.ai.goal.WrappedGoal goal : runningGoals) friendlyByteBuf.writeUtf(goal.getGoal().getClass().getSimpleName());
 +            List<BlockPos> blacklistedHives = bee.getBlacklistedHives();
 +            friendlyByteBuf.writeInt(blacklistedHives.size());
 +            for (BlockPos hive : blacklistedHives) friendlyByteBuf.writeBlockPos(hive);
@@ -99,13 +91,13 @@ index 48d59cf9e98ee1770189c8b1463552a9e0980236..c66b52d2507d47b0163e342a3bfc1694
      }
 +    // Blueberry end - implement debug packets
  
-     public static void sendGameEventInfo(Level level, GameEvent gameEvent, BlockPos blockPos) {
+     public static void sendGameEventInfo(Level level, GameEvent gameEvent, Vec3 vec3) {
      }
 diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
-index 46916fe456d5d078f952cc5c320c98b7885d0e77..2cad48f25601edecdc965da5ed9ce32dcc331497 100644
+index 19b0bc2eda93bbfe8da02d5da620dcd66efc7e23..e22aa7e8751c71d8e3758f25d6bf024392992e67 100644
 --- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
-@@ -101,7 +101,12 @@ public class PathFinder {
+@@ -105,7 +105,12 @@ public class PathFinder {
  
          Optional<Path> optional = !set3.isEmpty() ? set3.stream().map((target) -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), true)).min(Comparator.comparingInt(Path::getNodeCount)) : set.stream().map((target) -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
          profilerFiller.pop();
@@ -118,4 +110,4 @@ index 46916fe456d5d078f952cc5c320c98b7885d0e77..2cad48f25601edecdc965da5ed9ce32d
 +        // Blueberry end - implement debug packets
      }
  
-     private float getBestH(Node node, Set<Target> set) {
+     protected float distance(Node node, Node node2) {

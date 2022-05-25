@@ -5,10 +5,10 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index 4a8c0081b83d78b81d496779c5aa9fc53b5d9aff..5191bf42522498c9f5df3a162581be5cf91e81b3 100644
+index 5e7db30a99bb813e95f26db621cf2b0fbb8fed38..9f5c6aab1af266f41a636b709bae3f632ddc0e6e 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -224,9 +224,39 @@ public class ServerPlayerGameMode {
+@@ -221,9 +221,39 @@ public class ServerPlayerGameMode {
  
      public boolean destroyBlock(BlockPos blockPos) {
          BlockState blockState = this.level.getBlockState(blockPos);
@@ -49,7 +49,7 @@ index 4a8c0081b83d78b81d496779c5aa9fc53b5d9aff..5191bf42522498c9f5df3a162581be5c
              BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
              Block block = blockState.getBlock();
              if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks()) {
-@@ -235,6 +265,7 @@ public class ServerPlayerGameMode {
+@@ -232,6 +262,7 @@ public class ServerPlayerGameMode {
              } else if (this.player.blockActionRestricted(this.level, blockPos, this.gameModeForPlayer)) {
                  return false;
              } else {
@@ -57,7 +57,7 @@ index 4a8c0081b83d78b81d496779c5aa9fc53b5d9aff..5191bf42522498c9f5df3a162581be5c
                  block.playerWillDestroy(this.level, blockPos, blockState, this.player);
                  boolean flag = this.level.removeBlock(blockPos, false);
                  if (flag) {
-@@ -242,7 +273,7 @@ public class ServerPlayerGameMode {
+@@ -239,7 +270,7 @@ public class ServerPlayerGameMode {
                  }
  
                  if (this.isCreative()) {
@@ -66,7 +66,7 @@ index 4a8c0081b83d78b81d496779c5aa9fc53b5d9aff..5191bf42522498c9f5df3a162581be5c
                  } else {
                      ItemStack itemStack = this.player.getMainHandItem();
                      ItemStack itemStack2 = itemStack.copy();
-@@ -252,8 +283,18 @@ public class ServerPlayerGameMode {
+@@ -249,8 +280,18 @@ public class ServerPlayerGameMode {
                          block.playerDestroy(this.level, this.player, blockPos, blockState, blockEntity, itemStack2);
                      }
  
@@ -87,22 +87,22 @@ index 4a8c0081b83d78b81d496779c5aa9fc53b5d9aff..5191bf42522498c9f5df3a162581be5c
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index ebf98cb31d96d8d975143e5e0d067f8d64db8dbd..801c921b5bcef5c450dbbf5a9e9f8de9a6b2bc52 100644
+index 21a30bbb025b2aed394c777f6644a848d59f61e1..3a8943c1a5fb90bc92d9961f95271127fabf1266 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -99,6 +99,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
+@@ -105,6 +105,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
      private final BiomeManager biomeManager;
      private final ResourceKey<Level> dimension;
      private long subTickCount;
 +    public final ThreadLocal<List<net.minecraft.world.entity.item.ItemEntity>> captureDrops = new ThreadLocal<>(); // Blueberry
  
-     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l) {
+     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 33c3ca8398c5167994adb7715d93d8f979a58cb5..92e20ac30e8bcdb5309f33d8dcc4b065eba7cd6b 100644
+index d6858369d215026e37930fb88d6d155fe72a1ed1..0c8c69ee0ecde37920a922cdd3ba75d35c86122a 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -315,11 +315,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -317,11 +317,13 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ItemEntity itemEntity = (ItemEntity)supplier.get();
              itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index 33c3ca8398c5167994adb7715d93d8f979a58cb5..92e20ac30e8bcdb5309f33d8dcc4b065
          if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
          }
-@@ -482,6 +484,12 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -484,8 +486,14 @@ public class Block extends BlockBehaviour implements ItemLike {
          return this.builtInRegistryHolder;
      }
  
@@ -127,25 +127,15 @@ index 33c3ca8398c5167994adb7715d93d8f979a58cb5..92e20ac30e8bcdb5309f33d8dcc4b065
 +    }
 +    // Blueberry end
 +
-     public static final class BlockStatePairKey {
-         private final BlockState first;
-         private final BlockState second;
-diff --git a/src/main/java/net/minecraft/world/level/block/OreBlock.java b/src/main/java/net/minecraft/world/level/block/OreBlock.java
-index 8725b4c26dc024512a14e007e2062397f5debfc3..da9b20f91a34270fcd96a31d3e10847377dcc970 100644
---- a/src/main/java/net/minecraft/world/level/block/OreBlock.java
-+++ b/src/main/java/net/minecraft/world/level/block/OreBlock.java
-@@ -23,7 +23,7 @@ public class OreBlock extends Block {
- 
-     public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-         super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
+     protected void tryDropExperience(ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack, IntProvider intProvider) {
 -        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 +        if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
-             int i = this.xpRange.sample(serverLevel.random);
+             int i = intProvider.sample(serverLevel.random);
              if (i > 0) {
                  this.popExperience(serverLevel, blockPos, i);
-@@ -31,4 +31,17 @@ public class OreBlock extends Block {
+@@ -522,4 +530,17 @@ public class Block extends BlockBehaviour implements ItemLike {
+             return 31 * i + this.direction.hashCode();
          }
- 
      }
 +
 +    // Blueberry start
@@ -163,15 +153,15 @@ index 8725b4c26dc024512a14e007e2062397f5debfc3..da9b20f91a34270fcd96a31d3e108473
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java b/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
-index 80937715069abccca42763ea2785c0a95017847e..6b57b42f15b641ce64190a9b0471062e052139f6 100644
+index e1799f784d2a119c10a099eb838ef5af5c8d6f3a..7ae8cc0596d3ab50b40d2719ed07eeed320e0e7b 100644
 --- a/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/RedStoneOreBlock.java
-@@ -71,13 +71,23 @@ public class RedStoneOreBlock extends Block {
+@@ -74,13 +74,23 @@ public class RedStoneOreBlock extends Block {
  
-     public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack) {
-         super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack);
--        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-+        if (false && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
+     public void spawnAfterBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemStack, boolean flag) {
+         super.spawnAfterBreak(blockState, serverLevel, blockPos, itemStack, flag);
+-        if (flag && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
++        if (false && flag && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemStack) == 0) { // Blueberry - handled in PlayerBlockBreakEvent
              int i = 1 + serverLevel.random.nextInt(5);
              this.popExperience(serverLevel, blockPos, i);
          }
@@ -188,6 +178,6 @@ index 80937715069abccca42763ea2785c0a95017847e..6b57b42f15b641ce64190a9b0471062e
 +    }
 +    // Blueberry end
 +
-     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, Random random) {
+     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, RandomSource randomSource) {
          if (blockState.getValue(LIT)) {
              spawnParticles(level, blockPos);

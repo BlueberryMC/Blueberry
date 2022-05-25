@@ -17,7 +17,7 @@ While `Blueberry-API` and `MinecraftForge-API` are *not* based on patches, but `
 ## Getting started with patches
 
 Assuming you have already forked the repository:
-1. Clone your fork to your local machine
+1. Clone your fork to your local machine (ignore the magmacube related errors from IDE if there is any)
 2. Type `gradlew patchMinecraft applyBlueberryPatches` in a terminal to apply the changes from upstream (It takes some time!)
    - Alternatively, you can also do `gradlew applyBlueberryPatches` to just apply patches from MagmaCube-Patches. It can be useful when there are no upstream (MagmaCube) changes, and you don't want to waste time.
 3. Run `mvn install` inside `MagmaCube` directory to install the MagmaCube into local repository (Maven is required here)
@@ -27,6 +27,9 @@ Assuming you have already forked the repository:
 
 - Every single commit in `Blueberry-Client` is a patch
 - `upstream/master` points to a directory similar to `MagmaCube/Minecraft`
+
+> **Note**
+> You've updated the project and if you are getting an error something like shadowServerJar at step 2, try deleting the Blueberry-Client directory and try again.
 
 ## Adding patches
 1. Modify `Blueberry-Client`

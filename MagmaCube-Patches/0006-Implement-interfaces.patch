@@ -5,15 +5,15 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 204cf6f9babbfa7ed16758fa2a3b1fcc5be5236c..ebf98cb31d96d8d975143e5e0d067f8d64db8dbd 100644
+index 7ad07c0d851b8e13c16156def36be2e8b2306b53..21a30bbb025b2aed394c777f6644a848d59f61e1 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -64,7 +64,7 @@ import net.minecraft.world.level.storage.WritableLevelData;
+@@ -66,7 +66,7 @@ import net.minecraft.world.level.storage.WritableLevelData;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.scores.Scoreboard;
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
 +public abstract class Level implements LevelAccessor, AutoCloseable, net.blueberrymc.world.level.BlueberryLevelAccessor { // Blueberry - implement BlueberryLevelAccessor
-     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey.elementKey(Registry.DIMENSION_REGISTRY), ResourceKey::location);
+     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registry.DIMENSION_REGISTRY);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("the_nether"));

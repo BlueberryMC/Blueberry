@@ -6,15 +6,15 @@ Subject: [PATCH] Prevent freezing builtin registries
 I still haven't found a way around this
 
 diff --git a/src/main/java/net/minecraft/server/Bootstrap.java b/src/main/java/net/minecraft/server/Bootstrap.java
-index 6cd0de2d292e4b8d06b3c9599ba13296951e96c1..f5a6f38fe9f1753b8b3b6d76c29274c8ca6bab43 100644
+index 02f7c1a286a7b04be87bfca8bd7f2dbd186b0879..2a06964f5bdf762d5e8917a2c5a4d4679e59b443 100644
 --- a/src/main/java/net/minecraft/server/Bootstrap.java
 +++ b/src/main/java/net/minecraft/server/Bootstrap.java
-@@ -54,7 +54,7 @@ public class Bootstrap {
+@@ -52,7 +52,7 @@ public class Bootstrap {
+                     EntitySelectorOptions.bootStrap();
                      DispenseItemBehavior.bootStrap();
                      CauldronInteraction.bootStrap();
-                     ArgumentTypes.bootStrap();
 -                    Registry.freezeBuiltins();
-+                    // Registry.freezeBuiltins(); // Blueberry
++                    //Registry.freezeBuiltins(); // Blueberry - don't freeze registries
                      wrapStreams();
                  }
              }

@@ -5,10 +5,10 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-index b978ac67055c4a5a00f123e35d613f8d0f97caad..c7acfaddbe5542dc3defb6b209a0e4f8a8db4206 100644
+index 9ba4374027ccd13cf1e66b8ad08fca26373de98a..cbd867e174226153f835f9424b7a6c7d708b976d 100644
 --- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 +++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-@@ -170,7 +170,13 @@ public class CommandSuggestions {
+@@ -171,7 +171,13 @@ public class CommandSuggestions {
          boolean flag2 = this.commandsOnly || flag;
          int i = this.input.getCursorPosition();
          if (flag2) {
@@ -23,20 +23,20 @@ index b978ac67055c4a5a00f123e35d613f8d0f97caad..c7acfaddbe5542dc3defb6b209a0e4f8
              if (this.currentParse == null) {
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
-diff --git a/src/main/java/net/minecraft/client/gui/screens/Screen.java b/src/main/java/net/minecraft/client/gui/screens/Screen.java
-index 3f3bf962b7373747246774fcd4467c39271ddfc4..8e7452d64996494f06f836057208893a396c820e 100644
---- a/src/main/java/net/minecraft/client/gui/screens/Screen.java
-+++ b/src/main/java/net/minecraft/client/gui/screens/Screen.java
-@@ -355,6 +355,12 @@ public abstract class Screen extends AbstractContainerEventHandler implements Wi
-             this.minecraft.gui.getChat().addRecentChat(s);
-         }
+diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
+index 2827091043f1da00c9180c9080df4387119fb100..ab68c19127060df914dfd00e479095434039acda 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
++++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
+@@ -368,6 +368,12 @@ public class ChatScreen extends Screen {
  
-+        // Blueberry start
-+        if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) {
-+            net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.minecraft.player.createCommandSourceStack(), s);
-+            return;
-+        }
-+        // Blueberry end
-         this.minecraft.player.chat(s);
-     }
- 
+             Component component = this.chatPreview.pull(s);
+             if (s.startsWith("/")) {
++                // Blueberry start
++                if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) {
++                    net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.minecraft.player.createCommandSourceStack(), s);
++                    return;
++                }
++                // Blueberry end
+                 this.minecraft.player.command(s.substring(1), component);
+             } else {
+                 this.minecraft.player.chat(s, component);
