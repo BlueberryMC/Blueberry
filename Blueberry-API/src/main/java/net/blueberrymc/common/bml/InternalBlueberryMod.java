@@ -62,7 +62,6 @@ public class InternalBlueberryMod extends BlueberryMod {
             }
         });
         Blueberry.runOnServer(() -> Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createServer()));
-        registerArgumentTypes();
         AbstractBlueberryScheduler serverScheduler = Blueberry.getUtil().getServerScheduler();
         serverTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -83,6 +82,7 @@ public class InternalBlueberryMod extends BlueberryMod {
     @Override
     public void onPreInit() {
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
+        registerArgumentTypes();
         registerFluids();
         registerBlocks();
         registerItems();
