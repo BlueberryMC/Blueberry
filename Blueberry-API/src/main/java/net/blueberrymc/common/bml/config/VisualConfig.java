@@ -11,6 +11,7 @@ public abstract class VisualConfig<T> {
     private T value;
     private final T defaultValue;
     private boolean requiresRestart;
+    private boolean deprecated;
 
     protected VisualConfig(@Nullable Component component) {
         this(component, null, null);
@@ -79,6 +80,23 @@ public abstract class VisualConfig<T> {
 
     public boolean isRequiresRestart() {
         return this.requiresRestart;
+    }
+
+    @Contract(mutates = "this")
+    @NotNull
+    public VisualConfig<T> deprecated(boolean flag) {
+        this.deprecated = flag;
+        return this;
+    }
+
+    @Contract(mutates = "this")
+    @NotNull
+    public VisualConfig<T> deprecated() {
+        return this.deprecated(true);
+    }
+
+    public boolean isDeprecated() {
+        return this.deprecated;
     }
 
     // you can use it for anything like storing config path, etc.
