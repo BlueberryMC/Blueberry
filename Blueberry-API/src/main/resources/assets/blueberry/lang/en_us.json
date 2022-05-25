@@ -5,6 +5,7 @@
   "gui.screens.mods.refresh": "Refresh",
   "gui.screens.mods.reload": "Reload",
   "gui.screens.mods.recompile": "Recompile",
+  "gui.screens.mods.load": "Load",
   "gui.screens.mods.enable": "Enable",
   "gui.screens.mods.disable": "Disable",
   "gui.screens.mods.config": "Config",

@@ -3,6 +3,7 @@
   "gui.screens.mods.refresh": "再読み込み",
   "gui.screens.mods.reload": "リロード",
   "gui.screens.mods.recompile": "再コンパイル",
+  "gui.screens.mods.load": "読み込み",
   "gui.screens.mods.enable": "有効化",
   "gui.screens.mods.disable": "無効化",
   "gui.screens.mods.config": "設定",
