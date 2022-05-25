@@ -19,7 +19,11 @@ public class ArgumentTypes {
 
     @SuppressWarnings("unchecked")
     private static void addByClassEntry(@NotNull Class<? extends ArgumentType<?>> type, @NotNull ArgumentTypeInfo<?, ?> typeInfo) {
-        Util.required(() -> ((Map<Class<?>, ArgumentTypeInfo<?, ?>>) BY_CLASS_FIELD.get(null)).put(type, typeInfo));
+        try {
+            ((Map<Class<?>, ArgumentTypeInfo<?, ?>>) BY_CLASS_FIELD.get(null)).put(type, typeInfo);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void register(@NotNull String id, @NotNull Class<? extends ArgumentType<?>> type, @NotNull ArgumentTypeInfo<?, ?> typeInfo) {
