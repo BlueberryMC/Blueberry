@@ -5,7 +5,7 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index ca7885cefc56a6d5d6b9c37ad00783bbfceab54d..5036977ed5849629a15126825b9dd0a2f45d398c 100644
+index 64d929ae74945a57a394d8524fa5cf93d3a14454..1582eb7f739155b0c238853f26cd12964e5a01ba 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
 @@ -26,7 +26,7 @@ public class DetectedVersion implements WorldVersion {

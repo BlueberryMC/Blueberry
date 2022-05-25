@@ -370,7 +370,7 @@ index 292756bb57e7a72f786cb1448cc2c0bc61b3081c..74536fd5d0f3051af18c512f3b7b2b15
          String s = parseArgument(optionSet, optionSpec7);
          Proxy proxy = Proxy.NO_PROXY;
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index 4377629a887891f7a63177b3f98dacadac9da2f1..f38ad6d7f04570e4cf95cd6eb6add6dce2b38b72 100644
+index f7bfefc02ed41ea5a47ffcb1c746e00871e25c5f..6ed10a833b8f55da06f233ad6da89449f3057be9 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 @@ -283,7 +283,7 @@ import net.minecraft.world.scores.Team;
@@ -382,7 +382,7 @@ index 4377629a887891f7a63177b3f98dacadac9da2f1..f38ad6d7f04570e4cf95cd6eb6add6dc
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Component GENERIC_DISCONNECT_MESSAGE = Component.translatable("disconnect.lost");
      private final Connection connection;
-@@ -1632,6 +1632,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
+@@ -1631,6 +1631,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
  
          try {
              friendlyByteBuf = clientboundCustomPayloadPacket.getData();
@@ -773,7 +773,7 @@ index 0d4e654c0b135d5c42226ffc457b34e2428cb0f3..8063cbdf6d6178dded1aea7486ef0dd2
          Util.shutdownExecutors();
          SkullBlockEntity.clear();
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 20439648c9e2fc429e96d29eaee0deadfb14a1bc..08d2672591960f5a89bfe5a1fd19f2b58f53a2eb 100644
+index 35f224dbafe81f1eb1eaf04f9f0e7a1f9175bbcd..151de54c0e110428475b74e5b2cb1f502476fbae 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -170,7 +170,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
@@ -785,7 +785,7 @@ index 20439648c9e2fc429e96d29eaee0deadfb14a1bc..08d2672591960f5a89bfe5a1fd19f2b5
      static final Logger LOGGER = LogUtils.getLogger();
      private static final int LATENCY_CHECK_INTERVAL = 15000;
      public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0D);
-@@ -1564,6 +1564,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1569,6 +1569,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
      }
  
      public void handleCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket) {
