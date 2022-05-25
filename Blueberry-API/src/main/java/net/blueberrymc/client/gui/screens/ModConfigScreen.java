@@ -104,6 +104,8 @@ public class ModConfigScreen extends BlueberryScreen {
             Function<PoseStack, BiConsumer<Integer, Integer>> onTooltipFunction;
             Button.OnTooltip onTooltip;
             MutableComponent tooltip = Component.literal("");
+            // deprecated
+            if (config.isDeprecated()) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.deprecated").withStyle(ChatFormatting.RED)).append("\n");
             // description
             Component desc = config.getDescription();
             if (desc != null) tooltip.append(desc.plainCopy().withStyle(ChatFormatting.YELLOW)).append("\n");

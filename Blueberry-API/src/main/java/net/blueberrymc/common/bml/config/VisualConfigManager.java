@@ -143,6 +143,7 @@ public class VisualConfigManager {
             }
         };
         root.id(getKey(clazz));
+        root.deprecated(deprecated(clazz));
         List<Map.Entry<Integer, AnnotatedElement>> things = new ArrayList<>();
         for (Field field : clazz.getFields()) {
             if (!Modifier.isStatic(field.getModifiers())) continue;
@@ -165,14 +166,16 @@ public class VisualConfigManager {
                     var cfg = new BooleanVisualConfig(tryGetComponent(mod, config), getField(boolean.class, field), (Boolean) getDefaultValue(field))
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == AtomicBoolean.class) {
                     var cfg = new BooleanVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicBoolean.class, field)).get(), (Boolean) getDefaultValue(field))
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == int.class) {
@@ -186,7 +189,8 @@ public class VisualConfigManager {
                     var cfg = new IntegerVisualConfig(tryGetComponent(mod, config), getField(int.class, field), (Integer) getDefaultValue(field), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == AtomicInteger.class) {
@@ -200,7 +204,8 @@ public class VisualConfigManager {
                     var cfg = new IntegerVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicInteger.class, field)).get(), (Integer) getDefaultValue(field), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == long.class) {
@@ -214,7 +219,8 @@ public class VisualConfigManager {
                     var cfg = new LongVisualConfig(tryGetComponent(mod, config), getField(long.class, field), (Long) getDefaultValue(field), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == AtomicLong.class) {
@@ -228,7 +234,8 @@ public class VisualConfigManager {
                     var cfg = new LongVisualConfig(tryGetComponent(mod, config), Objects.requireNonNull(getField(AtomicLong.class, field)).get(), (Long) getDefaultValue(field), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == double.class) {
@@ -242,7 +249,8 @@ public class VisualConfigManager {
                     var cfg = new DoubleVisualConfig(tryGetComponent(mod, config), getField(double.class, field), (Double) getDefaultValue(field), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == float.class) {
@@ -256,7 +264,8 @@ public class VisualConfigManager {
                     var cfg = new FloatVisualConfig(tryGetComponent(mod, config), getField(float.class, field), (Float) getDefaultValue(field), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == byte.class) {
@@ -270,7 +279,8 @@ public class VisualConfigManager {
                     var cfg = new ByteVisualConfig(tryGetComponent(mod, config), getField(byte.class, field), ((Number) getDefaultValue(field)).byteValue(), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == short.class) {
@@ -284,21 +294,24 @@ public class VisualConfigManager {
                     var cfg = new ShortVisualConfig(tryGetComponent(mod, config), getField(short.class, field), ((Number) getDefaultValue(field)).shortValue(), min, max)
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == String.class) {
                     var cfg = new StringVisualConfig(tryGetComponent(mod, config), getField(String.class, field), (String) getDefaultValue(field))
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == Class.class) {
                     var cfg = new ClassVisualConfig(tryGetComponent(mod, config), getField(Class.class, field), (Class<?>) getDefaultValue(field))
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType().isEnum()) {
@@ -306,7 +319,8 @@ public class VisualConfigManager {
                             .reverse(shouldReverse(field))
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 } else if (field.getType() == CycleVisualConfig.class) {
@@ -314,7 +328,8 @@ public class VisualConfigManager {
                             .reverse(shouldReverse(field))
                             .id(getKey(field))
                             .description(getDescription(field))
-                            .requiresRestart(requiresMCRestart(field));
+                            .requiresRestart(requiresMCRestart(field))
+                            .deprecated(deprecated(field));
                     visited.add(new AbstractMap.SimpleImmutableEntry<>(cfg, field));
                     root.add(cfg);
                 }
@@ -508,6 +523,10 @@ public class VisualConfigManager {
 
     private static boolean requiresMCRestart(AnnotatedElement element) {
         return element.isAnnotationPresent(RequiresMCRestart.class);
+    }
+
+    private static boolean deprecated(AnnotatedElement element) {
+        return element.isAnnotationPresent(Deprecated.class);
     }
 
     @Nullable
