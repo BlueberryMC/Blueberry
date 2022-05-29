@@ -1,7 +1,9 @@
 package net.blueberrymc.common.util;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.util.function.ThrowableSupplier;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +55,8 @@ public class ActionableResult<T> {
      * @deprecated Use {@link #getOrThrow()} instead
      */
     @Deprecated
+    @DeprecatedReason("Use #getOrThrow() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
     public T value() {
         return get();
@@ -64,6 +68,8 @@ public class ActionableResult<T> {
      * version.
      */
     @Deprecated
+    @DeprecatedReason("You will have to use #get() after 2.0.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable
     public T nullableValue() {
         return value;

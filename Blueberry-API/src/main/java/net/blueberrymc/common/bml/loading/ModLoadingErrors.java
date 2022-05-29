@@ -1,10 +1,11 @@
 package net.blueberrymc.common.bml.loading;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.event.mod.ModLoadingErrorAddEvent;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,8 @@ public class ModLoadingErrors {
      * @deprecated Use {@link ModLoadingErrorAddEvent} instead
      */
     @Deprecated
+    @DeprecatedReason("Use ModLoadingErrorAddEvent instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable
     public static Consumer<ModLoadingError> hook = null;
 
@@ -46,7 +49,11 @@ public class ModLoadingErrors {
     public static void add(@NotNull("modLoadingError") ModLoadingError error) {
         Preconditions.checkNotNull(error, "modLoadingError cannot be null");
         new ModLoadingErrorAddEvent(error).callEvent();
-        LOGGER.catching(Level.ERROR, error.throwable);
+        if (error.isWarning) {
+            LOGGER.warn("", error.throwable);
+        } else {
+            LOGGER.error("", error.throwable);
+        }
         errors.add(error);
     }
 

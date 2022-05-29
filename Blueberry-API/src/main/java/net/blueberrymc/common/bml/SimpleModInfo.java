@@ -1,5 +1,7 @@
 package net.blueberrymc.common.bml;
 
+import net.blueberrymc.common.DeprecatedReason;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +12,8 @@ public record SimpleModInfo(@NotNull String name, @NotNull String modId) impleme
      * @deprecated Use {@link #name()} instead.
      */
     @Deprecated
+    @DeprecatedReason("Use #name() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
     @Override
     public String getName() {
@@ -20,6 +24,8 @@ public record SimpleModInfo(@NotNull String name, @NotNull String modId) impleme
      * @deprecated Use {@link #modId()} instead.
      */
     @Deprecated
+    @DeprecatedReason("Use #modId() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
     @Override
     public String getModId() {

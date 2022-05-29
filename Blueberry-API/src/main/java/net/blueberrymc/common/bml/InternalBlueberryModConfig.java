@@ -1,5 +1,6 @@
 package net.blueberrymc.common.bml;
 
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Config;
 import net.blueberrymc.common.bml.config.VisualConfigManager.DefaultValue;
@@ -9,6 +10,7 @@ import net.blueberrymc.common.bml.config.VisualConfigManager.Key;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Name;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Order;
 import net.blueberrymc.common.bml.config.VisualConfigManager.RequiresMCRestart;
+import org.jetbrains.annotations.ApiStatus;
 
 @Config
 @Name("Blueberry")
@@ -161,6 +163,8 @@ public class InternalBlueberryModConfig {
         @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.ignore_server_view_distance")
         @Key("ignoreServerViewDistance")
         @Deprecated
+        @DeprecatedReason("Not used anymore")
+        @ApiStatus.ScheduledForRemoval(inVersion = "1.6.0 or later")
         public static boolean ignoreServerViewDistance = false;
 
         @Order(10001)

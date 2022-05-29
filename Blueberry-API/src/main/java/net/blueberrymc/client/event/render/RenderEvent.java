@@ -2,6 +2,7 @@ package net.blueberrymc.client.event.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.bml.event.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,7 @@ public abstract class RenderEvent extends Event {
      * @deprecated unimplemented event
      */
     @Deprecated
+    @DeprecatedReason("Not implemented yet")
     public static abstract class Pre extends RenderEvent {
         private final PoseStack poseStack;
         private final RenderType renderType;
@@ -48,6 +50,7 @@ public abstract class RenderEvent extends Event {
      * @deprecated unimplemented event
      */
     @Deprecated
+    @DeprecatedReason("Not implemented yet")
     public static abstract class Post extends RenderEvent {
         private final PoseStack poseStack;
         private final RenderType renderType;

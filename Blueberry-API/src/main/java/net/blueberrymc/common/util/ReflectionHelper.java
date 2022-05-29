@@ -1,5 +1,6 @@
 package net.blueberrymc.common.util;
 
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.util.reflect.Ref;
 import net.blueberrymc.nativeutil.NativeUtil;
 import org.jetbrains.annotations.Contract;
@@ -14,12 +15,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
- * Helps you using reflection.
+ * Helps you to use reflection.
  */
 public final class ReflectionHelper {
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+
     private ReflectionHelper() {}
 
     /**
@@ -27,7 +29,10 @@ public final class ReflectionHelper {
      * @param clazz the class
      * @throws RuntimeException if class or constructor was not found
      * @return new instance
+     * @deprecated Slow & Inefficient
      */
+    @Deprecated(since = "1.5.0-SNAPSHOT", forRemoval = true)
+    @DeprecatedReason("Slow & Inefficient")
     @NotNull
     public static Object newInstance(@NotNull String clazz) {
         return NativeUtil.newInstance(Ref.forName(clazz).getDeclaredConstructor().getConstructor());
@@ -244,21 +249,6 @@ public final class ReflectionHelper {
         }
     }
 
-    @NotNull
-    public static Class<?> getCallerClass() { return getCallerClass(3); } // 2 + this method
-
-    @NotNull
-    public static Class<?> getCallerClass(int offset) {
-        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
-        for (int i = 1 + offset; i < stElements.length; i++) {
-            StackTraceElement ste = stElements[i];
-            if (!ste.getClassName().equals(ReflectionHelper.class.getName()) && !ste.getClassName().contains("java.lang.Thread")) {
-                return Ref.forName(ste.getClassName()).clazz();
-            }
-        }
-        throw new NoSuchElementException("sorry :(");
-    }
-
     /**
      * Gets all super classes and super interfaces, and return them. The returned entry is not unique and may contains the duplicate entry.
      * @return the super classes and interfaces.
@@ -291,5 +281,19 @@ public final class ReflectionHelper {
             superclass = superclass.getSuperclass();
         }
         return classes;
+    }
+
+    @NotNull
+    public static Class<?> getCallerClass() {
+        return getCallerClass(3); // 2 + this method
+    }
+
+    @NotNull
+    public static Class<?> getCallerClass(int offset) {
+        return STACK_WALKER.walk(stream ->
+                stream.skip(offset)
+                        .findFirst()
+                        .map(StackWalker.StackFrame::getDeclaringClass)
+                        .orElseThrow(() -> new IllegalStateException("No caller class found")));
     }
 }
