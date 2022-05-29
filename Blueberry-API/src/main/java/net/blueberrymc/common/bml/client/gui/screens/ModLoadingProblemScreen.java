@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
+// TODO: move into net.blueberrymc.client.gui.screens
 public class ModLoadingProblemScreen extends BlueberryScreen {
     private ProblemList problemList;
     private Screen screen;

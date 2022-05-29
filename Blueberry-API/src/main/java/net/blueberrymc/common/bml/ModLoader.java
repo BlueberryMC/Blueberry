@@ -1,8 +1,10 @@
 package net.blueberrymc.common.bml;
 
 import com.google.common.collect.ImmutableList;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -130,6 +132,8 @@ public interface ModLoader {
      * @deprecated unstable API
      */
     @Deprecated
+    @DeprecatedReason("Unstable API")
+    @ApiStatus.Experimental
     BlueberryMod forceRegisterMod(@NotNull ModDescriptionFile description, boolean useModClassLoader) throws InvalidModException;
 
     void initModResources(@NotNull BlueberryMod mod);

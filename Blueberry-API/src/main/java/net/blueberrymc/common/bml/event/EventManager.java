@@ -6,6 +6,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
+import net.blueberrymc.common.util.Nag;
 import net.blueberrymc.common.util.ThrowableConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,6 +75,7 @@ public class EventManager {
                 continue;
             }
             HandlerList handlerList = getHandlerList(eventClass);
+            Nag.deprecatedEvent(eventClass, mod); // notify the mod authors if event is deprecated
             boolean isStatic = Modifier.isStatic(method.getModifiers());
             ThrowableConsumer<Event> eventExecutor = isStatic ? event -> method.invoke(null, event) : event -> method.invoke(listener, event);
             handlerList.add(eventExecutor, eventHandler.priority(), listener, mod);
@@ -90,6 +92,7 @@ public class EventManager {
      */
     @SuppressWarnings("unchecked")
     public <T extends Event> void registerEvent(@NotNull Class<T> clazz, @NotNull BlueberryMod mod, @NotNull EventPriority priority, @NotNull ThrowableConsumer<T> consumer) {
+        Nag.deprecatedEvent(clazz, mod); // notify the mod authors if event is deprecated
         getHandlerList(clazz).add(event -> consumer.accept((T) event), priority, null, mod);
     }
 

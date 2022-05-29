@@ -14,6 +14,7 @@ public class RefMethod<T> extends RefExecutable {
     @NotNull
     public final Method getMethod() { return method; }
 
+    // TODO: undeprecate?
     /**
      * @deprecated obj is unchecked, may throw exception at runtime
      * @param obj the object (unchecked type)

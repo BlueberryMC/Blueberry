@@ -6,6 +6,7 @@ import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
 import net.blueberrymc.common.resources.BlueberryResourceManager;
+import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -16,6 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.lang.reflect.RecordComponent;
 import java.net.URL;
 import java.util.function.Function;
 
@@ -265,7 +269,7 @@ public class BlueberryMod implements VersionedModInfo {
     public void onPostInit() {}
 
     /**
-     * Called when the mod is being unloaded. Use {@link Blueberry#stopping} to distinguish between recompile and shutdown.
+     * Called when the mod is being unloaded. Use {@link Blueberry#isStopping()} to distinguish between recompile and shutdown.
      */
     public void onUnload() {}
 
@@ -291,5 +295,31 @@ public class BlueberryMod implements VersionedModInfo {
             return Blueberry.getModManager().getModById("blueberry");
         }
         return null;
+    }
+
+    /**
+     * Detects the mod from an {@link java.lang.reflect.AnnotatedElement}.
+     * @param element the element
+     * @return detected mod; null if mod could not be detected
+     */
+    @Nullable
+    public static BlueberryMod detectModFromElement(@NotNull AnnotatedElement element) {
+        if (element instanceof Class<?> clazz) {
+            return detectModFromClass(clazz);
+        } else if (element instanceof Member member) {
+            return detectModFromClass(member.getDeclaringClass());
+        } else if (element instanceof RecordComponent component) {
+            return detectModFromClass(component.getDeclaringRecord());
+        }
+        return null;
+    }
+
+    /**
+     * Detects the mod from a caller class.
+     * @return detected mod; null if mod could not be detected
+     */
+    @Nullable
+    public static BlueberryMod getCallerMod() {
+        return detectModFromClass(ReflectionHelper.getCallerClass());
     }
 }

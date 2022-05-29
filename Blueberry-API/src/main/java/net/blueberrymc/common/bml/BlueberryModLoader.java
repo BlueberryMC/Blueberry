@@ -428,7 +428,7 @@ public class BlueberryModLoader implements ModLoader {
     public void disableMod(@NotNull BlueberryMod mod, boolean unregister) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         Preconditions.checkArgument(mod.getStateList().getCurrentState() != ModState.UNLOADED, "mod already unloaded");
-        if (!unregister && !Blueberry.stopping && !mod.getDescription().isUnloadable()) throw new IllegalArgumentException(mod.getName() + " (" + mod.getModId() + ") cannot be unloaded");
+        if (!unregister && !Blueberry.isStopping() && !mod.getDescription().isUnloadable()) throw new IllegalArgumentException(mod.getName() + " (" + mod.getModId() + ") cannot be unloaded");
         try {
             mod.onUnload();
             mod.getStateList().add(ModState.UNLOADED);

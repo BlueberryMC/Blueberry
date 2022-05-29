@@ -25,6 +25,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,9 +49,17 @@ public class Blueberry {
 
     /**
      * Do not change the value please
+     * @deprecated shouldn't be modified by mods. Use #isStopping() to check if the Blueberry is shutting down.
      */
-    //@Deprecated
+    @Deprecated(since = "1.5.0-SNAPSHOT")
+    @DeprecatedReason("shouldn't be modified by mods. Use #isStopping() to check if the Blueberry is shutting down.")
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     public static boolean stopping = false;
+
+    @Contract(pure = true)
+    public static boolean isStopping() {
+        return stopping;
+    }
 
     @Contract(pure = true)
     @NotNull
@@ -151,6 +160,7 @@ public class Blueberry {
      * @param runnable function to run
      */
     @Deprecated
+    @DeprecatedReason("This method can cause unexpected NoClassDefFoundError. Use #safeRunOnClient(Supplier) instead if possible.")
     public static void runOnClient(@NotNull Runnable runnable) {
         if (side == Side.CLIENT) runnable.run();
     }
