@@ -773,7 +773,7 @@ index 0d4e654c0b135d5c42226ffc457b34e2428cb0f3..8063cbdf6d6178dded1aea7486ef0dd2
          Util.shutdownExecutors();
          SkullBlockEntity.clear();
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 35f224dbafe81f1eb1eaf04f9f0e7a1f9175bbcd..151de54c0e110428475b74e5b2cb1f502476fbae 100644
+index 86afc1a2841949449c4e6afd31536a093a542a01..71c4b553368b0681a3145c0266e43a09ce135878 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -170,7 +170,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
@@ -785,7 +785,7 @@ index 35f224dbafe81f1eb1eaf04f9f0e7a1f9175bbcd..151de54c0e110428475b74e5b2cb1f50
      static final Logger LOGGER = LogUtils.getLogger();
      private static final int LATENCY_CHECK_INTERVAL = 15000;
      public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0D);
-@@ -1569,6 +1569,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1576,6 +1576,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
      }
  
      public void handleCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket) {
