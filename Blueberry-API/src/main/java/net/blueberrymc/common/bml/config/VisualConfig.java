@@ -1,5 +1,6 @@
 package net.blueberrymc.common.bml.config;
 
+import net.blueberrymc.common.util.DeprecatedData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.Contract;
@@ -11,7 +12,8 @@ public abstract class VisualConfig<T> {
     private T value;
     private final T defaultValue;
     private boolean requiresRestart;
-    private boolean deprecated;
+    @Nullable
+    private DeprecatedData deprecatedData;
 
     protected VisualConfig(@Nullable Component component) {
         this(component, null, null);
@@ -84,19 +86,14 @@ public abstract class VisualConfig<T> {
 
     @Contract(mutates = "this")
     @NotNull
-    public VisualConfig<T> deprecated(boolean flag) {
-        this.deprecated = flag;
+    public VisualConfig<T> deprecated(@Nullable DeprecatedData deprecatedData) {
+        this.deprecatedData = deprecatedData;
         return this;
     }
 
-    @Contract(mutates = "this")
-    @NotNull
-    public VisualConfig<T> deprecated() {
-        return this.deprecated(true);
-    }
-
-    public boolean isDeprecated() {
-        return this.deprecated;
+    @Nullable
+    public DeprecatedData getDeprecatedData() {
+        return this.deprecatedData;
     }
 
     // you can use it for anything like storing config path, etc.
