@@ -48,3 +48,11 @@ publishing {
         }
     }
 }
+
+tasks {
+    processResources {
+        filesMatching("**/*.json") {
+            filter(org.apache.tools.ant.filters.EscapeUnicode::class.java)
+        }
+    }
+}
