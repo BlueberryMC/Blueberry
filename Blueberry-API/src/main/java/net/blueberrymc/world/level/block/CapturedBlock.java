@@ -1,15 +1,15 @@
 package net.blueberrymc.world.level.block;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.blueberrymc.util.Vec3i;
+import net.blueberrymc.world.World;
+import net.blueberrymc.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class CapturedBlock extends Block {
     private final BlockState blockState;
 
-    public CapturedBlock(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState blockState) {
-        super(level, pos);
+    public CapturedBlock(@NotNull World world, @NotNull Vec3i pos, @NotNull BlockState blockState) {
+        super(world, pos);
         this.blockState = blockState;
     }
 
@@ -29,7 +29,7 @@ public class CapturedBlock extends Block {
      */
     @NotNull
     @Override
-    public net.minecraft.world.level.block.Block getBlock() {
-        return getBlockStateOptional().map(BlockState::getBlock).orElseThrow(() -> new AssertionError("Block State is null"));
+    public BlockData getBlockData() {
+        return getBlockStateOptional().map(BlockState::getBlockData).orElseThrow(() -> new AssertionError("Block State is null"));
     }
 }

@@ -3,9 +3,10 @@ import net.blueberrymc.gradle.buildSrc.constants.*
 version = API_VERSION
 
 dependencies {
-    compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
+    //compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
     implementation("org.jetbrains:annotations:23.1.0")
     compileOnlyApi("org.jetbrains:annotations:23.1.0")
+    api("net.kyori:adventure-api:4.11.0")
     api("com.github.JnCrMx:discord-game-sdk4j:v0.5.5")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.google.code.gson:gson:2.10")

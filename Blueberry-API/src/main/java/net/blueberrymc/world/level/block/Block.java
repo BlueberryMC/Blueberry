@@ -2,13 +2,11 @@ package net.blueberrymc.world.level.block;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Location;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.blueberrymc.util.Vec3i;
+import net.blueberrymc.world.Chunk;
+import net.blueberrymc.world.World;
+import net.blueberrymc.world.level.block.entity.BlockEntity;
+import net.blueberrymc.world.level.block.state.BlockState;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,35 +14,38 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Represents a block that exists in the world at a specific location.
+ */
 public class Block {
-    private final Level level;
-    private final BlockPos pos;
+    private final World world;
+    private final Vec3i pos;
 
-    public Block(@NotNull Level level, @NotNull BlockPos pos) {
-        Preconditions.checkNotNull(level, "level cannot be null");
+    public Block(@NotNull World world, @NotNull Vec3i pos) {
+        Preconditions.checkNotNull(world, "level cannot be null");
         Preconditions.checkNotNull(pos, "pos cannot be null");
-        this.level = level;
+        this.world = world;
         this.pos = pos;
     }
 
     @NotNull
-    public Level getLevel() {
-        return level;
+    public World getWorld() {
+        return world;
     }
 
     @NotNull
-    public BlockPos getPos() {
+    public Vec3i getPos() {
         return pos;
     }
 
     @NotNull
     public Location getLocation() {
-        return new Location(level, pos);
+        return new Location(world, pos);
     }
 
     @NotNull
-    public LevelChunk getChunk() {
-        return Objects.requireNonNull(getLocation().getChunk());
+    public Chunk getChunk() {
+        return getLocation().getChunk();
     }
 
     /**
@@ -54,7 +55,7 @@ public class Block {
      */
     @Nullable
     public BlockState getBlockState() {
-        return level.getBlockState(pos);
+        return world.getBlockState(pos); // This implementation is non-null but subclasses might not be non-null
     }
 
     /**
@@ -63,7 +64,7 @@ public class Block {
      */
     @NotNull
     public final BlockState getFreshBlockState() {
-        return level.getBlockState(pos);
+        return world.getBlockState(pos);
     }
 
     @NotNull
@@ -72,7 +73,7 @@ public class Block {
     }
 
     public void removeBlockEntity() {
-        level.removeBlockEntity(pos);
+        world.removeBlockEntity(pos);
     }
 
     public boolean hasBlockEntity() {
@@ -81,7 +82,7 @@ public class Block {
 
     @Nullable
     public BlockEntity getBlockEntity() {
-        return level.getBlockEntity(pos);
+        return world.getBlockEntity(pos);
     }
 
     /**
@@ -90,8 +91,8 @@ public class Block {
      * @return the block
      */
     @Nullable
-    public net.minecraft.world.level.block.Block getBlock() {
-        return getBlockStateOptional().map(BlockState::getBlock).orElse(null);
+    public BlockData getBlockData() {
+        return getBlockStateOptional().map(BlockState::getBlockData).orElse(null);
     }
 
     /**
@@ -99,12 +100,12 @@ public class Block {
      * @return the block
      */
     @NotNull
-    public final net.minecraft.world.level.block.Block getFreshBlock() {
-        return getFreshBlockState().getBlock();
+    public final BlockData getFreshBlockData() {
+        return getFreshBlockState().getBlockData();
     }
 
     public boolean removeBlock(boolean notify) {
-        return level.removeBlock(pos, notify);
+        return world.removeBlock(pos, notify);
     }
 
     public boolean setBlock(@NotNull Block block) {
@@ -117,12 +118,12 @@ public class Block {
         return setBlockState(block.getBlockState(), applyPhysics);
     }
 
-    public boolean setBlock(@NotNull net.minecraft.world.level.block.Block block) {
+    public boolean setBlock(@NotNull BlockData block) {
         Preconditions.checkNotNull(block, "block cannot be null");
         return setBlock(block, true);
     }
 
-    public boolean setBlock(@NotNull net.minecraft.world.level.block.Block block, boolean applyPhysics) {
+    public boolean setBlock(@NotNull BlockData block, boolean applyPhysics) {
         Preconditions.checkNotNull(block, "block cannot be null");
         return setBlockState(block.defaultBlockState(), applyPhysics);
     }
@@ -133,31 +134,31 @@ public class Block {
 
     public boolean setBlockState(@Nullable BlockState blockState, boolean applyPhysics) {
         if (blockState == null) blockState = Blocks.AIR.defaultBlockState();
-        if (!blockState.isAir() && blockState.getBlock() instanceof EntityBlock && !blockState.getBlock().equals(this.getBlock())) {
-            level.removeBlockEntity(pos);
+        if (!blockState.isAir() && blockState.getBlockData() instanceof EntityBlock && !blockState.getBlockData().equals(this.getBlockData())) {
+            world.removeBlockEntity(pos);
         }
         if (applyPhysics) {
             int flags = SetBlockFlags.UPDATE_NEIGHBOUR | SetBlockFlags.SEND_BLOCK_UPDATE;
-            return level.setBlock(pos, blockState, flags);
+            return world.setBlock(pos, blockState, flags);
         } else {
             BlockState old = getBlockState();
             Objects.requireNonNull(old, "old block state cannot be null");
             int flags = SetBlockFlags.SEND_BLOCK_UPDATE | SetBlockFlags.NO_OBSERVER;
-            boolean success = level.setBlock(pos, blockState, flags);
+            boolean success = world.setBlock(pos, blockState, flags);
             if (success) {
-                level.sendBlockUpdated(pos, old, blockState, SendBlockUpdateFlags.UPDATE_NEIGHBOUR | SendBlockUpdateFlags.SEND_BLOCK_UPDATE);
+                world.notifyBlockChange(pos, old, blockState, SendBlockUpdateFlags.UPDATE_NEIGHBOUR | SendBlockUpdateFlags.SEND_BLOCK_UPDATE);
             }
             return success;
         }
     }
 
     public int getLightLevel() {
-        return level.getLightEmission(pos);
+        return world.getLightEmission(pos);
     }
 
     @NotNull
     public Block getRelative(int modX, int modY, int modZ) {
-        return new Block(level, new BlockPos(getX() + modX, getY() + modY, getZ() + modZ));
+        return new Block(world, pos.add(modX, modY, modZ));
     }
 
     @NotNull
@@ -192,26 +193,26 @@ public class Block {
 
     public void setBlockState(@NotNull BlockState blockState, @MagicConstant(flagsFromClass = SetBlockFlags.class) int flags) {
         Preconditions.checkNotNull(blockState, "blockState cannot be null");
-        level.setBlock(pos, blockState, flags);
+        world.setBlock(pos, blockState, flags);
     }
 
     public boolean isLoaded() {
-        return level.isLoaded(pos);
+        return world.isLoaded(pos);
     }
 
     public boolean isClientSide() {
-        return level.isClientSide;
+        return world.isClientSide();
     }
 
     public int getX() {
-        return pos.getX();
+        return pos.x();
     }
 
     public int getY() {
-        return pos.getY();
+        return pos.y();
     }
 
     public int getZ() {
-        return pos.getZ();
+        return pos.z();
     }
 }

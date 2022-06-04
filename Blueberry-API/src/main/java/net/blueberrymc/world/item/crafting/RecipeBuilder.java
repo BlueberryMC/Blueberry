@@ -2,8 +2,10 @@ package net.blueberrymc.world.item.crafting;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.util.WeakList;
+import net.blueberrymc.world.item.ItemStack;
+import net.kyori.adventure.key.Key;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Key;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,49 +29,49 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class RecipeBuilder {
-    private static final Map<ResourceLocation, Recipe<?>> RECIPES = new HashMap<>();
+    private static final Map<Key, Recipe<?>> RECIPES = new HashMap<>();
     public static final WeakList<RecipeManager> knownRecipeManagers = new WeakList<>();
     @NotNull
     public static final Ingredient AIR = Ingredient.of(Items.AIR);
 
     @Contract("_, _ -> new")
     @NotNull
-    public static Shaped shaped(@NotNull ResourceLocation id, @NotNull ItemLike result) {
+    public static Shaped shaped(@NotNull Key id, @NotNull ItemLike result) {
         return new Shaped(id, result.asItem());
     }
 
     @Contract("_, _, _ -> new")
     @NotNull
-    public static Shaped shaped(@NotNull ResourceLocation id, @NotNull ItemLike result, int count) {
+    public static Shaped shaped(@NotNull Key id, @NotNull ItemLike result, int count) {
         return new Shaped(id, result.asItem(), count);
     }
 
     @Contract("_, _ -> new")
     @NotNull
-    public static Shaped shaped(@NotNull ResourceLocation id, @NotNull ItemStack itemStack) {
+    public static Shaped shaped(@NotNull Key id, @NotNull ItemStack itemStack) {
         return new Shaped(id, itemStack);
     }
 
     @Contract("_, _ -> new")
     @NotNull
-    public static Shapeless shapeless(@NotNull ResourceLocation id, @NotNull ItemLike result) {
+    public static Shapeless shapeless(@NotNull Key id, @NotNull ItemLike result) {
         return new Shapeless(id, result.asItem());
     }
 
     @Contract("_, _, _ -> new")
     @NotNull
-    public static Shapeless shapeless(@NotNull ResourceLocation id, @NotNull ItemLike result, int count) {
+    public static Shapeless shapeless(@NotNull Key id, @NotNull ItemLike result, int count) {
         return new Shapeless(id, result.asItem(), count);
     }
 
     @Contract("_, _ -> new")
     @NotNull
-    public static Shapeless shapeless(@NotNull ResourceLocation id, @NotNull ItemStack itemStack) {
+    public static Shapeless shapeless(@NotNull Key id, @NotNull ItemStack itemStack) {
         return new Shapeless(id, itemStack);
     }
 
     @NotNull
-    public static Map<ResourceLocation, Recipe<?>> getRecipes() {
+    public static Map<Key, Recipe<?>> getRecipes() {
         return RECIPES;
     }
 
@@ -79,7 +81,7 @@ public abstract class RecipeBuilder {
     }
 
     @Nullable
-    public static Recipe<?> removeFromRecipeManager(@NotNull RecipeType<?> type, @NotNull ResourceLocation id) {
+    public static Recipe<?> removeFromRecipeManager(@NotNull RecipeType<?> type, @NotNull Key id) {
         knownRecipeManagers.bake().forEach(rm -> ((BlueberryRecipeManager) rm).removeRecipe(type, id));
         return getRecipes().remove(id);
     }
@@ -100,22 +102,22 @@ public abstract class RecipeBuilder {
     }
 
     public static class Shaped extends RecipeBuilder {
-        private final ResourceLocation id;
+        private final Key id;
         private final ItemStack result;
         private String group = "";
         private CraftingBookCategory category = CraftingBookCategory.MISC;
         private final List<String> rows = new ArrayList<>();
         private final Map<Character, Ingredient> key = new HashMap<>();
 
-        public Shaped(@NotNull ResourceLocation id, @NotNull Item result) {
+        public Shaped(@NotNull Key id, @NotNull Item result) {
             this(id, result, 1);
         }
 
-        public Shaped(@NotNull ResourceLocation id, @NotNull Item result, int count) {
+        public Shaped(@NotNull Key id, @NotNull Item result, int count) {
             this(id, new ItemStack(result, Math.max(count, 1)));
         }
 
-        public Shaped(@NotNull ResourceLocation id, @NotNull ItemStack result) {
+        public Shaped(@NotNull Key id, @NotNull ItemStack result) {
             Preconditions.checkNotNull(id, "id cannot be null");
             Preconditions.checkNotNull(result, "result cannot be null");
             this.id = id;
@@ -194,7 +196,7 @@ public abstract class RecipeBuilder {
         // --- getters
 
         @NotNull
-        public ResourceLocation getId() {
+        public Key getId() {
             return id;
         }
 
@@ -213,21 +215,21 @@ public abstract class RecipeBuilder {
     }
 
     public static class Shapeless extends RecipeBuilder {
-        private final ResourceLocation id;
+        private final Key id;
         private final ItemStack result;
         private String group = "";
         private final NonNullList<Ingredient> ingredients = NonNullList.create();
         private CraftingBookCategory category = CraftingBookCategory.MISC;
 
-        public Shapeless(@NotNull ResourceLocation id, @NotNull Item item) {
+        public Shapeless(@NotNull Key id, @NotNull Item item) {
             this(id, item, 1);
         }
 
-        public Shapeless(@NotNull ResourceLocation id, @NotNull Item item, int count) {
+        public Shapeless(@NotNull Key id, @NotNull Item item, int count) {
             this(id, new ItemStack(item, Math.max(count, 1)));
         }
 
-        public Shapeless(@NotNull ResourceLocation id, @NotNull ItemStack result) {
+        public Shapeless(@NotNull Key id, @NotNull ItemStack result) {
             this.id = id;
             this.result = result;
         }
@@ -280,7 +282,7 @@ public abstract class RecipeBuilder {
         // --- getters
 
         @NotNull
-        public ResourceLocation getId() {
+        public Key getId() {
             return id;
         }
 

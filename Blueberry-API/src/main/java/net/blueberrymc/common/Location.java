@@ -1,10 +1,11 @@
 package net.blueberrymc.common;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.util.Vec3;
+import net.blueberrymc.util.Vec3i;
+import net.blueberrymc.world.Chunk;
+import net.blueberrymc.world.World;
 import net.blueberrymc.world.level.block.Block;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +20,7 @@ import java.util.Objects;
  */
 public class Location {
     @Nullable
-    private Reference<Level> level;
+    private Reference<World> world;
     private double x;
     private double y;
     private double z;
@@ -28,16 +29,16 @@ public class Location {
 
     /**
      * Constructs a new location.
-     * @param level the level
+     * @param world the level
      * @param x x pos
      * @param y y pos
      * @param z z pos
      * @param yaw yaw (yRot)
      * @param pitch pitch (xRot)
      */
-    public Location(@Nullable Level level, double x, double y, double z, float yaw, float pitch) {
-        if (level != null) {
-            this.level = new WeakReference<>(level);
+    public Location(@Nullable World world, double x, double y, double z, float yaw, float pitch) {
+        if (world != null) {
+            this.world = new WeakReference<>(world);
         }
         this.x = x;
         this.y = y;
@@ -48,26 +49,35 @@ public class Location {
 
     /**
      * Constructs a new location with 0 yaw and 0 pitch.
-     * @param level the level
+     * @param world the level
      * @param x x pos
      * @param y y pos
      * @param z z pos
      */
-    public Location(@Nullable Level level, double x, double y, double z) {
-        this(level, x, y, z, 0.0F, 0.0F);
+    public Location(@Nullable World world, double x, double y, double z) {
+        this(world, x, y, z, 0.0F, 0.0F);
     }
 
     /**
      * Constructs a new location with provided BlockPos, 0 yaw, and 0 pitch.
-     * @param level the level
+     * @param world the level
      * @param pos block position
      */
-    public Location(@Nullable Level level, @NotNull BlockPos pos) {
-        this(level, Preconditions.checkNotNull(pos, "blockPos cannot be null").getX(), pos.getY(), pos.getZ());
+    public Location(@Nullable World world, @NotNull Vec3 pos) {
+        this(world, Preconditions.checkNotNull(pos, "blockPos cannot be null").x(), pos.y(), pos.z());
     }
 
     /**
-     * Constructs a new location with provided x, y, z, null level, 0 yaw, and 0 pitch.
+     * Constructs a new location with provided BlockPos, 0 yaw, and 0 pitch.
+     * @param world the level
+     * @param pos block position
+     */
+    public Location(@Nullable World world, @NotNull Vec3i pos) {
+        this(world, Preconditions.checkNotNull(pos, "blockPos cannot be null").x(), pos.y(), pos.z());
+    }
+
+    /**
+     * Constructs a new location with provided x, y, z, null world, 0 yaw, and 0 pitch.
      * @param x x pos
      * @param y y pos
      * @param z z pos
@@ -89,14 +99,14 @@ public class Location {
     }
 
     /**
-     * Sets a new level.
-     * @param level the level
+     * Sets a new world.
+     * @param world the world
      */
-    public void setLevel(@Nullable Level level) {
-        if (level != null) {
-            this.level = new WeakReference<>(level);
+    public void setWorld(@Nullable World world) {
+        if (world != null) {
+            this.world = new WeakReference<>(world);
         } else {
-            this.level = null;
+            this.world = null;
         }
     }
 
@@ -106,7 +116,7 @@ public class Location {
      * @return the level contains this location or null if it is not set
      */
     @Nullable
-    public Level getLevel() {
+    public World getWorld() {
         return this.getLevel(false);
     }
 
@@ -117,17 +127,17 @@ public class Location {
      */
     @Nullable
     @Contract("true -> !null")
-    public Level getLevel(boolean notNull) {
-        if (this.level == null) {
+    public World getLevel(boolean notNull) {
+        if (this.world == null) {
             if (notNull) {
                 throw new NullPointerException();
             } else {
                 return null;
             }
         }
-        Level level = this.level.get();
-        if (level == null) throw new IllegalArgumentException("Level unloaded");
-        return level;
+        World world = this.world.get();
+        if (world == null) throw new IllegalArgumentException("World unloaded");
+        return world;
     }
 
     /**
@@ -136,7 +146,7 @@ public class Location {
      * @return true if loaded, false otherwise
      */
     public boolean isLoaded() {
-        return getLevel(true).isLoaded(toBlockPos());
+        return getLevel(true).isLoaded(toVec3i());
     }
 
     /**
@@ -144,9 +154,9 @@ public class Location {
      * @return true if loaded, false otherwise
      */
     public boolean isLevelLoaded() {
-        if (this.level == null) return false;
-        Level level = this.level.get();
-        return level != null;
+        if (this.world == null) return false;
+        World world = this.world.get();
+        return world != null;
     }
 
     /**
@@ -155,7 +165,16 @@ public class Location {
      * @return chunk if loaded, null otherwise
      */
     @Nullable
-    public LevelChunk getChunk() {
+    public Chunk getChunkIfLoaded() {
+        return getLevel(true).getChunkIfLoaded((int) x >> 4, (int) z >> 4);
+    }
+
+    /**
+     * Returns the chunk at the location. This method causes the chunk to load or generate if not loaded.
+     * @return the chunk
+     */
+    @NotNull
+    public Chunk getChunk() {
         return getLevel(true).getChunk((int) x >> 4, (int) z >> 4);
     }
 
@@ -321,32 +340,32 @@ public class Location {
      */
     @NotNull
     public Block getBlock() {
-        return new Block(getLevel(true), toBlockPos());
+        return new Block(getLevel(true), toVec3i());
     }
 
     /**
-     * Converts the location into block pos.
+     * Converts the location into {@link Vec3}.
      * @return the block pos
      */
     @NotNull
-    public BlockPos toBlockPos() {
-        return new BlockPos(getBlockX(), getBlockY(), getBlockZ());
+    public Vec3 toVec3() {
+        return new Vec3(x, y, z);
     }
 
     /**
-     * Converts the location into Vector3d.
-     * @return location in vec3d
+     * Converts the location into {@link Vec3i}.
+     * @return the block pos
      */
     @NotNull
-    public Vector3d toVector3d() {
-        return new Vector3d(x, y, z);
+    public Vec3i toVec3i() {
+        return new Vec3i(getBlockX(), getBlockY(), getBlockZ());
     }
 
     @NotNull
     @Override
     public String toString() {
         return "Location{" +
-                "level=" + level +
+                "level=" + world +
                 ", x=" + x +
                 ", y=" + y +
                 ", z=" + z +
@@ -362,7 +381,7 @@ public class Location {
     @NotNull
     public String toBlockString() {
         return "Location{" +
-                "level=" + level +
+                "level=" + world +
                 ", x=" + getBlockX() +
                 ", y=" + getBlockY() +
                 ", z=" + getBlockZ() +
@@ -375,12 +394,12 @@ public class Location {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Location location = (Location) o;
-        return Double.compare(location.x, x) == 0 && Double.compare(location.y, y) == 0 && Double.compare(location.z, z) == 0 && Float.compare(location.yaw, yaw) == 0 && Float.compare(location.pitch, pitch) == 0 && Objects.equals(level, location.level);
+        return Double.compare(location.x, x) == 0 && Double.compare(location.y, y) == 0 && Double.compare(location.z, z) == 0 && Float.compare(location.yaw, yaw) == 0 && Float.compare(location.pitch, pitch) == 0 && Objects.equals(world, location.world);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(level, x, y, z, yaw, pitch);
+        return Objects.hash(world, x, y, z, yaw, pitch);
     }
 
     /**

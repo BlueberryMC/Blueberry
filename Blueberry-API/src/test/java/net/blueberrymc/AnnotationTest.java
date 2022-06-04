@@ -37,6 +37,9 @@ public class AnnotationTest {
     };
 
     private static final String[] EXCLUDED_CLASSES = {
+            // not @NotNull nor @Nullable because it is a function
+            "net/blueberrymc/util/VarargFunction",
+
             // has synthetic fields
             "net/blueberrymc/client/gui/screens/ModListScreen$ModsList",
             "net/blueberrymc/client/gui/screens/ModListScreen$ModsList$Entry",
