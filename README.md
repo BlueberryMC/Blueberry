@@ -19,7 +19,7 @@ Also, this branch is based on `dev/1.19` branch. Adventure API will (probably) b
 
 ## ⚠️ Important Warning
 **Blueberry is a very small project.**
-Whilst I try not to break API compatibility, but things could change at anytime!
+I try to keep the API compatibility between versions, but things could change at anytime!
 
 ## ✨ Key features
 - Live Compiler (compiles the mod from .java files when loading a mod)
