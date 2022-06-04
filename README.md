@@ -9,6 +9,7 @@ Open-source modding API for Minecraft
 This branch (`feature/api`) aims to provide a stable API between the Minecraft versions. In this branch, Blueberry-API
 module does **NOT** include magmacube in classpath, which means we are not able to use Minecraft classes in
 Blueberry-API module, so I'm trying to implement the API and use Minecraft classes in Blueberry-API-Impl module.
+Also, this branch is based on `dev/1.19` branch. Adventure API will (probably) be implemented in this branch.
 
 ## 🤔 Why?
 - Faster update (since it uses mojang mapping, no need to make our mapping)
