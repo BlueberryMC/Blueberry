@@ -1,6 +1,6 @@
 package net.blueberrymc.common;
 
-import net.blueberrymc.common.util.ImplGetter;
+import net.blueberrymc.common.internal.util.ImplGetter;
 import net.blueberrymc.world.level.block.BlockData;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.ApiStatus;

@@ -1,5 +1,6 @@
-package net.blueberrymc.common.util;
+package net.blueberrymc.common.internal.util;
 
+import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.util.VarargFunction;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

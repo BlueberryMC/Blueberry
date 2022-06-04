@@ -1,6 +1,6 @@
 package net.blueberrymc.world.level.block;
 
-import net.blueberrymc.common.util.ImplGetter;
+import net.blueberrymc.common.internal.util.ImplGetter;
 import net.blueberrymc.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
