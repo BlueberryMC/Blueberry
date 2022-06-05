@@ -21,8 +21,6 @@ import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.server.BlueberryServer;
 import net.blueberrymc.server.main.ServerMain;
 import net.blueberrymc.util.Constants;
-import net.minecraft.CrashReport;
-import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -242,7 +240,6 @@ public class Blueberry {
     public static void bootstrap(@Nullable BlueberryUtil utilImpl) {
         Preconditions.checkArgument(util == null, "Blueberry is already initialized!");
         Preconditions.checkArgument(side != null && gameDir != null && modLoader != null, "Blueberry#preBootstrap was not called");
-        if (Boolean.parseBoolean(ServerMain.blackboard.get("debug").toString())) SharedConstants.IS_RUNNING_IN_IDE = true;
         Runtime.getRuntime().addShutdownHook(new BlueberryShutdownHookThread());
         if (isClient()) {
             util = safeGetOnClient(() -> new SafeExecutor<>() {
@@ -307,9 +304,10 @@ public class Blueberry {
     /**
      * Copy of {@link net.minecraft.Util#pauseInIde(Throwable)}.
      */
+    @SuppressWarnings("JavadocReference")
     @Contract("_ -> param1")
     public static <T extends Throwable> T pauseInIde(@NotNull T throwable) {
-        if (SharedConstants.IS_RUNNING_IN_IDE) {
+        if (Constants.IS_RUNNING_IN_IDE) {
             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", throwable);
             doPause();
         }

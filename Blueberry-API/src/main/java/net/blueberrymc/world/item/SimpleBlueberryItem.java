@@ -1,8 +1,7 @@
 package net.blueberrymc.world.item;
 
 import net.blueberrymc.common.bml.BlueberryMod;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;

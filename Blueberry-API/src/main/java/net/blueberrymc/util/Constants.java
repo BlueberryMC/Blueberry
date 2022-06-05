@@ -3,6 +3,7 @@ package net.blueberrymc.util;
 import org.jetbrains.annotations.NotNull;
 
 public class Constants {
+    public static final boolean IS_RUNNING_IN_IDE = Boolean.getBoolean("blueberry.runningInIde");
     @NotNull public static final String CLIENT_NAME = "Blueberry";
     @NotNull public static final String GITHUB_REPO_OWNER = "BlueberryMC";
     @NotNull public static final String GITHUB_REPO_NAME = "Blueberry";

@@ -13,6 +13,8 @@ import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.util.NameGetter;
+import net.blueberrymc.world.item.Item;
+import net.blueberrymc.world.item.ItemRarity;
 import net.blueberrymc.world.item.SimpleBlueberryItem;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
@@ -129,10 +131,12 @@ public class InternalBlueberryMod extends BlueberryMod {
                     "3d",
                     new SimpleBlueberryItem(
                             this,
-                            new Item.Properties()
+                            Item.Properties
+                                    .builder()
                                     .stacksTo(1)
                                     //.tab(CreativeModeTabs.TAB_MISC)
-                                    .rarity(Rarity.EPIC),
+                                    .rarity(ItemRarity.EPIC)
+                                    .build(),
                             item -> BlueberryText.text("blueberry", "item.blueberry.3d")
                     )
             );

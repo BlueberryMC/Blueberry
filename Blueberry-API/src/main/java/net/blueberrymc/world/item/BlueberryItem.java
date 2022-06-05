@@ -2,7 +2,6 @@ package net.blueberrymc.world.item;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.BlueberryMod;
-import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlueberryItem extends Item {

@@ -10,7 +10,6 @@ import net.blueberrymc.common.launch.BlueberryTweaker;
 import net.blueberrymc.common.util.FileUtil;
 import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.Util;
-import net.minecraft.SharedConstants;
 import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +42,6 @@ public class ServerMain {
         OptionSpec<String> includeDirOption = optionParser.accepts("includeDir").withRequiredArg();
         OptionSpec<File> gameDirOption = optionParser.accepts("universe").withRequiredArg().ofType(File.class).defaultsTo(new File("."));
         OptionSet set = optionParser.parse(args); // use args because we don't need --tweakClass here
-        if (set.has("debug")) SharedConstants.IS_RUNNING_IN_IDE = true;
         List<String> illegalPackages = new ArrayList<>();
         illegalPackages.add("net/minecraft/client/");
         illegalPackages.add("net/blueberrymc/client/");
