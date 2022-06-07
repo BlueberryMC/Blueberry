@@ -1,0 +1,99 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Wed, 8 Jun 2022 01:12:56 +0900
+Subject: [PATCH] Adventure support
+
+
+diff --git a/src/main/java/net/minecraft/commands/CommandSource.java b/src/main/java/net/minecraft/commands/CommandSource.java
+index 9b09393e545cae57248e6eb7a0c7041c040788f9..9ecee5434171fcb95c2eb060c132f3a0130fcc2b 100644
+--- a/src/main/java/net/minecraft/commands/CommandSource.java
++++ b/src/main/java/net/minecraft/commands/CommandSource.java
+@@ -2,7 +2,7 @@ package net.minecraft.commands;
+ 
+ import net.minecraft.network.chat.Component;
+ 
+-public interface CommandSource extends net.blueberrymc.common.permission.PermissionHolder { // Blueberry
++public interface CommandSource extends net.blueberrymc.common.permission.PermissionHolder, net.kyori.adventure.audience.Audience { // Blueberry
+     CommandSource NULL = new CommandSource() {
+         public void sendSystemMessage(Component component) {
+         }
+@@ -31,4 +31,10 @@ public interface CommandSource extends net.blueberrymc.common.permission.Permiss
+     default boolean alwaysAccepts() {
+         return false;
+     }
++
++    // Blueberry start
++    default void sendMessage(final net.kyori.adventure.identity.Identity source, final net.kyori.adventure.text.Component message, final net.kyori.adventure.audience.MessageType type) {
++        sendSystemMessage(net.blueberrymc.impl.common.text.MinecraftComponent.toMinecraft(message));
++    }
++    // Blueberry end
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/resources/ResourceLocation.java b/src/main/java/net/minecraft/resources/ResourceLocation.java
+index ff16612b1f0e4592ce9bd90d5b724639c7ed0021..f0435b0f854570f0eaecaf0a5ded530c7d58bc29 100644
+--- a/src/main/java/net/minecraft/resources/ResourceLocation.java
++++ b/src/main/java/net/minecraft/resources/ResourceLocation.java
+@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
+ import net.minecraft.util.GsonHelper;
+ import org.apache.commons.lang3.StringUtils;
+ 
+-public class ResourceLocation implements Comparable<ResourceLocation> {
++public class ResourceLocation implements net.kyori.adventure.key.Key { // Blueberry - de-implement Comparable<ResourceLocation> and implement Key
+     public static final Codec<ResourceLocation> CODEC = Codec.STRING.comapFlatMap(ResourceLocation::read, ResourceLocation::toString).stable();
+     private static final SimpleCommandExceptionType ERROR_INVALID = new SimpleCommandExceptionType(Component.translatable("argument.id.invalid"));
+     public static final char NAMESPACE_SEPARATOR = ':';
+@@ -141,6 +141,23 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
+         return s + "." + this.toLanguageKey();
+     }
+ 
++    // Blueberry start
++    @Override
++    public String namespace() {
++        return namespace;
++    }
++
++    @Override
++    public String value() {
++        return path;
++    }
++
++    @Override
++    public String asString() {
++        return toString();
++    }
++    // Blueberry end
++
+     public static ResourceLocation read(StringReader stringReader) throws CommandSyntaxException {
+         int i = stringReader.getCursor();
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 93ad8c1d5cbbba8d859304de6401e2a27ebbaf6c..d5b3177cc29de1c5e1935524f3d018fdf6677d6d 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -1547,4 +1547,12 @@ public class ServerPlayer extends Player {
+         }
+ 
+     }
++
++    public void sendMessage(final net.kyori.adventure.identity.Identity source, final net.kyori.adventure.text.Component message, final net.kyori.adventure.audience.MessageType type) {
++        if (type == net.kyori.adventure.audience.MessageType.SYSTEM) {
++            sendSystemMessage(net.blueberrymc.impl.common.text.MinecraftComponent.toMinecraft(message));
++        } else {
++            sendChatMessage(PlayerChatMessage.unsigned(net.blueberrymc.impl.common.text.MinecraftComponent.toMinecraft(message)), source.);
++        }
++    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index b2179950f10be67bcab2f9d0615ded3b530a9820..1b5656b9b85e6857a7ede25c098428beca1cda10 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -113,7 +113,7 @@ import net.minecraft.world.scores.Scoreboard;
+ import net.minecraft.world.scores.Team;
+ import org.slf4j.Logger;
+ 
+-public abstract class Player extends LivingEntity {
++public abstract class Player extends LivingEntity implements net.kyori.adventure.audience.Audience { // Blueberry
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final int MAX_NAME_LENGTH = 16;
+     public static final int MAX_HEALTH = 20;
