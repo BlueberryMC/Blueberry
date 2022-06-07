@@ -99,7 +99,7 @@ index 21a30bbb025b2aed394c777f6644a848d59f61e1..3a8943c1a5fb90bc92d9961f95271127
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index d6858369d215026e37930fb88d6d155fe72a1ed1..251184a89c1b5e9c6eb89cfdef129545411da6c4 100644
+index 366026c48fb15c4300d0dd9daaff75f527febc9b..3ed8c0633e223ffc8184a1f2062f7f485f4b2c35 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
 @@ -317,11 +317,13 @@ public class Block extends BlockBehaviour implements ItemLike {

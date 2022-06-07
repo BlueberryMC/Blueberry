@@ -86,10 +86,10 @@ index da5ac7b22dd629ec1fffcdabc35743c161c5d611..89ff780da13eb16eb1a06fa4652c8604
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a41c3e237 100644
+index 12d82a456d0db6ad7be270e2d692d2c5efbd8c12..f5834c4bef8202458b55fbb99e0c119db78ced31 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -448,7 +448,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -449,7 +449,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear(ON_OSX);
@@ -99,7 +99,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode);
-@@ -462,6 +464,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -463,6 +465,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.splashManager = new SplashManager(this.user);
          this.resourceManager.registerReloadListener(this.splashManager);
          this.musicManager = new MusicManager(this);
@@ -107,7 +107,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          this.fontManager = new FontManager(this.textureManager);
          this.font = this.fontManager.createFont();
          this.resourceManager.registerReloadListener(this.fontManager.getReloadListener());
-@@ -480,6 +483,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -481,6 +484,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer, this::getItemRenderer, this::getEntityRenderDispatcher);
          this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
          BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -115,7 +115,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          this.resourceManager.registerReloadListener(blockEntityWithoutLevelRenderer);
          this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
          this.resourceManager.registerReloadListener(this.itemRenderer);
-@@ -531,6 +535,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -532,6 +536,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.realms32BitWarningStatus = new Realms32BitWarningStatus(this);
          LoadingOverlay.registerTextures(this);
          List<PackResources> list = this.resourcePackRepository.openAllSelected();
@@ -123,7 +123,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          this.reloadStateTracker.startReload(ResourceLoadStateTracker.ReloadReason.INITIAL, list);
          this.setOverlay(new LoadingOverlay(this, this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
                  if (SharedConstants.IS_RUNNING_IN_IDE) {
-@@ -540,9 +545,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -541,9 +546,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.reloadStateTracker.finishReload();
              }), false));
          if (s != null) {
@@ -135,7 +135,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          }
  
      }
-@@ -719,9 +724,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -720,9 +725,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
      }
  
      public static void crash(CrashReport crashReport) {
@@ -147,7 +147,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          if (crashReport.getSaveFile() != null) {
              Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile());
              System.exit(-1);
-@@ -860,6 +866,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -875,6 +881,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
          this.screen = screen;
          BufferUploader.reset();
@@ -155,7 +155,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
          if (screen != null) {
              this.mouseHandler.releaseMouse();
              KeyMapping.releaseAll();
-@@ -875,6 +882,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -890,6 +897,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
      public void setOverlay(@Nullable Overlay overlay) {
          this.overlay = overlay;
@@ -163,7 +163,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
      }
  
      public void destroy() {
-@@ -899,6 +907,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -914,6 +922,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.screen.removed();
              }
  
@@ -171,7 +171,7 @@ index 2181c3fbbf4dc1ca95f345c22a2daca6434869a1..f47a8672630d9ffce62ccafad5f7654a
              this.close();
          } finally {
              Util.timeSource = System::nanoTime;
-@@ -1683,6 +1692,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -1698,6 +1707,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
              this.pendingConnection.tick();
          }
  
