@@ -184,7 +184,7 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         File(installerDir, "src/main/resources/server_repositories.list").writeText(SERVER_REPOSITORIES_LIST.joinToString("\n"))
         File(installerDir, "src/main/resources/server_libraries.list").writeText(SERVER_LIBRARIES_LIST.joinToString("\n"))
         File(installerDir, "src/main/resources/server_libraries_excludes.list").writeText(SERVER_LIBRARIES_EXCLUDES_LIST.joinToString("\n"))
-        File(baseDir, "scripts/files/version.json").copyTo(File(installerDir, "src/main/resources/version.json"), true)
+        File(baseDir, "scripts/files/version.json").copyTo(File(installerDir, "src/main/resources/client.json"), true)
         File(installerDir, "src/main/resources/client.json").appendText("""
                 "releaseTime": "$datetime",
                 "time": "$datetime",
