@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * is not supported.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR})
 public @interface SideOnly {
     @NotNull Side value();
 }
