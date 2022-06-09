@@ -160,7 +160,7 @@ public class InternalBlueberryModConfig {
         @Order(10000)
         @Name(namespace = "blueberry", path = "blueberry.mod.config.multiplayer.ignore_server_view_distance")
         @Key("ignoreServerViewDistance")
-        @Deprecated
+        @Deprecated(forRemoval = true)
         @DeprecatedReason("Not used anymore")
         @ApiStatus.ScheduledForRemoval(inVersion = "1.6.0 or later")
         public static boolean ignoreServerViewDistance = false;

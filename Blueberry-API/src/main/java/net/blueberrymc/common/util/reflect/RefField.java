@@ -21,7 +21,7 @@ public record RefField<T>(@NotNull Field field) {
     /**
      * @deprecated Use {@link #field()} instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #field() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull

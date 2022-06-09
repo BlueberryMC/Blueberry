@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public record RefInstanceAwareField<T, R>(@NotNull RefField<T> field, @Nullable T instance) {
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #field() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
@@ -15,7 +15,7 @@ public record RefInstanceAwareField<T, R>(@NotNull RefField<T> field, @Nullable 
         return field;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #instance() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable

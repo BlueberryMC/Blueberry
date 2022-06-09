@@ -46,7 +46,8 @@ public record ModIdArgument(@NotNull Mode mode) implements ArgumentType<Blueberr
     /**
      * @deprecated Use {@link #mode()} instead.
      */
-    @Deprecated
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #mode() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull

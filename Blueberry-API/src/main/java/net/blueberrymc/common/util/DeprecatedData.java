@@ -25,6 +25,9 @@ public record DeprecatedData(boolean deprecated, @Nullable String since, boolean
                 Nag.nag(BlueberryMod.detectModFromElement(element), "Annotated with @ApiStatus.ScheduledForRemoval but not annotated with @Deprecated");
             }
         }
+        if (scheduledForRemoval != null && deprecated != null && !deprecated.forRemoval()) {
+            Nag.nag(BlueberryMod.detectModFromElement(element), "Annotated with @ApiStatus.ScheduledForRemoval but is not marked for removal with @Deprecated(forRemoval = true)");
+        }
         String since = null;
         boolean forRemoval = false;
         String reason = null;

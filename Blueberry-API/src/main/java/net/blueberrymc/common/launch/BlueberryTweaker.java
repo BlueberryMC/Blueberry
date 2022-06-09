@@ -32,7 +32,7 @@ public abstract class BlueberryTweaker implements ITweaker {
         } catch (Throwable throwable) {
             LOGGER.fatal("Critical error during initialization phase of mixin", throwable);
         }
-        //launchClassLoader.registerTransformer("net.blueberrymc.common.util.BlueberryClassTransformer");
+        launchClassLoader.registerTransformer("net.blueberrymc.common.launch.BlueberryClassTransformer");
     }
 
     @NotNull

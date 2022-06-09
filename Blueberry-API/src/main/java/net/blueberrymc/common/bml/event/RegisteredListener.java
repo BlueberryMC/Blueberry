@@ -15,7 +15,7 @@ public record RegisteredListener(
     /**
      * @deprecated Use {@link #executor()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #executor() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
@@ -26,7 +26,7 @@ public record RegisteredListener(
     /**
      * @deprecated Use {@link #priority()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #priority() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
@@ -37,7 +37,7 @@ public record RegisteredListener(
     /**
      * @deprecated Use {@link #listener()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #listener() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable
@@ -48,7 +48,7 @@ public record RegisteredListener(
     /**
      * @deprecated Use {@link #mod()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #mod() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
