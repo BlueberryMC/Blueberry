@@ -50,7 +50,7 @@ public record RefClass<T>(@NotNull Class<T> clazz) {
     /**
      * @deprecated Use {@link #clazz()} instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #clazz() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull

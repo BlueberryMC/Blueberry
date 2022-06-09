@@ -11,7 +11,7 @@ public record SimpleModInfo(@NotNull String name, @NotNull String modId) impleme
     /**
      * @deprecated Use {@link #name()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #name() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
@@ -23,7 +23,7 @@ public record SimpleModInfo(@NotNull String name, @NotNull String modId) impleme
     /**
      * @deprecated Use {@link #modId()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #modId() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull

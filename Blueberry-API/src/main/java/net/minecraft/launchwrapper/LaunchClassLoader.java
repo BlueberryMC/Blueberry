@@ -275,6 +275,10 @@ public class LaunchClassLoader extends URLClassLoader {
             if (DEBUG) {
                 LOGGER.error("Exception encountered attempting classloading of {}", name, e);
             }
+            // for some reason, instanceof returns false, so we do this instead
+            if (e.getClass().getTypeName().equals("net.blueberrymc.common.util.BlueberryEvil$WrongSideException")) {
+                throw (RuntimeException) e;
+            }
             throw new ClassNotFoundException(name, e);
         }
     }

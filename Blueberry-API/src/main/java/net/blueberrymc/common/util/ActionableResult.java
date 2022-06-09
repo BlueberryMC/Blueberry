@@ -22,19 +22,29 @@ public class ActionableResult<T> {
     @Nullable
     protected final T value;
 
-    protected ActionableResult() { this.value = null; }
+    protected ActionableResult() {
+        this.value = null;
+    }
 
-    protected ActionableResult(@Nullable T value) { this.value = value; }
+    protected ActionableResult(@Nullable T value) {
+        this.value = value;
+    }
 
     @SuppressWarnings("unchecked")
     @NotNull
-    public static <V> ActionableResult<V> empty() { return (ActionableResult<V>) EMPTY; }
+    public static <V> ActionableResult<V> empty() {
+        return (ActionableResult<V>) EMPTY;
+    }
 
     @NotNull
-    public static <V> ActionableResult<V> of(@NotNull Supplier<V> supplier) { return of(supplier.get()); }
+    public static <V> ActionableResult<V> of(@NotNull Supplier<V> supplier) {
+        return of(supplier.get());
+    }
 
     @NotNull
-    public static <V> ActionableResult<V> ofNullable(@NotNull Supplier<V> supplier) { return ofNullable(supplier.get()); }
+    public static <V> ActionableResult<V> ofNullable(@NotNull Supplier<V> supplier) {
+        return ofNullable(supplier.get());
+    }
 
     @NotNull
     public static <V> ActionableResult<V> of(@NotNull V value) {
@@ -48,13 +58,18 @@ public class ActionableResult<T> {
     }
 
     @NotNull
-    public static <V> ActionableResult<V> ofNullable(@Nullable V value) { return value == null ? empty() : new ActionableResult<>(value); }
+    public static <V> ActionableResult<V> ofNullable(@Nullable V value) {
+        if (value == null) {
+            return empty();
+        }
+        return new ActionableResult<>(value);
+    }
 
     // TODO: remove this method in 2.0.0
     /**
      * @deprecated Use {@link #getOrThrow()} instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #getOrThrow() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @NotNull
@@ -67,7 +82,7 @@ public class ActionableResult<T> {
      * @deprecated Warning: this method will be removed and {@link #get()} will return nullable value in a future
      * version.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("You will have to use #get() after 2.0.0")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable

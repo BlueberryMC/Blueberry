@@ -51,7 +51,7 @@ public class Blueberry {
      * Do not change the value please
      * @deprecated shouldn't be modified by mods. Use #isStopping() to check if the Blueberry is shutting down.
      */
-    @Deprecated(since = "1.5.0-SNAPSHOT")
+    @Deprecated(forRemoval = true, since = "1.5.0-SNAPSHOT")
     @DeprecatedReason("shouldn't be modified by mods. Use #isStopping() to check if the Blueberry is shutting down.")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     public static boolean stopping = false;

@@ -296,4 +296,17 @@ public final class ReflectionHelper {
                         .map(StackWalker.StackFrame::getDeclaringClass)
                         .orElseThrow(() -> new IllegalStateException("No caller class found")));
     }
+
+    @NotNull
+    public static StackWalker.StackFrame getCallerFrame() {
+        return getCallerFrame(3); // 2 + this method
+    }
+
+    @NotNull
+    public static StackWalker.StackFrame getCallerFrame(int offset) {
+        return STACK_WALKER.walk(stream ->
+                stream.skip(offset)
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("No caller found")));
+    }
 }

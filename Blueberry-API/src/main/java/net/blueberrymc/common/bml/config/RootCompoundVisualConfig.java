@@ -12,7 +12,8 @@ public class RootCompoundVisualConfig extends CompoundVisualConfig {
     /**
      * @deprecated Use {@link #onSave(Consumer)} instead.
      */
-    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed") // this field will be private (instead of removing) in the future, so it is fine
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #onSave(Consumer) instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     public Consumer<CompoundVisualConfig> onSave = null;

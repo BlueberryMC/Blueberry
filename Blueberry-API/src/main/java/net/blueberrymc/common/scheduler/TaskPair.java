@@ -27,7 +27,7 @@ public record TaskPair(@Nullable BlueberryTask clientTask, @Nullable BlueberryTa
         return Objects.requireNonNullElse(clientTask, serverTask);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #clientTask() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable
@@ -35,7 +35,7 @@ public record TaskPair(@Nullable BlueberryTask clientTask, @Nullable BlueberryTa
         return clientTask;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #serverTask() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable

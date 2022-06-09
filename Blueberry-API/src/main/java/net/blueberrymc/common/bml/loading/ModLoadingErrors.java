@@ -22,7 +22,7 @@ public class ModLoadingErrors {
     /**
      * @deprecated Use {@link ModLoadingErrorAddEvent} instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @DeprecatedReason("Use ModLoadingErrorAddEvent instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable
