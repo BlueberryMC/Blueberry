@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EventManager {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ConcurrentHashMap<Class<? extends Event>, HandlerList> handlerMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Class<? extends Event>, HandlerList> HANDLERS = new ConcurrentHashMap<>();
 
     private static void logInvalidHandler(Method method, String message, BlueberryMod mod) {
         LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod.getModId());
@@ -102,7 +102,7 @@ public class EventManager {
      */
     public void unregisterEvents(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
-        handlerMap.values().forEach(handlerList -> handlerList.remove(mod));
+        HANDLERS.values().forEach(handlerList -> handlerList.remove(mod));
     }
 
     /**
@@ -111,7 +111,7 @@ public class EventManager {
      */
     public void unregisterEvents(@NotNull Listener listener) {
         Preconditions.checkNotNull(listener, "listener cannot be null");
-        handlerMap.values().forEach(handlerList -> handlerList.remove(listener));
+        HANDLERS.values().forEach(handlerList -> handlerList.remove(listener));
     }
 
     /**
@@ -140,14 +140,14 @@ public class EventManager {
      */
     @NotNull
     public Set<Class<? extends Event>> getKnownEvents() {
-        return handlerMap.keySet();
+        return HANDLERS.keySet();
     }
 
     @Contract(pure = true)
     @NotNull
     @Unmodifiable
     public static Map<Class<? extends Event>, HandlerList> getHandlerMap() {
-        return ImmutableMap.copyOf(handlerMap);
+        return ImmutableMap.copyOf(HANDLERS);
     }
 
     /**
@@ -162,7 +162,7 @@ public class EventManager {
         if (Modifier.isAbstract(event.getModifiers())) {
             throw new IllegalArgumentException(event.getTypeName() + " is abstract");
         }
-        return handlerMap.computeIfAbsent(event, e -> new HandlerList());
+        return HANDLERS.computeIfAbsent(event, e -> new HandlerList());
     }
 
     static void printStackTrace(@NotNull Throwable throwable) {

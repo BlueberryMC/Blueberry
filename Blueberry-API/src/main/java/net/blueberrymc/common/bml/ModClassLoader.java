@@ -28,25 +28,25 @@ import java.util.jar.Manifest;
 
 public class ModClassLoader extends URLClassLoader {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final List<String> classLoaderExclusions = new ArrayList<>();
+    private static final List<String> CLASS_LOADER_EXCLUSIONS = new ArrayList<>();
 
     static {
-        classLoaderExclusions.add("com.mojang.");
-        classLoaderExclusions.add("net.minecraft.");
-        classLoaderExclusions.add("net.blueberrymc.");
-        classLoaderExclusions.add("java.");
-        classLoaderExclusions.add("jdk.");
-        classLoaderExclusions.add("sun.");
-        classLoaderExclusions.add("com.sun.");
-        classLoaderExclusions.add("javax.");
-        classLoaderExclusions.add("org.lwjgl.");
-        classLoaderExclusions.add("org.apache.logging.");
-        classLoaderExclusions.add("io.netty.");
-        classLoaderExclusions.add("com.google.gson.");
-        classLoaderExclusions.add("com.google.common.");
-        classLoaderExclusions.add("org.objectweb.asm.");
-        classLoaderExclusions.add("it.unimi.dsi.fastutil.");
-        classLoaderExclusions.add("org.slf4j.");
+        CLASS_LOADER_EXCLUSIONS.add("com.mojang.");
+        CLASS_LOADER_EXCLUSIONS.add("net.minecraft.");
+        CLASS_LOADER_EXCLUSIONS.add("net.blueberrymc.");
+        CLASS_LOADER_EXCLUSIONS.add("java.");
+        CLASS_LOADER_EXCLUSIONS.add("jdk.");
+        CLASS_LOADER_EXCLUSIONS.add("sun.");
+        CLASS_LOADER_EXCLUSIONS.add("com.sun.");
+        CLASS_LOADER_EXCLUSIONS.add("javax.");
+        CLASS_LOADER_EXCLUSIONS.add("org.lwjgl.");
+        CLASS_LOADER_EXCLUSIONS.add("org.apache.logging.");
+        CLASS_LOADER_EXCLUSIONS.add("io.netty.");
+        CLASS_LOADER_EXCLUSIONS.add("com.google.gson.");
+        CLASS_LOADER_EXCLUSIONS.add("com.google.common.");
+        CLASS_LOADER_EXCLUSIONS.add("org.objectweb.asm.");
+        CLASS_LOADER_EXCLUSIONS.add("it.unimi.dsi.fastutil.");
+        CLASS_LOADER_EXCLUSIONS.add("org.slf4j.");
     }
 
     protected final BlueberryModLoader modLoader;
@@ -150,7 +150,7 @@ public class ModClassLoader extends URLClassLoader {
     }
 
     public static boolean shouldUseLaunchClassLoader(@NotNull String name) {
-        for (String exclusion : classLoaderExclusions) {
+        for (String exclusion : CLASS_LOADER_EXCLUSIONS) {
             if (name.startsWith(exclusion)) return true;
         }
         return false;

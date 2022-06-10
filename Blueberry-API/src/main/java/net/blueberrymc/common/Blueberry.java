@@ -40,9 +40,9 @@ import java.util.function.Supplier;
 public class Blueberry {
     private static final Logger LOGGER = LogManager.getLogger();
     private static BlueberryModLoader modLoader;
-    private static final EventManager eventManager = new EventManager();
-    private static final ModManager modManager = new ModManager();
-    private static final NonNullObject<PermissionProvider> permissionProvider = new NonNullObject<>(DefaultPermissionProvider.INSTANCE);
+    private static final EventManager EVENT_MANAGER = new EventManager();
+    private static final ModManager MOD_MANAGER = new ModManager();
+    private static final NonNullObject<PermissionProvider> PERMISSION_PROVIDER = new NonNullObject<>(DefaultPermissionProvider.INSTANCE);
     private static Side side;
     private static BlueberryUtil util;
     private static File gameDir;
@@ -80,13 +80,13 @@ public class Blueberry {
     @Contract(pure = true)
     @NotNull
     public static EventManager getEventManager() {
-        return eventManager;
+        return EVENT_MANAGER;
     }
 
     @Contract(pure = true)
     @NotNull
     public static ModManager getModManager() {
-        return modManager;
+        return MOD_MANAGER;
     }
 
     /**
@@ -216,7 +216,7 @@ public class Blueberry {
      */
     @NotNull
     public static PermissionProvider getPermissionProvider() {
-        return permissionProvider.get();
+        return PERMISSION_PROVIDER.get();
     }
 
     /**
@@ -224,7 +224,7 @@ public class Blueberry {
      * @param permissionProvider new permission provider
      */
     public static void setPermissionProvider(@NotNull PermissionProvider permissionProvider) {
-        Blueberry.permissionProvider.set(permissionProvider);
+        Blueberry.PERMISSION_PROVIDER.set(permissionProvider);
     }
 
     /**

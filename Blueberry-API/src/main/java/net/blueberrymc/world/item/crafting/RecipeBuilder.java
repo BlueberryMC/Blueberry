@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class RecipeBuilder {
-    private static final Map<ResourceLocation, Recipe<?>> recipes = new HashMap<>();
+    private static final Map<ResourceLocation, Recipe<?>> RECIPES = new HashMap<>();
     public static final WeakList<RecipeManager> knownRecipeManagers = new WeakList<>();
     @NotNull
     public static final Ingredient AIR = Ingredient.of(Items.AIR);
@@ -69,7 +69,7 @@ public abstract class RecipeBuilder {
 
     @NotNull
     public static Map<ResourceLocation, Recipe<?>> getRecipes() {
-        return recipes;
+        return RECIPES;
     }
 
     @Nullable

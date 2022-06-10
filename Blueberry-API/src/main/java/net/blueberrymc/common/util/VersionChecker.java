@@ -18,20 +18,20 @@ import java.util.function.Supplier;
 
 public class VersionChecker {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final long halfHour = 1000 * 60 * 30;
+    private static final long HALF_HOUR = 1000 * 60 * 30;
     @NotNull
     private static Result cachedResult = Result.ERROR;
     private static long lastCachedResult = 0;
 
     public static boolean isCached() {
-        return System.currentTimeMillis() - lastCachedResult < halfHour;
+        return System.currentTimeMillis() - lastCachedResult < HALF_HOUR;
     }
 
     @NotNull
     private static Supplier<Result> getOrRecord(boolean forceUseCachedData, @NotNull Supplier<Result> valueSupplier) {
         return () -> {
             if (forceUseCachedData) return Objects.requireNonNullElse(cachedResult, Result.ERROR);
-            if (System.currentTimeMillis() - lastCachedResult > halfHour) {
+            if (System.currentTimeMillis() - lastCachedResult > HALF_HOUR) {
                 cachedResult = Objects.requireNonNullElse(valueSupplier.get(), Result.ERROR);
                 lastCachedResult = System.currentTimeMillis();
             }

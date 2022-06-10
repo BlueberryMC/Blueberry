@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FluidSpriteManager {
-    private static final TextureAtlasSprite[] lavaIcons = new TextureAtlasSprite[2];
-    private static final TextureAtlasSprite[] waterIcons = new TextureAtlasSprite[2];
-    private static final Map<Fluid, Material> map = new HashMap<>();
+    private static final TextureAtlasSprite[] LAVA_ICONS = new TextureAtlasSprite[2];
+    private static final TextureAtlasSprite[] WATER_ICONS = new TextureAtlasSprite[2];
+    private static final Map<Fluid, Material> MATERIAL_MAP = new HashMap<>();
 
     /**
      * Registers the texture for fluid.
@@ -31,32 +31,32 @@ public class FluidSpriteManager {
     public static void add(@NotNull Fluid fluid, @NotNull String namespace, @NotNull String path) {
         ResourceLocation resourceLocation = new ResourceLocation(namespace, path);
         Material material = new Material(InventoryMenu.BLOCK_ATLAS, resourceLocation); // TextureAtlas.LOCATION_BLOCKS
-        map.put(fluid, material);
+        MATERIAL_MAP.put(fluid, material);
     }
 
     @Nullable
     public static Material get(@NotNull Fluid fluid) {
-        return map.get(fluid);
+        return MATERIAL_MAP.get(fluid);
     }
 
     public static void setupSprites() {
-        lavaIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.LAVA.defaultBlockState()).getParticleIcon();
-        lavaIcons[1] = ModelBakery.LAVA_FLOW.sprite();
-        waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).getParticleIcon();
-        waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
+        LAVA_ICONS[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.LAVA.defaultBlockState()).getParticleIcon();
+        LAVA_ICONS[1] = ModelBakery.LAVA_FLOW.sprite();
+        WATER_ICONS[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).getParticleIcon();
+        WATER_ICONS[1] = ModelBakery.WATER_FLOW.sprite();
     }
 
     @NotNull
     public static TextureAtlasSprite[] getSprites(@NotNull FluidState fluidState) {
-        if (fluidState.is(FluidTags.LAVA)) return lavaIcons;
-        if (fluidState.is(FluidTags.WATER)) return waterIcons;
+        if (fluidState.is(FluidTags.LAVA)) return LAVA_ICONS;
+        if (fluidState.is(FluidTags.WATER)) return WATER_ICONS;
         try {
             TextureAtlasSprite[] sprites = new TextureAtlasSprite[2];
             sprites[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluidState.createLegacyBlock()).getParticleIcon();
             sprites[1] = Objects.requireNonNull(get(fluidState.getType())).sprite();
             return sprites;
         } catch (RuntimeException ex) { // ignore
-            return waterIcons;
+            return WATER_ICONS;
         }
     }
 }

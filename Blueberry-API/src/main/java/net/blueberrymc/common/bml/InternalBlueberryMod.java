@@ -31,8 +31,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class InternalBlueberryMod extends BlueberryMod {
-    private static final Timer clientTimer = new Timer("Async Client Blueberry Scheduler", true);
-    private static final Timer serverTimer = new Timer("Async Server Blueberry Scheduler", true);
+    private static final Timer CLIENT_TIMER = new Timer("Async Client Blueberry Scheduler", true);
+    private static final Timer SERVER_TIMER = new Timer("Async Server Blueberry Scheduler", true);
     private static DiscordRPCStatus lastDiscordRPCStatus = null;
 
     InternalBlueberryMod(@NotNull BlueberryModLoader modLoader, @NotNull ModDescriptionFile description, @NotNull ClassLoader classLoader, @NotNull File file) {
@@ -50,20 +50,20 @@ public class InternalBlueberryMod extends BlueberryMod {
             public void execute() {
                 InternalBlueberryMod.this.getVisualConfig().onSave(InternalBlueberryMod.this::saveConfig);
                 Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
-                        clientTimer.scheduleAtFixedRate(new TimerTask() {
+                        CLIENT_TIMER.scheduleAtFixedRate(new TimerTask() {
                             @Override
                             public void run() {
                                 scheduler.tickAsync();
                             }
                         }, 1, 1)
-                ).ifNotPresent(clientTimer::cancel);
+                ).ifNotPresent(CLIENT_TIMER::cancel);
                 Blueberry.getEventManager().registerEvents(InternalBlueberryMod.this, new InternalBlueberryModListener(InternalBlueberryMod.this).createClient());
                 ClientCommandManager.register("cblueberry", new ClientBlueberryCommand());
             }
         });
         Blueberry.runOnServer(() -> Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createServer()));
         AbstractBlueberryScheduler serverScheduler = Blueberry.getUtil().getServerScheduler();
-        serverTimer.scheduleAtFixedRate(new TimerTask() {
+        SERVER_TIMER.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 MinecraftServer server;
@@ -142,8 +142,8 @@ public class InternalBlueberryMod extends BlueberryMod {
         getLogger().info("Saving config");
         saveConfig();
         getLogger().info("Stopping scheduler");
-        clientTimer.cancel();
-        serverTimer.cancel();
+        CLIENT_TIMER.cancel();
+        SERVER_TIMER.cancel();
     }
 
     private void registerBlocks() {

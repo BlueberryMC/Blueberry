@@ -72,8 +72,8 @@ import static org.lwjgl.opengl.GL14.GL_ONE_MINUS_CONSTANT_ALPHA;
  */
 public class EarlyLoadingScreen {
     public static final boolean DISABLED = Boolean.parseBoolean(System.getProperty("net.blueberrymc.client.disableEarlyLoadingScreen", "true"));
-    private static final int width = 854;
-    private static final int height = 480;
+    private static final int WIDTH = 854;
+    private static final int HEIGHT = 480;
     private final Object LOCK = new Object();
     private static EarlyLoadingScreen instance;
     private long window;
@@ -167,7 +167,7 @@ public class EarlyLoadingScreen {
         String title = "Minecraft* " + Versioning.getVersion().getGameVersion();
         glfwWindowHintString(GLFW_X11_CLASS_NAME, title);
         glfwWindowHintString(GLFW_X11_INSTANCE_NAME, title);
-        window = glfwCreateWindow(width, height, "Blueberry Early Loading Screen", 0, 0);
+        window = glfwCreateWindow(WIDTH, HEIGHT, "Blueberry Early Loading Screen", 0, 0);
         if (window == 0) throw new RuntimeException("Could not create window");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1);
@@ -193,7 +193,7 @@ public class EarlyLoadingScreen {
         glClear(GL_DEPTH_BUFFER_BIT);
         GL11.glMatrixMode(5889);
         GL11.glLoadIdentity();
-        GL11.glOrtho(0.0D, width, height, 0.0D, 1000.0D, 3000.0D);
+        GL11.glOrtho(0.0D, WIDTH, HEIGHT, 0.0D, 1000.0D, 3000.0D);
         GL11.glMatrixMode(5888);
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
@@ -239,9 +239,9 @@ public class EarlyLoadingScreen {
         }
         GL11.glColor4f(r, g, b, 1);
         GL11.glVertex3f(0, 0, -10);
-        GL11.glVertex3f(0, height, -10);
-        GL11.glVertex3f(width, height, -10);
-        GL11.glVertex3f(width, 0, -10);
+        GL11.glVertex3f(0, HEIGHT, -10);
+        GL11.glVertex3f(WIDTH, HEIGHT, -10);
+        GL11.glVertex3f(WIDTH, 0, -10);
         GL11.glEnd();
     }
 
@@ -260,12 +260,12 @@ public class EarlyLoadingScreen {
             final float fade = Mth.clamp((10000.0f - (float) pair.getFirst() - (i - 4) * 1000.0f) / 11000.0f, 0.0f, 1.0f);
             if (fade < 0.01f && !noFade) continue;
             EarlyLoadingMessageManager.Message msg = pair.getSecond();
-            renderMessage(msg.text(), msg.type().color, ((height - 15) / 10) - i + 1, noFade ? 1.0f : fade);
+            renderMessage(msg.text(), msg.type().color, ((HEIGHT - 15) / 10) - i + 1, noFade ? 1.0f : fade);
         }
         renderMemoryInfo();
     }
 
-    private static final float[] memoryColor = new float[] { 0.0f, 0.0f, 0.0f };
+    private static final float[] MEMORY_COLOR = new float[] { 0.0f, 0.0f, 0.0f };
 
     private void renderMemoryInfo() {
         final MemoryUsage hUsage = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
@@ -274,10 +274,10 @@ public class EarlyLoadingScreen {
         String memory = String.format("Memory Heap: %d / %d MB (%.1f%%)  OffHeap: %d MB", hUsage.getUsed() >> 20, hUsage.getMax() >> 20, percentage * 100.0, ohUsage.getUsed() >> 20);
 
         final int i = Mth.hsvToRgb((1.0f - (float) Math.pow(percentage, 1.5f)) / 3f, 1.0f, 0.5f);
-        memoryColor[2] = ((i) & 0xFF) / 255.0f;
-        memoryColor[1] = ((i >> 8) & 0xFF) / 255.0f;
-        memoryColor[0] = ((i >> 16) & 0xFF) / 255.0f;
-        renderMessage(memory, memoryColor, 1, 1.0f);
+        MEMORY_COLOR[2] = ((i) & 0xFF) / 255.0f;
+        MEMORY_COLOR[1] = ((i >> 8) & 0xFF) / 255.0f;
+        MEMORY_COLOR[0] = ((i >> 16) & 0xFF) / 255.0f;
+        renderMessage(memory, MEMORY_COLOR, 1, 1.0f);
     }
 
     void renderMessage(@NotNull String message, float@NotNull[] colour, int line, float alpha) {

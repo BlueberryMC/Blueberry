@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InternalClientBlueberryMod {
-    private static final AtomicReference<String> lastScreen = new AtomicReference<>();
+    private static final AtomicReference<String> LAST_SCREEN = new AtomicReference<>();
 
     static void doReload(@NotNull ModStateList modState, boolean forceRefreshDiscord) {
         Minecraft mc = Minecraft.getInstance();
@@ -44,44 +44,44 @@ public class InternalClientBlueberryMod {
 
     public static void refreshDiscordStatus(@Nullable Screen screen, boolean force) {
         if (Blueberry.getSide() != Side.CLIENT) return;
-        if (!force && Objects.equals(lastScreen.get(), screen == null ? null : screen.getClass().getCanonicalName())) return;
+        if (!force && Objects.equals(LAST_SCREEN.get(), screen == null ? null : screen.getClass().getCanonicalName())) return;
         Minecraft minecraft = Minecraft.getInstance();
         ServerData serverData = minecraft.getCurrentServer();
         if (screen instanceof JoinMultiplayerScreen) {
             Blueberry.getUtil().updateDiscordStatus("In Server List Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
-            lastScreen.set(screen.getClass().getCanonicalName());
+            LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         } else if (screen instanceof TitleScreen) {
             Blueberry.getUtil().updateDiscordStatus("In Main Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
-            lastScreen.set(screen.getClass().getCanonicalName());
+            LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         } else if (screen instanceof SelectWorldScreen) {
             Blueberry.getUtil().updateDiscordStatus("In Select World Menu");
-            lastScreen.set(screen.getClass().getCanonicalName());
+            LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         } else if (screen instanceof ConnectScreen && serverData != null) {
             String serverIp = null;
             if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
             Blueberry.getUtil().updateDiscordStatus("Connecting to server", serverIp);
-            lastScreen.set(screen.getClass().getCanonicalName());
+            LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         }
         if (screen == null) {
             LocalPlayer player = minecraft.player;
             if (player == null) {
                 Blueberry.getUtil().updateDiscordStatus("In Main Menu");
-                lastScreen.set(null);
+                LAST_SCREEN.set(null);
                 return;
             }
             IntegratedServer integratedServer = minecraft.getSingleplayerServer();
             if (minecraft.isLocalServer() && integratedServer != null) {
                 Blueberry.getUtil().updateDiscordStatus("Playing on Single Player", integratedServer.getWorldData().getLevelName() + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                lastScreen.set(null);
+                LAST_SCREEN.set(null);
                 return;
             }
             if (minecraft.isConnectedToRealms()) {
                 Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                lastScreen.set(null);
+                LAST_SCREEN.set(null);
                 return;
             }
             if (serverData != null) {
@@ -92,7 +92,7 @@ public class InternalClientBlueberryMod {
                     if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
                     Blueberry.getUtil().updateDiscordStatus("Playing on 3rd-party server", serverIp + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                 }
-                lastScreen.set(null);
+                LAST_SCREEN.set(null);
             }
         }
     }

@@ -29,7 +29,7 @@ public class DiscordRPCTaskExecutor {
         return Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder().setNameFormat("Discord RPC Task Executor").build());
     }
 
-    private static final Queue<Runnable> taskQueue = new ArrayDeque<>();
+    private static final Queue<Runnable> TASK_QUEUE = new ArrayDeque<>();
     @Nullable
     private static Thread thread = null;
     private static boolean init = false;
@@ -56,7 +56,7 @@ public class DiscordRPCTaskExecutor {
             executor.scheduleAtFixedRate(() -> {
                 thread = Thread.currentThread();
                 Runnable task;
-                while ((task = taskQueue.poll()) != null) {
+                while ((task = TASK_QUEUE.poll()) != null) {
                     task.run();
                 }
                 DiscordRPC.discordRunCallbacks();
@@ -70,7 +70,7 @@ public class DiscordRPCTaskExecutor {
         } else {
             executor.scheduleAtFixedRate(() -> {
                 thread = Thread.currentThread();
-                taskQueue.clear();
+                TASK_QUEUE.clear();
                 DiscordRPC.discordRunCallbacks();
                 DiscordRichPresence presence = Blueberry.getUtil().getDiscordRichPresenceQueue();
                 if (presence != null) {
@@ -109,7 +109,7 @@ public class DiscordRPCTaskExecutor {
         if (isOnExecutorThread()) {
             runnable.run();
         } else {
-            taskQueue.add(runnable);
+            TASK_QUEUE.add(runnable);
         }
     }
 

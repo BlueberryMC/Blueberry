@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 public class ModLoadingErrors {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final List<ModLoadingError> errors = Collections.synchronizedList(new ArrayList<>());
+    private static final List<ModLoadingError> ERRORS = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * @deprecated Use {@link ModLoadingErrorAddEvent} instead
@@ -29,13 +29,13 @@ public class ModLoadingErrors {
     public static Consumer<ModLoadingError> hook = null;
 
     public static void clear() {
-        errors.clear();
+        ERRORS.clear();
     }
 
     @Contract(pure = true)
     @NotNull
     public static List<ModLoadingError> getErrors() {
-        return errors;
+        return ERRORS;
     }
 
     @Contract(pure = true)
@@ -54,10 +54,10 @@ public class ModLoadingErrors {
         } else {
             LOGGER.error("", error.throwable);
         }
-        errors.add(error);
+        ERRORS.add(error);
     }
 
     public static boolean hasErrorOrWarning() {
-        return !errors.isEmpty();
+        return !ERRORS.isEmpty();
     }
 }
