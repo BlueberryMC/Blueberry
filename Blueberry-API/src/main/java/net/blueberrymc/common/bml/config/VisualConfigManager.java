@@ -804,7 +804,8 @@ public class VisualConfigManager {
     /**
      * When the class or field is annotated with @HideOn(...), the annotated configuration would be hidden from the
      * specific side. If annotated on class, all configurations defined under a class would be hidden from the side.
-     * (This annotation just tells the VisualConfigManager not to add visual config)
+     * (This annotation just tells the VisualConfigManager not to add visual config, unlike
+     * {@link net.blueberrymc.common.SideOnly} which actually hides the class/method/fields.)
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE, ElementType.FIELD})

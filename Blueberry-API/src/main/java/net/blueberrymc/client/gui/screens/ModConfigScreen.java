@@ -1,8 +1,9 @@
 package net.blueberrymc.client.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.components.ScrollableContainer;
-import net.blueberrymc.common.resources.BlueberryText;
+import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.blueberrymc.common.bml.config.BooleanVisualConfig;
 import net.blueberrymc.common.bml.config.ByteVisualConfig;
@@ -18,11 +19,16 @@ import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.ShortVisualConfig;
 import net.blueberrymc.common.bml.config.StringVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
+import net.blueberrymc.common.resources.BlueberryText;
+import net.blueberrymc.common.scheduler.BlueberryTask;
+import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.util.ComponentGetter;
 import net.blueberrymc.util.NameGetter;
 import net.blueberrymc.util.NumberUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -34,13 +40,17 @@ import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -110,7 +120,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.deprecated");
                 tooltip.append(text.withStyle(ChatFormatting.RED)).append("\n");
                 if (deprecatedData.reason() != null) {
-                    tooltip.append(Component.literal("\"" + deprecatedData.reason() + "\"").withStyle(ChatFormatting.RED)).append("");
+                    tooltip.append(Component.literal("\"" + deprecatedData.reason() + "\"").withStyle(ChatFormatting.RED)).append("\n");
                 }
             }
             // description
@@ -145,6 +155,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 if (shouldShowMinMax) {
                     tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
                 }
+                tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.precise_control").withStyle(ChatFormatting.GRAY)).append("\n");
             }
             // pattern
             if (config instanceof StringVisualConfig stringVisualConfig) {
@@ -220,8 +231,8 @@ public class ModConfigScreen extends BlueberryScreen {
                 );
                 addLabel.accept(config, offset);
             } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
-                // TODO: slider
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
+                int componentWidth = Math.min(maxWidth, this.width / 6);
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal("")) {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
@@ -244,6 +255,74 @@ public class ModConfigScreen extends BlueberryScreen {
                 });
                 editBox.setValue(defValue.toString());
                 container.children().add(editBox);
+                Supplier<Component> sliderLabel = () -> Component.literal(Objects.requireNonNullElse(numberVisualConfig.get(), numberVisualConfig.getMinAsNumber()).toString());
+                AbstractSliderButton slider = new AbstractSliderButton(this.width / 2 + 6, offset, componentWidth, 20, Component.empty(), numberVisualConfig.getPercentage()) {
+                    @Override
+                    protected void updateMessage() {
+                        setMessage(sliderLabel.get());
+                    }
+
+                    @Override
+                    protected void applyValue() {
+                        double range = 1.0;
+                        if (hasShiftDown()) {
+                            range *= 0.25;
+                        }
+                        if (hasControlDown()) {
+                            range *= 0.2; // shift + control = 6.25% = 0.0625
+                        }
+                        if (hasAltDown()) {
+                            // shift + control + alt = 0.5% = 0.005
+                            // shift + alt = 2.5% = 0.025
+                            // control + alt = 2% = 0.02
+                            range *= 0.1;
+                        }
+                        boolean hasSpaceDown = InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_SPACE);
+                        if (hasSpaceDown) {
+                            // shift + control + alt + space = 0.0125% = 0.000125
+                            range *= 0.025;
+                        }
+                        numberVisualConfig.setPercentage(0.5 - range / 2 + range * value);
+                    }
+
+                    @Override
+                    public void renderToolTip(@NotNull PoseStack poseStack, int i, int i2) {
+                        onTooltipFunction.apply(poseStack).accept(i, i2);
+                    }
+                };
+                Consumer<Double> valueUpdater = (value) -> {
+                    try {
+                        ReflectionHelper.setField(AbstractSliderButton.class, slider, "value", value);
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                };
+                slider.setMessage(sliderLabel.get());
+                slider.visible = false;
+                container.children().add(slider);
+                Button toggleButton = new Button(this.width / 2 + 10 + componentWidth, offset, 20, 20, Component.literal("\u262f"), (button) -> {
+                    if (editBox.visible) {
+                        editBox.visible = false;
+                        slider.visible = true;
+                        slider.setMessage(sliderLabel.get());
+                        valueUpdater.accept(numberVisualConfig.getPercentage());
+                        unblock(editBox);
+                    } else {
+                        slider.visible = false;
+                        editBox.visible = true;
+                        editBox.setValue(Objects.requireNonNullElse(numberVisualConfig.get(), numberVisualConfig.getMinAsNumber()).toString());
+                    }
+                }, (button, poseStack, mouseX, mouseY) -> {
+                    String path;
+                    if (editBox.visible) {
+                        path = "gui.screens.mod_config.show_slider";
+                    } else {
+                        path = "gui.screens.mod_config.show_editbox";
+                    }
+                    renderTooltip(poseStack, BlueberryText.text("blueberry", path), mouseX, mouseY);
+                });
+                toggleButton.active = true;
+                container.children().add(toggleButton);
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig stringVisualConfig) {
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
@@ -422,5 +501,48 @@ public class ModConfigScreen extends BlueberryScreen {
             text.append("Unknown");
         }
         return text;
+    }
+
+    @SuppressWarnings("unused")
+    private void enableRainbowText(@NotNull EditBox editBox) {
+        AtomicInteger ticks = new AtomicInteger();
+        AtomicReference<BlueberryTask> task = new AtomicReference<>();
+        task.set(Blueberry.getUtil().getClientScheduler().runTaskTimer(Objects.requireNonNull(Blueberry.getModLoader().getModById("blueberry")), 1, 1, () -> {
+            if (Minecraft.getInstance().screen != this) {
+                task.get().cancel();
+                task.set(null);
+                return;
+            }
+            int i = 50;
+            if (ticks.incrementAndGet() > i) {
+                ticks.set(-i);
+            }
+            final int MAX_COLOR = 360;
+            final int MIN_COLOR = 160;
+            double jump = (MAX_COLOR-MIN_COLOR) / (i*1.0);
+            int color = hsvToRgb((float) (MIN_COLOR + (jump*Math.abs(ticks.get()))));
+            editBox.setTextColor(color);
+        }));
+    }
+
+    private static int hsvToRgb(float hue) {
+        int h = (int) (hue / 60);
+        float f = hue / 60 - h;
+        float q = (1 - f);
+        float t = (1 - q);
+
+        return switch (h) {
+            case 0 -> rgbToString(1, t, 0);
+            case 1 -> rgbToString(q, 1, 0);
+            case 2 -> rgbToString(0, 1, t);
+            case 3 -> rgbToString(0, q, 1);
+            case 4 -> rgbToString(t, 0, 1);
+            case 5, 6 -> rgbToString(1, 0, q);
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
+    private static int rgbToString(float r, float g, float b) {
+        return new Color((int) (r * 255), (int) (g * 255), (int) (b * 255)).getRGB();
     }
 }

@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Config;
 import net.blueberrymc.common.bml.config.VisualConfigManager.DefaultValue;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Description;
@@ -148,6 +149,14 @@ public class InternalBlueberryModConfig {
         @Description(@Name("Shows additional information on ModConfigScreen."))
         @Key("debugModConfigScreen")
         public static boolean debugModConfigScreen = false;
+
+        @Order(10003)
+        @Name("Numeric config control test")
+        @Key("test-numeric-control")
+        @Deprecated(since = "forever")
+        @DeprecatedReason("deprecated because why not")
+        @SideOnly(Side.CLIENT)
+        public static int testNumericControl = 0;
     }
 
     @Order(-9999)
