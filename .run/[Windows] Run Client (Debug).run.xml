@@ -4,7 +4,6 @@
     <envs>
       <env name="LOG4J_CONFIGURATION_FILE" value="log4j2-debug.xml" />
     </envs>
-    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="net.blueberrymc.client.main.ClientMain" />
     <module name="Blueberry-Parent.blueberry.main" />
     <option name="PROGRAM_PARAMETERS" value="--debug --version=debug --assetIndex=1.19 --versionType=debug --username=&quot;Dev&quot; --userType=mojang --uuid=&quot;dev&quot; --accessToken=abc --assetsDir=&quot;${APPDATA}\.minecraft\assets&quot; --mixin=mixins.blueberry.json" />

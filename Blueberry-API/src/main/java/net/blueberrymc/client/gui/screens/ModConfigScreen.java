@@ -298,7 +298,12 @@ public class ModConfigScreen extends BlueberryScreen {
 
     private static FormattedText addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
         if (!InternalBlueberryModConfig.Debug.debugModConfigScreen) return tooltip;
-        MutableComponent copy = tooltip.copy().append("\n");
+        MutableComponent copy;
+        if (tooltip.getSiblings().size() == 0) {
+            copy = tooltip.copy();
+        } else {
+            copy = tooltip.copy().append("\n");
+        }
         copy.append(Component.literal("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]").withStyle(ChatFormatting.GRAY)).append("\n");
         String valueType;
         Object value = config.get();
