@@ -66,13 +66,13 @@ public class FileDialogScreen extends BlueberryScreen {
         calledCallback = true;
         if (file != null) {
             if (options.fileType() == FileDialogScreenOptions.FileType.DIRECTORY && !file.isDirectory()) {
-                LOGGER.warn("Tried to invoke callback with a file that is not a directory");
+                LOGGER.warn("Attempted to invoke callback with a file that is not a directory");
                 file = null;
             } else if (options.fileType() == FileDialogScreenOptions.FileType.FILE && !file.isFile()) {
-                LOGGER.warn("Tried to invoke callback with a directory that is not a file");
+                LOGGER.warn("Attempted to invoke callback with a directory that is not a file");
                 file = null;
             } else if (!options.filter().test(file)) {
-                LOGGER.warn("Tried to invoke callback with a file that does not match the filter");
+                LOGGER.warn("Attempted to invoke callback with a file that does not match the filter");
                 file = null;
             }
         }
