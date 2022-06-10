@@ -111,7 +111,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.deprecated");
                 tooltip.append(text.withStyle(ChatFormatting.RED)).append("\n");
                 if (deprecatedData.reason() != null) {
-                    tooltip.append(Component.literal("\"" + deprecatedData.reason() + "\"").withStyle(ChatFormatting.RED)).append("");
+                    tooltip.append(new TextComponent("\"" + deprecatedData.reason() + "\"").withStyle(ChatFormatting.RED)).append("");
                 }
             }
             // description
@@ -299,7 +299,12 @@ public class ModConfigScreen extends BlueberryScreen {
 
     private static FormattedText addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
         if (!InternalBlueberryModConfig.Debug.debugModConfigScreen) return tooltip;
-        MutableComponent copy = tooltip.copy().append("\n");
+        MutableComponent copy;
+        if (tooltip.getSiblings().size() == 0) {
+            copy = tooltip.copy();
+        } else {
+            copy = tooltip.copy().append("\n");
+        }
         copy.append(new TextComponent("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]").withStyle(ChatFormatting.GRAY)).append("\n");
         String valueType;
         Object value = config.get();

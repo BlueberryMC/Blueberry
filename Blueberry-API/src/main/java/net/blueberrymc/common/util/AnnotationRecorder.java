@@ -25,7 +25,7 @@ public class AnnotationRecorder {
             @SuppressWarnings("DuplicatedCode") // not many options here :(
             @Override
             @NotNull
-            public MethodVisitor visitMethod(int access, @NotNull String name, @NotNull String descriptor, @NotNull String signature, @NotNull String @NotNull [] exceptions) {
+            public MethodVisitor visitMethod(int access, @NotNull String name, @NotNull String descriptor, @Nullable String signature, @NotNull String @Nullable [] exceptions) {
                 // Create new member
                 AnnotatedMember member = AnnotatedMember.createMutable(new Member(Type.METHOD, name, descriptor));
 
@@ -47,7 +47,7 @@ public class AnnotationRecorder {
             @SuppressWarnings("DuplicatedCode") // not many options here :(
             @Override
             @NotNull
-            public FieldVisitor visitField(int access, @NotNull String name, @NotNull String descriptor, @NotNull String signature, @Nullable Object value) {
+            public FieldVisitor visitField(int access, @NotNull String name, @NotNull String descriptor, @Nullable String signature, @Nullable Object value) {
                 // Create new member
                 AnnotatedMember member = AnnotatedMember.createMutable(new Member(Type.FIELD, name, descriptor));
 
