@@ -17,14 +17,14 @@ public class ModReloadEvent extends CancellableEvent {
     private final BlueberryMod mod;
 
     public ModReloadEvent(@Nullable ServerPlayer player, @NotNull BlueberryMod mod) {
-        Objects.requireNonNull(player, "player cannot be null");
         Objects.requireNonNull(mod, "mod cannot be null");
         this.player = player;
         this.mod = mod;
     }
 
     /**
-     * Checks if player has initiated the mod reload.
+     * Checks if player has initiated the mod reload. This method is applicable only when running on a server, and
+     * always returns null when running on a client.
      * @return true if player is defined, false otherwise.
      */
     public boolean isFromPlayer() {
@@ -33,7 +33,7 @@ public class ModReloadEvent extends CancellableEvent {
 
     /**
      * Get the actor who initiated the mod reload.
-     * @return the player, null if not a player (e.g. console) or done via ModListScreen
+     * @return the player, null if not a player (e.g. console) or done via ModListScreen on a client.
      */
     @Nullable
     public ServerPlayer getPlayer() {
