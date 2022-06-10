@@ -47,6 +47,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 public class JavaCompiler {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -144,61 +145,33 @@ public class JavaCompiler {
             }
         });
         AtomicBoolean first = new AtomicBoolean(true);
-        Files.walk(file.toPath())
-                .map(Path::toFile)
-                .forEach(f -> {
-                    if (throwable.get() != null) return;
-                    if (f.isDirectory()) {
-                        // if dir
-                        File target = new File(tmp, path.relativize(f.toPath()).toString());
-                        if (!target.mkdirs() && !target.getAbsolutePath().equals(tmp.getAbsolutePath())) {
-                            LOGGER.warn("Failed to create directory {} -> {}", f.getAbsolutePath(), target.getAbsolutePath());
+        try (Stream<Path> stream = Files.walk(file.toPath())) {
+            stream.map(Path::toFile)
+                    .forEach(f -> {
+                        if (throwable.get() != null) return;
+                        if (f.isDirectory()) {
+                            // if dir
+                            File target = new File(tmp, path.relativize(f.toPath()).toString());
+                            if (!target.mkdirs() && !target.getAbsolutePath().equals(tmp.getAbsolutePath())) {
+                                LOGGER.warn("Failed to create directory {} -> {}", f.getAbsolutePath(), target.getAbsolutePath());
+                            } else {
+                                LOGGER.debug("Created directory {} -> {}", f.getAbsolutePath(), target.getAbsolutePath());
+                            }
                         } else {
-                            LOGGER.debug("Created directory {} -> {}", f.getAbsolutePath(), target.getAbsolutePath());
-                        }
-                    } else {
-                        // if file
-                        if (f.getName().endsWith(".java")) {
-                            Runnable doCompile = () -> {
-                                String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
-                                LOGGER.info("Compiling: " + rel);
-                                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
-                                    @Override
-                                    public void execute() {
-                                        EarlyLoadingMessageManager.logModCompiler("Compiling: " + rel);
-                                    }
-                                });
-                                compile(file, f, tmp);
-                                if (!new File(tmp, rel).exists()) {
-                                    throwable.set(new RuntimeException("Compilation failed: " + rel));
+                            // if file
+                            if (f.getName().endsWith(".java")) {
+                                Runnable doCompile = () -> {
+                                    String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
+                                    LOGGER.info("Compiling: " + rel);
                                     Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
                                         @Override
                                         public void execute() {
-                                            EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                            EarlyLoadingMessageManager.logModCompiler("Compiling: " + rel);
                                         }
                                     });
-                                    LOGGER.error("Failed to compile: " + rel);
-                                    return;
-                                }
-                                LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
-                                Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
-                                    @Override
-                                    public void execute() {
-                                        EarlyLoadingMessageManager.logModCompiler("Compiled: " + rel);
-                                    }
-                                });
-                            };
-                            if (first.get()) { // to prevent race condition
-                                first.set(false);
-                                doCompile.run();
-                            } else {
-                                compilerExecutor.submit(() -> {
-                                    if (throwable.get() != null) return;
-                                    try {
-                                        doCompile.run();
-                                    } catch (Exception throwable1) {
-                                        String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
-                                        throwable.set(new RuntimeException("Compilation failed: " + rel, throwable1));
+                                    compile(file, f, tmp);
+                                    if (!new File(tmp, rel).exists()) {
+                                        throwable.set(new RuntimeException("Compilation failed: " + rel));
                                         Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
                                             @Override
                                             public void execute() {
@@ -206,20 +179,49 @@ public class JavaCompiler {
                                             }
                                         });
                                         LOGGER.error("Failed to compile: " + rel);
+                                        return;
                                     }
-                                });
-                            }
-                        } else {
-                            File dest = new File(tmp, path.relativize(f.toPath()).toString());
-                            try {
-                                Files.copy(f.toPath(), dest.toPath());
-                                LOGGER.debug("Copied {} -> {}", f.getAbsolutePath(), dest.getAbsolutePath());
-                            } catch (IOException ex) {
-                                LOGGER.warn("Failed to copy {} -> {}", f.getAbsolutePath(), dest.getAbsolutePath(), ex);
+                                    LOGGER.debug("Compiled {} -> {}", f.getAbsolutePath(), tmp.getAbsolutePath());
+                                    Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                        @Override
+                                        public void execute() {
+                                            EarlyLoadingMessageManager.logModCompiler("Compiled: " + rel);
+                                        }
+                                    });
+                                };
+                                if (first.get()) { // to prevent race condition
+                                    first.set(false);
+                                    doCompile.run();
+                                } else {
+                                    compilerExecutor.submit(() -> {
+                                        if (throwable.get() != null) return;
+                                        try {
+                                            doCompile.run();
+                                        } catch (Exception throwable1) {
+                                            String rel = path.relativize(f.toPath()).toString().replaceAll("(.*)\\.java", "$1.class");
+                                            throwable.set(new RuntimeException("Compilation failed: " + rel, throwable1));
+                                            Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
+                                                @Override
+                                                public void execute() {
+                                                    EarlyLoadingMessageManager.logModCompiler("Failed to compile: " + rel);
+                                                }
+                                            });
+                                            LOGGER.error("Failed to compile: " + rel);
+                                        }
+                                    });
+                                }
+                            } else {
+                                File dest = new File(tmp, path.relativize(f.toPath()).toString());
+                                try {
+                                    Files.copy(f.toPath(), dest.toPath());
+                                    LOGGER.debug("Copied {} -> {}", f.getAbsolutePath(), dest.getAbsolutePath());
+                                } catch (IOException ex) {
+                                    LOGGER.warn("Failed to copy {} -> {}", f.getAbsolutePath(), dest.getAbsolutePath(), ex);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+        }
         compilerExecutor.shutdown();
         try {
             if (!compilerExecutor.awaitTermination(5L, TimeUnit.MINUTES)) {
