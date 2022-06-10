@@ -9,6 +9,9 @@ import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.AsciiHeadersEncoder;
+import io.netty.util.AttributeKey;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.common.Blueberry;
@@ -66,7 +69,10 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         cp.add(ClasspathUtil.getClasspath(NotNull.class)); // jetbrains annotations
         cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
-        cp.add(ClasspathUtil.getClasspath(ByteBuf.class)); // netty
+        cp.add(ClasspathUtil.getClasspath(AttributeKey.class)); // netty-common
+        cp.add(ClasspathUtil.getClasspath(AsciiHeadersEncoder.class)); // netty-codec
+        cp.add(ClasspathUtil.getClasspath(Channel.class)); // netty-transport
+        cp.add(ClasspathUtil.getClasspath(ByteBuf.class)); // netty-buffer
         cp.add(ClasspathUtil.getClasspath(NativeUtil.class)); // NativeUtil
         cp.add(ClasspathUtil.getClasspath(Logger.class)); // Log4j2
         Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
