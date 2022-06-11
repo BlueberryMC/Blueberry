@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public record ItemStack(@NotNull Item item, int amount, @Nullable TagCompound tag) {
+    public static final ItemStack EMPTY = new ItemStack(Items.AIR, 0, null);
+
     public ItemStack(@NotNull Item item, int amount) {
         this(item, amount, null);
     }
@@ -43,5 +45,10 @@ public record ItemStack(@NotNull Item item, int amount, @Nullable TagCompound ta
     @Contract(value = "_ -> new", pure = true)
     public @NotNull ItemStack shrink(int amount) {
         return new ItemStack(item, this.amount - amount, tag);
+    }
+
+    @Contract(pure = true)
+    public boolean isEmpty() {
+        return this == EMPTY || this.item.equals(Items.AIR) || this.amount == 0;
     }
 }

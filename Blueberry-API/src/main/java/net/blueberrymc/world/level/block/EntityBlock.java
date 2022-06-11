@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a block that can have block entity.
  */
-public interface EntityBlock {
+public interface EntityBlock extends BlockData {
     @NotNull
     BlockEntity newBlockEntity(@NotNull Vec3i pos, @NotNull BlockState blockState);
 }

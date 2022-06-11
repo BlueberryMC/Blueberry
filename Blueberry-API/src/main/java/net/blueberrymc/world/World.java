@@ -1,13 +1,14 @@
 package net.blueberrymc.world;
 
 import net.blueberrymc.util.Vec3i;
+import net.blueberrymc.world.level.BlueberryLevelAccessor;
 import net.blueberrymc.world.level.block.entity.BlockEntity;
 import net.blueberrymc.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface World {
+public interface World extends BlueberryLevelAccessor {
     /**
      * Gets the block state at the given position.
      * @param pos The position to get the block state at.

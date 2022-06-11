@@ -1,6 +1,7 @@
 package net.blueberrymc.common;
 
 import net.blueberrymc.common.internal.util.ImplGetter;
+import net.blueberrymc.world.item.Item;
 import net.blueberrymc.world.level.block.BlockData;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.ApiStatus;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 
 public interface Registry<T> {
     Registry<BlockData> BLOCK = ofUnsafe("BLOCK", BlockData::ofUnsafe, ImplGetter::getHandleOf);
+    Registry<Item> ITEM = ofUnsafe("ITEM", Item::ofUnsafe, ImplGetter::getHandleOf);
 
     @SuppressWarnings("unchecked")
     @Contract("_, _, _ -> new")

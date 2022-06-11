@@ -5,6 +5,9 @@ import net.blueberrymc.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Blueberry equivalent of Minecraft Block.
+ */
 public interface BlockData {
     @Contract(value = "_ -> new", pure = true)
     @NotNull

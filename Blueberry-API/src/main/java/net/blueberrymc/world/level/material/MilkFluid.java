@@ -1,27 +1,25 @@
 package net.blueberrymc.world.level.material;
 
 import net.blueberrymc.registry.BlueberryRegistries;
+import net.blueberrymc.util.Vec3i;
+import net.blueberrymc.world.World;
 import net.blueberrymc.world.item.Item;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.blueberrymc.world.level.BlockGetter;
+import net.blueberrymc.world.level.LevelAccessor;
+import net.blueberrymc.world.level.block.Block;
+import net.blueberrymc.world.level.block.BlockFace;
+import net.blueberrymc.world.level.block.LiquidBlock;
+import net.blueberrymc.world.level.block.entity.BlockEntity;
+import net.blueberrymc.world.level.block.state.BlockState;
+import net.blueberrymc.world.level.fluid.FlowingFluid;
+import net.blueberrymc.world.level.fluid.Fluid;
+import net.blueberrymc.world.level.fluid.state.FluidState;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,13 +42,14 @@ public abstract class MilkFluid extends FlowingFluid {
         return Objects.requireNonNull(BlueberryRegistries.ITEM.get("blueberry", "milk_bucket"));
     }
 
-    public void animateTick(@NotNull Level level, @NotNull BlockPos blockPos, @NotNull FluidState fluidState, @NotNull Random random) {
-        if (!fluidState.isSource() && !fluidState.getValue(FALLING)) {
+    @Override
+    public void animateTick(@NotNull World world, @NotNull Vec3i pos, @NotNull FluidState state, @NotNull Random random) {
+        if (!state.isSource() && !state.getValue(FALLING)) {
             if (random.nextInt(64) == 0) {
-                level.playLocalSound((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D, SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
+                world.playLocalSound((double) pos.x() + 0.5D, (double) pos.y() + 0.5D, (double) pos.z() + 0.5D, SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
             }
         } else if (random.nextInt(10) == 0) {
-            level.addParticle(ParticleTypes.UNDERWATER, (double)blockPos.getX() + random.nextDouble(), (double)blockPos.getY() + random.nextDouble(), (double)blockPos.getZ() + random.nextDouble(), 0.0D, 0.0D, 0.0D);
+            world.addParticle(ParticleTypes.UNDERWATER, (double) pos.x() + random.nextDouble(), (double) pos.y() + random.nextDouble(), (double) pos.z() + random.nextDouble(), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -63,12 +62,13 @@ public abstract class MilkFluid extends FlowingFluid {
         return true;
     }
 
-    protected void beforeDestroyingBlock(@NotNull LevelAccessor levelAccessor, @NotNull BlockPos blockPos, @NotNull BlockState blockState) {
-        BlockEntity blockEntity = blockState.hasBlockEntity() ? levelAccessor.getBlockEntity(blockPos) : null;
-        Block.dropResources(blockState, levelAccessor, blockPos, blockEntity);
+    protected void beforeDestroyingBlock(@NotNull LevelAccessor levelAccessor, @NotNull Vec3i pos, @NotNull BlockState blockState) {
+        BlockEntity blockEntity = blockState.hasBlockEntity() ? levelAccessor.getBlockEntity(pos) : null;
+        Block.dropResources(blockState, (World) levelAccessor, pos, blockEntity);
     }
 
-    public int getSlopeFindDistance(@NotNull LevelReader levelReader) {
+    @Override
+    public int getSlopeFindDistance(@NotNull World world) {
         return 4;
     }
 
@@ -79,21 +79,25 @@ public abstract class MilkFluid extends FlowingFluid {
                 .setValue(LiquidBlock.LEVEL, getLegacyLevel(fluidState));
     }
 
+    @Override
     public boolean isSame(@NotNull Fluid fluid) {
         return fluid == Source.INSTANCE || fluid == Flowing.INSTANCE;
     }
 
-    public int getDropOff(@NotNull LevelReader levelReader) {
+    @Override
+    public int getDropOff(@NotNull World world) {
         return 1;
     }
 
-    public int getTickDelay(@NotNull LevelReader levelReader) {
+    @Override
+    public int getTickDelay(@NotNull World world) {
         return 5;
     }
 
-    public boolean canBeReplacedWith(@NotNull FluidState fluidState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull Fluid fluid, @NotNull Direction direction) {
+    @Override
+    public boolean canBeReplacedWith(@NotNull FluidState fluidState, @NotNull BlockGetter blockGetter, @NotNull Vec3i pos, @NotNull Fluid fluid, @NotNull BlockFace face) {
         // TODO: it uses deprecated method
-        return direction == Direction.DOWN && !fluid.is(FluidTags.WATER);
+        return face == BlockFace.DOWN && !fluid.is(FluidTags.WATER);
     }
 
     protected float getExplosionResistance() {
