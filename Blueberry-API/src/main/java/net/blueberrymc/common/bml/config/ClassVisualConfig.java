@@ -1,6 +1,6 @@
 package net.blueberrymc.common.bml.config;
 
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

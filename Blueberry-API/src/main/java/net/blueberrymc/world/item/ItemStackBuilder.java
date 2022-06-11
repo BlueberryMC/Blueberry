@@ -1,23 +1,18 @@
 package net.blueberrymc.world.item;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.ItemLike;
+import net.blueberrymc.nbt.TagCompound;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ItemStackBuilder {
     public final Item item;
     public int amount;
     public int damageValue = 0;
-    @Nullable public CompoundTag tag;
+    @Nullable public TagCompound tag;
     @Nullable public Component hoverName;
     @NotNull public final Map<Enchantment, Integer> enchantments = new ConcurrentHashMap<>();
     public int repairCost = 0;
@@ -29,7 +24,7 @@ public class ItemStackBuilder {
 
     @Contract(pure = true)
     @NotNull
-    public static ItemStackBuilder builder(@NotNull ItemLike itemLike, int amount, @Nullable CompoundTag tag) {
+    public static ItemStackBuilder builder(@NotNull ItemLike itemLike, int amount, @Nullable TagCompound tag) {
         return builder(itemLike.asItem(), amount).tag(tag);
     }
 
@@ -47,13 +42,13 @@ public class ItemStackBuilder {
 
     @Contract(pure = true)
     @NotNull
-    public CompoundTag getOrCreateTag() {
+    public TagCompound getOrCreateTag() {
         return this.tag != null ? this.tag : (this.tag = new CompoundTag());
     }
 
     @Contract(pure = true)
     @NotNull
-    public ItemStackBuilder tag(@Nullable CompoundTag tag) {
+    public ItemStackBuilder tag(@Nullable TagCompound tag) {
         this.tag = tag;
         return this;
     }

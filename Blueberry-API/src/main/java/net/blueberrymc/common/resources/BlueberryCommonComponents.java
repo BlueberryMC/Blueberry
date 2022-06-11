@@ -1,11 +1,9 @@
 package net.blueberrymc.common.resources;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.blueberrymc.common.text.BlueberryText;
 
 public class BlueberryCommonComponents {
-    public static final BlueberryText MULTIPLAYER_COMPATIBLE = new BlueberryText("blueberry", "multiplayer.compatible");
-    public static final BlueberryText MULTIPLAYER_INCOMPATIBLE = new BlueberryText("blueberry", "multiplayer.incompatible");
-    public static final BlueberryText MULTIPLAYER_VANILLA = new BlueberryText("blueberry", "multiplayer.vanilla");
-    public static final MutableComponent EMPTY_TEXT = Component.literal("");
+    public static final BlueberryText MULTIPLAYER_COMPATIBLE = BlueberryText.text("blueberry", "multiplayer.compatible");
+    public static final BlueberryText MULTIPLAYER_INCOMPATIBLE = BlueberryText.text("blueberry", "multiplayer.incompatible");
+    public static final BlueberryText MULTIPLAYER_VANILLA = BlueberryText.text("blueberry", "multiplayer.vanilla");
 }

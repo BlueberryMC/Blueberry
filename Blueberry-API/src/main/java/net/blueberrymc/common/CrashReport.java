@@ -10,4 +10,7 @@ public interface CrashReport {
     static CrashReport forThrowable(@NotNull Throwable throwable, @NotNull String message) {
         return (CrashReport) ImplGetter.byMethod("forThrowable", Throwable.class, String.class).apply(throwable, message);
     }
+
+    @NotNull
+    Throwable getException();
 }

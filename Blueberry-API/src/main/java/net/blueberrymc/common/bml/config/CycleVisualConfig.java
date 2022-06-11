@@ -2,7 +2,8 @@ package net.blueberrymc.common.bml.config;
 
 import net.blueberrymc.util.ComponentGetter;
 import net.blueberrymc.util.NameGetter;
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +91,7 @@ public class CycleVisualConfig<T> extends VisualConfig<T> {
     private String getName(T value) {
         if (value == null) return "null";
         if (value instanceof ComponentGetter cg) {
-            return cg.getComponent().getString();
+            return PlainTextComponentSerializer.plainText().serialize(cg.getComponent());
         } else if (value instanceof NameGetter ng) {
             return ng.getName();
         } else if (value instanceof Enum<?> e) {

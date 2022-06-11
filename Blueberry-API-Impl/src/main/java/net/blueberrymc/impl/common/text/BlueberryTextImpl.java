@@ -1,4 +1,4 @@
-package net.blueberrymc.common.resources;
+package net.blueberrymc.impl.common.text;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -6,9 +6,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.text.BlueberryText;
 import net.blueberrymc.common.util.SafeExecutor;
 import net.blueberrymc.network.CustomComponentSerializer;
+import net.blueberrymc.util.Reflected;
+import net.kyori.adventure.text.ComponentLike;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -28,31 +32,34 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlueberryText implements ComponentContents {
+public class BlueberryTextImpl implements ComponentContents, ComponentLike, BlueberryText {
     private static final ConcurrentHashMap<String, Properties> lang = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<>();
     private final String namespace;
     private final String path;
     private final List<Object> args;
 
+    @Reflected
     @Contract(pure = true)
-    public BlueberryText(@NotNull String namespace, @NotNull String path, @Nullable Object@Nullable... arguments) {
+    public BlueberryTextImpl(@NotNull String namespace, @NotNull String path, @Nullable Object@Nullable... arguments) {
         this.namespace = namespace;
         this.path = path;
         this.args = arguments != null ? Arrays.asList(arguments) : null;
     }
 
     @Contract("_, _, _ -> new")
-    public static @NotNull MutableComponent text(@NotNull String namespace, @NotNull String path, @Nullable Object... arguments) {
-        return MutableComponent.create(new BlueberryText(namespace, path, arguments));
+    public static @NotNull Component text(@NotNull String namespace, @NotNull String path, @Nullable Object... arguments) {
+        return MutableComponent.create(new BlueberryTextImpl(namespace, path, arguments));
     }
 
     @NotNull
+    @Override
     public String getNamespace() {
         return namespace;
     }
 
     @NotNull
+    @Override
     public String getPath() {
         return path;
     }
@@ -120,6 +127,7 @@ public class BlueberryText implements ComponentContents {
     }
 
     @NotNull
+    @Override
     public String getContents() {
         String cachePath = String.format("%s:%s:%s", this.namespace, this.path, getLanguageCode());
         if (!cache.containsKey(cachePath)) {
@@ -135,8 +143,9 @@ public class BlueberryText implements ComponentContents {
 
     @Contract(value = "_ -> new", pure = true)
     @NotNull
-    public BlueberryText cloneWithArgs(@Nullable Object@Nullable... args) {
-        return new BlueberryText(namespace, path, args);
+    @Override
+    public BlueberryTextImpl cloneWithArgs(@Nullable Object@Nullable... args) {
+        return new BlueberryTextImpl(namespace, path, args);
     }
 
     @Override
@@ -159,12 +168,17 @@ public class BlueberryText implements ComponentContents {
     }
 
     static {
-        CustomComponentSerializer.registerSerializer(BlueberryText.class, new Serializer());
+        CustomComponentSerializer.registerSerializer(BlueberryTextImpl.class, new Serializer());
     }
 
-    public static class Serializer implements CustomComponentSerializer<BlueberryText> {
+    @Override
+    public net.kyori.adventure.text.@NotNull Component asComponent() {
+        return net.kyori.adventure.text.Component.text(getContents());
+    }
+
+    public static class Serializer implements CustomComponentSerializer<BlueberryTextImpl> {
         @Override
-        public @NotNull JsonElement serialize(@NotNull BlueberryText component, @NotNull JsonSerializationContext context) {
+        public @NotNull JsonElement serialize(@NotNull BlueberryTextImpl component, @NotNull JsonSerializationContext context) {
             JsonObject json = new JsonObject();
             json.addProperty("namespace", component.namespace);
             json.addProperty("path", component.path);
@@ -179,7 +193,7 @@ public class BlueberryText implements ComponentContents {
         }
 
         @Override
-        public @NotNull BlueberryText deserialize(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
+        public @NotNull BlueberryTextImpl deserialize(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
             JsonObject json = element.getAsJsonObject();
             String namespace = json.get("namespace").getAsString();
             String path = json.get("path").getAsString();
@@ -195,7 +209,7 @@ public class BlueberryText implements ComponentContents {
                     args[i] = array.get(i).getAsString();//deserializeGlobal(array.get(i), context);
                 }
             }
-            return new BlueberryText(namespace, path, args);
+            return new BlueberryTextImpl(namespace, path, args);
         }
     }
 }

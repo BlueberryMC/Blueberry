@@ -92,9 +92,7 @@ public class BlueberryClient extends BlueberryUtil {
 
     @Override
     public boolean isOnGameThread() {
-        return RenderSystem.isOnRenderThread()
-                || Thread.currentThread().getName().equals("main")
-                || Thread.currentThread().getName().equals("Server thread"); // may be called from integrated server (logical server)
+        return getImpl().isOnGameThread();
     }
 
     // Blueberry
@@ -205,6 +203,10 @@ public class BlueberryClient extends BlueberryUtil {
             return false;
         }
         return true;
+    }
+
+    public static @NotNull BlueberryClient getInstance() {
+        return Blueberry.getUtil().asClient();
     }
 
     @FunctionalInterface

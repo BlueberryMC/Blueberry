@@ -6,8 +6,8 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfigManager;
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
+import net.blueberrymc.common.text.BlueberryText;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.config.ModDescriptionFile;
@@ -137,7 +137,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                                     //.tab(CreativeModeTabs.TAB_MISC)
                                     .rarity(ItemRarity.EPIC)
                                     .build(),
-                            item -> BlueberryText.text("blueberry", "item.blueberry.3d")
+                            item -> BlueberryText.text("blueberry", "item.blueberry.3d").asComponent()
                     )
             );
         }
@@ -207,7 +207,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         @NotNull
         @Override
         public String getName() {
-            return new BlueberryText("blueberry", "blueberry.mod.config.misc.discord_rpc.status." + name().toLowerCase(Locale.ROOT)).getContents();
+            return BlueberryText.text("blueberry", "blueberry.mod.config.misc.discord_rpc.status." + name().toLowerCase(Locale.ROOT)).getContents();
         }
     }
 }

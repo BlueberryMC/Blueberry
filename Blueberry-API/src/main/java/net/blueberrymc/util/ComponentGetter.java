@@ -1,6 +1,6 @@
 package net.blueberrymc.util;
 
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface

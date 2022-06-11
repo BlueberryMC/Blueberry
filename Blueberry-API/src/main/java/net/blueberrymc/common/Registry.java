@@ -21,6 +21,18 @@ public interface Registry<T> {
         return (Registry<T>) ImplGetter.byMethod("ofUnsafe", String.class, Function.class).apply(name, valueMapper, valueUnmapper);
     }
 
+    @SuppressWarnings("unchecked")
+    @Contract("_, _, _ -> param3")
+    static <R extends T, T> R register(@NotNull Registry<T> registry, @NotNull Key location, @Nullable R object) {
+        return (R) ImplGetter.byMethod("register", Registry.class, Key.class, Object.class).apply(registry, location, object);
+    }
+
+    @NotNull
+    Function<Object, T> valueMapper();
+
+    @NotNull
+    Function<T, Object> valueUnmapper();
+
     @Nullable
     T get(@Nullable Key key);
 
@@ -29,4 +41,9 @@ public interface Registry<T> {
 
     @Nullable
     Key getKey(@NotNull T value);
+
+    @Nullable
+    T byId(int id);
+
+    int getId(@NotNull T value);
 }

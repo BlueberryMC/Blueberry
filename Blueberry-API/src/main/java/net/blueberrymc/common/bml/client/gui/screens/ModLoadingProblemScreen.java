@@ -3,10 +3,12 @@ package net.blueberrymc.common.bml.client.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.screens.BlueberryScreen;
 import net.blueberrymc.common.resources.BlueberryCommonComponents;
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
+import net.blueberrymc.common.text.BlueberryText;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -15,7 +17,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -35,7 +36,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
     }
 
     public ModLoadingProblemScreen(@Nullable Screen screen, @Nullable Runnable callback) {
-        super(BlueberryText.text("blueberry", "gui.screens.mod_loading_problem.title").withStyle(ModLoadingErrors.hasErrors() ? ChatFormatting.RED : ChatFormatting.YELLOW));
+        super(BlueberryText.text("blueberry", "gui.screens.mod_loading_problem.title").asComponent().color(ModLoadingErrors.hasErrors() ? NamedTextColor.RED : NamedTextColor.YELLOW));
         this.screen = screen;
         this.callback = callback;
     }
@@ -133,7 +134,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return BlueberryCommonComponents.EMPTY_TEXT;
+                return Component.empty();
             }
         }
     }

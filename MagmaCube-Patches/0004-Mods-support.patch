@@ -19,12 +19,13 @@ index 05575121e5b84eeb54e5ec2add4cf31e26b7c193..c6ca0edf81e87c3f22276953d0fb6533
              this.windowedX = this.x = monitor.getX() + videoMode.getWidth() / 2 - this.width / 2;
 diff --git a/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..82f560b47ec3def0c2ddf248a4005dfb28538ded
+index 0000000000000000000000000000000000000000..a7c3600502f435aa0814ffe9a3454309682b6fd8
 --- /dev/null
 +++ b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
-@@ -0,0 +1,21 @@
+@@ -0,0 +1,29 @@
 +package net.blueberrymc.client;
 +
++import com.mojang.blaze3d.systems.RenderSystem;
 +import net.minecraft.client.Minecraft;
 +import net.minecraft.client.gui.screens.MenuScreens;
 +import net.minecraft.client.gui.screens.Screen;
@@ -36,6 +37,13 @@ index 0000000000000000000000000000000000000000..82f560b47ec3def0c2ddf248a4005dfb
 +import org.jetbrains.annotations.NotNull;
 +
 +public class BlueberryClientImpl extends BlueberryClient {
++    @Override
++    public boolean isOnGameThread() {
++        return RenderSystem.isOnRenderThread()
++                || Thread.currentThread().getName().equals("main")
++                || Thread.currentThread().getName().equals("Server thread"); // may be called from integrated server (logical server)
++    }
++
 +    public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
 +        Minecraft.getInstance().getBlockEntityRenderDispatcher().registerSpecialRenderer(blockEntityType, blockEntityRenderer);
 +    }

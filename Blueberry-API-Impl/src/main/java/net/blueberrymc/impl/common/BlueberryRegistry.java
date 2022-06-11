@@ -1,5 +1,7 @@
 package net.blueberrymc.impl.common;
 
+import net.blueberrymc.impl.util.KeyUtil;
+import net.blueberrymc.util.Reflected;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -13,10 +15,11 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public record BlueberryRegistry<T>(
-        @NotNull Registry<Object> registry,
+        @NotNull Registry<Object> handle,
         @NotNull Function<Object, T> valueMapper,
         @NotNull Function<T, Object> valueUnmapper) implements net.blueberrymc.common.Registry<T> {
     @SuppressWarnings("unchecked")
+    @Reflected
     @Contract("_, _, _ -> new")
     public static <T> @NotNull BlueberryRegistry<T> ofUnsafe(@NotNull String name, @NotNull Function<Object, T> valueMapper, @NotNull Function<T, Object> valueUnmapper) {
         try {
@@ -34,6 +37,10 @@ public record BlueberryRegistry<T>(
         }
     }
 
+    public static <T> @NotNull Object register(@NotNull net.blueberrymc.common.Registry<T> registry, @NotNull Key location, @Nullable Object object) {
+        return Registry.register(((BlueberryRegistry<T>) registry).handle, KeyUtil.toMinecraft(location), registry.valueUnmapper().apply(object));
+    }
+
     @Nullable
     @Override
     public T get(@Nullable Key key) {
@@ -41,7 +48,7 @@ public record BlueberryRegistry<T>(
         if (key != null) {
             location = new ResourceLocation(key.namespace(), key.value());
         }
-        return valueMapper.apply(registry.get(location));
+        return valueMapper.apply(handle.get(location));
     }
 
     @NotNull
@@ -58,6 +65,16 @@ public record BlueberryRegistry<T>(
     @Nullable
     @Override
     public Key getKey(@NotNull T value) {
-        return (Key) (Object) registry.getKey(valueUnmapper.apply(value));
+        return (Key) (Object) handle.getKey(valueUnmapper.apply(value));
+    }
+
+    @Override
+    public @Nullable T byId(int id) {
+        return valueMapper.apply(handle.byId(id));
+    }
+
+    @Override
+    public int getId(@NotNull T value) {
+        return handle.getId(valueUnmapper.apply(value));
     }
 }

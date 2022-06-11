@@ -1,17 +1,16 @@
 package net.blueberrymc.common.bml.config;
 
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.text.BlueberryText;
 import net.blueberrymc.common.util.DeprecatedData;
 import net.blueberrymc.common.util.ExperimentalData;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.yaml.YamlObject;
 import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.Util;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -45,7 +44,7 @@ public class VisualConfigManager {
             String path = configName.path();
             String name = configName.value();
             if (namespace.length() > 0 && path.length() > 0) {
-                return BlueberryText.text(namespace, path);
+                return BlueberryText.text(namespace, path).asComponent();
             }
             if (namespace.length() == 0 && path.length() > 0) {
                 String theNamespace;
@@ -54,13 +53,13 @@ public class VisualConfigManager {
                 } else {
                     theNamespace = mod.getModId();
                 }
-                return BlueberryText.text(theNamespace, path);
+                return BlueberryText.text(theNamespace, path).asComponent();
             }
             if (namespace.length() == 0 && name.length() > 0) {
-                return Component.literal(name);
+                return Component.text(name);
             }
         }
-        if (mod != null) return Component.literal(mod.getName());
+        if (mod != null) return Component.text(mod.getName());
         return null;
     }
 
@@ -83,7 +82,7 @@ public class VisualConfigManager {
         //Config config = clazz.getAnnotation(Config.class);
         BlueberryMod mod = BlueberryMod.detectModFromClass(clazz);
         Component component = tryGetComponent(mod, clazz.getAnnotation(Name.class));
-        if (component == null) component = Component.literal(clazz.getSimpleName());
+        if (component == null) component = Component.text(clazz.getSimpleName());
         return createFromClass(mod, component, clazz);
     }
 
@@ -489,10 +488,10 @@ public class VisualConfigManager {
     private static Component getDescription(AnnotatedElement element) {
         Description description = element.getAnnotation(Description.class);
         if (description == null) return null;
-        MutableComponent baseComponent = null;
+        Component baseComponent = null;
         for (Name name : description.value()) {
             if (baseComponent != null) {
-                baseComponent.append("\n").append(toComponent(element, name));
+                baseComponent = baseComponent.append(Component.newline()).append(toComponent(element, name));
             } else {
                 baseComponent = toComponent(element, name);
             }
@@ -500,8 +499,8 @@ public class VisualConfigManager {
         return baseComponent;
     }
 
-    private static MutableComponent toComponent(AnnotatedElement element, Name name) {
-        if (name.path().length() == 0) return Component.literal(name.value());
+    private static Component toComponent(AnnotatedElement element, Name name) {
+        if (name.path().length() == 0) return Component.text(name.value());
         String namespace = name.namespace();
         if (namespace.length() == 0) {
             BlueberryMod mod = null;
@@ -518,7 +517,7 @@ public class VisualConfigManager {
                 namespace = "minecraft";
             }
         }
-        return BlueberryText.text(namespace, name.path());
+        return BlueberryText.text(namespace, name.path()).asComponent();
     }
 
     private static boolean shouldSkip(AnnotatedElement element) {
@@ -652,8 +651,8 @@ public class VisualConfigManager {
     /**
      * Specifies the title of config class or friendly name of field. If <code>path</code> (and/or
      * <code>namespace</code>) was provided, {@link BlueberryText} will be used for the text. If <code>path</code> was
-     * not provided but <code>value</code> was provided, {@link net.minecraft.network.chat.contents.LiteralContents}
-     * will be used for the text.
+     * not provided but <code>value</code> was provided, {@link net.kyori.adventure.text.TextComponent} will be used
+     * for the text.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})

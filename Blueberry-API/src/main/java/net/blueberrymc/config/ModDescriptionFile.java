@@ -7,6 +7,7 @@ import net.blueberrymc.config.yaml.YamlObject;
 import net.blueberrymc.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +18,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ModDescriptionFile implements VersionedModInfo {
-    private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
+    private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z\\d][a-zA-Z\\d_-]*$");
     private static final Logger LOGGER = LogManager.getLogger();
     @NotNull protected final String modId;
     @NotNull protected final String version;
@@ -33,7 +34,7 @@ public class ModDescriptionFile implements VersionedModInfo {
     @Nullable protected final String sourceDir;
     @Nullable protected final String include;
 
-    // NOTE: This constructor is NOT an API.
+    @ApiStatus.Internal
     public ModDescriptionFile(@NotNull String modId,
                               @NotNull String version,
                               @NotNull String mainClass,

@@ -3,25 +3,22 @@ package net.blueberrymc.network;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.MutableComponent;
+import net.kyori.adventure.text.ComponentLike;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public interface CustomComponentSerializer<T extends ComponentContents> {
+public interface CustomComponentSerializer<T extends ComponentLike> {
     @NotNull
     Map<Class<?>, CustomComponentSerializer<?>> SERIALIZERS = new ConcurrentHashMap<>();
-    Component.Serializer COMPONENT_SERIALIZER = new Component.Serializer();
+    //Component.Serializer COMPONENT_SERIALIZER = new Component.Serializer();
 
     @NotNull
     @SuppressWarnings("unchecked")
-    private JsonElement serializeUnchecked(@NotNull ComponentContents component, @NotNull JsonSerializationContext context) {
+    private JsonElement serializeUnchecked(@NotNull ComponentLike component, @NotNull JsonSerializationContext context) {
         try {
-            return ((CustomComponentSerializer<ComponentContents>) this).serialize(component, context);
+            return ((CustomComponentSerializer<ComponentLike>) this).serialize(component, context);
         } catch (ClassCastException e) {
             throw new AssertionError("Wrong type of serializer for " + component.getClass().getTypeName(), e);
         }
@@ -33,17 +30,19 @@ public interface CustomComponentSerializer<T extends ComponentContents> {
     @NotNull
     T deserialize(@NotNull JsonElement element, @NotNull JsonDeserializationContext context);
 
+    /*
     @NotNull
     default Object deserializeGlobal(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
         return COMPONENT_SERIALIZER.deserialize(element, element.getClass(), context);
     }
+    */
 
-    static <T extends ComponentContents> void registerSerializer(@NotNull Class<T> componentClass, @NotNull CustomComponentSerializer<T> componentSerializerClass) {
+    static <T extends ComponentLike> void registerSerializer(@NotNull Class<T> componentClass, @NotNull CustomComponentSerializer<T> componentSerializerClass) {
         SERIALIZERS.put(componentClass, componentSerializerClass);
     }
 
     @NotNull
-    static JsonElement callSerialize(@NotNull ComponentContents component, @NotNull JsonSerializationContext context) {
+    static JsonElement callSerialize(@NotNull ComponentLike component, @NotNull JsonSerializationContext context) {
         CustomComponentSerializer<?> serializer = SERIALIZERS.get(component.getClass());
         if (serializer == null) {
             throw new IllegalArgumentException("Don't know how to serialize " + component + " as a Component");
@@ -53,7 +52,7 @@ public interface CustomComponentSerializer<T extends ComponentContents> {
     }
 
     @NotNull
-    static ComponentContents callDeserialize(@NotNull String customComponentType, @NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
+    static ComponentLike callDeserialize(@NotNull String customComponentType, @NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
         CustomComponentSerializer<?> serializer = SERIALIZERS.get(getCustomComponentClass(customComponentType));
         if (serializer == null) {
             throw new IllegalArgumentException("Don't know how to turn " + customComponentType + " into a component\n" +

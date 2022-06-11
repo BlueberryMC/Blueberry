@@ -9,8 +9,8 @@ import net.blueberrymc.common.resources.BlueberryResourceManager;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.config.ModConfig;
 import net.blueberrymc.config.ModDescriptionFile;
+import net.kyori.adventure.text.Component;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +67,7 @@ public class BlueberryMod implements VersionedModInfo {
 
     final void doEnable() {
         getStateList().add(ModState.LOADED);
-        setVisualConfig(new RootCompoundVisualConfig(Component.literal(getName())));
+        setVisualConfig(new RootCompoundVisualConfig(Component.text(getName())));
         onLoad();
         getStateList().add(ModState.PRE_INIT);
         onPreInit();
@@ -86,7 +86,7 @@ public class BlueberryMod implements VersionedModInfo {
             this.config = new ModConfig(this.description);
             this.logger = LogManager.getLogger(this.description.getName());
             this.file = file;
-            this.visualConfig = new RootCompoundVisualConfig(Component.literal(this.description.getName()));
+            this.visualConfig = new RootCompoundVisualConfig(Component.text(this.description.getName()));
             this.onLoad();
         } catch (Throwable throwable) {
             this.stateList.add(ModState.ERRORED);

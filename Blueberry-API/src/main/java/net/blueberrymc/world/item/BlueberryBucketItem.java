@@ -2,10 +2,7 @@ package net.blueberrymc.world.item;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.BlueberryMod;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlueberryBucketItem extends BucketItem {

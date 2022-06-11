@@ -15,11 +15,25 @@ public class ImplGetter {
         if (!typeName.startsWith("net.blueberrymc.")) {
             throw new IllegalArgumentException("Cannot get impl class of " + typeName);
         }
-        String implClassName = "net.blueberrymc.impl." +
-                typeName.substring(16, typeName.lastIndexOf(".") + 1) +
-                "Blueberry" +
-                typeName.substring(typeName.lastIndexOf(".") + 1);
-        return Class.forName(implClassName);
+        String implPackage = "net.blueberrymc.impl." + typeName.substring(16, typeName.lastIndexOf("."));
+        String implClassName = typeName.substring(typeName.lastIndexOf(".") + 1);
+        try {
+            // net.blueberrymc.common.Test -> net.blueberrymc.impl.common.BlueberryTest
+            return Class.forName(implPackage + ".Blueberry" + implClassName);
+        } catch (ClassNotFoundException e) {
+            try {
+                String reallyClassName = implClassName;
+                if (reallyClassName.contains("$")) {
+                    reallyClassName = reallyClassName.substring(0, reallyClassName.indexOf("$"));
+                }
+                String dollar = implClassName.substring(implClassName.indexOf('$'));
+                // net.blueberrymc.common.Test$AAAA -> net.blueberrymc.impl.common.TestImpl$AAAA
+                return Class.forName(implPackage + "." + reallyClassName + "Impl" + dollar);
+            } catch (ClassNotFoundException e1) {
+                e1.addSuppressed(e);
+                throw e1;
+            }
+        }
     }
 
     public static @NotNull VarargFunction<Object, Object> byMethod(@NotNull String name, @NotNull Class<?> @NotNull ... argumentTypes) {
@@ -68,11 +82,12 @@ public class ImplGetter {
     @NotNull
     public static Object getHandleOf(@NotNull Object o) {
         try {
-            return o.getClass().getMethod("handle").invoke(o);
-        } catch (NoSuchMethodException e) {
+            return o.getClass().getField("handle").get(o);
+        } catch (NoSuchFieldException e) {
             try {
                 return o.getClass().getMethod("getHandle").invoke(o);
             } catch (ReflectiveOperationException e1) {
+                e1.addSuppressed(e);
                 throw new RuntimeException(e1);
             }
         } catch (ReflectiveOperationException e) {

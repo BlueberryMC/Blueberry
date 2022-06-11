@@ -8,7 +8,6 @@ import net.blueberrymc.common.util.BlueberryEvil;
 import net.blueberrymc.common.util.SimpleEntry;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.server.BlueberryServer;
-import net.minecraft.CrashReport;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;

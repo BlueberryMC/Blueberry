@@ -1,7 +1,7 @@
 package net.blueberrymc.network;
 
 import net.blueberrymc.common.resources.BlueberryCommonComponents;
-import net.blueberrymc.common.resources.BlueberryText;
+import net.blueberrymc.common.text.BlueberryText;
 import org.jetbrains.annotations.NotNull;
 
 public enum ServerType {

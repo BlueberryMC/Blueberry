@@ -2,7 +2,6 @@ package net.blueberrymc.common;
 
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.common.scheduler.NoopBlueberryScheduler;
-import net.minecraft.CrashReport;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 

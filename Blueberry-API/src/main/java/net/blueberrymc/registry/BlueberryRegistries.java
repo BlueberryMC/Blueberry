@@ -10,7 +10,9 @@ import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.blueberrymc.common.util.VoidSafeExecutor;
+import net.blueberrymc.world.item.Item;
 import net.blueberrymc.world.level.block.BlockData;
+import net.kyori.adventure.key.Key;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -63,6 +65,7 @@ import net.minecraft.world.level.storage.loot.providers.number.LootNumberProvide
 import net.minecraft.world.level.storage.loot.providers.score.LootScoreProviderType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -165,19 +168,19 @@ public final class BlueberryRegistries<T> {
     }
 
     @NotNull
-    public <R extends T> R register(@NotNull String namespace, @NotNull String id, @NotNull R object) {
+    public <R extends T> R register(@Subst("blueberry") @NotNull String namespace, @Subst("item") @NotNull String id, @NotNull R object) {
         //if (has(namespace, id)) return; // TODO: figure out why it returns true even if it's not yet registered
-        return register(new ResourceLocation(namespace, id), object);
+        return register(Key.key(namespace, id), object);
     }
 
     @Nullable
-    public T get(@NotNull ResourceLocation location) {
+    public T get(@NotNull Key location) {
         return registry.get(location);
     }
 
     @Nullable
-    public T get(@NotNull String namespace, @NotNull String id) {
-        return get(new ResourceLocation(namespace, id));
+    public T get(@Subst("blueberry") @NotNull String namespace, @Subst("item") @NotNull String id) {
+        return get(Key.key(namespace, id));
     }
 
     public int getId(@NotNull T t) {
@@ -189,7 +192,7 @@ public final class BlueberryRegistries<T> {
         return registry.byId(id);
     }
 
-    public boolean has(@NotNull ResourceLocation location) {
+    public boolean has(@NotNull Key location) {
         return get(location) != null;
     }
 
@@ -198,7 +201,7 @@ public final class BlueberryRegistries<T> {
     }
 
     @NotNull
-    public <R extends T> R register(@NotNull ResourceLocation location, @NotNull R object) {
+    public <R extends T> R register(@NotNull Key location, @NotNull R object) {
         Preconditions.checkNotNull(location, "ResourceLocation cannot be null");
         Preconditions.checkNotNull(object, "value cannot be null");
         String message = "Registering " + object.getClass().getCanonicalName() + ": " + location;

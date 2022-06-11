@@ -1,9 +1,7 @@
 package net.blueberrymc.world.item;
 
 import net.blueberrymc.common.bml.BlueberryMod;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -16,9 +14,8 @@ public class SimpleBlueberryBucketItem extends BlueberryBucketItem {
         this.toNameFunction = toNameFunction;
     }
 
-    @NotNull
     @Override
-    public Component getName(@NotNull ItemStack itemStack) {
+    public @NotNull Component getName(@NotNull ItemStack itemStack) {
         return toNameFunction.apply(itemStack);
     }
 }

@@ -2,7 +2,7 @@ package net.blueberrymc.common.event.network;
 
 import io.netty.channel.Channel;
 import net.blueberrymc.common.bml.event.Event;
-import net.minecraft.network.protocol.PacketFlow;
+import net.blueberrymc.network.BlueberryPacketFlow;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ConnectionSetupCompressionEvent extends Event {
     protected final Channel channel;
-    protected final PacketFlow flow;
+    protected final BlueberryPacketFlow flow;
     protected final int compressionThreshold;
 
-    public ConnectionSetupCompressionEvent(@NotNull Channel channel, @NotNull PacketFlow flow, int compressionThreshold) {
+    public ConnectionSetupCompressionEvent(@NotNull Channel channel, @NotNull BlueberryPacketFlow flow, int compressionThreshold) {
         super(true);
         this.channel = channel;
         this.flow = flow;
@@ -30,7 +30,7 @@ public class ConnectionSetupCompressionEvent extends Event {
     }
 
     @NotNull
-    public PacketFlow getFlow() {
+    public BlueberryPacketFlow getFlow() {
         return flow;
     }
 

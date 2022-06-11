@@ -1,6 +1,6 @@
 package net.blueberrymc.common.bml.config;
 
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;

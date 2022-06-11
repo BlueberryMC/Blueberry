@@ -20,8 +20,6 @@ import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.nativeutil.NativeUtil;
 import net.blueberrymc.util.ThreadLocalLoggedBufferedOutputStream;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.server.MinecraftServer;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +54,6 @@ public class JavaCompiler {
     static {
         Set<String> cp = new HashSet<>();
         cp.add(ClasspathUtil.getClasspath(Blueberry.class)); // Blueberry-API
-        cp.add(ClasspathUtil.getClasspath(MinecraftServer.class)); // Minecraft
         cp.add(ClasspathUtil.getClasspath(Nonnull.class)); // javax
         cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper
         cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));// ASM
@@ -69,7 +66,6 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
         cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         cp.add(ClasspathUtil.getClasspath(NotNull.class)); // jetbrains annotations
-        cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
         cp.add(ClasspathUtil.getClasspath(AttributeKey.class)); // netty-common
         cp.add(ClasspathUtil.getClasspath(AsciiHeadersEncoder.class)); // netty-codec
         cp.add(ClasspathUtil.getClasspath(Channel.class)); // netty-transport
@@ -79,12 +75,18 @@ public class JavaCompiler {
         Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
             @Override
             public void execute() {
-                cp.add(ClasspathUtil.getClasspath(com.mojang.blaze3d.vertex.PoseStack.class)); // Blaze3d
-                cp.add(ClasspathUtil.getClasspath(org.lwjgl.glfw.GLFW.class)); // LWJGL
+                try {
+                    cp.add(ClasspathUtil.getClasspath(Class.forName("com.mojang.blaze3d.vertex.PoseStack"))); // Blaze3d
+                    cp.add(ClasspathUtil.getClasspath(org.lwjgl.glfw.GLFW.class)); // LWJGL
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         try {
             // these class are not in classpath of Blueberry-API, so we need to do this
+            cp.add(ClasspathUtil.getClasspath(Class.forName("org.apache.commons.io.IOUtils"))); // commons-io
+            cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.server.MinecraftServer"))); // Minecraft
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API
         } catch (ClassNotFoundException e) {
             if (Blueberry.isClient()) {

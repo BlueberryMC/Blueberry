@@ -2,11 +2,20 @@ import net.blueberrymc.gradle.buildSrc.constants.*
 
 version = API_VERSION
 
+val adventureVersion = "4.11.0"
+
 dependencies {
     //compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
     implementation("org.jetbrains:annotations:23.1.0")
     compileOnlyApi("org.jetbrains:annotations:23.1.0")
-    api("net.kyori:adventure-api:4.11.0")
+    compileOnlyApi("com.mojang:brigadier:1.0.18")
+    compileOnlyApi("org.lwjgl:lwjgl:3.2.1")
+    compileOnlyApi("org.lwjgl:lwjgl-glfw:3.2.1")
+    api("net.kyori:adventure-api:$adventureVersion")
+    api("net.kyori:adventure-text-serializer-plain:$adventureVersion")
+    api("net.kyori:adventure-text-serializer-legacy:$adventureVersion")
+    api("net.kyori:adventure-text-serializer-gson:$adventureVersion")
+    api("commons-io:commons-io:2.6")
     api("com.github.JnCrMx:discord-game-sdk4j:v0.5.5")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.google.code.gson:gson:2.10")

@@ -37,10 +37,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,9 +57,9 @@ import java.util.regex.Pattern;
  * Mod config screen, accessible via mod list screen.
  */
 public class ModConfigScreen extends BlueberryScreen {
-    private static final Component UNKNOWN_TEXT = Component.literal("<unknown>").withStyle(ChatFormatting.GRAY);
-    private static final Component BOOLEAN_TRUE = Component.literal("true").withStyle(ChatFormatting.GREEN);
-    private static final Component BOOLEAN_FALSE = Component.literal("false").withStyle(ChatFormatting.RED);
+    private static final Component UNKNOWN_TEXT = Component.text("<unknown>", NamedTextColor.GRAY);
+    private static final Component BOOLEAN_TRUE = Component.text("true", NamedTextColor.GREEN);
+    private static final Component BOOLEAN_FALSE = Component.text("false", NamedTextColor.RED);
     private final List<Consumer<PoseStack>> callbacks = new ArrayList<>();
     private final CompoundVisualConfig compoundVisualConfig;
     private final Screen previousScreen;
