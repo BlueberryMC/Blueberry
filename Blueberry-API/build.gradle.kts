@@ -26,6 +26,7 @@ dependencies {
     api("org.spongepowered:mixin:0.8.5")
     api("net.blueberrymc:native-util:2.1.0")
     api("ca.weblite:java-objc-bridge:1.1")
+    api("org.joml:joml:1.10.4") // for EarlyLoadingScreen
     api("net.minecraft:launchwrapper:1.12") {
         exclude("org.lwjgl.lwjgl", "lwjgl")
         exclude("org.lwjgl", "lwjgl")

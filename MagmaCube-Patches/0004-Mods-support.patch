@@ -4,6 +4,19 @@ Date: Thu, 14 Jan 2021 01:44:46 +0900
 Subject: [PATCH] Mods support
 
 
+diff --git a/src/main/java/com/mojang/blaze3d/platform/Window.java b/src/main/java/com/mojang/blaze3d/platform/Window.java
+index c5e9751449636b329fecd034cdabda11239ec6c3..f7f11a2dff97642bae151c62c982a5cec99525b4 100644
+--- a/src/main/java/com/mojang/blaze3d/platform/Window.java
++++ b/src/main/java/com/mojang/blaze3d/platform/Window.java
+@@ -78,7 +78,7 @@ public final class Window implements AutoCloseable {
+         GLFW.glfwWindowHint(139267, 2);
+         GLFW.glfwWindowHint(139272, 204801);
+         GLFW.glfwWindowHint(139270, 1);
+-        this.window = GLFW.glfwCreateWindow(this.width, this.height, s2, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
++        this.window = net.blueberrymc.client.EarlyLoadingScreen.getInstance().acquireWindowOrGet(() -> GLFW.glfwCreateWindow(this.width, this.height, s2, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L));
+         if (monitor != null) {
+             VideoMode videoMode = monitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
+             this.windowedX = this.x = monitor.getX() + videoMode.getWidth() / 2 - this.width / 2;
 diff --git a/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java b/src/main/java/net/blueberrymc/client/BlueberryClientImpl.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..82f560b47ec3def0c2ddf248a4005dfb28538ded
@@ -241,19 +254,39 @@ index ec06900671bcfa7398d740d4862335fe48f51678..c1295b7da20b86a89b24cbf42de7170f
          if (this.minecraft.showOnlyReducedInfo()) {
              return list;
          } else {
+diff --git a/src/main/java/net/minecraft/client/gui/font/FontManager.java b/src/main/java/net/minecraft/client/gui/font/FontManager.java
+index 532aed64c98da5298be79c44b89cbf63411acb71..4ad4950bffc9cdf792f0d7c0b85d114028a9653d 100644
+--- a/src/main/java/net/minecraft/client/gui/font/FontManager.java
++++ b/src/main/java/net/minecraft/client/gui/font/FontManager.java
+@@ -139,6 +139,7 @@ public class FontManager implements AutoCloseable {
+             });
+             profilerFiller.pop();
+             profilerFiller.endTick();
++            net.minecraft.client.gui.screens.LoadingOverlay.isFontReady = true; // Blueberry
+         }
+ 
+         public String getName() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
-index bd568ad18f934b84466054eb97a0fb07dc703b10..159adba112fa43d8e5dabf830babda208388dbcd 100644
+index bd568ad18f934b84466054eb97a0fb07dc703b10..2f71612c186d6a0a8e17d0778e9adacda6dac44e 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -111,6 +111,7 @@ public class LoadingOverlay extends Overlay {
+@@ -23,6 +23,7 @@ import net.minecraft.util.FastColor;
+ import net.minecraft.util.Mth;
+ 
+ public class LoadingOverlay extends Overlay {
++    public static boolean isFontReady = false; // Blueberry
+     static final ResourceLocation MOJANG_STUDIOS_LOGO_LOCATION = new ResourceLocation("textures/gui/title/mojangstudios.png");
+     private static final int LOGO_BACKGROUND_COLOR = FastColor.ARGB32.color(255, 239, 50, 61);
+     private static final int LOGO_BACKGROUND_COLOR_DARK = FastColor.ARGB32.color(255, 0, 0, 0);
+@@ -111,6 +112,7 @@ public class LoadingOverlay extends Overlay {
          blit(poseStack, i8, i9 - i10, i11, (int)d, 0.0625F, 60.0F, 120, 60, 120, 120);
          RenderSystem.defaultBlendFunc();
          RenderSystem.disableBlend();
-+        net.blueberrymc.client.EarlyLoadingScreen.getInstance().renderMessagesFromGUI(); // Blueberry
++        net.blueberrymc.client.EarlyLoadingScreen.getInstance().renderMessagesFromGUI(poseStack); // Blueberry
          int i12 = (int)((double)this.minecraft.getWindow().getGuiScaledHeight() * 0.8325D);
          float f10 = this.reload.getActualProgress();
          this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + f10 * 0.050000012F, 0.0F, 1.0F);
-@@ -119,6 +120,7 @@ public class LoadingOverlay extends Overlay {
+@@ -119,6 +121,7 @@ public class LoadingOverlay extends Overlay {
          }
  
          if (f2 >= 2.0F) {
@@ -261,7 +294,7 @@ index bd568ad18f934b84466054eb97a0fb07dc703b10..159adba112fa43d8e5dabf830babda20
              this.minecraft.setOverlay((Overlay)null);
          }
  
-@@ -132,6 +134,7 @@ public class LoadingOverlay extends Overlay {
+@@ -132,6 +135,7 @@ public class LoadingOverlay extends Overlay {
  
              this.fadeOutStart = Util.getMillis();
              if (this.minecraft.screen != null) {
