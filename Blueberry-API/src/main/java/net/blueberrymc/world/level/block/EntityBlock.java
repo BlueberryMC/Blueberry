@@ -9,6 +9,17 @@ import org.jetbrains.annotations.NotNull;
  * Represents a block that can have block entity.
  */
 public interface EntityBlock extends BlockData {
+    @Override
+    default boolean isBlockEntity() {
+        return true;
+    }
+
+    /**
+     * Creates a block entity for this block.
+     * @param pos position of the block entity
+     * @param blockState block state
+     * @return block entity
+     */
     @NotNull
     BlockEntity newBlockEntity(@NotNull Vec3i pos, @NotNull BlockState blockState);
 }

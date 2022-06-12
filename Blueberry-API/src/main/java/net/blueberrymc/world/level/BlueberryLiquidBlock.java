@@ -1,7 +1,7 @@
 package net.blueberrymc.world.level;
 
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.material.FlowingFluid;
+import net.blueberrymc.world.level.block.LiquidBlock;
+import net.blueberrymc.world.level.fluid.FlowingFluid;
 import org.jetbrains.annotations.NotNull;
 
 /**

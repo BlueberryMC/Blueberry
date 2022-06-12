@@ -1,4 +1,4 @@
 package net.blueberrymc.world.level.fluid;
 
-public class FlowingFluid extends Fluid {
+public abstract class FlowingFluid extends Fluid {
 }

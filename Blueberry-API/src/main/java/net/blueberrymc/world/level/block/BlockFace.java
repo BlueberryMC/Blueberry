@@ -1,8 +1,14 @@
 package net.blueberrymc.world.level.block;
 
+import net.blueberrymc.util.NameGetter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public enum BlockFace {
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+
+public enum BlockFace implements NameGetter {
     NORTH(0, 0, -1),
     EAST(1, 0, 0),
     SOUTH(0, 0, 1),
@@ -89,5 +95,32 @@ public enum BlockFace {
             case WEST_SOUTH_WEST -> BlockFace.EAST_NORTH_EAST;
             case SELF -> BlockFace.SELF;
         };
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return name();
+    }
+
+    public static final class Plane implements Iterable<BlockFace>, Predicate<BlockFace> {
+        public static final Plane HORIZONTAL = new Plane(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
+        public static final Plane VERTICAL = new Plane(BlockFace.UP, BlockFace.DOWN);
+
+        private final List<BlockFace> faces;
+
+        private Plane(final BlockFace... faces) {
+            this.faces = List.of(faces);
+        }
+
+        @NotNull
+        @Override
+        public Iterator<BlockFace> iterator() {
+            return faces.iterator();
+        }
+
+        @Override
+        public boolean test(@Nullable BlockFace blockFace) {
+            return faces.contains(blockFace);
+        }
     }
 }

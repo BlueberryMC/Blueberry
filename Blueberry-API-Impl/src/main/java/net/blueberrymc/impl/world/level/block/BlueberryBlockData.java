@@ -9,16 +9,23 @@ import net.minecraft.world.level.block.EntityBlock;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+public class BlueberryBlockData extends BlockData {
+    @NotNull
+    private final Block handle;
 
-public record BlueberryBlockData(@NotNull Block handle) implements BlockData {
+    public BlueberryBlockData(@NotNull Block handle) {
+        super(Properties.builder().build());
+        this.handle = handle;
+    }
+
     @Reflected
     public BlueberryBlockData(@NotNull Object o) {
         this((Block) o);
     }
 
-    public BlueberryBlockData {
-        Objects.requireNonNull(handle, "handle");
+    @NotNull
+    public Block getHandle() {
+        return handle;
     }
 
     @Contract(" -> new")

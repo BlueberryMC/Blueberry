@@ -5,13 +5,13 @@ import com.mojang.serialization.Codec;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
 import net.blueberrymc.common.Blueberry;
-import net.blueberrymc.common.Registry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.ModClassLoader;
 import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.blueberrymc.world.item.Item;
 import net.blueberrymc.world.level.block.BlockData;
+import net.blueberrymc.world.level.block.state.BlockState;
 import net.kyori.adventure.key.Key;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -82,12 +82,10 @@ public final class BlueberryRegistries<T> {
 
     public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPES = new BlueberryRegistries<>(BuiltInRegistries.PARTICLE_TYPE);
     public static final BlueberryRegistries<BlockData> BLOCK = new BlueberryRegistries<>(BuiltInRegistries.BLOCK, block -> {
-        /*
         for (BlockState blockState : block.getStateDefinition().getPossibleStates()) {
             Block.BLOCK_STATE_REGISTRY.add(blockState);
         }
         block.getLootTable(); // initialize loot table key
-        */
     });
     public static final BlueberryRegistries<Item> ITEM = new BlueberryRegistries<>(BuiltInRegistries.ITEM);
     public static final BlueberryRegistries<MenuType<?>> MENU = new BlueberryRegistries<>(BuiltInRegistries.MENU);

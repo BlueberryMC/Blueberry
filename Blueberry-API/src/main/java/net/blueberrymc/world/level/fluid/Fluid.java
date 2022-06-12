@@ -1,17 +1,33 @@
 package net.blueberrymc.world.level.fluid;
 
+import net.blueberrymc.tags.TagKey;
 import net.blueberrymc.util.Vec3i;
 import net.blueberrymc.world.World;
 import net.blueberrymc.world.level.BlockGetter;
 import net.blueberrymc.world.level.block.BlockFace;
-import net.blueberrymc.world.level.block.state.BlockState;
+import net.blueberrymc.world.level.block.state.StateDefinition;
+import net.blueberrymc.world.level.block.state.properties.BlockStateProperties;
+import net.blueberrymc.world.level.block.state.properties.BooleanProperty;
+import net.blueberrymc.world.level.block.state.properties.IntegerProperty;
 import net.blueberrymc.world.level.fluid.state.FluidState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
 public abstract class Fluid {
-    public static final BlockState.Property<Integer> LEVEL = BlockState.Property.create("level", Integer.class);
+    public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
+    public static final BooleanProperty FALLING = BlockStateProperties.FALLING;
+
+    private final StateDefinition<Fluid, FluidState> stateDefinition;
+
+    public Fluid() {
+        var builder = StateDefinition.<Fluid, FluidState>builder(this);
+        createFluidStateDefinition(builder);
+        this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
+    }
+
+    protected void createFluidStateDefinition(@NotNull StateDefinition.@NotNull Builder<Fluid, FluidState> builder) {
+    }
 
     protected void animateTick(@NotNull World world, Vec3i pos, @NotNull FluidState state, @NotNull Random random) {
     }
@@ -35,4 +51,6 @@ public abstract class Fluid {
     public int getLegacyLevel(@NotNull FluidState state) {
         return state.getValue(LEVEL);
     }
+
+    public abstract boolean is(@NotNull TagKey<Fluid> tagKey);
 }

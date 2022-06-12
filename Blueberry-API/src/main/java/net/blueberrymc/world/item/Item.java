@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class Item {
     private static final Logger LOGGER = LogManager.getLogger();
+    private final ItemRarity rarity;
 
     public Item(@NotNull Properties properties) {
         if (Constants.IS_RUNNING_IN_IDE) {
@@ -19,10 +20,27 @@ public abstract class Item {
                 LOGGER.error("Item classes should end with Item and {} doesn't.", s);
             }
         }
+        this.rarity = properties.getRarity();
     }
 
     @NotNull
     public abstract Component getName(@NotNull ItemStack itemStack);
+
+    @NotNull
+    public ItemRarity getRawRarity() {
+        return rarity;
+    }
+
+    /**
+     * Create a new item with the given minecraft item instance.
+     * @param o the instance
+     * @return the item
+     */
+    @Contract(value = "_ -> new", pure = true)
+    @NotNull
+    public static Item ofUnsafe(@NotNull Object o) {
+        return (Item) ImplGetter.byConstructor(Object.class).apply(o);
+    }
 
     public interface Properties {
         @Contract(" -> new")
@@ -30,6 +48,18 @@ public abstract class Item {
         static Builder builder() {
             return (Builder) ImplGetter.byMethod("builder").apply();
         }
+
+        int getMaxStackSize();
+
+        int getMaxDamage();
+
+        @Nullable
+        Item getCraftRemainder();
+
+        @NotNull
+        ItemRarity getRarity();
+
+        boolean isFireResistant();
 
         interface Builder {
             /**
@@ -82,6 +112,21 @@ public abstract class Item {
 
             /**
              * Sets whether the item (as an entity form) survives the fire.
+             * @param fireResistant true if the item survives the fire, false otherwise
+             * @return this builder
+             */
+            @Contract(value = "_ -> this", mutates = "this")
+            @NotNull
+            default Builder fireResistant(boolean fireResistant) {
+                if (fireResistant) {
+                    return this.fireResistant();
+                } else {
+                    return this;
+                }
+            }
+
+            /**
+             * Sets the item (as an entity form) to survives the fire.
              * @return this builder
              */
             @Contract(value = "-> this", mutates = "this")

@@ -1,7 +1,8 @@
 package net.blueberrymc.world.level.block;
 
-import net.blueberrymc.world.level.block.state.BlockState;
+import net.blueberrymc.world.level.block.state.properties.BlockStateProperties;
+import net.blueberrymc.world.level.block.state.properties.IntegerProperty;
 
-public class LiquidBlock {
-    public static final BlockState.Property<Integer> LEVEL = BlockState.Property.create("level", Integer.class);
+public abstract class LiquidBlock extends BlockData {
+    public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
 }

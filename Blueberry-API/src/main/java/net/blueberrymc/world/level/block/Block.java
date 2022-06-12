@@ -2,7 +2,7 @@ package net.blueberrymc.world.level.block;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Location;
-import net.blueberrymc.util.Vec3;
+import net.blueberrymc.common.internal.util.ImplGetter;
 import net.blueberrymc.util.Vec3i;
 import net.blueberrymc.world.Chunk;
 import net.blueberrymc.world.World;
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Represents a block that exists in the world at a specific location.
@@ -221,84 +220,52 @@ public class Block {
         return pos.z();
     }
 
-    // TODO: probably easier to delegate to ImplGetter
+    @SuppressWarnings("unchecked")
     @NotNull
     public static List<@NotNull ItemStack> getDrops(@NotNull BlockState state, @NotNull World world, @NotNull Vec3i pos, @Nullable BlockEntity blockEntity) {
-        LootContext.Builder builder = LootContext.builder(world)
-                .withRandom(world.getRandom())
-                .withParameter(LootContextParams.ORIGIN, pos.toBlockVec3())
-                .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
-                .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
-        return state.getDrops(builder);
+        return (List<ItemStack>) ImplGetter.byMethod("getDrops", BlockState.class, World.class, Vec3i.class, BlockEntity.class)
+                .apply(state, world, pos, blockEntity);
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
     public static List<@NotNull ItemStack> getDrops(@NotNull BlockState state, @NotNull World world, @NotNull Vec3i pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, @NotNull ItemStack itemStack) {
-        LootContext.Builder builder = LootContext.builder(world)
-                .withRandom(world.getRandom())
-                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .withParameter(LootContextParams.TOOL, itemStack)
-                .withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
-                .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
-        return state.getDrops(builder);
+        return (List<ItemStack>) ImplGetter.byMethod("getDrops", BlockState.class, World.class, Vec3i.class, BlockEntity.class, Entity.class, ItemStack.class)
+                .apply(state, world, pos, blockEntity, entity, itemStack);
     }
 
     public static void dropResources(@NotNull BlockState state, @NotNull World world, @NotNull Vec3i pos) {
         if (!world.isClientSide()) {
-            getDrops(state, world, pos, null).forEach((itemStack) -> popResource(world, pos, itemStack));
-            state.spawnAfterBreak(world, pos, ItemStack.EMPTY, true);
+            ImplGetter.byMethod("dropResources", BlockState.class, World.class, Vec3i.class)
+                    .apply(state, world, pos);
         }
-
     }
 
     public static void dropResources(@NotNull BlockState state, @NotNull World world, @NotNull Vec3i pos, @Nullable BlockEntity blockEntity) {
         if (!world.isClientSide()) {
-            getDrops(state, world, pos, blockEntity).forEach((itemStack) -> popResource(world, pos, itemStack));
-            state.spawnAfterBreak(world, pos, ItemStack.EMPTY, true);
+            ImplGetter.byMethod("dropResources", BlockState.class, World.class, Vec3i.class, BlockEntity.class)
+                    .apply(state, world, pos, blockEntity);
         }
-
     }
 
     public static void dropResources(@NotNull BlockState state, @NotNull World world, @NotNull Vec3i pos, @Nullable BlockEntity blockEntity, @NotNull Entity entity, @NotNull ItemStack itemStack) {
         if (!world.isClientSide()) {
-            getDrops(state, world, pos, blockEntity, entity, itemStack).forEach((itemStackx) -> popResource(world, pos, itemStackx));
-            state.spawnAfterBreak(world, pos, itemStack, true);
+            ImplGetter.byMethod("dropResources", BlockState.class, World.class, Vec3i.class, BlockEntity.class, Entity.class, ItemStack.class)
+                    .apply(state, world, pos, blockEntity, entity, itemStack);
         }
-
     }
 
     public static void popResource(@NotNull World world, @NotNull Vec3i pos, @NotNull ItemStack itemStack) {
-        float divHeight = EntityType.ITEM.getHeight() / 2.0F;
-        double x = (double) ((float) pos.x() + 0.5F) + Mth.nextDouble(world.getRandom(), -0.25D, 0.25D);
-        double y = (double) ((float) pos.y() + 0.5F) + Mth.nextDouble(world.getRandom(), -0.25D, 0.25D) - (double) divHeight;
-        double z = (double) ((float) pos.z() + 0.5F) + Mth.nextDouble(world.getRandom(), -0.25D, 0.25D);
-        popResource(world, () -> new ItemEntity(world, x, y, z, itemStack), itemStack);
+        if (!world.isClientSide()) {
+            ImplGetter.byMethod("popResource", World.class, Vec3i.class, ItemStack.class)
+                    .apply(world, pos, itemStack);
+        }
     }
 
-    public static void popResourceFromFace(@NotNull World world, @NotNull Vec3i pos, @NotNull BlockFace direction, ItemStack itemStack) {
-        int modX = direction.getModX();
-        int modY = direction.getModY();
-        int modZ = direction.getModZ();
-        float divWidth = EntityType.ITEM.getWidth() / 2.0F;
-        float divHeight = EntityType.ITEM.getHeight() / 2.0F;
-        double d = (double) ((float) pos.x() + 0.5F) + (modX == 0 ? Mth.nextDouble(world.getRandom(), -0.25D, 0.25D) : (double) ((float) modX * (0.5F + divWidth)));
-        double d2 = (double) ((float) pos.y() + 0.5F) + (modY == 0 ? Mth.nextDouble(world.getRandom(), -0.25D, 0.25D) : (double) ((float) modY * (0.5F + divHeight))) - (double) divHeight;
-        double d3 = (double) ((float) pos.z() + 0.5F) + (modZ == 0 ? Mth.nextDouble(world.getRandom(), -0.25D, 0.25D) : (double) ((float) modZ * (0.5F + divWidth)));
-        double d4 = modX == 0 ? Mth.nextDouble(world.getRandom(), -0.1D, 0.1D) : (double) modX * 0.1D;
-        double d5 = modY == 0 ? Mth.nextDouble(world.getRandom(), 0.0D, 0.1D) : (double) modY * 0.1D + 0.1D;
-        double d6 = modZ == 0 ? Mth.nextDouble(world.getRandom(), -0.1D, 0.1D) : (double) modZ * 0.1D;
-        popResource(world, () -> new ItemEntity(world, d, d2, d3, itemStack, d4, d5, d6), itemStack);
-    }
-
-    private static void popResource(@NotNull World world, Supplier<ItemEntity> supplier, @NotNull ItemStack itemStack) {
-        if (!world.isClientSide() && !itemStack.isEmpty() && world.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-            ItemEntity itemEntity = (ItemEntity) supplier.get();
-            itemEntity.setDefaultPickUpDelay();
-            List<ItemEntity> drops = world.captureDrops.get();
-            if (drops != null) {
-                drops.add(itemEntity); return;
-            } // Blueberry
-            world.addFreshEntity(itemEntity);
+    public static void popResourceFromFace(@NotNull World world, @NotNull Vec3i pos, @NotNull BlockFace direction, @NotNull ItemStack itemStack) {
+        if (!world.isClientSide()) {
+            ImplGetter.byMethod("popResourceFromFace", World.class, Vec3i.class, BlockFace.class, ItemStack.class)
+                    .apply(world, pos, direction, itemStack);
         }
     }
 }

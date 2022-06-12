@@ -1,8 +1,10 @@
 package net.blueberrymc.impl.world;
 
+import net.blueberrymc.impl.util.MinecraftRandomSource;
 import net.blueberrymc.impl.util.PositionUtil;
 import net.blueberrymc.impl.world.level.block.entity.BlueberryBlockEntity;
 import net.blueberrymc.impl.world.level.block.state.BlueberryBlockState;
+import net.blueberrymc.util.RandomSource;
 import net.blueberrymc.util.Vec3i;
 import net.blueberrymc.world.Chunk;
 import net.blueberrymc.world.World;
@@ -15,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Random;
 
 public record BlueberryWorld(@NotNull Level handle) implements World {
     public BlueberryWorld {
@@ -59,6 +62,11 @@ public record BlueberryWorld(@NotNull Level handle) implements World {
     @Override
     public void removeBlockEntity(@NotNull Vec3i pos) {
         handle.removeBlockEntity(PositionUtil.toBlockPos(pos));
+    }
+
+    @Override
+    public @NotNull RandomSource getRandom() {
+        return new MinecraftRandomSource(handle.getRandom());
     }
 
     @Override

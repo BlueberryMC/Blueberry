@@ -1,8 +1,9 @@
-package net.blueberrymc.common;
+package net.blueberrymc.registry;
 
 import net.blueberrymc.common.internal.util.ImplGetter;
 import net.blueberrymc.world.item.Item;
 import net.blueberrymc.world.level.block.BlockData;
+import net.blueberrymc.world.level.fluid.Fluid;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -14,6 +15,7 @@ import java.util.function.Function;
 public interface Registry<T> {
     Registry<BlockData> BLOCK = ofUnsafe("BLOCK", BlockData::ofUnsafe, ImplGetter::getHandleOf);
     Registry<Item> ITEM = ofUnsafe("ITEM", Item::ofUnsafe, ImplGetter::getHandleOf);
+    ResourceKey<Registry<Fluid>> FLUID_REGISTRY = ResourceKey.ofUnsafeRegistryField("FLUID_REGISTRY");
 
     @SuppressWarnings("unchecked")
     @Contract("_, _, _ -> new")

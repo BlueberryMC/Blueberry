@@ -8,9 +8,23 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ImplGetter {
-    private static @NotNull Class<?> getImplClass(@NotNull Class<?> apiClass) throws ClassNotFoundException {
+    private static final Map<Class<?>, Class<?>> CLASS_MAP = new ConcurrentHashMap<>();
+
+    private static @NotNull Class<?> getImplClass(@NotNull Class<?> apiClass) {
+        return CLASS_MAP.computeIfAbsent(apiClass, cl -> {
+            try {
+                return _getImplClass(cl);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private static @NotNull Class<?> _getImplClass(@NotNull Class<?> apiClass) throws ClassNotFoundException {
         String typeName = apiClass.getTypeName();
         if (!typeName.startsWith("net.blueberrymc.")) {
             throw new IllegalArgumentException("Cannot get impl class of " + typeName);

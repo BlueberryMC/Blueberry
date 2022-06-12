@@ -7,8 +7,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public record ItemStack(@NotNull Item item, int amount, @Nullable TagCompound tag) {
+public class ItemStack {
     public static final ItemStack EMPTY = new ItemStack(Items.AIR, 0, null);
+    @NotNull
+    private final Item item;
+    private final int amount;
+    @Nullable
+    private final TagCompound tag;
+
+    public ItemStack(@NotNull Item item, int amount, @Nullable TagCompound tag) {
+        Objects.requireNonNull(item, "item");
+        this.item = item;
+        this.amount = amount;
+        this.tag = tag;
+    }
 
     public ItemStack(@NotNull Item item, int amount) {
         this(item, amount, null);
@@ -18,22 +30,32 @@ public record ItemStack(@NotNull Item item, int amount, @Nullable TagCompound ta
         this(item, 1, null);
     }
 
-    public ItemStack {
-        Objects.requireNonNull(item, "item");
+    @NotNull
+    public Item item() {
+        return item;
+    }
+
+    public int amount() {
+        return amount;
+    }
+
+    @Nullable
+    public TagCompound tag() {
+        return tag;
     }
 
     @Contract(value = "_ -> new", pure = true)
-    public @NotNull ItemStack withTag(@Nullable TagCompound tag) {
+    public @NotNull ItemStack tag(@Nullable TagCompound tag) {
         return new ItemStack(item, amount, tag);
     }
 
     @Contract(value = "_ -> new", pure = true)
-    public @NotNull ItemStack withAmount(int amount) {
+    public @NotNull ItemStack amount(int amount) {
         return new ItemStack(item, amount, tag);
     }
 
     @Contract(value = "_ -> new", pure = true)
-    public @NotNull ItemStack withItem(@NotNull Item item) {
+    public @NotNull ItemStack item(@NotNull Item item) {
         return new ItemStack(item, amount, tag);
     }
 

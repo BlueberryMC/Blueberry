@@ -1,6 +1,8 @@
 package net.blueberrymc.world.level.material;
 
 import net.blueberrymc.registry.BlueberryRegistries;
+import net.blueberrymc.tags.FluidTags;
+import net.blueberrymc.tags.TagKey;
 import net.blueberrymc.util.Vec3i;
 import net.blueberrymc.world.World;
 import net.blueberrymc.world.item.Item;
@@ -11,6 +13,7 @@ import net.blueberrymc.world.level.block.BlockFace;
 import net.blueberrymc.world.level.block.LiquidBlock;
 import net.blueberrymc.world.level.block.entity.BlockEntity;
 import net.blueberrymc.world.level.block.state.BlockState;
+import net.blueberrymc.world.level.block.state.StateDefinition;
 import net.blueberrymc.world.level.fluid.FlowingFluid;
 import net.blueberrymc.world.level.fluid.Fluid;
 import net.blueberrymc.world.level.fluid.state.FluidState;
@@ -18,7 +21,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.state.StateDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -122,6 +124,11 @@ public abstract class MilkFluid extends FlowingFluid {
         public boolean isSource(@NotNull FluidState fluidState) {
             return false;
         }
+
+        @Override
+        public boolean is(@NotNull TagKey<Fluid> tagKey) {
+            return tagKey == FluidTags.WATER;
+        }
     }
 
     public static class Source extends MilkFluid {
@@ -136,6 +143,12 @@ public abstract class MilkFluid extends FlowingFluid {
 
         public boolean isSource(@NotNull FluidState fluidState) {
             return true;
+        }
+
+
+        @Override
+        public boolean is(@NotNull TagKey<Fluid> tagKey) {
+            return tagKey == FluidTags.WATER;
         }
     }
 }

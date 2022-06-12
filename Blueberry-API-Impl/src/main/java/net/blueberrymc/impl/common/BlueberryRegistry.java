@@ -17,7 +17,7 @@ import java.util.function.Function;
 public record BlueberryRegistry<T>(
         @NotNull Registry<Object> handle,
         @NotNull Function<Object, T> valueMapper,
-        @NotNull Function<T, Object> valueUnmapper) implements net.blueberrymc.common.Registry<T> {
+        @NotNull Function<T, Object> valueUnmapper) implements net.blueberrymc.registry.Registry<T> {
     @SuppressWarnings("unchecked")
     @Reflected
     @Contract("_, _, _ -> new")
@@ -37,8 +37,12 @@ public record BlueberryRegistry<T>(
         }
     }
 
-    public static <T> @NotNull Object register(@NotNull net.blueberrymc.common.Registry<T> registry, @NotNull Key location, @Nullable Object object) {
-        return Registry.register(((BlueberryRegistry<T>) registry).handle, KeyUtil.toMinecraft(location), registry.valueUnmapper().apply(object));
+    public static <T> @NotNull T register(@NotNull net.blueberrymc.registry.Registry<T> registry, @NotNull Key location, @Nullable T object) {
+        var value = Registry.register(
+                ((BlueberryRegistry<T>) registry).handle,
+                KeyUtil.toMinecraft(location),
+                registry.valueUnmapper().apply(object));
+        return registry.valueMapper().apply(value);
     }
 
     @Nullable

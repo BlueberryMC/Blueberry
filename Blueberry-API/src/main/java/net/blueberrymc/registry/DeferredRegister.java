@@ -1,6 +1,5 @@
 package net.blueberrymc.registry;
 
-import net.blueberrymc.common.Registry;
 import net.kyori.adventure.key.Key;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;

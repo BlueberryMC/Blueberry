@@ -244,4 +244,14 @@ public class Util {
             throw new RuntimeException(throwable);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Contract(pure = true)
+    public static <T> T @NotNull [] map(byte @NotNull [] bytes, @NotNull Function<@NotNull Byte, T> mapFn) {
+        T[] array = (T[]) new Object[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            array[i] = mapFn.apply(bytes[i]);
+        }
+        return array;
+    }
 }

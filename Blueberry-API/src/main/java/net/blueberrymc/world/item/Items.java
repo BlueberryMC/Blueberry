@@ -1,6 +1,6 @@
 package net.blueberrymc.world.item;
 
-import net.blueberrymc.common.Registry;
+import net.blueberrymc.registry.Registry;
 import net.kyori.adventure.key.Key;
 
 public class Items {

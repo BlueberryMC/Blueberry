@@ -1,4 +1,8 @@
 package net.blueberrymc.nbt;
 
-public interface Tag {
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.NonExtendable
+public interface Tag extends BinaryTagHolder {
 }
