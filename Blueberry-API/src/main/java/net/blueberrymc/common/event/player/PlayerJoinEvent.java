@@ -1,7 +1,7 @@
 package net.blueberrymc.common.event.player;
 
 import net.blueberrymc.common.bml.event.Event;
-import net.minecraft.server.level.ServerPlayer;
+import net.blueberrymc.server.entity.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

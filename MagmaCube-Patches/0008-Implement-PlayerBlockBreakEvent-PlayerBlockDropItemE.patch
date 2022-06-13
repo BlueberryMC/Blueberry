@@ -5,7 +5,7 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6fa67df875 100644
+index 5e7db30a99bb813e95f26db621cf2b0fbb8fed38..4edcb3d0fac31bc37367b2d42b79b2aab4bd674b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 @@ -221,9 +221,39 @@ public class ServerPlayerGameMode {
@@ -75,7 +75,7 @@ index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6f
 +                }
 +                // Blueberry start
 +                if (event.isDropItems()) {
-+                    net.blueberrymc.common.event.EventFactory.handlePlayerBlockDropItemEvent(level, blockPos, blockState, this.player, level.captureDrops.get());
++                    net.blueberrymc.impl.common.event.EventFactory.handlePlayerBlockDropItemEvent(level, blockPos, blockState, this.player, level.captureDrops.get());
 +                }
 +                level.captureDrops.set(null);
 +                if (flag) {
