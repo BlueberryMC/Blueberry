@@ -26,7 +26,7 @@ jobs:
           BN: ${{ secrets[steps.getMajorVersion.outputs.value] }}
       - uses: hmanzur/actions-set-secret@v2.0.0
         with:
-          name: 'BUILD_NUMBER'
+          name: ${{ steps.getMajorVersion.outputs.value }}
           value: ${{ steps.generateNextBuildNumber.outputs.value }}
           token: ${{ secrets.TOKEN }}
       - run: "echo 'Current build number (this number will be masked!): '$CBN', next build number: '$NBN"
@@ -45,7 +45,7 @@ jobs:
       - name: Get major version
         id: getMajorVersion
         run: |
-          MINECRAFT_VERSION=(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
+          MINECRAFT_VERSION=$(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
           MINECRAFT_VERSION=${MINECRAFT_VERSION%.*}
           echo "::set-output name=value::$MINECRAFT_VERSION"
       - name: Setup git
