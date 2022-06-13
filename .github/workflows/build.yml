@@ -42,6 +42,8 @@ jobs:
         env:
           CBN: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
           NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
+    outputs:
+      major_version: ${{ env.MAJOR_VERSION }}
   gradle-build:
     runs-on: ubuntu-latest
     strategy:
@@ -52,7 +54,7 @@ jobs:
       - get_major_version
       - update_build_number
     env:
-      MAJOR_VERSION: ${{ needs.get_major_version.outputs.major_version }}
+      MAJOR_VERSION: ${{ needs.update_build_number.outputs.major_version }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup git
