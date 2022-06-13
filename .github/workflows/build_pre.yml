@@ -2,7 +2,7 @@ name: CI (pre)
 on:
   push:
     branches:
-      - 'dev/1.19'
+      - 'dev/**'
   workflow_dispatch:
 jobs:
   gradle-build:
