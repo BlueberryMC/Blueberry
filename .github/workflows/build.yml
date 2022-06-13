@@ -2,7 +2,8 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - '*'
+      - 'ver/*'
   workflow_dispatch:
 jobs:
   # the problem is that the numbers are going to be masked because of the secrets
