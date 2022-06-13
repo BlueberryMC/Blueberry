@@ -74,7 +74,7 @@ jobs:
       - name: Install MagmaCube
         run: 'cd MagmaCube && mvn -B clean install'
       - name: Run test
-        run: './gradlew test --info --stacktrace'
+        run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER test --info --stacktrace'
         env:
           BUILD_NUMBER: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
       - name: Bake installer
