@@ -7,31 +7,40 @@ on:
   workflow_dispatch:
 jobs:
   # the problem is that the numbers are going to be masked because of the secrets
-  update-build-number:
+  get_major_version:
     runs-on: ubuntu-latest
-    name: "Update build number"
+    name: "Get major version"
     steps:
       - uses: actions/checkout@v2
       - name: Get major version
         id: getMajorVersion
         run: |
           MINECRAFT_VERSION=$(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
-          MINECRAFT_VERSION=${MINECRAFT_VERSION%.*}
           echo "Detected major version: $MINECRAFT_VERSION"
-          echo "::set-output name=value::BUILD_NUMBER_$MINECRAFT_VERSION"
+          echo "::set-output name=value::$MINECRAFT_VERSION"
+    outputs:
+      major_version: ${{ steps.getMajorVersion.outputs.value }}
+  update_build_number:
+    runs-on: ubuntu-latest
+    name: "Update build number"
+    needs:
+      - get_major_version
+    env:
+      MAJOR_VERSION: ${{ needs.update_build_number.outputs.major_version }}
+    steps:
       - name: Generate next build number
         run: 'echo "::set-output name=value::$(($BN + 1))"'
         id: generateNextBuildNumber
         env:
-          BN: ${{ secrets[steps.getMajorVersion.outputs.value] }}
+          BN: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
       - uses: hmanzur/actions-set-secret@v2.0.0
         with:
-          name: ${{ steps.getMajorVersion.outputs.value }}
+          name: ${{ format('BUILD_NUMBER_{0}', env.MAJOR_VERSION) }}
           value: ${{ steps.generateNextBuildNumber.outputs.value }}
           token: ${{ secrets.TOKEN }}
       - run: "echo 'Current build number (this number will be masked!): '$CBN', next build number: '$NBN"
         env:
-          CBN: ${{ secrets[steps.getMajorVersion.outputs.value] }}
+          CBN: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
           NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
   gradle-build:
     runs-on: ubuntu-latest
@@ -39,15 +48,13 @@ jobs:
       matrix:
         java: [ '17' ]
     name: "Gradle (Java ${{ matrix.Java }})"
-    needs: [update-build-number]
+    needs:
+      - get_major_version
+      - update_build_number
+    env:
+      MAJOR_VERSION: ${{ needs.update_build_number.outputs.major_version }}
     steps:
       - uses: actions/checkout@v2
-      - name: Get major version
-        id: getMajorVersion
-        run: |
-          MINECRAFT_VERSION=$(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
-          MINECRAFT_VERSION=${MINECRAFT_VERSION%.*}
-          echo "::set-output name=value::$MINECRAFT_VERSION"
       - name: Setup git
         run: 'git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"'
       - name: Setup Java JDK
@@ -66,15 +73,17 @@ jobs:
         run: 'cd MagmaCube && mvn -B clean install'
       - name: Run test
         run: './gradlew test --info --stacktrace'
+        env:
+          BUILD_NUMBER: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
       - name: Bake installer
         run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
         env:
-          BUILD_NUMBER: ${{ secrets[steps.getMajorVersion.outputs.value] }}
+          BUILD_NUMBER: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
       - name: Retrieve version
         run: 'echo "::set-output name=version::$(./gradlew -q --console plain -PBUILD_NUMBER=$BUILD_NUMBER printVersion)"'
         id: retrieveVersion
         env:
-          BUILD_NUMBER: ${{ secrets[steps.getMajorVersion.outputs.value] }}
+          BUILD_NUMBER: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
       - name: Release new build
         uses: softprops/action-gh-release@v1
         with:
