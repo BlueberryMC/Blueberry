@@ -29,7 +29,7 @@ public final class ReflectionHelper {
      * @param clazz the class
      * @throws RuntimeException if class or constructor was not found
      * @return new instance
-     * @deprecated Slow & Inefficient
+     * @deprecated Slow and Inefficient
      */
     @Deprecated(since = "1.5.0-SNAPSHOT", forRemoval = true)
     @DeprecatedReason("Slow & Inefficient")
