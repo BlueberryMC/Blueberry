@@ -17,12 +17,12 @@ jobs:
         run: |
           MINECRAFT_VERSION=(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"(.*)\"/\1/")
           MINECRAFT_VERSION=${MINECRAFT_VERSION%.*}
-          echo "::set-output name=value::$MINECRAFT_VERSION"
+          echo "::set-output name=value::BUILD_NUMBER_$MINECRAFT_VERSION"
       - name: Generate next build number
         run: 'echo "::set-output name=value::$(($BN + 1))"'
         id: generateNextBuildNumber
         env:
-          BN: ${{ secrets['BUILD_NUMBER_' + steps.getMajorVersion.outputs.value] }}
+          BN: ${{ secrets[steps.getMajorVersion.outputs.value] }}
       - uses: hmanzur/actions-set-secret@v2.0.0
         with:
           name: 'BUILD_NUMBER'
@@ -30,7 +30,7 @@ jobs:
           token: ${{ secrets.TOKEN }}
       - run: "echo 'Current build number (this number will be masked!): '$CBN', next build number: '$NBN"
         env:
-          CBN: ${{ secrets['BUILD_NUMBER_' + steps.getMajorVersion.outputs.value] }}
+          CBN: ${{ secrets[steps.getMajorVersion.outputs.value] }}
           NBN: ${{ steps.generateNextBuildNumber.outputs.value }}
   gradle-build:
     runs-on: ubuntu-latest
@@ -68,12 +68,12 @@ jobs:
       - name: Bake installer
         run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
         env:
-          BUILD_NUMBER: ${{ secrets['BUILD_NUMBER_' + steps.getMajorVersion.outputs.value] }}
+          BUILD_NUMBER: ${{ secrets[steps.getMajorVersion.outputs.value] }}
       - name: Retrieve version
         run: 'echo "::set-output name=version::$(./gradlew -q --console plain -PBUILD_NUMBER=$BUILD_NUMBER printVersion)"'
         id: retrieveVersion
         env:
-          BUILD_NUMBER: ${{ secrets['BUILD_NUMBER_' + steps.getMajorVersion.outputs.value] }}
+          BUILD_NUMBER: ${{ secrets[steps.getMajorVersion.outputs.value] }}
       - name: Release new build
         uses: softprops/action-gh-release@v1
         with:
