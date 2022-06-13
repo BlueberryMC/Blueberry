@@ -63,7 +63,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: 'gradle'
+          #cache: 'gradle'
       #      - name: Update submodules
       #        run: "git submodule update --init && cd MagmaCube && git submodule update --init && cd .."
       - name: "Apply patches (MagmaCube)"
