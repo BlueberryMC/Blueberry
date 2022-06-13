@@ -1,6 +1,6 @@
 package net.blueberrymc.gradle.buildSrc.constants
 
-const val API_VERSION = "1.4.1-SNAPSHOT"
+const val API_VERSION = "1.4.2-SNAPSHOT"
 const val TTS_VERSION = "1.12.4"
 const val LOG4J_VERSION = "2.17.1"
 const val LWJGL_VERSION = "3.2.2"
