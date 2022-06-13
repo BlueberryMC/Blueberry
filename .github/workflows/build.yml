@@ -2,8 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - '*'
-      - 'ver/*'
+      - '**'
   workflow_dispatch:
 jobs:
   # the problem is that the numbers are going to be masked because of the secrets
@@ -94,6 +93,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ !startsWith(github.ref_name, 'ver/') && github.ref_name != 'main' && github.ref_name != 'master' }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
