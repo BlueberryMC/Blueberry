@@ -15,8 +15,9 @@ jobs:
       - name: Get major version
         id: getMajorVersion
         run: |
-          MINECRAFT_VERSION=$(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"(.*)\"/\1/")
+          MINECRAFT_VERSION=$(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
           MINECRAFT_VERSION=${MINECRAFT_VERSION%.*}
+          echo "Detected major version: $MINECRAFT_VERSION"
           echo "::set-output name=value::BUILD_NUMBER_$MINECRAFT_VERSION"
       - name: Generate next build number
         run: 'echo "::set-output name=value::$(($BN + 1))"'
@@ -44,7 +45,7 @@ jobs:
       - name: Get major version
         id: getMajorVersion
         run: |
-          MINECRAFT_VERSION=(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"(.*)\"/\1/")
+          MINECRAFT_VERSION=(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
           MINECRAFT_VERSION=${MINECRAFT_VERSION%.*}
           echo "::set-output name=value::$MINECRAFT_VERSION"
       - name: Setup git
