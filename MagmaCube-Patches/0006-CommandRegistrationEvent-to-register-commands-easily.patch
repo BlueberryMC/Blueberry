@@ -5,10 +5,10 @@ Subject: [PATCH] CommandRegistrationEvent to register commands easily
 
 
 diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
-index de29ef1f06ce19d796db6aa7b03a62156660d1df..cd1f1b11c0ea154cf9e2c900590bef0dace5fcae 100644
+index e271671b9a1042c352bba35f051a7b7ca558970c..d23b72821d82cb75438aaa73829507b450eace38 100644
 --- a/src/main/java/net/minecraft/commands/Commands.java
 +++ b/src/main/java/net/minecraft/commands/Commands.java
-@@ -172,6 +172,7 @@ public class Commands {
+@@ -173,6 +173,7 @@ public class Commands {
          TriggerCommand.register(this.dispatcher);
          WeatherCommand.register(this.dispatcher);
          WorldBorderCommand.register(this.dispatcher);

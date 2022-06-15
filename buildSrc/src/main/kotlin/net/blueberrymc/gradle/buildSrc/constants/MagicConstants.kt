@@ -4,10 +4,12 @@ const val API_VERSION = "1.5.0-SNAPSHOT"
 const val TTS_VERSION = "1.13.9"
 const val LOG4J_VERSION = "2.17.1"
 const val LWJGL_VERSION = "3.3.1"
-const val MINECRAFT_VERSION = "1.19"
-const val CLIENT_JAR_URL = "https://launcher.mojang.com/v1/objects/c0898ec7c6a5a2eaa317770203a1554260699994/client.jar"
-const val SERVER_JAR_URL = "https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar"
-const val CLIENT_MAPPING_URL = "https://launcher.mojang.com/v1/objects/150346d1c0b4acec0b4eb7f58b86e3ea1aa730f3/client.txt"
+@Suppress("unused") // see .github/workflows/build.yml
+const val MAJOR_VERSION = "1.19"
+const val MINECRAFT_VERSION = "22w24a"
+const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/dc26b29eb345cbb60e3939af0b7c78fa52a60daa/client.jar"
+const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/fdad42550c3f0bcdc52680dcebd5b712d32bc5d7/server.jar"
+const val CLIENT_MAPPING_URL = "https://piston-data.mojang.com/v1/objects/e30571a5d3b123b42dcf141570ed0737434e8c4c/client.txt"
 const val MAPPING_VERSION = "22w05a"
 const val KOTLIN_VERSION = "1.6.10"
 
@@ -20,11 +22,11 @@ val SERVER_REPOSITORIES_LIST = listOf(
 val SERVER_LIBRARIES_LIST = listOf(
     "com.google.guava:guava:31.0.1-jre",
     "it.unimi.dsi:fastutil:8.5.6",
-    "io.netty:netty-all:4.1.76.Final",
+    "io.netty:netty-all:4.1.77.Final",
     "com.mojang:brigadier:1.0.18",
     "com.mojang:datafixerupper:5.0.28",
     "com.mojang:javabridge:1.2.24",
-    "com.mojang:authlib:3.5.41",
+    "com.mojang:authlib:3.6.42",
     "com.mojang:logging:1.0.0",
     "net.java.dev.jna:jna:5.9.0",
     "net.java.dev.jna:jna-platform:5.9.0",

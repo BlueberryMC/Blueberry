@@ -191,8 +191,8 @@ public class FileDialogScreen extends BlueberryScreen {
         }
 
         @Override
-        protected void renderList(@NotNull PoseStack poseStack, int rowLeft, int i2, int mouseX, int mouseY, float deltaFrameTime) {
-            super.renderList(poseStack, rowLeft, i2, mouseX, mouseY, deltaFrameTime);
+        protected void renderList(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
+            super.renderList(poseStack, mouseX, mouseY, deltaFrameTime);
             int itemCount = this.getItemCount();
 
             for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
@@ -203,13 +203,13 @@ public class FileDialogScreen extends BlueberryScreen {
                     int rowWidth = this.getRowWidth();
                     if (this.isSelectedItem(itemIndex)) {
                         if (entry.file.isDirectory()) {
-                            cdButton.x = rowLeft + rowWidth;
+                            cdButton.x = getRowLeft() + rowWidth;
                             cdButton.y = rowTop - 3;
                             cdButton.visible = true;
                             cdButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
                             if (options.fileType() == FileDialogScreenOptions.FileType.DIRECTORY ||
                                     options.fileType() == FileDialogScreenOptions.FileType.ALL) {
-                                selectButton.x = rowLeft + rowWidth + 22;
+                                selectButton.x = getRowLeft() + rowWidth + 22;
                                 selectButton.y = rowTop - 3;
                                 selectButton.visible = true;
                                 selectButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
@@ -218,7 +218,7 @@ public class FileDialogScreen extends BlueberryScreen {
                             }
                         } else {
                             cdButton.visible = false;
-                            selectButton.x = rowLeft + rowWidth;
+                            selectButton.x = getRowLeft() + rowWidth;
                             selectButton.y = rowTop - 3;
                             selectButton.visible = true;
                             selectButton.render(poseStack, mouseX, mouseY, deltaFrameTime);

@@ -14,7 +14,7 @@ jobs:
       - name: Get major version
         id: getMajorVersion
         run: |
-          MINECRAFT_VERSION=$(grep MINECRAFT_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
+          MINECRAFT_VERSION=$(grep MAJOR_VERSION buildSrc/src/main/kotlin/net/blueberrymc/gradle/buildSrc/constants/MagicConstants.kt | sed -r "s/.*= \"([0-9]+\\.[0-9]+)(\\.[0-9]+)?\"/\1/" | sed s/\\./_/)
           echo "Detected major version: $MINECRAFT_VERSION"
           echo "::set-output name=value::$MINECRAFT_VERSION"
     outputs:
