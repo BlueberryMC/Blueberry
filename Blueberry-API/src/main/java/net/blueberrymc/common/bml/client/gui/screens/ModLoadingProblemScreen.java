@@ -1,8 +1,8 @@
 package net.blueberrymc.common.bml.client.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.blueberrymc.client.gui.BlueberryGuiComponents;
 import net.blueberrymc.client.gui.screens.BlueberryScreen;
+import net.blueberrymc.common.resources.BlueberryCommonComponents;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
@@ -132,7 +132,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return BlueberryGuiComponents.EMPTY_TEXT;
+                return BlueberryCommonComponents.EMPTY_TEXT;
             }
         }
     }

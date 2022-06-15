@@ -11,6 +11,8 @@ import net.blueberrymc.network.CustomComponentSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +35,11 @@ public class BlueberryText extends BaseComponent {
         this.namespace = namespace;
         this.path = path;
         this.args = arguments != null ? Arrays.asList(arguments) : null;
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull BlueberryText text(@NotNull String namespace, @NotNull String path, @Nullable Object@Nullable... arguments) {
+        return new BlueberryText(namespace, path, arguments);
     }
 
     @NotNull
@@ -122,8 +129,13 @@ public class BlueberryText extends BaseComponent {
         return text;
     }
 
+    /**
+     * @deprecated This method will be removed in 1.5.0 due to Minecraft changes.
+     */
     @NotNull
     @Override
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.5.0")
+    @Deprecated(forRemoval = true)
     public BaseComponent plainCopy() {
         return new BlueberryText(this.namespace, this.path);
     }
@@ -131,6 +143,15 @@ public class BlueberryText extends BaseComponent {
     @NotNull
     public BlueberryText cloneWithArgs(@Nullable Object@Nullable... args) {
         return new BlueberryText(namespace, path, args);
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "BlueberryText{" +
+                "namespace='" + namespace + '\'' +
+                ", path='" + path + '\'' +
+                ", args=" + args +
+                '}';
     }
 
     static {

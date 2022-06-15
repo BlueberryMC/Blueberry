@@ -58,7 +58,7 @@ public class ModListScreen extends BlueberryScreen {
             this.minecraft.setScreen(this.previousScreen);
             this.minecraft.setScreen(new ModListScreen(this.previousScreen));
         }));
-        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, new TranslatableComponent("structure_block.mode.load"), (button) ->
+        this.addRenderableWidget(new Button(this.width / 2 - 50, this.height - 38, 96, 20, BlueberryText.text("blueberry", "gui.screens.mods.load"), (button) ->
                 this.minecraft.setScreen(FileDialogScreen.create(
                         this,
                         FileDialogScreenOptions
