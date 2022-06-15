@@ -101,7 +101,7 @@ jobs:
           path: '*-installer.jar'
       - name: Deploy build
         run: |
-          echo "V=${V%.*}"
-          curl -X PUT -H "Authorization: Bearer ${{ secrets.DEPLOY_SECRET_KEY }}" https://api.blueberrymc.net/v1/projects/blueberry/version_groups/well_anything_can_be_put_here/builds/${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}?repo=${{ github.repository }}&commit=${{ github.sha }}&versionGroup=${{ env.MAJOR_VERSION }}&version=$V&branch=${{ github.ref_name }}"
+          V=${V%.*}
+          curl -X PUT -H "Authorization: Bearer ${{ secrets.DEPLOY_SECRET_KEY }}" "https://api.blueberrymc.net/v1/projects/blueberry/version_groups/well_anything_can_be_put_here/builds/${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}?repo=${{ github.repository }}&commit=${{ github.sha }}&versionGroup=${{ env.MAJOR_VERSION }}&version=$V&branch=${{ github.ref_name }}"
         env:
           V: ${{ steps.retrieveVersion.outputs.version }}
