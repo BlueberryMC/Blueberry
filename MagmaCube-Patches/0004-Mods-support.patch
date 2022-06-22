@@ -99,10 +99,10 @@ index da5ac7b22dd629ec1fffcdabc35743c161c5d611..89ff780da13eb16eb1a06fa4652c8604
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf17ff1b02 100644
+index a072b7833bb19a4c36e3864a0607e340b4948740..a380300a103db76a57d85c5d3f796c9dff575688 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -453,7 +453,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -458,7 +458,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear(ON_OSX);
@@ -112,7 +112,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode);
-@@ -467,6 +469,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -472,6 +474,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.splashManager = new SplashManager(this.user);
          this.resourceManager.registerReloadListener(this.splashManager);
          this.musicManager = new MusicManager(this);
@@ -120,7 +120,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
          this.fontManager = new FontManager(this.textureManager);
          this.font = this.fontManager.createFont();
          this.resourceManager.registerReloadListener(this.fontManager.getReloadListener());
-@@ -485,6 +488,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -490,6 +493,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer, this::getItemRenderer, this::getEntityRenderDispatcher);
          this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
          BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -128,7 +128,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
          this.resourceManager.registerReloadListener(blockEntityWithoutLevelRenderer);
          this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
          this.resourceManager.registerReloadListener(this.itemRenderer);
-@@ -537,6 +541,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -543,6 +547,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.reportingContext = ReportingContext.create(ReportEnvironment.local(), this.userApiService);
          LoadingOverlay.registerTextures(this);
          List<PackResources> list = this.resourcePackRepository.openAllSelected();
@@ -136,19 +136,29 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
          this.reloadStateTracker.startReload(ResourceLoadStateTracker.ReloadReason.INITIAL, list);
          this.setOverlay(new LoadingOverlay(this, this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
                  if (SharedConstants.IS_RUNNING_IN_IDE) {
-@@ -546,9 +551,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -552,8 +557,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.reloadStateTracker.finishReload();
              }), false));
          if (s != null) {
 -            ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null);
 +            this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(() -> ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null))); // Blueberry
+         } else if (this.shouldShowBanNotice()) {
++            this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(() -> { // Blueberry
+             this.setScreen(BanNoticeScreen.create((flag) -> {
+                 if (flag) {
+                     Util.getPlatform().openUri("https://aka.ms/mcjavamoderation");
+@@ -561,8 +567,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+ 
+                 this.setScreen(new TitleScreen(true));
+             }, this.multiplayerBan()));
++            })); // Blueberry
          } else {
 -            this.setScreen(new TitleScreen(true));
 +            this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(new TitleScreen())); // Blueberry
          }
  
      }
-@@ -725,9 +730,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -739,9 +746,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
      }
  
      public static void crash(CrashReport crashReport) {
@@ -160,7 +170,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
          if (crashReport.getSaveFile() != null) {
              Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getSaveFile());
              System.exit(-1);
-@@ -880,6 +886,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -894,6 +902,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
          this.screen = screen;
          BufferUploader.reset();
@@ -168,7 +178,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
          if (screen != null) {
              this.mouseHandler.releaseMouse();
              KeyMapping.releaseAll();
-@@ -895,6 +902,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -909,6 +918,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
  
      public void setOverlay(@Nullable Overlay overlay) {
          this.overlay = overlay;
@@ -176,7 +186,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
      }
  
      public void destroy() {
-@@ -919,6 +927,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -933,6 +943,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.screen.removed();
              }
  
@@ -184,7 +194,7 @@ index 39ac42c69f34a2acb2c2975b6f37675751944c50..2c9ffb158155991c907a040fb2e9cebf
              this.close();
          } finally {
              Util.timeSource = System::nanoTime;
-@@ -1703,6 +1712,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -1717,6 +1728,10 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
              this.pendingConnection.tick();
          }
  
@@ -716,6 +726,20 @@ index 43f39473c5ef3de9e53e6722bea6a0a58382526e..f5254cecd40e9d643cb59316e929560a
      void handleStatusResponse(ClientboundStatusResponsePacket var1);
  
      void handlePongResponse(ClientboundPongResponsePacket var1);
+diff --git a/src/main/java/net/minecraft/server/Bootstrap.java b/src/main/java/net/minecraft/server/Bootstrap.java
+index 02f7c1a286a7b04be87bfca8bd7f2dbd186b0879..6c2ed40b1bdd9e566bcc48093f732d8965e83efe 100644
+--- a/src/main/java/net/minecraft/server/Bootstrap.java
++++ b/src/main/java/net/minecraft/server/Bootstrap.java
+@@ -52,7 +52,8 @@ public class Bootstrap {
+                     EntitySelectorOptions.bootStrap();
+                     DispenseItemBehavior.bootStrap();
+                     CauldronInteraction.bootStrap();
+-                    Registry.freezeBuiltins();
++                    //Registry.freezeBuiltins(); // Blueberry - don't freeze registries
++                    net.blueberrymc.common.event.lifecycle.RegistryBootstrappedEvent.fire(); // Blueberry
+                     wrapStreams();
+                 }
+             }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
 index 3ef4b97f18968f75213c7d3ce9276d91b46e26c9..3dddac41cf3163217f932217c90e6f21a69c8a68 100644
 --- a/src/main/java/net/minecraft/server/Main.java

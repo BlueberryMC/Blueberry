@@ -18,7 +18,7 @@ index 545dd6362633a1fabf73cbcc68e87bd90df23b17..e2ba61d1ecf81c74bd7be2a4cccd0daf
          return ImmutableSet.of(this.namespace);
      }
 diff --git a/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
-index 2faeab1ffca93dae4357b353dfd671100615926b..a4e414c694239c5e136c4d60b6318e4667d73314 100644
+index 62e8b49a734836c9ba3511b31ab5c37c93c8c568..a1e674d1e9a63e2ac4c97c15c9e40fc59f1ed3e6 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
 @@ -22,7 +22,7 @@ public class MultiPackResourceManager implements CloseableResourceManager {
@@ -28,7 +28,7 @@ index 2faeab1ffca93dae4357b353dfd671100615926b..a4e414c694239c5e136c4d60b6318e46
 -        this.packs = List.copyOf(list);
 +        this.packs = new java.util.ArrayList<>(list); // Blueberry
          Map<String, FallbackResourceManager> map = new HashMap();
-         List<String> list2 = list.stream().flatMap((packResourcesx) -> packResourcesx.getNamespaces(packType).stream()).toList();
+         List<String> list2 = list.stream().flatMap((packResourcesx) -> packResourcesx.getNamespaces(packType).stream()).distinct().toList();
  
 @@ -106,4 +106,6 @@ public class MultiPackResourceManager implements CloseableResourceManager {
      public void close() {

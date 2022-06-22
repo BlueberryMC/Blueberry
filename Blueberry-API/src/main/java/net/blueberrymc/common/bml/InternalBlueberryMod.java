@@ -2,8 +2,6 @@ package net.blueberrymc.common.bml;
 
 import net.blueberrymc.client.command.ClientBlueberryCommand;
 import net.blueberrymc.client.commands.ClientCommandManager;
-import net.blueberrymc.command.argument.ArgumentTypes;
-import net.blueberrymc.command.argument.ModIdArgument;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
@@ -16,7 +14,6 @@ import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.util.NameGetter;
 import net.blueberrymc.world.item.SimpleBlueberryItem;
-import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -41,14 +38,26 @@ public class InternalBlueberryMod extends BlueberryMod {
 
     @Override
     public void onLoad() {
+        // debug
         getLogger().debug("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getTypeName());
+
+        // discord rich presence
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
+
+        // config
         onReload();
         this.setVisualConfig(VisualConfigManager.createFromClass(InternalBlueberryModConfig.class));
+
+        // events & side-specific code
+        InternalBlueberryModListener listener = new InternalBlueberryModListener(this);
+        Blueberry.getEventManager().registerEvents(this, listener);
         Blueberry.safeRunOnClient(() -> new VoidSafeExecutor() {
             @Override
             public void execute() {
+                // config
                 InternalBlueberryMod.this.getVisualConfig().onSave(InternalBlueberryMod.this::saveConfig);
+
+                // start scheduler
                 Blueberry.getUtil().getClientSchedulerOptional().ifPresent(scheduler ->
                         CLIENT_TIMER.scheduleAtFixedRate(new TimerTask() {
                             @Override
@@ -57,11 +66,20 @@ public class InternalBlueberryMod extends BlueberryMod {
                             }
                         }, 1, 1)
                 ).ifNotPresent(CLIENT_TIMER::cancel);
-                Blueberry.getEventManager().registerEvents(InternalBlueberryMod.this, new InternalBlueberryModListener(InternalBlueberryMod.this).createClient());
+
+                // register events
+                Blueberry.getEventManager().registerEvents(InternalBlueberryMod.this, listener.createClient());
+
+                // register /cblueberry client command
                 ClientCommandManager.register("cblueberry", new ClientBlueberryCommand());
             }
         });
-        Blueberry.runOnServer(() -> Blueberry.getEventManager().registerEvents(this, new InternalBlueberryModListener(this).createServer()));
+        Blueberry.runOnServer(() -> {
+            // register events
+            Blueberry.getEventManager().registerEvents(this, listener.createServer());
+        });
+
+        // start scheduler
         AbstractBlueberryScheduler serverScheduler = Blueberry.getUtil().getServerScheduler();
         SERVER_TIMER.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -82,7 +100,6 @@ public class InternalBlueberryMod extends BlueberryMod {
     @Override
     public void onPreInit() {
         Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
-        registerArgumentTypes();
         registerFluids();
         registerBlocks();
         registerItems();
@@ -150,10 +167,6 @@ public class InternalBlueberryMod extends BlueberryMod {
     }
 
     private void registerFluids() {
-    }
-
-    private void registerArgumentTypes() {
-        ArgumentTypes.register("blueberry:modid", ModIdArgument.class, SingletonArgumentInfo.contextFree(ModIdArgument::modId));
     }
 
     @Override

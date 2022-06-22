@@ -13,7 +13,7 @@ dependencies {
     api("com.mojang:brigadier:1.0.18")
     api("com.mojang:datafixerupper:5.0.28")
     api("com.mojang:javabridge:1.2.24")
-    api("com.mojang:authlib:3.6.42")
+    api("com.mojang:authlib:3.7.43")
     api("it.unimi.dsi:fastutil:8.5.6")
     api("io.netty:netty-all:4.1.77.Final")
     api("org.apache.commons:commons-lang3:3.12.0")
