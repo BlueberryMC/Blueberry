@@ -24,7 +24,7 @@ index 9ba4374027ccd13cf1e66b8ad08fca26373de98a..cbd867e174226153f835f9424b7a6c7d
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-index 2827091043f1da00c9180c9080df4387119fb100..ab68c19127060df914dfd00e479095434039acda 100644
+index 6c5aba67775e36df4c3f83fcb763ec441a477703..0614372b6e0679e3d6c6d70e71edc801d8918842 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 @@ -368,6 +368,12 @@ public class ChatScreen extends Screen {
@@ -37,6 +37,6 @@ index 2827091043f1da00c9180c9080df4387119fb100..ab68c19127060df914dfd00e47909543
 +                    return;
 +                }
 +                // Blueberry end
-                 this.minecraft.player.command(s.substring(1), component);
+                 this.minecraft.player.commandSigned(s.substring(1), component);
              } else {
-                 this.minecraft.player.chat(s, component);
+                 this.minecraft.player.chatSigned(s, component);

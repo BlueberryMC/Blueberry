@@ -106,10 +106,10 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 136d10927e3efabdfe34c189b9d8979f962e55e1..a6b76519fbc30f27d69c8c36ed1125b730280432 100644
+index efd8c5e54d6dc065c8d804bb80be80df3adcfcbc..c93e788570cf513e13c02c8e764c7e1289b7c2ad 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -102,7 +102,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -101,7 +101,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
      }
  
      public void handleAcceptedLogin() {
@@ -118,7 +118,7 @@ index 136d10927e3efabdfe34c189b9d8979f962e55e1..a6b76519fbc30f27d69c8c36ed1125b7
              this.gameProfile = this.createFakeProfile(this.gameProfile);
          }
  
-@@ -136,6 +136,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -149,6 +149,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
  
      }
  
@@ -137,7 +137,7 @@ index 136d10927e3efabdfe34c189b9d8979f962e55e1..a6b76519fbc30f27d69c8c36ed1125b7
      private void placeNewPlayer(ServerPlayer serverPlayer) {
          this.server.getPlayerList().placeNewPlayer(this.connection, serverPlayer);
      }
-@@ -198,6 +210,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -200,6 +212,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
                  this.state = ServerLoginPacketListenerImpl.State.KEY;
                  this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
              } else {

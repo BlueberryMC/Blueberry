@@ -5,13 +5,13 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index 7b77755e90db7b0663cbe061212a9dfa9d12f450..a37fbd0a4325469f5446c6c759434fa6fc763f37 100644
+index de2ae33240e1dcb534188e5fbdb57d8ce9aee349..25d55fc101cf9fe1d0d05797ff94c436c807599d 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -291,6 +291,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+@@ -292,6 +292,13 @@ public class LocalPlayer extends AbstractClientPlayer {
      }
  
-     public void chat(String s, @Nullable Component component) {
+     public void chatSigned(String s, @Nullable Component component) {
 +        // Blueberry start - fire ClientLocalPlayerChatEvent
 +        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
 +        if (!event.callEvent()) {

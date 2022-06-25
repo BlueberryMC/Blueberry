@@ -99,7 +99,7 @@ index da5ac7b22dd629ec1fffcdabc35743c161c5d611..89ff780da13eb16eb1a06fa4652c8604
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index a072b7833bb19a4c36e3864a0607e340b4948740..a380300a103db76a57d85c5d3f796c9dff575688 100644
+index 334c25a4127f6dddda3c966f25800e2b1c102a04..e79b97b31579b95bca90981a8a47f2463d1cb2e9 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -458,7 +458,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
@@ -240,7 +240,7 @@ index d625340ebe571852dee8f27f2b21a94d165098bc..9ec59c1de0aeb17cec0824d71bfbf8e5
  
      public static double defaultUnfocusedPct() {
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index ec06900671bcfa7398d740d4862335fe48f51678..c1295b7da20b86a89b24cbf42de7170f989792c7 100644
+index dd5afa387626ec17d7cbcd321339ea7c1e2aa360..f157710920eb09e9d14bcde4f838301d1130ac59 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -71,6 +71,7 @@ import net.minecraft.world.level.levelgen.RandomState;
@@ -313,7 +313,7 @@ index bd568ad18f934b84466054eb97a0fb07dc703b10..2f71612c186d6a0a8e17d0778e9adacd
              }
          }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
-index 12d02997948d80bde5f5b22ecd88cde9ddb4dd9c..8610e7a0e9be110ae481e489277dc54a80a36e70 100644
+index 6b97783b50be4ba3d7fc3aff064472e773487bfb..7b36ed5c6b00654cc7e4d40fe09bd66b9a4b9877 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/PauseScreen.java
 @@ -83,6 +83,7 @@ public class PauseScreen extends Screen {
@@ -325,10 +325,10 @@ index 12d02997948d80bde5f5b22ecd88cde9ddb4dd9c..8610e7a0e9be110ae481e489277dc54a
  
      public void tick() {
 diff --git a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-index c2b12c1ac9d96aab4878d15013a65fddd601680b..7d62589c65471dbe9f2cc89a12c6cf67758077bc 100644
+index 91c4d21d32e80cb7c0d686a0bbd915cc3972e1cb..4aa322223035381776fd75e1c57eecc74e19d879 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -154,7 +154,8 @@ public class TitleScreen extends Screen {
+@@ -151,7 +151,8 @@ public class TitleScreen extends Screen {
              Screen screen = (Screen)(this.minecraft.options.skipMultiplayerWarning ? new JoinMultiplayerScreen(this) : new SafetyScreen(this));
              this.minecraft.setScreen(screen);
          }, onTooltip))).active = flag;
@@ -337,8 +337,8 @@ index c2b12c1ac9d96aab4878d15013a65fddd601680b..7d62589c65471dbe9f2cc89a12c6cf67
 +        (this.addRenderableWidget(new Button(this.width / 2 + 2, i + i2 * 2, 98, 20, Component.translatable("menu.online"), (button) -> this.realmsButtonClicked(), onTooltip))).active = flag;
      }
  
-     private void createDemoMenuOptions(int i, int i2) {
-@@ -303,8 +304,12 @@ public class TitleScreen extends Screen {
+     @Nullable
+@@ -314,8 +315,12 @@ public class TitleScreen extends Screen {
                  s = s + I18n.get("menu.modded");
              }
  

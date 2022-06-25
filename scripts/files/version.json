@@ -107,10 +107,10 @@
   },
   "assetIndex": {
     "id": "1.19",
-    "sha1": "72f061c25c8a96c4b8dd9b5609a6da6a8fb7fd73",
-    "size": 385216,
-    "totalSize": 553651102,
-    "url": "https://launchermeta.mojang.com/v1/packages/72f061c25c8a96c4b8dd9b5609a6da6a8fb7fd73/1.19.json"
+    "sha1": "0a4c73f7a55f2052b163739b96874a644551e9e4",
+    "size": 385416,
+    "totalSize": 554690230,
+    "url": "https://piston-meta.mojang.com/v1/packages/0a4c73f7a55f2052b163739b96874a644551e9e4/1.19.json"
   },
   "assets": "1.19",
   "logging": {
@@ -1472,4 +1472,4 @@
     }
   ],
   "minimumLauncherVersion": 21,
-  "type": "release",
+  "type": "snapshot",

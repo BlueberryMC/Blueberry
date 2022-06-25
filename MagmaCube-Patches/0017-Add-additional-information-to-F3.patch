@@ -9,7 +9,7 @@ Added to game information:
 - Client Protocol Version
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index c1295b7da20b86a89b24cbf42de7170f989792c7..c453648d4b6c920f652c5def424f1c72a7d31e69 100644
+index f157710920eb09e9d14bcde4f838301d1130ac59..8ac9ce1c03ea6245148f6dce75d96994611efcff 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -182,8 +182,9 @@ public class DebugScreenOverlay extends GuiComponent {
