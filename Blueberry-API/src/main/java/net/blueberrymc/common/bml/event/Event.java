@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * All events require a static method named getHandlerList() which returns the {@link HandlerList}.
  * @see EventManager#callEvent(Event)
  * @see Event#callEvent()
- * @see EventManager#registerEvents(BlueberryMod,Listener)
+ * @see EventManager#registerEvents(BlueberryMod,Object)
  */
 public abstract class Event {
     private String name;

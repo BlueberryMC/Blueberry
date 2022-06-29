@@ -3,6 +3,7 @@ package net.blueberrymc.common.bml.event;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
@@ -10,6 +11,7 @@ import net.blueberrymc.common.util.Nag;
 import net.blueberrymc.common.util.ThrowableConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -29,6 +31,13 @@ public class EventManager {
         ModLoadingErrors.add(new ModLoadingError(mod, String.format("Invalid EventHandler: %s at %s in mod %s", message, method.toGenericString(), mod.getModId()), true));
     }
 
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @DeprecatedReason("Listener interface is deprecated")
+    @Deprecated(forRemoval = true)
+    public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
+        this.registerEvents(mod, (Object) listener);
+    }
+
     /**
      * Register a listener. To qualify a method for listener, the method would need to meet all these requirements:
      * <ul>
@@ -42,7 +51,7 @@ public class EventManager {
      * @param mod the mod
      * @param listener the listener
      */
-    public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
+    public void registerEvents(@NotNull BlueberryMod mod, @NotNull Object listener) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         Preconditions.checkNotNull(listener, "listener cannot be null");
         for (Method method : listener.getClass().getMethods()) {
@@ -93,7 +102,7 @@ public class EventManager {
     @SuppressWarnings("unchecked")
     public <T extends Event> void registerEvent(@NotNull Class<T> clazz, @NotNull BlueberryMod mod, @NotNull EventPriority priority, @NotNull ThrowableConsumer<T> consumer) {
         Nag.deprecatedEvent(clazz, mod); // notify the mod authors if event is deprecated
-        getHandlerList(clazz).add(event -> consumer.accept((T) event), priority, null, mod);
+        getHandlerList(clazz).add(event -> consumer.accept((T) event), priority, (Object) null, mod);
     }
 
     /**
@@ -108,10 +117,22 @@ public class EventManager {
     /**
      * Unregister a listener
      * @param listener the listener to unregister
+     * @deprecated Listener interface is deprecated
      */
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @DeprecatedReason("Listener interface is deprecated")
+    @Deprecated(forRemoval = true)
     public void unregisterEvents(@NotNull Listener listener) {
+        unregisterEvents((Object) listener);
+    }
+
+    /**
+     * Unregister a listener
+     * @param listener the listener to unregister
+     */
+    public void unregisterEvents(@NotNull Object listener) {
         Preconditions.checkNotNull(listener, "listener cannot be null");
-        HANDLERS.values().forEach(handlerList -> handlerList.remove(listener));
+        HANDLERS.values().forEach(handlerList -> handlerList.removeListener(listener));
     }
 
     /**

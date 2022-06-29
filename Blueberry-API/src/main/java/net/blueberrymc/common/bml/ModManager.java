@@ -2,12 +2,14 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.collect.ImmutableList;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.event.Listener;
 import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +24,14 @@ public class ModManager {
         return Blueberry.getEventManager();
     }
 
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @DeprecatedReason("Listener interface is deprecated")
+    @Deprecated(forRemoval = true)
     public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
+        getEventManager().registerEvents(mod, (Object) listener);
+    }
+
+    public void registerEvents(@NotNull BlueberryMod mod, @NotNull Object listener) {
         getEventManager().registerEvents(mod, listener);
     }
 
