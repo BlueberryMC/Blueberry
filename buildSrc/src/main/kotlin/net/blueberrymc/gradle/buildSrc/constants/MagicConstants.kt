@@ -11,7 +11,7 @@ const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/d1a0318001
 const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/71a6d4c634de517ab1b6c2db8b743cbc831d9794/server.jar"
 const val CLIENT_MAPPING_URL = "https://piston-data.mojang.com/v1/objects/f45b5b9218548772d45f4cb029d0249879895dfb/client.txt"
 const val MAPPING_VERSION = "22w05a"
-const val KOTLIN_VERSION = "1.6.10"
+const val KOTLIN_VERSION = "1.7.0"
 
 val SERVER_REPOSITORIES_LIST = listOf(
     "https://repo.blueberrymc.net/repository/maven-public/",

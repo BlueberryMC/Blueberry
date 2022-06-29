@@ -1451,24 +1451,24 @@
     {
       "downloads": {
         "artifact": {
-          "path": "org/jetbrains/kotlin/kotlin-stdlib/1.6.10/kotlin-stdlib-1.6.10.jar",
-          "sha1": "b8af3fe6f1ca88526914929add63cf5e7c5049af",
-          "size": 1508076,
-          "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.10/kotlin-stdlib-1.6.10.jar"
+          "path": "org/jetbrains/kotlin/kotlin-stdlib/1.7.0/kotlin-stdlib-1.7.0.jar",
+          "sha1": "a5f42c684ad9003160ef0d0f693ecf0ba7b13549",
+          "size": 1524619,
+          "url": "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.0/kotlin-stdlib-1.7.0.jar"
         }
       },
-      "name": "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
+      "name": "org.jetbrains.kotlin:kotlin-stdlib:1.7.0"
     },
     {
       "downloads": {
         "artifact": {
-          "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.10/kotlin-stdlib-common-1.6.10.jar",
-          "sha1": "0c118700e3a33c8a0d9adc920e9dec0831171925",
-          "size": 200617,
-          "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.10/kotlin-stdlib-common-1.6.10.jar"
+          "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.7.0/kotlin-stdlib-common-1.7.0.jar",
+          "sha1": "51736992f422993a1e741051bdf3c12801bc1ca1",
+          "size": 198935,
+          "url": "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.0/kotlin-stdlib-common-1.7.0.jar"
         }
       },
-      "name": "org.jetbrains.kotlin:kotlin-stdlib-common:1.6.10"
+      "name": "org.jetbrains.kotlin:kotlin-stdlib-common:1.7.0"
     }
   ],
   "minimumLauncherVersion": 21,

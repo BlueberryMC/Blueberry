@@ -1,10 +1,11 @@
 import net.blueberrymc.gradle.buildSrc.Util.getBuildNumber
+import net.blueberrymc.gradle.buildSrc.constants.KOTLIN_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
 
 plugins {
     java
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version net.blueberrymc.gradle.buildSrc.constants.KOTLIN_VERSION
     `maven-publish`
     `java-library`
 }
@@ -58,7 +59,7 @@ subprojects {
     }
 
     dependencies {
-        implementation(kotlin("stdlib", "1.6.20"))
+        implementation(kotlin("stdlib", KOTLIN_VERSION))
     }
 
     publishing {
@@ -127,7 +128,7 @@ allprojects {
 
 subprojects {
     dependencies {
-        testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.6.10")
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$KOTLIN_VERSION")
         testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     }

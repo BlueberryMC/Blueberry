@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.7.0"
 }
 
 repositories {
@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", "1.6.20"))
+    implementation(kotlin("stdlib", "1.7.0"))
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r")
     implementation("net.minecraftforge:forgeflower:1.5.498.29")
     implementation("net.minecraftforge:accesstransformers:8.0.4")
@@ -17,4 +17,12 @@ dependencies {
     // ingredients for baking installer
     implementation("io.sigpipe:jbsdiff:1.0")
     implementation("net.blueberrymc:native-util:2.1.0")
+}
+
+tasks {
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = compileJava.get().targetCompatibility
+        }
+    }
 }

@@ -20,7 +20,7 @@ Whilst I try not to break API compatibility, but things could change at anytime!
   - See the [documentation](https://www.blueberrymc.net/reference/source-mod/) for more details and how to use it properly
 - [Mixin](https://github.com/SpongePowered/Mixin) support
 - File selection screen within the client (FileDialogScreen)
-- Bundled Kotlin (v1.6.10)
+- Bundled Kotlin (v1.7.0)
 
 ## ✏️ Translations
 All translation PRs are welcome!
