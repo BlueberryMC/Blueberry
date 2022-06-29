@@ -10,8 +10,20 @@ import org.jetbrains.annotations.Nullable;
 public record RegisteredListener(
         @NotNull ThrowableConsumer<Event> executor,
         @NotNull EventPriority priority,
-        @Nullable Listener listener,
+        @Nullable Object listener,
         @NotNull BlueberryMod mod) {
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @DeprecatedReason("Listener interface is deprecated")
+    @Deprecated(forRemoval = true)
+    public RegisteredListener(
+            @NotNull ThrowableConsumer<Event> executor,
+            @NotNull EventPriority priority,
+            @Nullable Listener listener,
+            @NotNull BlueberryMod mod) {
+        this(executor, priority, (Object) listener, mod);
+    }
+
     /**
      * @deprecated Use {@link #executor()} instead.
      */
@@ -41,8 +53,8 @@ public record RegisteredListener(
     @DeprecatedReason("Use #listener() instead")
     @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
     @Nullable
-    public Listener getListener() {
-        return listener;
+    public Listener getListener() throws ClassCastException {
+        return (Listener) listener;
     }
 
     /**

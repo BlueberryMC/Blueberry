@@ -3,7 +3,6 @@ package net.blueberrymc.common.bml;
 import net.blueberrymc.client.event.render.gui.ScreenChangedEvent;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.event.EventHandler;
-import net.blueberrymc.common.bml.event.Listener;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +19,10 @@ public record InternalBlueberryModListener(@NotNull InternalBlueberryMod mod) {
         return new Client();
     }
 
-    public class Server implements Listener {
+    public class Server {
     }
 
-    public class Client implements Listener {
+    public class Client {
         @EventHandler
         public void onScreenChanged(@NotNull ScreenChangedEvent e) {
             if (Blueberry.getCurrentState() != ModState.AVAILABLE) return;
