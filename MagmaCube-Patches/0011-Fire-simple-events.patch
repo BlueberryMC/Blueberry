@@ -5,13 +5,13 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index 3ce5109711b0108df4cb284297fa643a0ceaf5c6..b99f4050f7fb375d2268f24e22db4f568f3f34ec 100644
+index 9b16098a3e03a8f3059284d47786cb831a7ea85a..ee0608573487d1aa0f0036e3af7ffd2ef5e15e65 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -289,6 +289,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+@@ -294,6 +294,13 @@ public class LocalPlayer extends AbstractClientPlayer {
      }
  
-     public void chatSigned(String s, @Nullable Component component) {
+     private void sendChat(String s, @Nullable Component component) {
 +        // Blueberry start - fire ClientLocalPlayerChatEvent
 +        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
 +        if (!event.callEvent()) {
@@ -19,9 +19,9 @@ index 3ce5109711b0108df4cb284297fa643a0ceaf5c6..b99f4050f7fb375d2268f24e22db4f56
 +        }
 +        s = event.getMessage();
 +        // Blueberry end - fire ClientLocalPlayerChatEvent
-         MessageSigner messageSigner = MessageSigner.create(this.getUUID());
-         this.sendChat(messageSigner, s, component);
-     }
+         MessageSigner messageSigner = this.createMessageSigner();
+         if (component != null) {
+             MessageSignature messageSignature = this.signMessage(messageSigner, component);
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index a19a2c72bf9bd177718b7e4b19f63b3162052cde..c65049641fc01204dd9d105880e0e2b15fc96c79 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
@@ -43,10 +43,10 @@ index a19a2c72bf9bd177718b7e4b19f63b3162052cde..c65049641fc01204dd9d105880e0e2b1
  
      public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index b563132c91441a54a05c5792adf5861142358a7d..b8db47f9efb45c3a5f77ef5976a1e3fcf9ec36ab 100644
+index 3a2fe79a8625dfb37b8facb250edd84cffa4db86..61fbcf4209d30f98f287312aca251952f3deed7a 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -190,6 +190,7 @@ public abstract class PlayerList {
+@@ -193,6 +193,7 @@ public abstract class PlayerList {
          }
  
          serverLevel2.addNewPlayer(serverPlayer);

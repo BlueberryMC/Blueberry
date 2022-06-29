@@ -18,10 +18,10 @@ index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c
          public void sendSystemMessage(Component component) {
          }
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index e91af739fc733401c0380ec65e06fe5b9f3308ea..7a7e3fd21c7a0a940255dfbfe4ecd03e77725232 100644
+index c0c1f84068302e5d45585a815fe29fb4025e1ea3..d48eb2db1f00adc4d925f9f7f94c5353d3028a33 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-@@ -33,7 +33,7 @@ import net.minecraft.world.level.dimension.DimensionType;
+@@ -35,7 +35,7 @@ import net.minecraft.world.level.dimension.DimensionType;
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
  
@@ -30,7 +30,7 @@ index e91af739fc733401c0380ec65e06fe5b9f3308ea..7a7e3fd21c7a0a940255dfbfe4ecd03e
      public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
      public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
      private final CommandSource source;
-@@ -298,4 +298,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
+@@ -312,4 +312,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
      public RegistryAccess registryAccess() {
          return this.server.registryAccess();
      }
@@ -49,10 +49,10 @@ index e91af739fc733401c0380ec65e06fe5b9f3308ea..7a7e3fd21c7a0a940255dfbfe4ecd03e
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 02cdfd3a3d51db90a70551bb0c6bebf57a11a574..267d2bd389f6f1429aecda4625825c94097c1790 100644
+index 820444d5a41737a3e774f4a8dc690b4a1db04db4..0ecf743031b47c0912c146f874ed6df4142a61ba 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1803,4 +1803,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1806,4 +1806,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              };
          }
      }
@@ -93,7 +93,7 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 2f3b6f2dae95c84e94cf49e721d9bbea3417ed21..525663b6c148f21c1c944e6de01dbebe930c4ab7 100644
+index 5c14258e8f4da3ba24115d0a3629ef9f491ecc06..32765d2ac7838bfdc6334127c90ea16fed297616 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -3132,4 +3132,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -115,7 +115,7 @@ index 2f3b6f2dae95c84e94cf49e721d9bbea3417ed21..525663b6c148f21c1c944e6de01dbebe
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index dcf3b11075125ecc8ddd13bec878dc81f3428bff..67b21e4684388f8c9d95cd6637efe9a788997e15 100644
+index 53d681888af7e8360383ba2c33c400dd35181dcd..9752662fcaa64dca543362f15ef4c14ed6ad16e4 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -2015,4 +2015,16 @@ public abstract class Player extends LivingEntity {

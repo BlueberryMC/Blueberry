@@ -5,7 +5,7 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-index 15fd267f503ebaa2afe05a3bc18f0fcefe7fa37e..268aee1d16e07818b88906b9ce7d0a2967d0aaa1 100644
+index d93497c6c11aeb206582cfdf47ca8f93a8815e74..7980f442d9122a49d98f18b527adc5ec405df034 100644
 --- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 +++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 @@ -170,7 +170,13 @@ public class CommandSuggestions {

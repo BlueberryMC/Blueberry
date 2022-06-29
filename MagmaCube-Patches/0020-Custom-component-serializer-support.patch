@@ -5,7 +5,7 @@ Subject: [PATCH] Custom component serializer support
 
 
 diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
-index c3747a0333c19563eb8a84a9a366063faafa8c96..c6099676646c770f29d39292b8dff09d51834b1a 100644
+index 4e5ade513076f866bd8f5d4f4f74eea29e6ae2f3..fcbc069e3cc578c00279804805f129a33dce7ad2 100644
 --- a/src/main/java/net/minecraft/network/chat/Component.java
 +++ b/src/main/java/net/minecraft/network/chat/Component.java
 @@ -253,7 +253,7 @@ public interface Component extends Message, FormattedText {

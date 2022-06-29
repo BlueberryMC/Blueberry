@@ -22,10 +22,10 @@ index cd5c7cb69ef18fc910928422ceb757b4d4e58de5..25401af2d3b0d5ceff5022eac4e1ac6a
              boolean flag3 = worldData.worldGenSettings().isOldCustomizedWorld();
              boolean flag4 = worldData.worldGenSettingsLifecycle() != Lifecycle.stable();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7799398738a35933afda336fc91ebb2b898883c3..02cdfd3a3d51db90a70551bb0c6bebf57a11a574 100644
+index 89c7b88bd8f5d0af76fa3db8228a95bc79ba342f..820444d5a41737a3e774f4a8dc690b4a1db04db4 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -302,6 +302,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -300,6 +300,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          boolean flag = false;
          ProfiledDuration profiledDuration = JvmProfiler.INSTANCE.onWorldLoadedStarted();
          this.worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().shouldReportAsModified());
