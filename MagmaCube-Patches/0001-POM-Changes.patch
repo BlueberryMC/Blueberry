@@ -27,7 +27,7 @@ index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f
      @DontObfuscate
      public static String getClientModName() {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f631124b85fb375c6375d595aa5a635b371734d1..608f29b206581bbf31b1ab1561c02c54ebcf1b0e 100644
+index a8478cb007b26ef2c2bcdcd99419f5173f724593..3d5d90b083b96f64d88062dc7b3d687126d48f9d 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -920,7 +920,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

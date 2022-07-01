@@ -5,10 +5,10 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index de2ae33240e1dcb534188e5fbdb57d8ce9aee349..25d55fc101cf9fe1d0d05797ff94c436c807599d 100644
+index 3ce5109711b0108df4cb284297fa643a0ceaf5c6..b99f4050f7fb375d2268f24e22db4f568f3f34ec 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -292,6 +292,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+@@ -289,6 +289,13 @@ public class LocalPlayer extends AbstractClientPlayer {
      }
  
      public void chatSigned(String s, @Nullable Component component) {
@@ -43,7 +43,7 @@ index a19a2c72bf9bd177718b7e4b19f63b3162052cde..c65049641fc01204dd9d105880e0e2b1
  
      public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 52029aa5f5f0b225b78cb91d2cc78030ac8d9c7f..b1f2ca8bfe0048f48e2cad75b5ab5abc3e4891b7 100644
+index b563132c91441a54a05c5792adf5861142358a7d..b8db47f9efb45c3a5f77ef5976a1e3fcf9ec36ab 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -190,6 +190,7 @@ public abstract class PlayerList {

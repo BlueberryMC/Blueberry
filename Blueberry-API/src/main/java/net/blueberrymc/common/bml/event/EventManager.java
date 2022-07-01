@@ -100,7 +100,7 @@ public class EventManager {
      * @param <T> the event type
      */
     @SuppressWarnings("unchecked")
-    public <T extends Event> void registerEvent(@NotNull Class<T> clazz, @NotNull BlueberryMod mod, @NotNull EventPriority priority, @NotNull ThrowableConsumer<T> consumer) {
+    public <T extends Event> void registerEvent(@NotNull Class<T> clazz, @NotNull BlueberryMod mod, @NotNull EventPriority priority, @NotNull ThrowableConsumer<@NotNull T> consumer) {
         Nag.deprecatedEvent(clazz, mod); // notify the mod authors if event is deprecated
         getHandlerList(clazz).add(event -> consumer.accept((T) event), priority, (Object) null, mod);
     }

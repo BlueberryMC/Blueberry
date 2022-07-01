@@ -49,7 +49,7 @@ index e91af739fc733401c0380ec65e06fe5b9f3308ea..7a7e3fd21c7a0a940255dfbfe4ecd03e
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index cc7ad5ed6cd5b0aa5e795b1ccc6f52e9bad602c4..86e8d254db8ac7d8723b46d2323d82a1513adfe9 100644
+index 02cdfd3a3d51db90a70551bb0c6bebf57a11a574..267d2bd389f6f1429aecda4625825c94097c1790 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1803,4 +1803,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -93,7 +93,7 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index a850f97263ff0543e207b2dd815e3efdf1f4fd3c..b77e70b04229b4d7fd29222998bb3cdab9728dfc 100644
+index 2f3b6f2dae95c84e94cf49e721d9bbea3417ed21..525663b6c148f21c1c944e6de01dbebe930c4ab7 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -3132,4 +3132,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -115,10 +115,10 @@ index a850f97263ff0543e207b2dd815e3efdf1f4fd3c..b77e70b04229b4d7fd29222998bb3cda
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 23a8ff5955a6b3d3aa2fcffe9dc55ac5696cea90..b2179950f10be67bcab2f9d0615ded3b530a9820 100644
+index dcf3b11075125ecc8ddd13bec878dc81f3428bff..67b21e4684388f8c9d95cd6637efe9a788997e15 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2010,4 +2010,16 @@ public abstract class Player extends LivingEntity {
+@@ -2015,4 +2015,16 @@ public abstract class Player extends LivingEntity {
              return this.message;
          }
      }

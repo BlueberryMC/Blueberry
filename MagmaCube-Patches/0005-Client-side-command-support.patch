@@ -5,10 +5,10 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-index 9ba4374027ccd13cf1e66b8ad08fca26373de98a..cbd867e174226153f835f9424b7a6c7d708b976d 100644
+index 15fd267f503ebaa2afe05a3bc18f0fcefe7fa37e..268aee1d16e07818b88906b9ce7d0a2967d0aaa1 100644
 --- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 +++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-@@ -171,7 +171,13 @@ public class CommandSuggestions {
+@@ -170,7 +170,13 @@ public class CommandSuggestions {
          boolean flag2 = this.commandsOnly || flag;
          int i = this.input.getCursorPosition();
          if (flag2) {
@@ -24,10 +24,10 @@ index 9ba4374027ccd13cf1e66b8ad08fca26373de98a..cbd867e174226153f835f9424b7a6c7d
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-index 6c5aba67775e36df4c3f83fcb763ec441a477703..0614372b6e0679e3d6c6d70e71edc801d8918842 100644
+index 98c9b0628115b9f75cbca01c804296800416e9e7..64f13c620bfcfff0fd594edf1be2537273bfea7d 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -368,6 +368,12 @@ public class ChatScreen extends Screen {
+@@ -375,6 +375,12 @@ public class ChatScreen extends Screen {
  
              Component component = this.chatPreview.pull(s);
              if (s.startsWith("/")) {

@@ -106,19 +106,19 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index efd8c5e54d6dc065c8d804bb80be80df3adcfcbc..c93e788570cf513e13c02c8e764c7e1289b7c2ad 100644
+index b46aa8580bafc37d2d9b8790819470d6ba6415b2..2b1b33f05578e42679c6e3000385869bc2e54812 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -101,7 +101,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
-     }
+@@ -102,7 +102,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
  
      public void handleAcceptedLogin() {
+         ProfilePublicKey profilePublicKey = null;
 -        if (!this.gameProfile.isComplete()) {
 +        if (!net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee && !this.gameProfile.isComplete()) { // Blueberry - handled in initUUID
              this.gameProfile = this.createFakeProfile(this.gameProfile);
-         }
- 
-@@ -149,6 +149,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+         } else {
+             try {
+@@ -147,6 +147,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
  
      }
  
@@ -137,7 +137,7 @@ index efd8c5e54d6dc065c8d804bb80be80df3adcfcbc..c93e788570cf513e13c02c8e764c7e12
      private void placeNewPlayer(ServerPlayer serverPlayer) {
          this.server.getPlayerList().placeNewPlayer(this.connection, serverPlayer);
      }
-@@ -200,6 +212,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -198,6 +210,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
                  this.state = ServerLoginPacketListenerImpl.State.KEY;
                  this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
              } else {

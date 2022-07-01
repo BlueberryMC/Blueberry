@@ -5,10 +5,10 @@ Subject: [PATCH] Custom component serializer support
 
 
 diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
-index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..75fb320db4dd5245a974c749cc997de8271cef00 100644
+index c3747a0333c19563eb8a84a9a366063faafa8c96..c6099676646c770f29d39292b8dff09d51834b1a 100644
 --- a/src/main/java/net/minecraft/network/chat/Component.java
 +++ b/src/main/java/net/minecraft/network/chat/Component.java
-@@ -238,7 +238,7 @@ public interface Component extends Message, FormattedText {
+@@ -253,7 +253,7 @@ public interface Component extends Message, FormattedText {
                      mutableComponent = Component.selector(GsonHelper.getAsString(jsonObject, "selector"), optional);
                  } else if (jsonObject.has("keybind")) {
                      mutableComponent = Component.keybind(GsonHelper.getAsString(jsonObject, "keybind"));
@@ -17,7 +17,7 @@ index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..75fb320db4dd5245a974c749cc997de8
                      if (!jsonObject.has("nbt")) {
                          throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
                      }
-@@ -260,6 +260,17 @@ public interface Component extends Message, FormattedText {
+@@ -275,6 +275,17 @@ public interface Component extends Message, FormattedText {
                      }
  
                      mutableComponent = Component.nbt(s3, flag, optional2, dataSource);
@@ -35,7 +35,7 @@ index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..75fb320db4dd5245a974c749cc997de8
                  }
  
                  if (jsonObject.has("extra")) {
-@@ -360,7 +371,7 @@ public interface Component extends Message, FormattedText {
+@@ -375,7 +386,7 @@ public interface Component extends Message, FormattedText {
              } else if (componentContents instanceof KeybindContents) {
                  KeybindContents keybindContents = (KeybindContents)componentContents;
                  jsonObject.addProperty("keybind", keybindContents.getName());
@@ -44,7 +44,7 @@ index 8deb8d62fb1a9579a842cece0cab91ac00081a0f..75fb320db4dd5245a974c749cc997de8
                  if (!(componentContents instanceof NbtContents)) {
                      throw new IllegalArgumentException("Don't know how to serialize " + componentContents + " as a Component");
                  }
-@@ -384,6 +395,12 @@ public interface Component extends Message, FormattedText {
+@@ -399,6 +410,12 @@ public interface Component extends Message, FormattedText {
                      StorageDataSource storageDataSource = (StorageDataSource)dataSource;
                      jsonObject.addProperty("storage", storageDataSource.id().toString());
                  }
