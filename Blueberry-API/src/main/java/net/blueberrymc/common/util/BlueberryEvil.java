@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -41,6 +42,15 @@ public class BlueberryEvil {
                     return null;
                 }
                 return super.visitMethod(access, name, descriptor, signature, exceptions);
+            }
+
+            @Override
+            public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+                AnnotationRecorder.AnnotatedMember member = result.findMember(AnnotationRecorder.Type.FIELD, name, descriptor);
+                if (isServer() && isClientOnly(member)) {
+                    return null;
+                }
+                return super.visitField(access, name, descriptor, signature, value);
             }
         }, 0);
         return cw.toByteArray();
