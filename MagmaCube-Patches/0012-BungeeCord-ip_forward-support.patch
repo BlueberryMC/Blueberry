@@ -5,10 +5,10 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index c65049641fc01204dd9d105880e0e2b15fc96c79..6f8994755a729bdbd4fdbd482bde7179780ffc18 100644
+index 7638aa5aef3be9a36620871a91efeedd0c4b85d9..7a9f9401bc2dcbad463cc5d275a70d730e048156 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -74,6 +74,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -72,6 +72,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private float averageSentPackets;
      private int tickCount;
      private boolean handlingFault;
@@ -20,7 +20,7 @@ index c65049641fc01204dd9d105880e0e2b15fc96c79..6f8994755a729bdbd4fdbd482bde7179
  
      public Connection(PacketFlow packetFlow) {
          this.receiving = packetFlow;
-@@ -83,6 +88,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -81,6 +86,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          super.channelActive(channelHandlerContext);
          this.channel = channelHandlerContext.channel();
          this.address = this.channel.remoteAddress();
@@ -28,7 +28,7 @@ index c65049641fc01204dd9d105880e0e2b15fc96c79..6f8994755a729bdbd4fdbd482bde7179
  
          try {
              this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -253,6 +259,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -249,6 +255,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void disconnect(Component component) {
@@ -37,7 +37,7 @@ index c65049641fc01204dd9d105880e0e2b15fc96c79..6f8994755a729bdbd4fdbd482bde7179
              this.channel.close().awaitUninterruptibly();
              this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 8063cbdf6d6178dded1aea7486ef0dd229c4678c..d7d96ee418604dfcaf4c9699559c75a0345d514d 100644
+index 3671a437dcc830fbc14f6efa894277924e4edaaf..204e7cd3b082355092111e1b2a7d98551ac09292 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -145,7 +145,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -106,10 +106,10 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index b46aa8580bafc37d2d9b8790819470d6ba6415b2..2b1b33f05578e42679c6e3000385869bc2e54812 100644
+index 8fb337c4df4675fa058c008720cc78bf78cd6dd8..239d8c5aa689fb3cf6cbb796570937858ca4bd33 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -102,7 +102,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -103,7 +103,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
  
      public void handleAcceptedLogin() {
          ProfilePublicKey profilePublicKey = null;
@@ -118,7 +118,7 @@ index b46aa8580bafc37d2d9b8790819470d6ba6415b2..2b1b33f05578e42679c6e3000385869b
              this.gameProfile = this.createFakeProfile(this.gameProfile);
          } else {
              try {
-@@ -147,6 +147,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -148,6 +148,18 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
  
      }
  
@@ -137,7 +137,7 @@ index b46aa8580bafc37d2d9b8790819470d6ba6415b2..2b1b33f05578e42679c6e3000385869b
      private void placeNewPlayer(ServerPlayer serverPlayer) {
          this.server.getPlayerList().placeNewPlayer(this.connection, serverPlayer);
      }
-@@ -198,6 +210,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -199,6 +211,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
                  this.state = ServerLoginPacketListenerImpl.State.KEY;
                  this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
              } else {

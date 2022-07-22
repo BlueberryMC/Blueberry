@@ -5,28 +5,28 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index 9b16098a3e03a8f3059284d47786cb831a7ea85a..ee0608573487d1aa0f0036e3af7ffd2ef5e15e65 100644
+index 988bbb3272bc491e19160bd39df6a0d5c41349b7..56cf05f428e53d562b27c7299f76ce576b0bdc07 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -294,6 +294,13 @@ public class LocalPlayer extends AbstractClientPlayer {
-     }
+@@ -310,6 +310,13 @@ public class LocalPlayer extends AbstractClientPlayer {
  
      private void sendChat(String s, @Nullable Component component) {
+         String s2 = StringUtil.trimChatMessage(s);
 +        // Blueberry start - fire ClientLocalPlayerChatEvent
-+        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
++        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s2);
 +        if (!event.callEvent()) {
 +            return;
 +        }
-+        s = event.getMessage();
++        s2 = event.getMessage();
 +        // Blueberry end - fire ClientLocalPlayerChatEvent
          MessageSigner messageSigner = this.createMessageSigner();
+         LastSeenMessages.Update update = this.connection.generateMessageAcknowledgements();
          if (component != null) {
-             MessageSignature messageSignature = this.signMessage(messageSigner, component);
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index a19a2c72bf9bd177718b7e4b19f63b3162052cde..c65049641fc01204dd9d105880e0e2b15fc96c79 100644
+index b030c8feaa6f5e9bfca0c1eeedc359642950f6ce..7638aa5aef3be9a36620871a91efeedd0c4b85d9 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -90,6 +90,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -88,6 +88,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              LOGGER.error(LogUtils.FATAL_MARKER, "Failed to change protocol to handshake", var3);
          }
  
@@ -34,7 +34,7 @@ index a19a2c72bf9bd177718b7e4b19f63b3162052cde..c65049641fc01204dd9d105880e0e2b1
      }
  
      public void setProtocol(ConnectionProtocol connectionProtocol) {
-@@ -360,6 +361,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -356,6 +357,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              }
          }
  
@@ -43,7 +43,7 @@ index a19a2c72bf9bd177718b7e4b19f63b3162052cde..c65049641fc01204dd9d105880e0e2b1
  
      public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 3a2fe79a8625dfb37b8facb250edd84cffa4db86..61fbcf4209d30f98f287312aca251952f3deed7a 100644
+index 028e49c0409e0a754955a3a6d3e265b4bd6559f3..21d12c32cb445290fab38c9c8378d8a6d741f0b7 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -193,6 +193,7 @@ public abstract class PlayerList {

@@ -5,10 +5,10 @@ Subject: [PATCH] Mods support
 
 
 diff --git a/src/main/java/com/mojang/blaze3d/platform/Window.java b/src/main/java/com/mojang/blaze3d/platform/Window.java
-index c5e9751449636b329fecd034cdabda11239ec6c3..f7f11a2dff97642bae151c62c982a5cec99525b4 100644
+index f026977db9c535afdb3203ca05103788f2bc784e..c1161a294d1c2668d75e492f56b80898e066c286 100644
 --- a/src/main/java/com/mojang/blaze3d/platform/Window.java
 +++ b/src/main/java/com/mojang/blaze3d/platform/Window.java
-@@ -78,7 +78,7 @@ public final class Window implements AutoCloseable {
+@@ -80,7 +80,7 @@ public final class Window implements AutoCloseable {
          GLFW.glfwWindowHint(139267, 2);
          GLFW.glfwWindowHint(139272, 204801);
          GLFW.glfwWindowHint(139270, 1);
@@ -55,10 +55,10 @@ index 0000000000000000000000000000000000000000..7b1e2686690e9d7df32131010891223b
 +public class BlueberryServerImpl extends BlueberryServer {
 +}
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index 6038b95bc93a9b2174f463e6e966988c4a999b9b..1720b9d2f1bbd68e535d95a15b230dd8439b2a15 100644
+index 18d790873a57c1a38abca9874d170eee7d4abfd4..c330c712b76b836eb964d62914095364318900fd 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
-@@ -225,6 +225,6 @@ public class CrashReport {
+@@ -227,6 +227,6 @@ public class CrashReport {
  
      public static void preload() {
          MemoryReserve.allocate();
@@ -68,12 +68,12 @@ index 6038b95bc93a9b2174f463e6e966988c4a999b9b..1720b9d2f1bbd68e535d95a15b230dd8
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/SystemReport.java b/src/main/java/net/minecraft/SystemReport.java
-index da5ac7b22dd629ec1fffcdabc35743c161c5d611..89ff780da13eb16eb1a06fa4652c86049a9da1e8 100644
+index d407afcacaad89de4836abdc8a975f73570614ef..e87e91bc99e99b69b7f319f3bf3f4d2fc55beaef 100644
 --- a/src/main/java/net/minecraft/SystemReport.java
 +++ b/src/main/java/net/minecraft/SystemReport.java
-@@ -48,6 +48,26 @@ public class SystemReport {
+@@ -49,6 +49,26 @@ public class SystemReport {
              List<String> list = Util.getVmArguments().collect(Collectors.toList());
-             return String.format("%d total; %s", list.size(), String.join(" ", list));
+             return String.format(Locale.ROOT, "%d total; %s", list.size(), String.join(" ", list));
          }));
 +        // Blueberry start
 +        this.setDetail("Blueberry Version", net.blueberrymc.common.util.Versioning.getVersion().getFullyQualifiedVersion());
@@ -99,10 +99,10 @@ index da5ac7b22dd629ec1fffcdabc35743c161c5d611..89ff780da13eb16eb1a06fa4652c8604
  
      public void setDetail(String s, String s2) {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 7172210edb203a2bbc1d45a76189c1d666ed7adf..f6fbebbac5f45fa11c29fb0f48d19b6b9e1d48f9 100644
+index 586802eee623474a0d5e6eb49e9587eb61bb1c51..64f41ea8c835705461432d81b482f10ce1c0a313 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -461,7 +461,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -460,7 +460,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear(ON_OSX);
@@ -112,7 +112,7 @@ index 7172210edb203a2bbc1d45a76189c1d666ed7adf..f6fbebbac5f45fa11c29fb0f48d19b6b
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode);
-@@ -475,6 +477,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -474,6 +476,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.splashManager = new SplashManager(this.user);
          this.resourceManager.registerReloadListener(this.splashManager);
          this.musicManager = new MusicManager(this);
@@ -120,7 +120,7 @@ index 7172210edb203a2bbc1d45a76189c1d666ed7adf..f6fbebbac5f45fa11c29fb0f48d19b6b
          this.fontManager = new FontManager(this.textureManager);
          this.font = this.fontManager.createFont();
          this.resourceManager.registerReloadListener(this.fontManager.getReloadListener());
-@@ -493,6 +496,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -492,6 +495,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.font, this.entityModels, this::getBlockRenderer, this::getItemRenderer, this::getEntityRenderDispatcher);
          this.resourceManager.registerReloadListener(this.blockEntityRenderDispatcher);
          BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer = new BlockEntityWithoutLevelRenderer(this.blockEntityRenderDispatcher, this.entityModels);
@@ -128,20 +128,20 @@ index 7172210edb203a2bbc1d45a76189c1d666ed7adf..f6fbebbac5f45fa11c29fb0f48d19b6b
          this.resourceManager.registerReloadListener(blockEntityWithoutLevelRenderer);
          this.itemRenderer = new ItemRenderer(this.textureManager, this.modelManager, this.itemColors, blockEntityWithoutLevelRenderer);
          this.resourceManager.registerReloadListener(this.itemRenderer);
-@@ -549,6 +553,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -548,6 +552,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
          this.reportingContext = ReportingContext.create(ReportEnvironment.local(), this.userApiService);
          LoadingOverlay.registerTextures(this);
          List<PackResources> list = this.resourcePackRepository.openAllSelected();
 +        net.blueberrymc.common.Blueberry.getModLoader().callInit(); // Blueberry
          this.reloadStateTracker.startReload(ResourceLoadStateTracker.ReloadReason.INITIAL, list);
-         this.setOverlay(new LoadingOverlay(this, this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list), (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
-                 if (SharedConstants.IS_RUNNING_IN_IDE) {
+         ReloadInstance reloadInstance = this.resourceManager.createReload(Util.backgroundExecutor(), this, RESOURCE_RELOAD_INITIAL_TASK, list);
+         this.setOverlay(new LoadingOverlay(this, reloadInstance, (optional) -> Util.ifElse(optional, this::rollbackResourcePacks, () -> {
 @@ -558,8 +563,9 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
                  this.reloadStateTracker.finishReload();
              }), false));
          if (s != null) {
--            ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null);
-+            this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(() -> ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null))); // Blueberry
+-            reloadInstance.done().thenRunAsync(() -> ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null), this);
++            reloadInstance.done().thenRunAsync(() -> this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(() -> ConnectScreen.startConnecting(new TitleScreen(), this, new ServerAddress(s, i), (ServerData)null))), this); // Blueberry
          } else if (this.shouldShowBanNotice()) {
 +            this.setScreen(new net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen(() -> { // Blueberry
              this.setScreen(BanNoticeScreen.create((flag) -> {
@@ -164,7 +164,7 @@ index 7172210edb203a2bbc1d45a76189c1d666ed7adf..f6fbebbac5f45fa11c29fb0f48d19b6b
      public static void crash(CrashReport crashReport) {
 -        File crashReportsDir = new File(getInstance().gameDirectory, "crash-reports");
 +        File crashReportsDir = new File(instance == null ? new File(".") : getInstance().gameDirectory, "crash-reports"); // Blueberry
-         File crashReportFile = new File(crashReportsDir, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
+         File crashReportFile = new File(crashReportsDir, "crash-" + Util.getFilenameFormattedDateTime() + "-client.txt");
          Bootstrap.realStdoutPrintln(crashReport.getFriendlyReport());
 +        net.blueberrymc.common.util.DiscordRPCTaskExecutor.shutdownNow(); // Blueberry
          if (crashReport.getSaveFile() != null) {
@@ -206,10 +206,10 @@ index 7172210edb203a2bbc1d45a76189c1d666ed7adf..f6fbebbac5f45fa11c29fb0f48d19b6b
          this.keyboardHandler.tick();
          this.profiler.pop();
 diff --git a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
-index 0311dee00a3f408ca403ea2f4b0d66dfd262eaaf..1e3d12c9fd96dd0bb5d295acea1ade5ff6aae474 100644
+index 5c12a82d736543423216bff3b6b2803973ab1bf9..bb588e28c235f2d034a4c5b0dd4e49badb75935c 100644
 --- a/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
 +++ b/src/main/java/net/minecraft/client/gui/components/ChatComponent.java
-@@ -390,15 +390,27 @@ public class ChatComponent extends GuiComponent {
+@@ -389,15 +389,27 @@ public class ChatComponent extends GuiComponent {
      }
  
      public static int getWidth(double d) {
@@ -240,7 +240,7 @@ index 0311dee00a3f408ca403ea2f4b0d66dfd262eaaf..1e3d12c9fd96dd0bb5d295acea1ade5f
  
      public static double defaultUnfocusedPct() {
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index dd5afa387626ec17d7cbcd321339ea7c1e2aa360..f157710920eb09e9d14bcde4f838301d1130ac59 100644
+index 4f0198f271fc2d6b45d748f359fe32c9dc862e77..1220ce554dadc118110ab97feb2264b82b9771d8 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 @@ -71,6 +71,7 @@ import net.minecraft.world.level.levelgen.RandomState;
@@ -254,7 +254,7 @@ index dd5afa387626ec17d7cbcd321339ea7c1e2aa360..f157710920eb09e9d14bcde4f838301d
 @@ -354,6 +355,12 @@ public class DebugScreenOverlay extends GuiComponent {
          long l3 = Runtime.getRuntime().freeMemory();
          long l4 = l2 - l3;
-         List<String> list = Lists.newArrayList(new String[]{String.format("Java: %s %dbit", System.getProperty("java.version"), this.minecraft.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", l4 * 100L / l, bytesToMegabytes(l4), bytesToMegabytes(l)), String.format("Allocation rate: %03dMB /s", bytesToMegabytes(this.allocationRateCalculator.bytesAllocatedPerSecond(l4))), String.format("Allocated: % 2d%% %03dMB", l2 * 100L / l, bytesToMegabytes(l2)), "", String.format("CPU: %s", GlUtil.getCpuInfo()), "", String.format("Display: %dx%d (%s)", Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), GlUtil.getVendor()), GlUtil.getRenderer(), GlUtil.getOpenGLVersion()});
+         List<String> list = Lists.newArrayList(new String[]{String.format(Locale.ROOT, "Java: %s %dbit", System.getProperty("java.version"), this.minecraft.is64Bit() ? 64 : 32), String.format(Locale.ROOT, "Mem: % 2d%% %03d/%03dMB", l4 * 100L / l, bytesToMegabytes(l4), bytesToMegabytes(l)), String.format(Locale.ROOT, "Allocation rate: %03dMB /s", bytesToMegabytes(this.allocationRateCalculator.bytesAllocatedPerSecond(l4))), String.format(Locale.ROOT, "Allocated: % 2d%% %03dMB", l2 * 100L / l, bytesToMegabytes(l2)), "", String.format(Locale.ROOT, "CPU: %s", GlUtil.getCpuInfo()), "", String.format(Locale.ROOT, "Display: %dx%d (%s)", Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), GlUtil.getVendor()), GlUtil.getRenderer(), GlUtil.getOpenGLVersion()});
 +        // Blueberry start
 +        list.add("");
 +        list.add("MagmaCube " + Blueberry.getVersion().getShortMagmaCubeCommit());
@@ -414,10 +414,10 @@ index 6813cc831731506dedf18d0b475918c149ffb8b8..12d7e2656e89ead6bd08958757328d76
          String s = parseArgument(optionSet, optionSpec7);
          Proxy proxy = Proxy.NO_PROXY;
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index ca338f2133d2f2db6735e7beb2eed5ffa73ac46b..46066a5795a3acaa25b6a4f57ea16bd1ea9e549d 100644
+index ff66fac866de3f881f5f861fb0ddffb660f091de..7a626c99f5a070a749fdf6fee28a45c50d4029b2 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -284,7 +284,7 @@ import net.minecraft.world.scores.Team;
+@@ -290,7 +290,7 @@ import net.minecraft.world.scores.Team;
  import net.minecraft.world.scores.criteria.ObjectiveCriteria;
  import org.slf4j.Logger;
  
@@ -425,8 +425,8 @@ index ca338f2133d2f2db6735e7beb2eed5ffa73ac46b..46066a5795a3acaa25b6a4f57ea16bd1
 +public class ClientPacketListener implements ClientGamePacketListener, net.blueberrymc.network.client.ClientBlueberryPacketListener { // Blueberry
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Component GENERIC_DISCONNECT_MESSAGE = Component.translatable("disconnect.lost");
-     private final Connection connection;
-@@ -1626,6 +1626,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
+     private static final Component UNSECURE_SERVER_TOAST_TITLE = Component.translatable("multiplayer.unsecureserver.toast.title");
+@@ -1651,6 +1651,7 @@ public class ClientPacketListener implements ClientGamePacketListener {
  
          try {
              friendlyByteBuf = clientboundCustomPayloadPacket.getData();
@@ -435,13 +435,13 @@ index ca338f2133d2f2db6735e7beb2eed5ffa73ac46b..46066a5795a3acaa25b6a4f57ea16bd1
                  String s = friendlyByteBuf.readUtf();
                  this.minecraft.player.setServerBrand(s);
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ServerData.java b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
-index 9c710f163ab90745ca2f48fac54f3c7e6924bbc8..d3e5319600eb5104876fd5880f6133c8b21e644c 100644
+index bc46e3593d3b8733b9af851b92077254756cd5a1..6a53a220b59f088a9b8767efa342f3549e080263 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ServerData.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ServerData.java
-@@ -32,6 +32,10 @@ public class ServerData {
-     @Nullable
+@@ -33,6 +33,10 @@ public class ServerData {
      private ServerData.ChatPreview chatPreview;
      private boolean chatPreviewEnabled = true;
+     private boolean enforcesSecureChat;
 +    // Blueberry start
 +    public net.blueberrymc.network.ServerType serverType = null;
 +    public int modsCount = 0;
@@ -625,10 +625,10 @@ index 80d2ab8309e7fb167d12a7849ddaa9616572e2c7..91051b0b01b416adb440ed30d78b6ffb
  
              poseStack.popPose();
 diff --git a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-index 74c9e4878158710a274d49ca8e8875cd4fe4dcd6..a4d5970259d5da24d58dc233c2ba974998a0ce61 100644
+index d7096595c7747fd2e23caa9e13583965b42e2676..da24eb396936de3acba800987844bf115921ee30 100644
 --- a/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/src/main/java/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -98,6 +98,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
+@@ -99,6 +99,7 @@ public class TextureAtlas extends AbstractTexture implements Tickable {
          int i3 = Integer.MAX_VALUE;
          int i4 = 1 << i;
          profilerFiller.popPush("extracting_frames");
@@ -637,7 +637,7 @@ index 74c9e4878158710a274d49ca8e8875cd4fe4dcd6..a4d5970259d5da24d58dc233c2ba9749
          for(TextureAtlasSprite.Info info : this.getBasicSpriteInfos(resourceManager, set)) {
              i3 = Math.min(i3, Math.min(info.width(), info.height()));
 diff --git a/src/main/java/net/minecraft/client/resources/ClientPackSource.java b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
-index 73644127185b83dc344694eb9e8887b472ed3f28..8c14fb9e9686bdbff54012044fc44562f74b8d1d 100644
+index 556dbe34f5623fbfc5523371a89c0fba36cbe629..f37af77e9f0752eb2dcfa9757931dc7d09668760 100644
 --- a/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 +++ b/src/main/java/net/minecraft/client/resources/ClientPackSource.java
 @@ -90,6 +90,7 @@ public class ClientPackSource implements RepositorySource {
@@ -649,10 +649,10 @@ index 73644127185b83dc344694eb9e8887b472ed3f28..8c14fb9e9686bdbff54012044fc44562
      }
  
 diff --git a/src/main/java/net/minecraft/client/resources/model/ModelBakery.java b/src/main/java/net/minecraft/client/resources/model/ModelBakery.java
-index 5e5e868e9b4f4610187e03e107c6372bac8eaa20..59f194cba20fe2dd958b5afb97d23c097bcd9cdd 100644
+index b1b6d2d7cc9cea1b9815978befdaab89d11ad246..e471382584e5715255a83f34c84a5199da9ddac2 100644
 --- a/src/main/java/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/src/main/java/net/minecraft/client/resources/model/ModelBakery.java
-@@ -135,6 +135,13 @@ public class ModelBakery {
+@@ -136,6 +136,13 @@ public class ModelBakery {
      private final Map<ResourceLocation, Pair<TextureAtlas, TextureAtlas.Preparations>> atlasPreparations;
      private int nextModelGroup = 1;
      private final Object2IntMap<BlockState> modelGroups = Util.make(new Object2IntOpenHashMap(), (object2IntOpenHashMap) -> object2IntOpenHashMap.defaultReturnValue(-1));
@@ -666,7 +666,7 @@ index 5e5e868e9b4f4610187e03e107c6372bac8eaa20..59f194cba20fe2dd958b5afb97d23c09
  
      public ModelBakery(ResourceManager resourceManager, BlockColors blockColors, ProfilerFiller profilerFiller, int i) {
          this.resourceManager = resourceManager;
-@@ -164,8 +171,10 @@ public class ModelBakery {
+@@ -165,8 +172,10 @@ public class ModelBakery {
          }
  
          profilerFiller.popPush("special");
@@ -677,7 +677,7 @@ index 5e5e868e9b4f4610187e03e107c6372bac8eaa20..59f194cba20fe2dd958b5afb97d23c09
          profilerFiller.popPush("textures");
          Set<Pair<String, String>> set = Sets.newLinkedHashSet();
          Set<Material> set2 = this.topLevelModels.values().stream().flatMap((unbakedModel) -> unbakedModel.getMaterials(this::getModel, set).stream()).collect(Collectors.toSet());
-@@ -425,6 +434,18 @@ public class ModelBakery {
+@@ -426,6 +435,18 @@ public class ModelBakery {
          this.topLevelModels.put(modelResourceLocation, unbakedModel);
      }
  
@@ -697,10 +697,10 @@ index 5e5e868e9b4f4610187e03e107c6372bac8eaa20..59f194cba20fe2dd958b5afb97d23c09
          int i = this.nextModelGroup++;
          iterable.forEach((blockState) -> this.modelGroups.put(blockState, i));
 diff --git a/src/main/java/net/minecraft/network/ConnectionProtocol.java b/src/main/java/net/minecraft/network/ConnectionProtocol.java
-index 413c19a0bf732cc52e8ae4976baf1b032a494eb9..db2670d493492823c6d81a8652eeb088b841952e 100644
+index 6137c5451826788b59cd7967ec01040605a8e04d..5625e7d9a47860ca0c2e0db3359ce5996de35149 100644
 --- a/src/main/java/net/minecraft/network/ConnectionProtocol.java
 +++ b/src/main/java/net/minecraft/network/ConnectionProtocol.java
-@@ -198,6 +198,12 @@ public enum ConnectionProtocol {
+@@ -199,6 +199,12 @@ public enum ConnectionProtocol {
      STATUS(1, protocol().addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet<ServerStatusPacketListener>()).addPacket(ServerboundStatusRequestPacket.class, ServerboundStatusRequestPacket::new).addPacket(ServerboundPingRequestPacket.class, ServerboundPingRequestPacket::new)).addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet<ClientStatusPacketListener>()).addPacket(ClientboundStatusResponsePacket.class, ClientboundStatusResponsePacket::new).addPacket(ClientboundPongResponsePacket.class, ClientboundPongResponsePacket::new))),
      LOGIN(2, protocol().addFlow(PacketFlow.CLIENTBOUND, (new ConnectionProtocol.PacketSet<ClientLoginPacketListener>()).addPacket(ClientboundLoginDisconnectPacket.class, ClientboundLoginDisconnectPacket::new).addPacket(ClientboundHelloPacket.class, ClientboundHelloPacket::new).addPacket(ClientboundGameProfilePacket.class, ClientboundGameProfilePacket::new).addPacket(ClientboundLoginCompressionPacket.class, ClientboundLoginCompressionPacket::new).addPacket(ClientboundCustomQueryPacket.class, ClientboundCustomQueryPacket::new)).addFlow(PacketFlow.SERVERBOUND, (new ConnectionProtocol.PacketSet<ServerLoginPacketListener>()).addPacket(ServerboundHelloPacket.class, ServerboundHelloPacket::new).addPacket(ServerboundKeyPacket.class, ServerboundKeyPacket::new).addPacket(ServerboundCustomQueryPacket.class, ServerboundCustomQueryPacket::new)));
  
@@ -774,10 +774,10 @@ index 3ef4b97f18968f75213c7d3ce9276d91b46e26c9..3dddac41cf3163217f932217c90e6f21
              CrashReport.preload();
              if (optionSet.has(optionSpec14)) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a670a2abd8d8849bf59a0c4d63d03af729c3ab46..89c7b88bd8f5d0af76fa3db8228a95bc79ba342f 100644
+index c20242e0a31a2099532579103b2e3f99579c237e..d636eb1beb750ca88afa1bcd3ca41bd1e5860fe1 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -263,6 +263,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -262,6 +262,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              this.proxy = proxy;
              this.packRepository = packRepository;
              this.resources = new MinecraftServer.ReloadableResources(worldStem.resourceManager(), worldStem.dataPackResources());
@@ -790,7 +790,7 @@ index a670a2abd8d8849bf59a0c4d63d03af729c3ab46..89c7b88bd8f5d0af76fa3db8228a95bc
              this.services = services;
              if (services.profileCache() != null) {
                  services.profileCache().setExecutor(this);
-@@ -277,6 +283,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -276,6 +282,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              this.structureTemplateManager = new StructureTemplateManager(worldStem.resourceManager(), levelStorageAccess, dataFixer);
              this.serverThread = thread;
              this.executor = Util.backgroundExecutor();
@@ -799,8 +799,8 @@ index a670a2abd8d8849bf59a0c4d63d03af729c3ab46..89c7b88bd8f5d0af76fa3db8228a95bc
      }
  
 @@ -617,6 +624,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             this.status.setVersion(new ServerStatus.Version(SharedConstants.getCurrentVersion().getName(), SharedConstants.getCurrentVersion().getProtocolVersion()));
              this.status.setPreviewsChat(this.previewsChat());
+             this.status.setEnforcesSecureChat(this.enforceSecureProfile());
              this.updateStatusIcon(this.status);
 +            if (net.blueberrymc.common.Blueberry.isServer()) net.blueberrymc.common.Blueberry.getModLoader().callPostInit(); // Blueberry
  
@@ -819,7 +819,7 @@ index a670a2abd8d8849bf59a0c4d63d03af729c3ab46..89c7b88bd8f5d0af76fa3db8228a95bc
          long l2 = this.tickTimes[this.tickCount % 100] = Util.getNanos() - l;
          this.averageTickTime = this.averageTickTime * 0.8F + (float)l2 / 1000000.0F * 0.19999999F;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 0d4e654c0b135d5c42226ffc457b34e2428cb0f3..8063cbdf6d6178dded1aea7486ef0dd229c4678c 100644
+index 5c41ee64aec0943adc3d15337411ea028e9e1b2a..3671a437dcc830fbc14f6efa894277924e4edaaf 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -505,6 +505,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -831,19 +831,19 @@ index 0d4e654c0b135d5c42226ffc457b34e2428cb0f3..8063cbdf6d6178dded1aea7486ef0dd2
          Util.shutdownExecutors();
          SkullBlockEntity.clear();
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a788de377282c3a9005e6975bc8c765d41fd1917..8e2548f78cd9d95d37e10401bef99beb95aaf1f8 100644
+index b2a28d879e10b5f2b9909b37fbb79aff426f9fa1..f5d0d3d37108357609f947ab67ffd9ddcfd46896 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -170,7 +170,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
+@@ -185,7 +185,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  import org.apache.commons.lang3.StringUtils;
  import org.slf4j.Logger;
  
--public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener {
-+public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener, net.blueberrymc.network.server.ServerBlueberryPacketListener { // Blueberry
+-public class ServerGamePacketListenerImpl implements ServerPlayerConnection, TickablePacketListener, ServerGamePacketListener {
++public class ServerGamePacketListenerImpl implements ServerPlayerConnection, TickablePacketListener, ServerGamePacketListener, net.blueberrymc.network.server.ServerBlueberryPacketListener { // Blueberry
      static final Logger LOGGER = LogUtils.getLogger();
      private static final int LATENCY_CHECK_INTERVAL = 15000;
      public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0D);
-@@ -1603,6 +1603,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1739,6 +1739,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
      }
  
      public void handleCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket) {

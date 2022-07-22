@@ -22,10 +22,10 @@ index cd5c7cb69ef18fc910928422ceb757b4d4e58de5..25401af2d3b0d5ceff5022eac4e1ac6a
              boolean flag3 = worldData.worldGenSettings().isOldCustomizedWorld();
              boolean flag4 = worldData.worldGenSettingsLifecycle() != Lifecycle.stable();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 89c7b88bd8f5d0af76fa3db8228a95bc79ba342f..820444d5a41737a3e774f4a8dc690b4a1db04db4 100644
+index d636eb1beb750ca88afa1bcd3ca41bd1e5860fe1..9e310721023ce795febaf36888db202ccbc04b6d 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -300,6 +300,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -299,6 +299,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          boolean flag = false;
          ProfiledDuration profiledDuration = JvmProfiler.INSTANCE.onWorldLoadedStarted();
          this.worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().shouldReportAsModified());
@@ -90,10 +90,10 @@ index c37ecadbfea737ae4dc13aeed32cc83055aabf5b..3c4b98cf7e3f82b4230d575444996425
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/storage/WorldData.java b/src/main/java/net/minecraft/world/level/storage/WorldData.java
-index 48420d6d8bf0e87850411cd20df495e371ae3616..9e72852d5cb21a1df04119c4af0c50d268435c7a 100644
+index d1edadb7a575ea086cef5d0a1e3212aeb68cbe03..c2317fc26b15d04fa42e926947cb48365f0d493b 100644
 --- a/src/main/java/net/minecraft/world/level/storage/WorldData.java
 +++ b/src/main/java/net/minecraft/world/level/storage/WorldData.java
-@@ -14,7 +14,7 @@ import net.minecraft.world.level.GameType;
+@@ -15,7 +15,7 @@ import net.minecraft.world.level.GameType;
  import net.minecraft.world.level.LevelSettings;
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  

@@ -107,10 +107,10 @@
   },
   "assetIndex": {
     "id": "1.19",
-    "sha1": "4f4d42f50fe8ba9b5d0d4ae63993c71b46df7622",
+    "sha1": "0ce6c4dd959fab3f85ccbf0d60ae65baf468971f",
     "size": 385416,
-    "totalSize": 554788294,
-    "url": "https://piston-meta.mojang.com/v1/packages/4f4d42f50fe8ba9b5d0d4ae63993c71b46df7622/1.19.json"
+    "totalSize": 555080986,
+    "url": "https://piston-meta.mojang.com/v1/packages/0ce6c4dd959fab3f85ccbf0d60ae65baf468971f/1.19.json"
   },
   "assets": "1.19",
   "logging": {
@@ -487,13 +487,13 @@
     {
       "downloads": {
         "artifact": {
-          "path": "com/mojang/authlib/3.9.47/authlib-3.9.47.jar",
-          "sha1": "faf33dd9bdb018b3a9b2813ccdf81712f4349aca",
-          "size": 116479,
-          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.9.47/authlib-3.9.47.jar"
+          "path": "com/mojang/authlib/3.11.49/authlib-3.11.49.jar",
+          "sha1": "2e3055ec2a017c7f94b79744b4a68b65695a118c",
+          "size": 120100,
+          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.11.49/authlib-3.11.49.jar"
         }
       },
-      "name": "com.mojang:authlib:3.9.47"
+      "name": "com.mojang:authlib:3.11.49"
     },
     {
       "downloads": {
