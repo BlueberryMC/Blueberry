@@ -24,7 +24,7 @@ index cbb0034363a39c6e2aa97bac4182daf60ede86c2..cf3915675346e0d869e71167352bbb32
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-index 3340e2ef189f529d231fed8ef4606a759fe64392..b9a13cd63c750315907e8636dfdab88744149a8e 100644
+index 3340e2ef189f529d231fed8ef4606a759fe64392..d4432ae7fb7990af723555050b52a0789162036b 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 @@ -469,6 +469,12 @@ public class ChatScreen extends Screen {
@@ -34,7 +34,7 @@ index 3340e2ef189f529d231fed8ef4606a759fe64392..b9a13cd63c750315907e8636dfdab887
 +                // Blueberry start
 +                if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) {
 +                    net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.minecraft.player.createCommandSourceStack(), s);
-+                    return;
++                    return true;
 +                }
 +                // Blueberry end
                  this.minecraft.player.commandSigned(s.substring(1), component);
