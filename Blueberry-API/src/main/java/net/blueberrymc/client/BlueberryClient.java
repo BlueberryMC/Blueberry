@@ -2,7 +2,7 @@ package net.blueberrymc.client;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.arikia.dev.drpc.DiscordRichPresence;
+import de.jcm.discordgamesdk.activity.Activity;
 import net.blueberrymc.client.gui.screens.MultiLineBackupConfirmScreen;
 import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
 import net.blueberrymc.client.scheduler.BlueberryClientScheduler;
@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ public class BlueberryClient extends BlueberryUtil {
     private static final Logger LOGGER = LogManager.getLogger();
     private final BlueberryClientScheduler clientScheduler = new BlueberryClientScheduler();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();
-    private final AtomicReference<DiscordRichPresence> discordRichPresenceQueue = new AtomicReference<>();
+    private final AtomicReference<Activity> discordRichPresenceQueue = new AtomicReference<>();
     @Nullable private final BlueberryClient impl;
 
     public BlueberryClient() {
@@ -102,25 +103,35 @@ public class BlueberryClient extends BlueberryUtil {
     // <start or end>
     @Override
     public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {
-        setDiscordRichPresenceQueue(
-                new DiscordRichPresence
-                        .Builder(state)
-                        .setDetails(details)
-                        .setBigImage(bigImage != null ? bigImage.getKey() : null, bigImage != null ? bigImage.getValue() : null)
-                        .setSmallImage(smallImage != null ? smallImage.getKey() : null, smallImage != null ? smallImage.getValue() : null)
-                        .setStartTimestamps(start)
-                        .build()
-        );
+        Activity activity = new Activity();
+        if (details != null) {
+            activity.setDetails(details);
+        }
+        if (state != null) {
+            activity.setState(state);
+        }
+        if (bigImage != null) {
+            activity.assets().setLargeImage(bigImage.getKey());
+            activity.assets().setLargeText(bigImage.getValue());
+        }
+        if (smallImage != null) {
+            activity.assets().setSmallImage(smallImage.getKey());
+            activity.assets().setSmallText(smallImage.getValue());
+        }
+        if (start > 0) {
+            activity.timestamps().setStart(Instant.ofEpochMilli(start));
+        }
+        setDiscordRichPresenceQueue(activity);
     }
 
     @Nullable
     @Override
-    public DiscordRichPresence getDiscordRichPresenceQueue() {
+    public Activity getDiscordRichPresenceQueue() {
         return discordRichPresenceQueue.get();
     }
 
     @Override
-    public void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {
+    public void setDiscordRichPresenceQueue(@Nullable Activity discordRichPresence) {
         discordRichPresenceQueue.set(discordRichPresence);
     }
 

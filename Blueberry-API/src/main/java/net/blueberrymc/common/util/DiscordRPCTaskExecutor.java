@@ -1,9 +1,10 @@
 package net.blueberrymc.common.util;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.arikia.dev.drpc.DiscordEventHandlers;
-import net.arikia.dev.drpc.DiscordRPC;
-import net.arikia.dev.drpc.DiscordRichPresence;
+import de.jcm.discordgamesdk.Core;
+import de.jcm.discordgamesdk.CreateParams;
+import de.jcm.discordgamesdk.DiscordEventAdapter;
+import de.jcm.discordgamesdk.activity.Activity;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.Side;
 import net.blueberrymc.util.Constants;
@@ -12,21 +13,24 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class used to enable Discord Rich Presence.
  */
 public class DiscordRPCTaskExecutor {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScheduledExecutorService executor;
+    private static ExecutorService executor;
 
-    private static ScheduledExecutorService createExecutor() {
-        return Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder().setNameFormat("Discord RPC Task Executor").build());
+    private static ExecutorService createExecutor() {
+        return Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("Discord RPC Task Executor").build());
     }
 
     private static final Queue<Runnable> taskQueue = new ArrayDeque<>();
@@ -45,52 +49,65 @@ public class DiscordRPCTaskExecutor {
      * @param discordRpc whether to enable discord rpc (setting to false will cause Discord RPC Task Executor to do
      *                   almost nothing).
      */
-    @SuppressWarnings("CodeBlock2Expr")
     public static void init(@NotNull String clientId, boolean discordRpc) {
         if (init) return;
+        downloadAndLoadLibrary();
         init = true;
         DiscordRPCTaskExecutor.discordRpcEnabled = discordRpc;
         LOGGER.info("Discord Rich Presence: " + (discordRpcEnabled ? "Enabled" : "Disabled"));
         executor = createExecutor();
+        taskQueue.clear();
         if (discordRpcEnabled) {
-            executor.scheduleAtFixedRate(() -> {
+            executor.execute(() -> {
                 thread = Thread.currentThread();
-                Runnable task;
-                while ((task = taskQueue.poll()) != null) {
-                    task.run();
+                LOGGER.info("Logging into Discord...");
+                try (CreateParams params = new CreateParams()) {
+                    params.setClientID(Long.parseLong(clientId, 10));
+                    params.setFlags(CreateParams.getDefaultFlags());
+                    AtomicReference<Core> lateInitCore = new AtomicReference<>();
+                    params.registerEventHandler(new DiscordEventAdapter() {
+                        @Override
+                        public void onCurrentUserUpdate() {
+                            var core = Objects.requireNonNull(lateInitCore.get());
+                            var user = core.userManager().getCurrentUser();
+                            LOGGER.info("Successfully logged into Discord: " + user.getUsername() + "#" + user.getDiscriminator() + " (" + user.getUserId() + ")");
+                        }
+                    });
+                    try (Core core = new Core(params)) {
+                        lateInitCore.set(core);
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try {
+                                // Run tasks
+                                Runnable task;
+                                while ((task = taskQueue.poll()) != null) {
+                                    task.run();
+                                }
+                                // Run callbacks
+                                core.runCallbacks();
+                                // Set activity
+                                Activity activity = Blueberry.getUtil().getDiscordRichPresenceQueue();
+                                if (activity != null) {
+                                    LOGGER.info("Updating Discord Rich Presence to State: " + activity.getState() + ", Details: " + activity.getDetails());
+                                    core.activityManager().updateActivity(activity);
+                                    Blueberry.getUtil().setDiscordRichPresenceQueue(null);
+                                }
+                            } catch (Exception e) {
+                                LOGGER.error(e);
+                            }
+                            // Sleep
+                            try {
+                                //noinspection BusyWait
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                break;
+                            }
+                        }
+                    }
                 }
-                DiscordRPC.discordRunCallbacks();
-                DiscordRichPresence presence = Blueberry.getUtil().getDiscordRichPresenceQueue();
-                if (presence != null) {
-                    LOGGER.info("Updating Discord Rich Presence to State: " + presence.state + ", Details: " + presence.details);
-                    DiscordRPC.discordUpdatePresence(presence);
-                    Blueberry.getUtil().setDiscordRichPresenceQueue(null);
-                }
-            }, 0, 100, TimeUnit.MILLISECONDS);
-        } else {
-            executor.scheduleAtFixedRate(() -> {
-                thread = Thread.currentThread();
-                taskQueue.clear();
-                DiscordRPC.discordRunCallbacks();
-                DiscordRichPresence presence = Blueberry.getUtil().getDiscordRichPresenceQueue();
-                if (presence != null) {
-                    Blueberry.getUtil().setDiscordRichPresenceQueue(null);
-                }
-            }, 0, 100, TimeUnit.MILLISECONDS);
+
+            });
         }
-        DiscordRPCTaskExecutor.submit(() -> {
-            LOGGER.info("Loading Discord RPC Library...");
-            //noinspection InstantiationOfUtilityClass
-            new DiscordRPC();
-            LOGGER.info("Logging into Discord...");
-            DiscordRPC.discordInitialize(clientId, new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
-                LOGGER.info("Successfully logged into Discord: " + user.username + "#" + user.discriminator + " (" + user.userId + ")");
-            }).setErroredEventHandler((i, s) -> {
-                LOGGER.error("Encountered error on Discord RPC: " + i + " (" + s + ")");
-            }).setDisconnectedEventHandler((i, s) -> {
-                LOGGER.info("Disconnected from Discord: " + i + " (" + s + ")");
-            }).build(), true);
-        });
     }
 
     /**
@@ -126,7 +143,6 @@ public class DiscordRPCTaskExecutor {
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            DiscordRPC.discordShutdown();
             thread = null;
             init = false;
             LOGGER.info("Successfully disconnected from Discord.");
@@ -138,5 +154,14 @@ public class DiscordRPCTaskExecutor {
      */
     public static void shutdown() {
         submit(DiscordRPCTaskExecutor::shutdownNow);
+    }
+
+    private static void downloadAndLoadLibrary() {
+        LOGGER.info("Downloading Discord GameSDK...");
+        try {
+            Core.initDownload();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to download Discord GameSDK", e);
+        }
     }
 }

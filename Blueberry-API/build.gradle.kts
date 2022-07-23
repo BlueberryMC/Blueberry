@@ -6,7 +6,7 @@ dependencies {
     compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
     implementation("org.jetbrains:annotations:23.0.0")
     compileOnlyApi("org.jetbrains:annotations:23.0.0")
-    api("net.arikia.dev:discord-rpc-without-jna:1.7.0")
+    api("com.github.JnCrMx:discord-game-sdk4j:v0.5.5")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.google.code.gson:gson:2.8.8")
     api("com.google.guava:guava:31.0.1-jre")
