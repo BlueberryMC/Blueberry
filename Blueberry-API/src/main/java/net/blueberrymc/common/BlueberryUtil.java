@@ -1,6 +1,6 @@
 package net.blueberrymc.common;
 
-import net.arikia.dev.drpc.DiscordRichPresence;
+import de.jcm.discordgamesdk.activity.Activity;
 import net.blueberrymc.client.BlueberryClient;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.common.util.ActionableResult;
@@ -98,9 +98,12 @@ public abstract class BlueberryUtil {
     public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {}
 
     @Nullable
-    public DiscordRichPresence getDiscordRichPresenceQueue() { return null; }
+    public Activity getDiscordRichPresenceQueue() {
+        return null;
+    }
 
-    public void setDiscordRichPresenceQueue(@Nullable DiscordRichPresence discordRichPresence) {}
+    public void setDiscordRichPresenceQueue(@Nullable Activity discordRichPresence) {
+    }
 
     public byte@NotNull[] processClass(@NotNull String path, byte @NotNull [] b) {
         try {

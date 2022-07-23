@@ -42,7 +42,7 @@ public class InternalBlueberryMod extends BlueberryMod {
         getLogger().debug("ClassLoader: " + InternalBlueberryMod.class.getClassLoader().getClass().getTypeName());
 
         // discord rich presence
-        Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
+        DiscordRPCTaskExecutor.submit(() -> Blueberry.getUtil().updateDiscordStatus("Initializing the game"));
 
         // config
         onReload();
@@ -99,7 +99,6 @@ public class InternalBlueberryMod extends BlueberryMod {
 
     @Override
     public void onPreInit() {
-        Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
         registerFluids();
         registerBlocks();
         registerItems();
@@ -107,9 +106,6 @@ public class InternalBlueberryMod extends BlueberryMod {
 
     @Override
     public void onInit() {
-        if (isFirst()) {
-            Blueberry.getUtil().updateDiscordStatus("Initializing the game", getStateList().getCurrentState().getName());
-        }
     }
 
     private void saveConfig() {
