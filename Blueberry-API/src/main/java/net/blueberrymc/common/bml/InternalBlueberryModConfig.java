@@ -12,6 +12,7 @@ import net.blueberrymc.common.bml.config.VisualConfigManager.Name;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Order;
 import net.blueberrymc.common.bml.config.VisualConfigManager.RequiresMCRestart;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 @Config
 @Name("Blueberry")
@@ -204,6 +205,22 @@ public class InternalBlueberryModConfig {
             @Name(namespace = "blueberry", path = "blueberry.mod.config.misc.discord_rpc.show_server_ip")
             @Key("showServerIp")
             public static volatile boolean showServerIp = true;
+
+            // TODO: add translation
+            @Order(10002)
+            @DefaultValue
+            @Name("Enable game invites")
+            @Description(@Name("This is an experimental feature and may be removed or changed in the future."))
+            @Key("enableGameInvites")
+            public static volatile boolean enableGameInvites = false;
+
+            @Order(10003)
+            @DefaultValue
+            @Name("DISCORD_INSTANCE_ID") // don't translate this
+            @Description(@Name("For debugging purposes. Leave empty if you are not sure what it is.")) // maybe translate this
+            @Key("discordInstanceId")
+            @NotNull
+            public static volatile String discordInstanceId = "";
         }
 
         @Order(-9999)

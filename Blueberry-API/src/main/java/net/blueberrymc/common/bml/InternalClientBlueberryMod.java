@@ -3,6 +3,7 @@ package net.blueberrymc.common.bml;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.Side;
+import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -48,18 +49,22 @@ public class InternalClientBlueberryMod {
         Minecraft minecraft = Minecraft.getInstance();
         ServerData serverData = minecraft.getCurrentServer();
         if (screen instanceof JoinMultiplayerScreen) {
+            DiscordRPCTaskExecutor.destroyLobby();
             Blueberry.getUtil().updateDiscordStatus("In Server List Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
             LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         } else if (screen instanceof TitleScreen) {
+            DiscordRPCTaskExecutor.destroyLobby();
             Blueberry.getUtil().updateDiscordStatus("In Main Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
             LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         } else if (screen instanceof SelectWorldScreen) {
+            DiscordRPCTaskExecutor.destroyLobby();
             Blueberry.getUtil().updateDiscordStatus("In Select World Menu");
             LAST_SCREEN.set(screen.getClass().getCanonicalName());
             return;
         } else if (screen instanceof ConnectScreen && serverData != null) {
+            DiscordRPCTaskExecutor.destroyLobby();
             String serverIp = null;
             if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
             Blueberry.getUtil().updateDiscordStatus("Connecting to server", serverIp);
@@ -69,6 +74,7 @@ public class InternalClientBlueberryMod {
         if (screen == null) {
             LocalPlayer player = minecraft.player;
             if (player == null) {
+                DiscordRPCTaskExecutor.destroyLobby();
                 Blueberry.getUtil().updateDiscordStatus("In Main Menu");
                 LAST_SCREEN.set(null);
                 return;
@@ -88,9 +94,16 @@ public class InternalClientBlueberryMod {
                 if (serverData.isLan()) {
                     Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
                 } else {
-                    String serverIp = null;
-                    if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
-                    Blueberry.getUtil().updateDiscordStatus("Playing on 3rd-party server", serverIp + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    String serverIp = InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp ? serverData.ip : null;
+                    DiscordRPCTaskExecutor.createLobby().thenAccept(l ->
+                            Blueberry.getUtil().updateDiscordStatus(
+                                    "Playing on 3rd-party server",
+                                    serverIp + " ",
+                                    BlueberryUtil.BLUEBERRY_ICON,
+                                    null,
+                                    System.currentTimeMillis()
+                            )
+                    );
                 }
                 LAST_SCREEN.set(null);
             }
