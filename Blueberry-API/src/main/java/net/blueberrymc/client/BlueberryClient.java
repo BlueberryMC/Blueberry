@@ -11,6 +11,7 @@ import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.bml.VersionedModInfo;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
+import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
 import net.blueberrymc.common.util.InstalledModsContainer;
 import net.blueberrymc.common.util.ListUtils;
 import net.blueberrymc.common.util.SimpleEntry;
@@ -131,8 +132,14 @@ public class BlueberryClient extends BlueberryUtil {
     }
 
     @Override
-    public void setDiscordRichPresenceQueue(@Nullable Activity discordRichPresence) {
-        discordRichPresenceQueue.set(discordRichPresence);
+    public void setDiscordRichPresenceQueue(@Nullable Activity activity) {
+        if (activity != null) {
+            long lobbyId = DiscordRPCTaskExecutor.getCurrentLobbyId();
+            if (lobbyId != -1) {
+                activity.party().setID(Long.toString(lobbyId));
+            }
+        }
+        discordRichPresenceQueue.set(activity);
     }
 
     /**

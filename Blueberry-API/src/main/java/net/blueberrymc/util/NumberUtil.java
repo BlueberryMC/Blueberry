@@ -4,6 +4,19 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class NumberUtil {
+    @Contract("null -> false")
+    public static boolean isLong(@Nullable String s) {
+        if (s == null) {
+            return false;
+        }
+        try {
+            Long.parseLong(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @Contract("null, _ -> false; !null, null -> false")
     public static boolean isNumberLessThan(@Nullable Number number, @Nullable Number another) {
         if (number == null || another == null) return false;

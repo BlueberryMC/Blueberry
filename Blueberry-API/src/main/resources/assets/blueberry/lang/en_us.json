@@ -73,5 +73,17 @@
   "multiplayer.compatible": "Compatible with server (%s mods present)",
   "multiplayer.incompatible": "Incompatible with server (%s mods present)",
   "multiplayer.vanilla": "Vanilla server",
-  "command.argument.mod_id.invalid_mod": "Unknown mod '%s'"
+  "command.argument.mod_id.invalid_mod": "Unknown mod '%s'",
+  "discord.title": "[Discord]",
+  "discord.error_with_result": "Error returned from Discord: %s",
+  "discord.activity.join_request.title": "%s is requesting to join the party",
+  "discord.activity.join_request.accept": "Accept",
+  "discord.activity.join_request.accept.hover_text": "Click to accept the request",
+  "discord.activity.join_request.accept.accepted": "You have accepted the request.",
+  "discord.activity.join_request.deny": "Deny",
+  "discord.activity.join_request.deny.hover_text": "Click to deny the request",
+  "discord.activity.join_request.deny.denied": "You have denied the request.",
+  "discord.activity.join_request.ignore": "Ignore",
+  "discord.activity.join_request.ignore.hover_text": "Click to ignore the request",
+  "discord.activity.join_request.ignore.ignored": "You have ignored the request."
 }
