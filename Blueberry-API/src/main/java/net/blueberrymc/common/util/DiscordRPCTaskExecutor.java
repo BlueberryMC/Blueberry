@@ -174,7 +174,8 @@ public class DiscordRPCTaskExecutor {
                                 }
                                 lobbyManager.connectNetwork(lobby);
                                 lobbyManager.openNetworkChannel(lobby, NETWORK_SYSTEM_MESSAGE_ID, true);
-                                byte[] data = Component.Serializer.toJson(Component.literal("")).getBytes(StandardCharsets.UTF_8);
+                                // TODO: translate
+                                byte[] data = Component.Serializer.toJson(new TextComponent(tag + " joined the lobby!").withStyle(ChatFormatting.YELLOW)).getBytes(StandardCharsets.UTF_8);
                                 for (DiscordUser user : lobbyManager.getMemberUsers(lobby)) {
                                     lobbyManager.sendNetworkMessage(lobby, user.getUserId(), NETWORK_SYSTEM_MESSAGE_ID, data);
                                 }
