@@ -18,7 +18,7 @@ index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c
          public void sendSystemMessage(Component component) {
          }
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index a76436aff19da1f23418b9b8fc41ad4d57a88b96..a782a4caf74eb88ae0a49009340d826d9686ef0a 100644
+index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec067099953c 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
 @@ -36,7 +36,7 @@ import net.minecraft.world.level.dimension.DimensionType;
@@ -30,7 +30,7 @@ index a76436aff19da1f23418b9b8fc41ad4d57a88b96..a782a4caf74eb88ae0a49009340d826d
      public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
      public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
      private final CommandSource source;
-@@ -323,4 +323,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
+@@ -344,4 +344,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
      public RegistryAccess registryAccess() {
          return this.server.registryAccess();
      }

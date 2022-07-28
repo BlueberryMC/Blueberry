@@ -24,7 +24,7 @@ index cbb0034363a39c6e2aa97bac4182daf60ede86c2..cf3915675346e0d869e71167352bbb32
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-index 3340e2ef189f529d231fed8ef4606a759fe64392..d4432ae7fb7990af723555050b52a0789162036b 100644
+index d356f1716c4eaa4422487e02d254acebcdbc5f13..6b912f6170918dc9c448052d9144e5b2daf73c27 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 @@ -469,6 +469,12 @@ public class ChatScreen extends Screen {

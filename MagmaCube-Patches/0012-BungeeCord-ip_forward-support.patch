@@ -5,10 +5,10 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 7638aa5aef3be9a36620871a91efeedd0c4b85d9..7a9f9401bc2dcbad463cc5d275a70d730e048156 100644
+index 16a955cf6534eb2955cf4047dc69b9ab9ab0e587..0da4fc7d631739e50cee58aa4a22ca1becc60a36 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -72,6 +72,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -70,6 +70,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private float averageSentPackets;
      private int tickCount;
      private boolean handlingFault;
@@ -20,7 +20,7 @@ index 7638aa5aef3be9a36620871a91efeedd0c4b85d9..7a9f9401bc2dcbad463cc5d275a70d73
  
      public Connection(PacketFlow packetFlow) {
          this.receiving = packetFlow;
-@@ -81,6 +86,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -79,6 +84,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          super.channelActive(channelHandlerContext);
          this.channel = channelHandlerContext.channel();
          this.address = this.channel.remoteAddress();
@@ -28,7 +28,7 @@ index 7638aa5aef3be9a36620871a91efeedd0c4b85d9..7a9f9401bc2dcbad463cc5d275a70d73
  
          try {
              this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -249,6 +255,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -258,6 +264,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void disconnect(Component component) {
@@ -57,10 +57,10 @@ index 3671a437dcc830fbc14f6efa894277924e4edaaf..204e7cd3b082355092111e1b2a7d9855
          }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-index 13ec000e23b19e877a47244182e62d46bd6b76bd..906aad24d735ec99545d13267ddce4a2e304b46e 100644
+index f61029a5a3a5be18410356ec22173f570b4da655..a862c9d110fe5ca35e97faa174bc2d00c6ff6390 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-@@ -144,6 +144,7 @@ public class ServerConnectionListener {
+@@ -145,6 +145,7 @@ public class ServerConnectionListener {
                              connection.setReadOnly();
                          }
                      } else {
@@ -106,7 +106,7 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 8fb337c4df4675fa058c008720cc78bf78cd6dd8..239d8c5aa689fb3cf6cbb796570937858ca4bd33 100644
+index 000e49f6e1b04fc810cb45aeed861f9b6578d580..36240f50c0bc7225cde0ba2f0cc066fa8f771f92 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -103,7 +103,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
