@@ -5,23 +5,23 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index bc9e8723eccc02a77720bf8deb062c9af4298f91..3cf04f921ab424c5e84bbcf4f4da04cca8769ef0 100644
+index bc9e8723eccc02a77720bf8deb062c9af4298f91..d3576f4b42fc89004c3f96a3c95cdd0ca6f13e25 100644
 --- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
 +++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -310,6 +310,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+@@ -309,6 +309,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+     }
  
      private void sendChat(String s, @Nullable Component component) {
-         ChatMessageContent chatMessageContent = this.buildSignedContent(s, component);
 +        // Blueberry start - fire ClientLocalPlayerChatEvent
-+        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s2);
++        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
 +        if (!event.callEvent()) {
 +            return;
 +        }
-+        s2 = event.getMessage();
++        s = event.getMessage();
 +        // Blueberry end - fire ClientLocalPlayerChatEvent
+         ChatMessageContent chatMessageContent = this.buildSignedContent(s, component);
          MessageSigner messageSigner = this.createMessageSigner();
          LastSeenMessages.Update update = this.connection.generateMessageAcknowledgements();
-         MessageSignature messageSignature = this.signMessage(messageSigner, chatMessageContent, update.lastSeen());
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index cc8e1e3c7c9b472c24ed895efdbf7da81f5d7911..16a955cf6534eb2955cf4047dc69b9ab9ab0e587 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
