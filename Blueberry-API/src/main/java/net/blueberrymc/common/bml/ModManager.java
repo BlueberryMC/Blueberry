@@ -68,7 +68,7 @@ public class ModManager {
                 Pack pack = Pack.create(mod.getDescription().getModId(), true, () -> mod.getResourceManager().getPackResources(), packConstructor, Pack.Position.BOTTOM, PackSource.BUILT_IN);
                 if (pack != null) consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
-                break; // assume we're not finished resource manager load yet
+                break; // resource manager has not been loaded yet
             }
         }
     }
