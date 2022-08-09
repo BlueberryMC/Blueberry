@@ -106,10 +106,10 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 000e49f6e1b04fc810cb45aeed861f9b6578d580..36240f50c0bc7225cde0ba2f0cc066fa8f771f92 100644
+index 241abccbbe5a96d1a64570263e6a8634df13c467..4f0ef5f80b4291d4f28ee0469de8da9b45fc3b38 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -103,7 +103,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -99,7 +99,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
  
      public void handleAcceptedLogin() {
          ProfilePublicKey profilePublicKey = null;
@@ -118,7 +118,7 @@ index 000e49f6e1b04fc810cb45aeed861f9b6578d580..36240f50c0bc7225cde0ba2f0cc066fa
              this.gameProfile = this.createFakeProfile(this.gameProfile);
          } else {
              try {
-@@ -148,6 +148,18 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -144,6 +144,18 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
  
      }
  
@@ -137,7 +137,7 @@ index 000e49f6e1b04fc810cb45aeed861f9b6578d580..36240f50c0bc7225cde0ba2f0cc066fa
      private void placeNewPlayer(ServerPlayer serverPlayer) {
          this.server.getPlayerList().placeNewPlayer(this.connection, serverPlayer);
      }
-@@ -199,6 +211,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -183,6 +195,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
                  this.state = ServerLoginPacketListenerImpl.State.KEY;
                  this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
              } else {
