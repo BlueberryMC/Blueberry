@@ -169,12 +169,9 @@ public class InternalBlueberryMod extends BlueberryMod {
                 boolean forceRefreshDiscord = false;
                 if (lastDiscordRPCStatus != InternalBlueberryModConfig.Misc.DiscordRPC.status) {
                     DiscordRPCTaskExecutor.shutdownNow();
-                    if (InternalBlueberryModConfig.Misc.DiscordRPC.status != DiscordRPCStatus.DISABLED) {
-                        DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
-                        forceRefreshDiscord = true;
-                    }
-                } else if (lastDiscordRPCStatus == null) {
-                    DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
+                }
+                DiscordRPCTaskExecutor.init(InternalBlueberryModConfig.Misc.DiscordRPC.status == DiscordRPCStatus.ENABLED);
+                if (lastDiscordRPCStatus != DiscordRPCStatus.DISABLED) {
                     forceRefreshDiscord = true;
                 }
                 lastDiscordRPCStatus = InternalBlueberryModConfig.Misc.DiscordRPC.status;

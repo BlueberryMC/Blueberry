@@ -60,6 +60,7 @@ public class DiscordRPCTaskExecutor {
     @Nullable
     private static Thread thread = null;
     private static boolean init = false;
+    private static boolean downloadedLibrary = false;
     public static boolean discordRpcEnabled = false;
 
     public static void init(boolean discordRpc) {
@@ -74,7 +75,10 @@ public class DiscordRPCTaskExecutor {
      */
     public static void init(@NotNull String clientId, boolean discordRpc) {
         if (init) return;
-        downloadAndLoadLibrary();
+        if (!downloadedLibrary) {
+            downloadAndLoadLibrary();
+            downloadedLibrary = true;
+        }
         init = true;
         DiscordRPCTaskExecutor.discordRpcEnabled = discordRpc;
         LOGGER.info("Discord Rich Presence: " + (discordRpcEnabled ? "Enabled" : "Disabled"));
