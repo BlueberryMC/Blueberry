@@ -13,6 +13,8 @@ import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +22,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InternalClientBlueberryMod {
+    private static final Logger LOGGER = LogManager.getLogger("Blueberry");
     private static final AtomicReference<String> lastScreen = new AtomicReference<>();
 
     static void doReload(@NotNull ModStateList modState, boolean forceRefreshDiscord) {
@@ -46,67 +49,71 @@ public class InternalClientBlueberryMod {
     public static void refreshDiscordStatus(@Nullable Screen screen, boolean force) {
         if (Blueberry.getSide() != Side.CLIENT) return;
         if (!force && Objects.equals(lastScreen.get(), screen == null ? null : screen.getClass().getCanonicalName())) return;
-        Minecraft minecraft = Minecraft.getInstance();
-        ServerData serverData = minecraft.getCurrentServer();
-        if (screen instanceof JoinMultiplayerScreen) {
-            DiscordRPCTaskExecutor.destroyLobby();
-            Blueberry.getUtil().updateDiscordStatus("In Server List Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
-            lastScreen.set(screen.getClass().getCanonicalName());
-            return;
-        } else if (screen instanceof TitleScreen) {
-            DiscordRPCTaskExecutor.destroyLobby();
-            Blueberry.getUtil().updateDiscordStatus("In Main Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
-            lastScreen.set(screen.getClass().getCanonicalName());
-            return;
-        } else if (screen instanceof SelectWorldScreen) {
-            DiscordRPCTaskExecutor.destroyLobby();
-            Blueberry.getUtil().updateDiscordStatus("In Select World Menu");
-            lastScreen.set(screen.getClass().getCanonicalName());
-            return;
-        } else if (screen instanceof ConnectScreen && serverData != null) {
-            DiscordRPCTaskExecutor.destroyLobby();
-            String serverIp = null;
-            if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
-            Blueberry.getUtil().updateDiscordStatus("Connecting to server", serverIp);
-            lastScreen.set(screen.getClass().getCanonicalName());
-            return;
-        }
-        if (screen == null) {
-            LocalPlayer player = minecraft.player;
-            if (player == null) {
+        try {
+            Minecraft minecraft = Minecraft.getInstance();
+            ServerData serverData = minecraft.getCurrentServer();
+            if (screen instanceof JoinMultiplayerScreen) {
                 DiscordRPCTaskExecutor.destroyLobby();
-                Blueberry.getUtil().updateDiscordStatus("In Main Menu");
-                lastScreen.set(null);
+                Blueberry.getUtil().updateDiscordStatus("In Server List Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
+                lastScreen.set(screen.getClass().getCanonicalName());
+                return;
+            } else if (screen instanceof TitleScreen) {
+                DiscordRPCTaskExecutor.destroyLobby();
+                Blueberry.getUtil().updateDiscordStatus("In Main Menu", Blueberry.getModLoader().getActiveMods().size() + " mods active");
+                lastScreen.set(screen.getClass().getCanonicalName());
+                return;
+            } else if (screen instanceof SelectWorldScreen) {
+                DiscordRPCTaskExecutor.destroyLobby();
+                Blueberry.getUtil().updateDiscordStatus("In Select World Menu");
+                lastScreen.set(screen.getClass().getCanonicalName());
+                return;
+            } else if (screen instanceof ConnectScreen && serverData != null) {
+                DiscordRPCTaskExecutor.destroyLobby();
+                String serverIp = null;
+                if (InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp) serverIp = serverData.ip;
+                Blueberry.getUtil().updateDiscordStatus("Connecting to server", serverIp);
+                lastScreen.set(screen.getClass().getCanonicalName());
                 return;
             }
-            IntegratedServer integratedServer = minecraft.getSingleplayerServer();
-            if (minecraft.isLocalServer() && integratedServer != null) {
-                Blueberry.getUtil().updateDiscordStatus("Playing on Single Player", integratedServer.getWorldData().getLevelName() + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                lastScreen.set(null);
-                return;
-            }
-            if (minecraft.isConnectedToRealms()) {
-                Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                lastScreen.set(null);
-                return;
-            }
-            if (serverData != null) {
-                if (serverData.isLan()) {
-                    Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                } else {
-                    String serverIp = InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp ? serverData.ip : null;
-                    DiscordRPCTaskExecutor.createLobby().thenAccept(l ->
-                            Blueberry.getUtil().updateDiscordStatus(
-                                    "Playing on 3rd-party server",
-                                    serverIp + " ",
-                                    BlueberryUtil.BLUEBERRY_ICON,
-                                    null,
-                                    System.currentTimeMillis()
-                            )
-                    );
+            if (screen == null) {
+                LocalPlayer player = minecraft.player;
+                if (player == null) {
+                    DiscordRPCTaskExecutor.destroyLobby();
+                    Blueberry.getUtil().updateDiscordStatus("In Main Menu");
+                    lastScreen.set(null);
+                    return;
                 }
-                lastScreen.set(null);
+                IntegratedServer integratedServer = minecraft.getSingleplayerServer();
+                if (minecraft.isLocalServer() && integratedServer != null) {
+                    Blueberry.getUtil().updateDiscordStatus("Playing on Single Player", integratedServer.getWorldData().getLevelName() + " ", BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    lastScreen.set(null);
+                    return;
+                }
+                if (minecraft.isConnectedToRealms()) {
+                    Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    lastScreen.set(null);
+                    return;
+                }
+                if (serverData != null) {
+                    if (serverData.isLan()) {
+                        Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+                    } else {
+                        String serverIp = InternalBlueberryModConfig.Misc.DiscordRPC.showServerIp ? serverData.ip : null;
+                        DiscordRPCTaskExecutor.createLobby().thenAccept(l ->
+                                Blueberry.getUtil().updateDiscordStatus(
+                                        "Playing on 3rd-party server",
+                                        serverIp + " ",
+                                        BlueberryUtil.BLUEBERRY_ICON,
+                                        null,
+                                        System.currentTimeMillis()
+                                )
+                        );
+                    }
+                    lastScreen.set(null);
+                }
             }
+        } catch (Exception | UnsatisfiedLinkError e) {
+            LOGGER.warn("Failed to update Discord status", e);
         }
     }
 }
