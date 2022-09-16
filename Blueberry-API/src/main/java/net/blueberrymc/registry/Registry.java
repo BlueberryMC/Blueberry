@@ -40,6 +40,12 @@ public interface Registry<T> {
     @Nullable
     T get(@Nullable Key key);
 
+    /**
+     * Try to get a value from this registry, or throw an exception if the value is not found.
+     * @param key the key
+     * @return the value
+     * @throws IllegalArgumentException if the value is not found
+     */
     @NotNull
     T getValueOrThrow(@NotNull Key key);
 

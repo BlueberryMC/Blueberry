@@ -1,10 +1,13 @@
 package net.blueberrymc.world.item;
 
 import net.blueberrymc.common.internal.util.ImplGetter;
+import net.blueberrymc.registry.Registry;
 import net.blueberrymc.util.Constants;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +46,28 @@ public abstract class Item {
     public static Item ofUnsafe(@NotNull Object o) {
         Objects.requireNonNull(o, "o");
         return (Item) ImplGetter.byConstructor(Object.class).apply(o);
+    }
+
+    /**
+     * Gets an item by its id, key, or resource location (like <code>minecraft:stone</code>).
+     * @param key item location
+     * @return the item
+     * @throws IllegalArgumentException if the item is not found
+     */
+    @NotNull
+    public static Item byKey(@NotNull Key key) {
+        return Registry.ITEM.getValueOrThrow(key);
+    }
+
+    /**
+     * Gets an item by its id, key, or resource location (like <code>minecraft:stone</code>).
+     * @param key item location
+     * @return the item
+     * @throws IllegalArgumentException if the item is not found
+     */
+    @NotNull
+    public static Item byKey(@Subst("minecraft:stone") @NotNull String key) {
+        return byKey(Key.key(key));
     }
 
     public interface Properties {
