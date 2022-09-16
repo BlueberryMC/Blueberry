@@ -12,5 +12,14 @@ public interface CrashReport {
     }
 
     @NotNull
+    String getTitle();
+
+    @NotNull
+    String getDetails();
+
+    @NotNull
     Throwable getException();
+
+    @NotNull
+    String getEntireReport();
 }

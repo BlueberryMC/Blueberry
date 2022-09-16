@@ -4,7 +4,6 @@ import net.blueberrymc.impl.util.KeyUtil;
 import net.blueberrymc.util.Reflected;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +17,9 @@ public record BlueberryRegistry<T>(
         @NotNull Registry<Object> handle,
         @NotNull Function<Object, T> valueMapper,
         @NotNull Function<T, Object> valueUnmapper) implements net.blueberrymc.registry.Registry<T> {
+    /**
+     * {@link net.blueberrymc.registry.Registry#ofUnsafe(String, Function, Function)}
+     */
     @SuppressWarnings("unchecked")
     @Reflected
     @Contract("_, _, _ -> new")
@@ -37,6 +39,10 @@ public record BlueberryRegistry<T>(
         }
     }
 
+    /**
+     * {@link net.blueberrymc.registry.Registry#register(net.blueberrymc.registry.Registry, Key, Object)}
+     */
+    @Reflected
     public static <T> @NotNull T register(@NotNull net.blueberrymc.registry.Registry<T> registry, @NotNull Key location, @Nullable T object) {
         var value = Registry.register(
                 ((BlueberryRegistry<T>) registry).handle,
@@ -48,11 +54,11 @@ public record BlueberryRegistry<T>(
     @Nullable
     @Override
     public T get(@Nullable Key key) {
-        ResourceLocation location = null;
-        if (key != null) {
-            location = new ResourceLocation(key.namespace(), key.value());
+        Object v = handle.get(KeyUtil.toMinecraft(key));
+        if (v == null) {
+            return null;
         }
-        return valueMapper.apply(handle.get(location));
+        return valueMapper.apply(v);
     }
 
     @NotNull
@@ -69,12 +75,16 @@ public record BlueberryRegistry<T>(
     @Nullable
     @Override
     public Key getKey(@NotNull T value) {
-        return (Key) (Object) handle.getKey(valueUnmapper.apply(value));
+        return KeyUtil.toAdventure(handle.getKey(valueUnmapper.apply(value)));
     }
 
     @Override
     public @Nullable T byId(int id) {
-        return valueMapper.apply(handle.byId(id));
+        Object v = handle.byId(id);
+        if (v == null) {
+            return null;
+        }
+        return valueMapper.apply(v);
     }
 
     @Override

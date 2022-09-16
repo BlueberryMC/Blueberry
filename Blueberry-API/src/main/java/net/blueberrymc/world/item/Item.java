@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public abstract class Item {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ItemRarity rarity;
@@ -39,6 +41,7 @@ public abstract class Item {
     @Contract(value = "_ -> new", pure = true)
     @NotNull
     public static Item ofUnsafe(@NotNull Object o) {
+        Objects.requireNonNull(o, "o");
         return (Item) ImplGetter.byConstructor(Object.class).apply(o);
     }
 
