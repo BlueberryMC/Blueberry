@@ -112,8 +112,10 @@ public class BlueberryModLoader implements ModLoader {
                     }
                 }
             } catch (ModDescriptionNotFoundException ex) {
-                LOGGER.warn("Adding into classpath from non-mod file/folder: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
-                toAdd.add(file);
+                if (file.isFile()) {
+                    LOGGER.warn("Adding into classpath from non-mod file: " + file.getAbsolutePath() + ". This could cause severe issues, please remove it if possible.");
+                    toAdd.add(file);
+                }
             } catch (Throwable throwable) {
                 LOGGER.error("Error during preprocessing {} (loaded from: {})", file.getName(), file.getAbsolutePath(), throwable);
                 ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(file.getName(), file.getName()), "Error during preprocessing: " + throwable.getMessage(), false));
