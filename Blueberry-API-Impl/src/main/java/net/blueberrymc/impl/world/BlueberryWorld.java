@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.Random;
 
 public record BlueberryWorld(@NotNull Level handle) implements World {
     public BlueberryWorld {
@@ -64,6 +63,7 @@ public record BlueberryWorld(@NotNull Level handle) implements World {
         handle.removeBlockEntity(PositionUtil.toBlockPos(pos));
     }
 
+    @Contract(" -> new")
     @Override
     public @NotNull RandomSource getRandom() {
         return new MinecraftRandomSource(handle.getRandom());
@@ -78,6 +78,12 @@ public record BlueberryWorld(@NotNull Level handle) implements World {
         return new BlueberryBlockEntity(blockEntity);
     }
 
+    /**
+     * Attempt to get a chunk if loaded.
+     * @param chunkX The chunk X position.
+     * @param chunkZ The chunk Z position.
+     * @return The chunk if loaded, otherwise null.
+     */
     @Override
     public @Nullable Chunk getChunkIfLoaded(int chunkX, int chunkZ) {
         if (handle.getChunkSource().hasChunk(chunkX, chunkZ)) {
@@ -87,6 +93,12 @@ public record BlueberryWorld(@NotNull Level handle) implements World {
         return null;
     }
 
+    /**
+     * Attempt to get a chunk, loading and/or generating it if necessary.
+     * @param chunkX The chunk X position.
+     * @param chunkZ The chunk Z position.
+     * @return the chunk
+     */
     @Contract("_, _ -> new")
     @Override
     public @NotNull Chunk getChunk(int chunkX, int chunkZ) {
