@@ -23,8 +23,11 @@ public abstract class Fluid {
     public Fluid() {
         var builder = StateDefinition.<Fluid, FluidState>builder(this);
         createFluidStateDefinition(builder);
-        this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
+        this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::create);
     }
+
+    @NotNull
+    public abstract FluidState defaultFluidState();
 
     protected void createFluidStateDefinition(@NotNull StateDefinition.@NotNull Builder<Fluid, FluidState> builder) {
     }

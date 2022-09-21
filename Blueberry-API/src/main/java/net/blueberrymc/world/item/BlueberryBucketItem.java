@@ -2,13 +2,14 @@ package net.blueberrymc.world.item;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.world.level.fluid.Fluid;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlueberryBucketItem extends BucketItem {
     private final BlueberryMod mod;
 
-    public BlueberryBucketItem(@NotNull("mod") BlueberryMod mod, @NotNull("fluid") Fluid fluid, @NotNull("properties") Properties properties) {
+    public BlueberryBucketItem(@NotNull BlueberryMod mod, @NotNull Fluid fluid, @NotNull Properties properties) {
         super(fluid, properties);
         Preconditions.checkNotNull(mod, "mod cannot be null");
         this.mod = mod;

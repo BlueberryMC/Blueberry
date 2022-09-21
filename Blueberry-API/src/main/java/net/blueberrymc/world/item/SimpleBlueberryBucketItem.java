@@ -1,6 +1,7 @@
 package net.blueberrymc.world.item;
 
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.world.level.fluid.Fluid;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
