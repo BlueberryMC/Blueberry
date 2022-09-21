@@ -2,6 +2,7 @@ package net.blueberrymc.impl.nbt;
 
 import net.blueberrymc.nbt.Tag;
 import net.blueberrymc.nbt.TagCompound;
+import net.blueberrymc.util.Reflected;
 import net.kyori.adventure.util.Codec;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Contract;
@@ -19,6 +20,12 @@ public class TagCompoundImpl extends TagImpl implements TagCompound {
             return null;
         }
         return new TagCompoundImpl(handle);
+    }
+
+    @Reflected
+    @Contract(" -> new")
+    public static @NotNull TagCompoundImpl create() {
+        return new TagCompoundImpl(new CompoundTag());
     }
 
     @NotNull

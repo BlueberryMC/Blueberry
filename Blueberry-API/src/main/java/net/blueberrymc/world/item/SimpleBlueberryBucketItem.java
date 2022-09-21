@@ -9,7 +9,7 @@ import java.util.function.Function;
 public class SimpleBlueberryBucketItem extends BlueberryBucketItem {
     private final Function<ItemStack, Component> toNameFunction;
 
-    public SimpleBlueberryBucketItem(@NotNull("mod") BlueberryMod mod, @NotNull("fluid") Fluid fluid, @NotNull Properties properties, @NotNull("toNameFunction") Function<ItemStack, Component> toNameFunction) {
+    public SimpleBlueberryBucketItem(@NotNull BlueberryMod mod, @NotNull Fluid fluid, @NotNull Properties properties, @NotNull Function<ItemStack, Component> toNameFunction) {
         super(mod, fluid, properties);
         this.toNameFunction = toNameFunction;
     }

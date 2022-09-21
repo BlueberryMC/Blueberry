@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class Item {
+public abstract class Item implements ItemLike {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ItemRarity rarity;
 
@@ -26,6 +26,11 @@ public abstract class Item {
             }
         }
         this.rarity = properties.getRarity();
+    }
+
+    @Override
+    public @NotNull Item asItem() {
+        return this;
     }
 
     @NotNull

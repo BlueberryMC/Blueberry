@@ -20,4 +20,7 @@ public interface AbstractTagCollection<T extends Tag> extends Collection<T>, Tag
     boolean setTag(int index, @NotNull Tag value);
 
     boolean addTag(int index, @NotNull Tag value);
+
+    @NotNull
+    Object toPrimitiveArray();
 }

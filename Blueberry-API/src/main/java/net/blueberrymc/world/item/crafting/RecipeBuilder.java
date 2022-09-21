@@ -1,8 +1,12 @@
 package net.blueberrymc.world.item.crafting;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.tags.TagKey;
 import net.blueberrymc.util.WeakList;
+import net.blueberrymc.world.item.Item;
+import net.blueberrymc.world.item.ItemLike;
 import net.blueberrymc.world.item.ItemStack;
+import net.blueberrymc.world.item.Items;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Key;

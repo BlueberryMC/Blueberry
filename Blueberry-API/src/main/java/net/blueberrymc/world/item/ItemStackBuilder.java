@@ -43,7 +43,7 @@ public class ItemStackBuilder {
     @Contract(pure = true)
     @NotNull
     public TagCompound getOrCreateTag() {
-        return this.tag != null ? this.tag : (this.tag = new CompoundTag());
+        return this.tag != null ? this.tag : (this.tag = TagCompound.create());
     }
 
     @Contract(pure = true)
@@ -147,7 +147,7 @@ public class ItemStackBuilder {
     public ItemStack build() {
         ItemStack stack = new ItemStack(item, amount);
         if (damageValue != 0) stack.setDamageValue(damageValue);
-        if (tag != null) stack.setTag(tag);
+        if (tag != null) stack.tag(tag);
         if (hoverName != null) stack.setHoverName(hoverName);
         if (!enchantments.isEmpty()) enchantments.forEach(stack::enchant);
         if (repairCost != 0) stack.setRepairCost(repairCost);

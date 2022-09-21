@@ -1,5 +1,7 @@
 package net.blueberrymc.nbt;
 
+import net.blueberrymc.common.internal.util.ImplGetter;
+import net.kyori.adventure.util.Codec;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +9,13 @@ import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.NonExtendable
 public interface TagCompound extends Tag {
+    @NotNull Codec<TagCompound, String, TagParser.TagParserException, RuntimeException> CODEC = Codec.codec(TagParser::parse, TagCompound::toString);
+
+    @NotNull
+    static TagCompound create() {
+        return (TagCompound) ImplGetter.byMethod("create").apply();
+    }
+
     /**
      * Removes the tag with the given name.
      * @param key The name of the tag to remove.
