@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -101,7 +102,7 @@ public class BlueberryText implements ComponentContents {
                 in = Blueberry.class.getResourceAsStream(jsonPath);
                 if (in == null) in = Blueberry.getModLoader().getResourceAsStream(jsonPath);
                 if (in != null) {
-                    InputStreamReader reader = new InputStreamReader(in);
+                    InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
                     GsonHelper.parse(reader).entrySet().forEach((entry) -> {
                         String s;
                         try {
