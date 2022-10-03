@@ -50,7 +50,14 @@ public class BlueberryEvil {
                 if (isServer() && isClientOnly(member)) {
                     return null;
                 }
-                return super.visitField(access, name, descriptor, signature, value);
+                FieldVisitor fieldVisitor = super.visitField(access, name, descriptor, signature, value);
+                if (member != null) {
+                    AnnotationRecorder.AnnotationData experimentalAnnotation = member.findAnnotation("Lorg/jetbrains/annotations/ApiStatus$Experimental;");
+                    if (experimentalAnnotation != null) {
+                        fieldVisitor.visitAnnotation("Lnet/blueberrymc/common/Experimental;", true).visitEnd();
+                    }
+                }
+                return fieldVisitor;
             }
         }, 0);
         return cw.toByteArray();

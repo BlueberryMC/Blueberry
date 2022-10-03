@@ -118,7 +118,7 @@ public class ModConfigScreen extends BlueberryScreen {
             var experimentalData = config.getExperimentalData();
             if (experimentalData.experimental()) {
                 MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.experimental");
-                tooltip.append(text.withStyle(ChatFormatting.YELLOW)).append("\n");
+                tooltip.append(text.withStyle(ChatFormatting.GOLD)).append("\n");
             }
             // description
             Component desc = config.getDescription();
