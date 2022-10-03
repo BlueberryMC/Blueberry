@@ -34,6 +34,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -405,6 +406,7 @@ public class BlueberryModLoader implements ModLoader {
     @Override
     public void enableMod(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
+        Preconditions.checkArgument(mod.getStateList().getCurrentState() != ModState.UNREGISTERED, "Attempting to enable an unregistered mod");
         if (mod.getClassLoader() instanceof ModClassLoader && ((ModClassLoader) mod.getClassLoader()).isClosed()) {
             throw new IllegalArgumentException("ClassLoader is already closed (unregistered?)");
         }
@@ -430,6 +432,7 @@ public class BlueberryModLoader implements ModLoader {
     public void disableMod(@NotNull BlueberryMod mod, boolean unregister) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         Preconditions.checkArgument(mod.getStateList().getCurrentState() != ModState.UNLOADED, "mod already unloaded");
+        Preconditions.checkArgument(mod.getStateList().getCurrentState() != ModState.UNREGISTERED, "mod already unregistered");
         if (!unregister && !Blueberry.isStopping() && !mod.getDescription().isUnloadable()) throw new IllegalArgumentException(mod.getName() + " (" + mod.getModId() + ") cannot be unloaded");
         try {
             mod.onUnload();
@@ -446,11 +449,13 @@ public class BlueberryModLoader implements ModLoader {
         }
         loaders.remove(mod.getClassLoader());
         if (unregister) {
+            mod.getStateList().add(ModState.UNREGISTERED);
             if (mod.getClassLoader() instanceof ModClassLoader) {
                 try {
                     ((ModClassLoader) mod.getClassLoader()).close();
                 } catch (IOException ex) {
                     LOGGER.warn("Error closing class loader '{}' of mod {} ({}) [{}]", mod.getClassLoader().getClass().getSimpleName(), mod.getName(), mod.getModId(), mod.getDescription().getVersion(), ex);
+                    ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(mod.getName(), mod.getModId()), ex, false));
                 }
             }
             {
@@ -475,11 +480,17 @@ public class BlueberryModLoader implements ModLoader {
                     provider.remove(blueberryResourceManager.getPackResources());
                 } else {
                     LOGGER.warn("Unknown ResourceManager type: " + resourceManager.getClass().getTypeName());
+                    ModLoadingErrors.add(new ModLoadingError(
+                            new SimpleModInfo(mod.getName(), mod.getModId()),
+                            "Unknown ResourceManager type: " + resourceManager.getClass().getTypeName(),
+                            true
+                    ));
                 }
                 blueberryResourceManager.getPackResources().close();
                 Blueberry.getUtil().reloadResourcePacks(); // reload to apply changes
             } catch (Exception ex) {
                 LOGGER.warn("Error unregistering ResourceManager", ex);
+                ModLoadingErrors.add(new ModLoadingError(new SimpleModInfo(mod.getName(), mod.getModId()), ex, false));
             }
             {
                 List<String> toRemove = new ArrayList<>();
@@ -536,6 +547,7 @@ public class BlueberryModLoader implements ModLoader {
         }
     }
 
+    @ApiStatus.Internal
     public void registerInternalBlueberryMod(@NotNull ModDescriptionFile description) {
         forceRegisterMod(description, new InternalBlueberryMod(this, description, Launch.classLoader, new File(ClasspathUtil.getClasspath(InternalBlueberryMod.class))));
     }

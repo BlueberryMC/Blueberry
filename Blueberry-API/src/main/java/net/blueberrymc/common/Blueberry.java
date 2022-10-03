@@ -325,6 +325,7 @@ public class Blueberry {
         }
     }
 
+    @ApiStatus.Internal
     static void registerInternalMod() {
         ModDescriptionFile description = new ModDescriptionFile(
                 "blueberry",

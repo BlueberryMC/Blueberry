@@ -107,12 +107,18 @@ public class ModConfigScreen extends BlueberryScreen {
             MutableComponent tooltip = new TextComponent("");
             // deprecated
             var deprecatedData = config.getDeprecatedData();
-            if (deprecatedData != null && deprecatedData.deprecated()) {
+            if (deprecatedData.deprecated()) {
                 MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.deprecated");
                 tooltip.append(text.withStyle(ChatFormatting.RED)).append("\n");
                 if (deprecatedData.reason() != null) {
                     tooltip.append(new TextComponent("\"" + deprecatedData.reason() + "\"").withStyle(ChatFormatting.RED)).append("");
                 }
+            }
+            // experimental
+            var experimentalData = config.getExperimentalData();
+            if (experimentalData.experimental()) {
+                MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.experimental");
+                tooltip.append(text.withStyle(ChatFormatting.YELLOW)).append("\n");
             }
             // description
             Component desc = config.getDescription();

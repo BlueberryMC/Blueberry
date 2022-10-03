@@ -149,6 +149,22 @@ public class InternalBlueberryModConfig {
         @Description(@Name("Shows additional information on ModConfigScreen."))
         @Key("debugModConfigScreen")
         public static boolean debugModConfigScreen = false;
+
+        @Order(10003)
+        @DefaultValue
+        @ApiStatus.Experimental
+        @Name("Allow unloading mods")
+        @Description(@Name("Adds unload button on the mods screen."))
+        @Key("allowUnload")
+        public static boolean allowUnload = false;
+
+        @Order(10004)
+        @Name("Numeric config control test")
+        @Key("test-numeric-control")
+        @Deprecated(since = "forever")
+        @DeprecatedReason("deprecated because why not")
+        @SideOnly(Side.CLIENT)
+        public static int testNumericControl = 0;
     }
 
     @Order(-9999)

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
+import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.blueberrymc.common.bml.SimpleModInfo;
 import net.blueberrymc.common.bml.client.gui.screens.ModLoadingProblemScreen;
 import net.blueberrymc.common.bml.event.EventManager;
@@ -41,6 +42,7 @@ public class ModListScreen extends BlueberryScreen {
     private final Screen previousScreen;
     private Button reloadButton;
     private Button recompileButton;
+    private Button disableButton;
     private Button unloadButton;
     private Button configButton;
 
@@ -146,18 +148,39 @@ public class ModListScreen extends BlueberryScreen {
                 }
             }
         }))).active = false;
-        (this.unloadButton = this.addRenderableWidget(new Button(10, this.height - 56, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.disable"), button -> {
+        boolean isUnloadButtonEnabled = InternalBlueberryModConfig.Debug.allowUnload;
+        int disableButtonWidth = isUnloadButtonEnabled ? (this.width / 5 / 2 - 11) : (this.width / 5 - 20);
+        (this.disableButton = this.addRenderableWidget(new Button(10, this.height - 56, disableButtonWidth, 20, new BlueberryText("blueberry", "gui.screens.mods.disable"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null) {
                 if (entry.mod.isUnloaded()) {
                     Blueberry.getModLoader().enableMod(entry.mod);
-                    this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.disable"));
+                    this.disableButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.disable"));
                 } else {
                     Blueberry.getModLoader().disableMod(entry.mod);
-                    this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.enable"));
+                    this.disableButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.enable"));
                 }
             }
         }))).active = false;
+        (this.unloadButton = this.addRenderableWidget(new Button(2 + this.width / 5 / 2, this.height - 56, this.width / 5 / 2 - 11, 20, BlueberryText.text("blueberry", "gui.screens.mods.unload"), button -> {
+            ModsList.Entry entry = this.modsList.getSelected();
+            if (entry != null) {
+                Blueberry.getModLoader().disableMod(entry.mod, true);
+                this.minecraft.reloadResourcePacks().thenAccept(v -> this.minecraft.setScreen(this));
+                if (ModLoadingErrors.hasErrors()) {
+                    ModLoadingErrors.add(new ModLoadingError(null, "One or more errors were detected. It is recommended to restart your Minecraft to prevent further issues.", true));
+                    this.minecraft.setScreen(new ModLoadingProblemScreen(this));
+                }
+            }
+        }, (button, poseStack, i, i1) -> {
+            ModsList.Entry entry = this.modsList.getSelected();
+            if (entry != null) {
+                if (this.minecraft.level != null) {
+                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.unload.in_world_tooltip"), i, i1);
+                }
+            }
+        }))).active = false;
+        this.unloadButton.visible = isUnloadButtonEnabled;
         (this.configButton = this.addRenderableWidget(new Button(10, this.height - 34, this.width / 5 - 20, 20, new BlueberryText("blueberry", "gui.screens.mods.config"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
             if (entry != null && entry.mod.getVisualConfig().isNotEmpty()) {
@@ -219,12 +242,14 @@ public class ModListScreen extends BlueberryScreen {
             this.reloadButton.active = isReloadSupported(mod);
             assert this.minecraft != null;
             this.recompileButton.active = this.minecraft.level == null && mod.isFromSource();
+            this.disableButton.active = this.minecraft.level == null && mod.getDescription().isUnloadable();
+            // TODO: disallow unload if mod is required by another mod or mixin is applied;
             this.unloadButton.active = this.minecraft.level == null && mod.getDescription().isUnloadable();
             this.configButton.active = mod.getVisualConfig().isNotEmpty();
             if (mod.isUnloaded()) {
-                this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.enable"));
+                this.disableButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.enable"));
             } else {
-                this.unloadButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.disable"));
+                this.disableButton.setMessage(new BlueberryText("blueberry", "gui.screens.mods.disable"));
             }
             int y = 40;
             drawString(poseStack, this.font, "Mod Name: " + mod.getName(), this.width / 4, y, 16777215);
