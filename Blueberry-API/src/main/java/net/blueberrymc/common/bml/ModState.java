@@ -13,6 +13,7 @@ public enum ModState {
     AVAILABLE('A'),
     ERRORED('E'),
     UNLOADED('U'),
+    UNREGISTERED('N'),
     ;
 
     private final char shortName;

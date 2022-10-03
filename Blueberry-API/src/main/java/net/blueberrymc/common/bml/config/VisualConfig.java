@@ -1,18 +1,21 @@
 package net.blueberrymc.common.bml.config;
 
 import net.blueberrymc.common.util.DeprecatedData;
+import net.blueberrymc.common.util.ExperimentalData;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public abstract class VisualConfig<T> {
     private final Component component;
     private T value;
     private final T defaultValue;
     private boolean requiresRestart;
-    @Nullable
-    private DeprecatedData deprecatedData;
+    private DeprecatedData deprecatedData = DeprecatedData.NOT_DEPRECATED;
+    private ExperimentalData experimentalData = ExperimentalData.NOT_EXPERIMENTAL;
 
     protected VisualConfig(@Nullable Component component) {
         this(component, null, null);
@@ -86,13 +89,25 @@ public abstract class VisualConfig<T> {
     @Contract(mutates = "this")
     @NotNull
     public VisualConfig<T> deprecated(@Nullable DeprecatedData deprecatedData) {
-        this.deprecatedData = deprecatedData;
+        this.deprecatedData = Objects.requireNonNullElse(deprecatedData, DeprecatedData.NOT_DEPRECATED);
         return this;
     }
 
-    @Nullable
+    @Contract(mutates = "this")
+    @NotNull
+    public VisualConfig<T> experimental(@Nullable ExperimentalData experimentalData) {
+        this.experimentalData = Objects.requireNonNullElse(experimentalData, ExperimentalData.NOT_EXPERIMENTAL);
+        return this;
+    }
+
+    @NotNull
     public DeprecatedData getDeprecatedData() {
         return this.deprecatedData;
+    }
+
+    @NotNull
+    public ExperimentalData getExperimentalData() {
+        return this.experimentalData;
     }
 
     // you can use it for anything like storing config path, etc.

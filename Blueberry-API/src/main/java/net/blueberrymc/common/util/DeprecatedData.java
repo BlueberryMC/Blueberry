@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.AnnotatedElement;
 
 public record DeprecatedData(boolean deprecated, @Nullable String since, boolean forRemoval, @Nullable String reason, @Nullable String scheduledRemoval) {
+    public static final DeprecatedData NOT_DEPRECATED = new DeprecatedData(false, null, false, null, null);
+
     @Contract("_ -> new")
     @NotNull
     public static DeprecatedData of(@NotNull AnnotatedElement element) {

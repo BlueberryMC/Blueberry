@@ -13,6 +13,7 @@
   "gui.screens.mods.reload.unsupported": "このModはリロードできません",
   "gui.screens.mods.reload.reload_tooltip": "Modをリロード (一部のModでは動作しない可能性があります)",
   "gui.screens.mod_config.deprecated": "**非推奨**",
+  "gui.screens.mod_config.experimental": "**試験的**",
   "gui.screens.mod_config.default": "[デフォルト: %s]",
   "gui.screens.mod_config.number_min_max": "[最低: %s, 最大: %s]",
   "gui.screens.mod_config.requires_restart": "[再起動が必要]",
