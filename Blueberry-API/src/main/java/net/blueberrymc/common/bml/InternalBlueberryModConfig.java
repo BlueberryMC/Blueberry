@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.Side;
+import net.blueberrymc.common.SideOnly;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Config;
 import net.blueberrymc.common.bml.config.VisualConfigManager.DefaultValue;
 import net.blueberrymc.common.bml.config.VisualConfigManager.Description;
