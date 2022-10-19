@@ -48,17 +48,19 @@ public abstract class MilkFluid extends FlowingFluid {
     public void animateTick(@NotNull World world, @NotNull Vec3i pos, @NotNull FluidState state, @NotNull Random random) {
         if (!state.isSource() && !state.getValue(FALLING)) {
             if (random.nextInt(64) == 0) {
-                world.playLocalSound((double) pos.x() + 0.5D, (double) pos.y() + 0.5D, (double) pos.z() + 0.5D, SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
+                //world.playLocalSound((double) pos.x() + 0.5D, (double) pos.y() + 0.5D, (double) pos.z() + 0.5D, SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
             }
         } else if (random.nextInt(10) == 0) {
-            world.addParticle(ParticleTypes.UNDERWATER, (double) pos.x() + random.nextDouble(), (double) pos.y() + random.nextDouble(), (double) pos.z() + random.nextDouble(), 0.0D, 0.0D, 0.0D);
+            //world.addParticle(ParticleTypes.UNDERWATER, (double) pos.x() + random.nextDouble(), (double) pos.y() + random.nextDouble(), (double) pos.z() + random.nextDouble(), 0.0D, 0.0D, 0.0D);
         }
     }
 
+    /*
     @Nullable
     public ParticleOptions getDripParticle() {
         return ParticleTypes.DRIPPING_WATER;
     }
+    */
 
     protected boolean canConvertToSource() {
         return true;

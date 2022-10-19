@@ -17,6 +17,7 @@ import java.util.Random;
 public abstract class Fluid {
     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
     public static final BooleanProperty FALLING = BlockStateProperties.FALLING;
+    private FluidState defaultFluidState;
 
     private final StateDefinition<Fluid, FluidState> stateDefinition;
 
@@ -24,10 +25,17 @@ public abstract class Fluid {
         var builder = StateDefinition.<Fluid, FluidState>builder(this);
         createFluidStateDefinition(builder);
         this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::create);
+        registerDefaultState(this.stateDefinition.any());
+    }
+
+    protected void registerDefaultState(@NotNull FluidState fluidState) {
+        this.defaultFluidState = fluidState;
     }
 
     @NotNull
-    public abstract FluidState defaultFluidState();
+    public FluidState defaultFluidState() {
+        return this.defaultFluidState;
+    }
 
     protected void createFluidStateDefinition(@NotNull StateDefinition.@NotNull Builder<Fluid, FluidState> builder) {
     }

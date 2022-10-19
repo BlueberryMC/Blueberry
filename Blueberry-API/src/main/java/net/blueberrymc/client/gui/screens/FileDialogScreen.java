@@ -3,13 +3,14 @@ package net.blueberrymc.client.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.blueberrymc.common.util.FileUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -161,7 +162,7 @@ public class FileDialogScreen extends BlueberryScreen {
                 minecraft.setScreen(FileDialogScreen.create(firstScreen, options.toBuilder().initialDirectory(file).build()));
             }).bounds(0, 0, 20, 20).build();
             cdButton.visible = false;
-            selectButton = Button.builder(Component.literal("✔").withStyle(ChatFormatting.GREEN), (button) -> {
+            selectButton = Button.builder(Component.text("✔", NamedTextColor.GREEN), (button) -> {
                 minecraft.setScreen(firstScreen);
                 options.runCallback(getSelected().file);
             }).bounds(0, 0, 20, 20).build();
@@ -265,7 +266,7 @@ public class FileDialogScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return Component.translatable("narrator.select", this.file.getName());
+                return Component.translatable("narrator.select").args(Component.text(this.file.getName()));
             }
         }
     }

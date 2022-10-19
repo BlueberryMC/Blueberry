@@ -1,7 +1,7 @@
 package net.blueberrymc.client.gui.screens;
 
 import net.blueberrymc.common.util.FileUtil;
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +70,7 @@ public record FileDialogScreenOptions(
     // Builder with private constructor
     public static final class Builder {
         @Nullable private File boundary;
-        @NotNull private Component title = Component.literal("Select a file");
+        @NotNull private Component title = Component.text("Select a file");
         @NotNull private FileType fileType = FileType.ALL;
         @Nullable private Callback callback;
         @NotNull private Predicate<File> filter = (file) -> true;

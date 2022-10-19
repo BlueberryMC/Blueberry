@@ -19,8 +19,8 @@ import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.ShortVisualConfig;
 import net.blueberrymc.common.bml.config.StringVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.scheduler.BlueberryTask;
+import net.blueberrymc.common.text.BlueberryText;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.util.ComponentGetter;
 import net.blueberrymc.util.NameGetter;
@@ -39,9 +39,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,13 +114,16 @@ public class ModConfigScreen extends BlueberryScreen {
         });
         for (VisualConfig<?> config : this.compoundVisualConfig) {
             MutableComponent tooltip = Component.literal("");
+            //Function<PoseStack, BiConsumer<Integer, Integer>> onTooltipFunction;
+            //Button.OnTooltip onTooltip;
+            //Component tooltip = Component.empty();
             // deprecated
             var deprecatedData = config.getDeprecatedData();
             if (deprecatedData.deprecated()) {
-                MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.deprecated");
-                tooltip.append(text.withStyle(ChatFormatting.RED)).append("\n");
+                Component text = BlueberryText.text("blueberry", "gui.screens.mod_config.deprecated").withColor(NamedTextColor.RED);
+                tooltip = tooltip.append(text).append(Component.newline());
                 if (deprecatedData.reason() != null) {
-                    tooltip.append(Component.literal("\"" + deprecatedData.reason() + "\"").withStyle(ChatFormatting.RED)).append("\n");
+                    tooltip = tooltip.append(Component.text("\"" + deprecatedData.reason() + "\"", NamedTextColor.RED)).append(Component.newline());
                 }
             }
             // experimental
@@ -129,7 +134,7 @@ public class ModConfigScreen extends BlueberryScreen {
             }
             // description
             Component desc = config.getDescription();
-            if (desc != null) tooltip.append(desc.plainCopy().withStyle(ChatFormatting.YELLOW)).append("\n");
+            if (desc != null) tooltip = tooltip.append(desc.color(NamedTextColor.YELLOW).append(Component.newline()));
             // default value
             Object def = config instanceof CompoundVisualConfig ? null : config.getDefaultValue();
             if (def != null) {
@@ -138,11 +143,12 @@ public class ModConfigScreen extends BlueberryScreen {
                     s = ng.getName();
                 }
                 if (def instanceof ComponentGetter cg) {
-                    s = cg.getComponent().getString();
+                    s = PlainTextComponentSerializer.plainText().serialize(cg.getComponent());
                 }
                 // if (def instanceof Enum<?>) s = ((Enum<?>) def).name();
                 if (def instanceof Class<?> cl) s = cl.getTypeName();
-                tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.default", s + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
+                // TODO: legacy color char
+                tooltip = tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.default", s + "\u00a7").withColor(NamedTextColor.AQUA)).append(Component.newline());
             }
             // min/max value of number
             if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
@@ -157,21 +163,21 @@ public class ModConfigScreen extends BlueberryScreen {
                     shouldShowMinMax = false;
                 }
                 if (shouldShowMinMax) {
-                    tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber()).withStyle(ChatFormatting.AQUA)).append("\n");
+                    tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.number_min_max", numberVisualConfig.getMinAsNumber(), numberVisualConfig.getMaxAsNumber(), NamedTextColor.AQUA)).append(Component.newline());
                 }
-                tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.precise_control").withStyle(ChatFormatting.GRAY)).append("\n");
+                tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.precise_control", NamedTextColor.GRAY)).append(Component.newline());
             }
             // pattern
             if (config instanceof StringVisualConfig stringVisualConfig) {
                 Pattern pattern = stringVisualConfig.getPattern();
-                if (pattern != null) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
+                if (pattern != null) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA, NamedTextColor.AQUA)).append(Component.newline());
             }
             if (config instanceof ClassVisualConfig classVisualConfig) {
                 Pattern pattern = classVisualConfig.getPattern();
-                if (pattern != null) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA).withStyle(ChatFormatting.AQUA)).append("\n");
+                if (pattern != null) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.pattern", ChatFormatting.GOLD + pattern.pattern() + ChatFormatting.AQUA, NamedTextColor.AQUA)).append(Component.newline());
             }
             // requiresRestart
-            if (config.isRequiresRestart()) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.requires_restart").withStyle(ChatFormatting.RED)).append("\n");
+            if (config.isRequiresRestart()) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.requires_restart", NamedTextColor.RED)).append(Component.newline());
             if (tooltip.getSiblings().size() > 0) tooltip.getSiblings().remove(tooltip.getSiblings().size() - 1); // removes last \n
             Tooltip onTooltip;
             if (tooltip.toString().length() > 0) {
@@ -204,7 +210,7 @@ public class ModConfigScreen extends BlueberryScreen {
                                 .build()
                 );
                 container.children().add(
-                        Button.builder(Component.literal("<-"), (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())))
+                        Button.builder(Component.text("<-"), (button) -> btn.setMessage(Component.text(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())))
                                 .bounds((this.width / 2) + 6, buttonY, 22, 20)
                                 .tooltip(onTooltip)
                                 .build()
@@ -218,7 +224,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 addLabel.accept(config, offset);
             } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
                 int componentWidth = Math.min(maxWidth, this.width / 6);
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal(""));
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.text(""));
                 editBox.setTooltip(onTooltip);
                 Number defValue = numberVisualConfig.get();
                 if (defValue == null) defValue = numberVisualConfig.getDefaultValue();
@@ -237,7 +243,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 });
                 editBox.setValue(defValue.toString());
                 container.children().add(editBox);
-                Supplier<Component> sliderLabel = () -> Component.literal(Objects.requireNonNullElse(numberVisualConfig.get(), numberVisualConfig.getMinAsNumber()).toString());
+                Supplier<Component> sliderLabel = () -> Component.text(Objects.requireNonNullElse(numberVisualConfig.get(), numberVisualConfig.getMinAsNumber()).toString());
                 AbstractSliderButton slider = new AbstractSliderButton(this.width / 2 + 6, offset, componentWidth, 20, Component.empty(), numberVisualConfig.getPercentage()) {
                     @Override
                     protected void updateMessage() {
@@ -278,7 +284,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 slider.setMessage(sliderLabel.get());
                 slider.visible = false;
                 container.children().add(slider);
-                Button toggleButton = Button.builder(Component.literal("☯"), (button) -> {
+                Button toggleButton = Button.builder(Component.text("☯"), (button) -> {
                     if (editBox.visible) {
                         editBox.visible = false;
                         slider.visible = true;
@@ -302,7 +308,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(toggleButton);
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig stringVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.text(""));
                 editBox.setTooltip(onTooltip);
                 String defValue = stringVisualConfig.get();
                 if (defValue == null) defValue = stringVisualConfig.getDefaultValue();
@@ -321,7 +327,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof ClassVisualConfig classVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.text(""));
                 editBox.setTooltip(onTooltip);
                 Class<?> defValue = classVisualConfig.get();
                 if (defValue == null) defValue = classVisualConfig.getDefaultValue();
@@ -344,15 +350,15 @@ public class ModConfigScreen extends BlueberryScreen {
         super.init();
     }
 
-    private static Component addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
+    private static Component addDebugInfo(VisualConfig<?> config, Component tooltip) {
         if (!InternalBlueberryModConfig.Debug.debugModConfigScreen) return tooltip;
-        MutableComponent copy;
-        if (tooltip.getSiblings().size() == 0) {
-            copy = tooltip.copy();
+        Component copy;
+        if (tooltip.children().size() == 0) {
+            copy = tooltip;
         } else {
-            copy = tooltip.copy().append("\n");
+            copy = tooltip.append(Component.newline());
         }
-        copy.append(Component.literal("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        copy = copy.append(Component.text("[Config Type: " + Util.getExtendedSimpleName(config.getClass()) + "]", NamedTextColor.GRAY)).append(Component.newline());
         String valueType;
         Object value = config.get();
         if (value == null) {
@@ -360,37 +366,38 @@ public class ModConfigScreen extends BlueberryScreen {
         } else {
             valueType = value.getClass().getTypeName();
         }
-        copy.append(Component.literal("[Type: " + valueType + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+        copy = copy.append(Component.text("[Type: " + valueType + "]", NamedTextColor.GRAY)).append(Component.newline());
         if (config instanceof CompoundVisualConfig compoundVisualConfig) {
-            copy.append(Component.literal("[Compound size: " + compoundVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
+            copy = copy.append(Component.text("[Compound size: " + compoundVisualConfig.size() + "]", NamedTextColor.GRAY)).append(Component.newline());
         } else {
-            copy.append(Component.literal("[Raw value: ").withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal(String.valueOf(config.get())))
-                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
-                    .append("\n");
+            copy = copy.append(Component.text("[Raw value: ", NamedTextColor.GRAY))
+                    .append(Component.text(String.valueOf(config.get())))
+                    .append(Component.text("]", NamedTextColor.GRAY))
+                    .append(Component.newline());
         }
         if (config instanceof CycleVisualConfig<?> cycleVisualConfig && cycleVisualConfig.get() instanceof Enum<?> e) {
-            copy.append(Component.literal("[List size: " + cycleVisualConfig.size() + "]").withStyle(ChatFormatting.GRAY)).append("\n");
-            copy.append(Component.literal("[Enum constant: ").withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal(e.name()).withStyle(ChatFormatting.YELLOW))
-                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
-                    .append("\n");
-            copy.append(Component.literal("[Enum ordinal: ").withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal(Integer.toString(e.ordinal())).withStyle(ChatFormatting.YELLOW))
-                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
-                    .append("\n");
-            copy.append(Component.literal("[Previous value: ").withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekNext() : cycleVisualConfig.peekPrevious())))
-                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
-                    .append("\n");
-            copy.append(Component.literal("[Next value: ").withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekPrevious() : cycleVisualConfig.peekNext())))
-                    .append(Component.literal("]").withStyle(ChatFormatting.GRAY))
-                    .append("\n");
+            copy = copy.append(Component.text("[List size: " + cycleVisualConfig.size() + "]", NamedTextColor.GRAY)).append(Component.newline())
+                    .append(Component.text("[Enum constant: ", NamedTextColor.GRAY))
+                    .append(Component.text(e.name(), NamedTextColor.YELLOW))
+                    .append(Component.text("]", NamedTextColor.GRAY))
+                    .append(Component.newline())
+                    .append(Component.text("[Enum ordinal: ", NamedTextColor.GRAY))
+                    .append(Component.text(Integer.toString(e.ordinal()), NamedTextColor.YELLOW))
+                    .append(Component.text("]", NamedTextColor.GRAY))
+                    .append(Component.newline())
+                    .append(Component.text("[Previous value: ", NamedTextColor.GRAY))
+                    .append(Component.text(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekNext() : cycleVisualConfig.peekPrevious())))
+                    .append(Component.text("]", NamedTextColor.GRAY))
+                    .append(Component.newline())
+                    .append(Component.text("[Next value: ", NamedTextColor.GRAY))
+                    .append(Component.text(String.valueOf(cycleVisualConfig.isReverse() ? cycleVisualConfig.peekPrevious() : cycleVisualConfig.peekNext())))
+                    .append(Component.text("]", NamedTextColor.GRAY))
+                    .append(Component.newline());
         }
-        if (copy.getSiblings().get(0).getContents().toString().equals("\n")) copy.getSiblings().remove(0);
-        copy.getSiblings().remove(copy.getSiblings().size() - 1);
-        return copy;
+        List<Component> children = new ArrayList<>(copy.children());
+        if (children.get(0).equals(Component.newline())) children.remove(0);
+        children.remove(children.size() - 1);
+        return copy.children(children);
     }
 
     @Contract("null, _ -> !null")
@@ -448,8 +455,8 @@ public class ModConfigScreen extends BlueberryScreen {
     }
 
     @NotNull
-    private static MutableComponent title(@NotNull CompoundVisualConfig compoundVisualConfig) {
-        MutableComponent text = BlueberryText.text("blueberry", "gui.screens.mod_config.title");
+    private static Component title(@NotNull CompoundVisualConfig compoundVisualConfig) {
+        Component text = BlueberryText.text("blueberry", "gui.screens.mod_config.title").asComponent();
         CompoundVisualConfig parent = compoundVisualConfig;
         List<Component> components = new ArrayList<>();
         while ((parent = parent.getParent()) != null) {
@@ -460,14 +467,14 @@ public class ModConfigScreen extends BlueberryScreen {
             }
         }
         Collections.reverse(components);
-        components.forEach(component -> text.append(" > ").append(component));
-        text.append(" > ");
+        components.forEach(component -> text.append(Component.text(" > ")).append(component));
+        text.append(Component.text(" > "));
         if (compoundVisualConfig.getComponent() != null) {
             text.append(compoundVisualConfig.getComponent());
         } else if (compoundVisualConfig.getTitle() != null) {
             text.append(compoundVisualConfig.getTitle());
         } else {
-            text.append("Unknown");
+            text.append(Component.text("Unknown"));
         }
         return text;
     }
