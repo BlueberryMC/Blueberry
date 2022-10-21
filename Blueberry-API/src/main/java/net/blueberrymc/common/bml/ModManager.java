@@ -7,6 +7,9 @@ import net.blueberrymc.common.bml.event.Event;
 import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.event.Listener;
 import net.blueberrymc.network.mod.ModInfo;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import org.jetbrains.annotations.ApiStatus;
@@ -62,11 +65,16 @@ public class ModManager {
         return Blueberry.getModLoader().getConfigDir();
     }
 
-    public void loadPacks(@NotNull Consumer<Pack> consumer, @NotNull Pack.PackConstructor packConstructor) {
+    public void loadPacks(@NotNull Consumer<Pack> consumer) {
         for (BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
             try {
-                Pack pack = Pack.create(mod.getDescription().getModId(), true, () -> mod.getResourceManager().getPackResources(), packConstructor, Pack.Position.BOTTOM, PackSource.BUILT_IN);
-                if (pack != null) consumer.accept(pack);
+                PackResources packResources = mod.getResourceManager().getPackResources();
+                Pack.Info info = Pack.readPackInfo(mod.getModId(), (s) -> packResources);
+                if (info == null) {
+                    throw new RuntimeException("Failed to load mod pack info for " + mod.getModId());
+                }
+                Pack pack = Pack.create(mod.getDescription().getModId(), Component.literal(mod.getName()), true, (s) -> packResources, info, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, false, PackSource.BUILT_IN);
+                consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
                 break; // resource manager has not been loaded yet
             }

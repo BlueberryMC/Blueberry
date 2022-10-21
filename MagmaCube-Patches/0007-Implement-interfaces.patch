@@ -5,7 +5,7 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 7ad07c0d851b8e13c16156def36be2e8b2306b53..21a30bbb025b2aed394c777f6644a848d59f61e1 100644
+index 5130b25fb28bb3cb6d1333f94b434d64c42733af..e8ed0735375051276f18e4a4e78882e9f3e29769 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -66,7 +66,7 @@ import net.minecraft.world.level.storage.WritableLevelData;

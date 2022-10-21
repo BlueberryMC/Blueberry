@@ -5,28 +5,28 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index 6937e154d90f5661c832722da3d6c9fc8b907740..99b8396b7ce57ae781f870c70baec546a7229d3c 100644
+index 089d1e75b8ffc4ecd8ac5bc1f375ce2981dbf633..2f7faf4a1317f04e05617d6a0a2d8982fae9f3f6 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
-@@ -26,7 +26,7 @@ public class DetectedVersion implements WorldVersion {
+@@ -25,7 +25,7 @@ public class DetectedVersion implements WorldVersion {
+     private final int resourcePackVersion;
      private final int dataPackVersion;
      private final Date buildTime;
-     private final String releaseTarget;
 -    @javax.annotation.Nullable public final String magmaCubeVersion; // MagmaCube
 +    @javax.annotation.Nullable public final String magmaCubeVersion = net.blueberrymc.common.util.Versioning.getVersion().getMagmaCubeCommit(); // MagmaCube // Blueberry
  
      private DetectedVersion() {
          this.id = UUID.randomUUID().toString().replaceAll("-", "");
-@@ -38,7 +38,7 @@ public class DetectedVersion implements WorldVersion {
+@@ -36,7 +36,7 @@ public class DetectedVersion implements WorldVersion {
+         this.resourcePackVersion = 11;
          this.dataPackVersion = 10;
          this.buildTime = new Date();
-         this.releaseTarget = "1.19.2";
 -        this.magmaCubeVersion = "debug"; // MagmaCube
 +        // this.magmaCubeVersion = "debug"; // MagmaCube // Blueberry
      }
  
      private DetectedVersion(JsonObject json) {
-@@ -52,7 +52,7 @@ public class DetectedVersion implements WorldVersion {
+@@ -49,7 +49,7 @@ public class DetectedVersion implements WorldVersion {
          this.resourcePackVersion = GsonHelper.getAsInt(jsonObject2, "resource");
          this.dataPackVersion = GsonHelper.getAsInt(jsonObject2, "data");
          this.buildTime = Date.from(ZonedDateTime.parse(GsonHelper.getAsString(json, "build_time")).toInstant());
@@ -36,10 +36,10 @@ index 6937e154d90f5661c832722da3d6c9fc8b907740..99b8396b7ce57ae781f870c70baec546
  
      public static WorldVersion tryDetectVersion() {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 16e504d87cbe557bfb878703e8ea03b4f9481abe..ecf21a7bcfcb90c86398aeb67681eaae5abde178 100644
+index 5464401995dfbeed4c351be0ca18790efe9f33e3..ee4054987fcc9773ce2964f0b1d557169daea7ab 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -732,7 +732,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -740,7 +740,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
      }
  
      public String getLaunchedVersion() {

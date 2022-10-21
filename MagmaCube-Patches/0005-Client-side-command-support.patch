@@ -5,10 +5,10 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-index cbb0034363a39c6e2aa97bac4182daf60ede86c2..cf3915675346e0d869e71167352bbb3235828bff 100644
+index 93fc0e72637df24b24c526583d9b7d8cfc750bff..94291d5dddb394e939b3e8688540cb1bfc855248 100644
 --- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 +++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-@@ -174,7 +174,13 @@ public class CommandSuggestions {
+@@ -172,7 +172,13 @@ public class CommandSuggestions {
          boolean flag2 = this.commandsOnly || flag;
          int i = this.input.getCursorPosition();
          if (flag2) {
@@ -24,12 +24,12 @@ index cbb0034363a39c6e2aa97bac4182daf60ede86c2..cf3915675346e0d869e71167352bbb32
                  this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
              }
 diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-index d356f1716c4eaa4422487e02d254acebcdbc5f13..6b912f6170918dc9c448052d9144e5b2daf73c27 100644
+index 07ee357deefd90c77817a52d414636e8cb43e5f0..b3d254fb27cce2a1aaa7523b42066911240767e8 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -469,6 +469,12 @@ public class ChatScreen extends Screen {
+@@ -220,6 +220,12 @@ public class ChatScreen extends Screen {
+             }
  
-             Component component = Util.mapNullable(this.chatPreview.pull(s), ClientChatPreview.Preview::response);
              if (s.startsWith("/")) {
 +                // Blueberry start
 +                if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) {
@@ -37,6 +37,6 @@ index d356f1716c4eaa4422487e02d254acebcdbc5f13..6b912f6170918dc9c448052d9144e5b2
 +                    return true;
 +                }
 +                // Blueberry end
-                 this.minecraft.player.commandSigned(s.substring(1), component);
+                 this.minecraft.player.connection.sendCommand(s.substring(1));
              } else {
-                 this.minecraft.player.chatSigned(s, component);
+                 this.minecraft.player.connection.sendChat(s);

@@ -4,14 +4,14 @@ Date: Fri, 5 Mar 2021 21:38:13 +0900
 Subject: [PATCH] Fire simple events
 
 
-diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index bc9e8723eccc02a77720bf8deb062c9af4298f91..d3576f4b42fc89004c3f96a3c95cdd0ca6f13e25 100644
---- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
-+++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -309,6 +309,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+index ddd45124be6837e4701efbfa8ab0f8e74e8d8296..c099066df8e8671262190331237c204c9f66f84b 100644
+--- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
++++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -2257,6 +2257,13 @@ public class ClientPacketListener implements ClientGamePacketListener, net.blueb
      }
  
-     private void sendChat(String s, @Nullable Component component) {
+     public void sendChat(String s) {
 +        // Blueberry start - fire ClientLocalPlayerChatEvent
 +        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
 +        if (!event.callEvent()) {
@@ -19,9 +19,9 @@ index bc9e8723eccc02a77720bf8deb062c9af4298f91..d3576f4b42fc89004c3f96a3c95cdd0c
 +        }
 +        s = event.getMessage();
 +        // Blueberry end - fire ClientLocalPlayerChatEvent
-         ChatMessageContent chatMessageContent = this.buildSignedContent(s, component);
-         MessageSigner messageSigner = this.createMessageSigner();
-         LastSeenMessages.Update update = this.connection.generateMessageAcknowledgements();
+         Instant instant = Instant.now();
+         long l = Crypt.SaltSupplier.getLong();
+         LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index cc8e1e3c7c9b472c24ed895efdbf7da81f5d7911..16a955cf6534eb2955cf4047dc69b9ab9ab0e587 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
@@ -43,12 +43,12 @@ index cc8e1e3c7c9b472c24ed895efdbf7da81f5d7911..16a955cf6534eb2955cf4047dc69b9ab
  
      public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index d06b8673efce982e10d700ee5dfc4905e51f5143..d2842371406e25ad71e81767cbcb45393af5b3a1 100644
+index 34860550bbde992490c79657d77b6840f36eaf12..7c1a1f80ea17a83a60640f5056f95620d1b4ace2 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -193,6 +193,7 @@ public abstract class PlayerList {
-         }
- 
+@@ -195,6 +195,7 @@ public abstract class PlayerList {
+         this.playersByUUID.put(serverPlayer.getUUID(), serverPlayer);
+         this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
          serverLevel2.addNewPlayer(serverPlayer);
 +        new net.blueberrymc.common.event.player.PlayerJoinEvent(serverPlayer).callEvent(); // Blueberry
          this.server.getCustomBossEvents().onPlayerConnect(serverPlayer);

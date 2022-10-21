@@ -1,21 +1,15 @@
 package net.blueberrymc.common.resources;
 
 import net.blueberrymc.common.bml.BlueberryMod;
-import net.minecraft.DetectedVersion;
-import net.minecraft.server.packs.FilePackResources;
-import net.minecraft.server.packs.FolderPackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
+import net.minecraft.server.packs.resources.IoSupplier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 public class BlueberryResourceManager extends FallbackResourceManager {
     @NotNull private final BlueberryMod mod;
@@ -25,91 +19,20 @@ public class BlueberryResourceManager extends FallbackResourceManager {
         super(PackType.CLIENT_RESOURCES, mod.getDescription().getModId());
         this.mod = mod;
         if (this.mod.getFile().isDirectory()) {
-            packResources = new FolderPackResources(this.mod.getFile()) {
-                @NotNull
+            packResources = new PathPackResources("Mod Resources for " + mod.getName() + " (Folder)", this.mod.getFile().toPath()) {
+                @Nullable
                 @Override
-                public String getName() {
-                    return "Mod Resources for " + mod.getName() + " (Folder)";
-                }
-
-                @NotNull
-                @Override
-                protected InputStream getResource(@NotNull String s) throws IOException {
-                    if (s.equals("pack.mcmeta")) {
-                        return createMetadata(mod);
+                public IoSupplier<InputStream> getRootResource(String @NotNull ... paths) {
+                    if (paths.length == 1 && paths[0].equals("pack.mcmeta")) {
+                        return () -> ModPackResources.createMetadata(mod);
                     }
-                    InputStream in = mod.getClass().getResourceAsStream("/" + s);
-                    if (in == null) in = mod.getClassLoader().getResourceAsStream("/" + s);
-                    if (in == null) {
-                        try {
-                            File file = new File(mod.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
-                            if (file.exists() && file.isDirectory()) {
-                                File entry = new File(file, s);
-                                if (entry.exists() && entry.isFile()) {
-                                    in = new FileInputStream(entry);
-                                }
-                            }
-                        } catch (URISyntaxException ignore) {}
-                    }
-                    if (in != null) return in;
-                    return super.getResource(s);
-                }
-
-                @Override
-                public boolean hasResource(@NotNull String s) {
-                    try {
-                        getResource(s);
-                        return true;
-                    } catch (IOException exception) {
-                        return false;
-                    }
+                    return super.getRootResource(paths);
                 }
             };
         } else {
-            packResources = new FilePackResources(this.mod.getFile()) {
-                @NotNull
-                @Override
-                public String getName() {
-                    return "Mod Resources for " + mod.getName() + " (File)";
-                }
-
-                @NotNull
-                @Override
-                protected InputStream getResource(@NotNull String s) throws IOException {
-                    if (s.equals("pack.mcmeta")) {
-                        return createMetadata(mod);
-                    }
-                    InputStream in = mod.getClass().getResourceAsStream("/" + s);
-                    if (in == null) in = mod.getClassLoader().getResourceAsStream("/" + s);
-                    if (in != null) return in;
-                    return super.getResource(s);
-                }
-
-                @Override
-                public boolean hasResource(@NotNull String s) {
-                    try {
-                        getResource(s);
-                        return true;
-                    } catch (IOException exception) {
-                        return false;
-                    }
-                }
-            };
+            packResources = new ModPackResources(mod);
         }
         this.push(packResources);
-    }
-
-    @SuppressWarnings("StringBufferReplaceableByString")
-    @NotNull
-    private static InputStream createMetadata(@NotNull BlueberryMod mod) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
-        sb.append("  \"pack\": {\n");
-        sb.append("    \"description\": \"Mod Resources for ").append(mod.getDescription().getModId()).append("\",");
-        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion(com.mojang.bridge.game.PackType.RESOURCE));
-        sb.append("  }\n");
-        sb.append("}\n");
-        return new ByteArrayInputStream(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     public @NotNull PackResources getPackResources() {

@@ -15,7 +15,6 @@ import net.blueberrymc.registry.BlueberryRegistries;
 import net.blueberrymc.util.NameGetter;
 import net.blueberrymc.world.item.SimpleBlueberryItem;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.Contract;
@@ -132,7 +131,7 @@ public class InternalBlueberryMod extends BlueberryMod {
                             this,
                             new Item.Properties()
                                     .stacksTo(1)
-                                    .tab(CreativeModeTab.TAB_MISC)
+                                    //.tab(CreativeModeTabs.TAB_MISC)
                                     .rarity(Rarity.EPIC),
                             item -> BlueberryText.text("blueberry", "item.blueberry.3d")
                     )

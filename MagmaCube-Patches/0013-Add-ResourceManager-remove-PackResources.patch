@@ -5,10 +5,10 @@ Subject: [PATCH] Add ResourceManager#remove(PackResources)
 
 
 diff --git a/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
-index 545dd6362633a1fabf73cbcc68e87bd90df23b17..e2ba61d1ecf81c74bd7be2a4cccd0daf65640a42 100644
+index c49797d8daeda8956e64050ecdbaa22642b4bf9b..a25fa4d33d643ad1fa1baaa2cc77095602644e19 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/FallbackResourceManager.java
-@@ -57,6 +57,8 @@ public class FallbackResourceManager implements ResourceManager {
+@@ -55,6 +55,8 @@ public class FallbackResourceManager implements ResourceManager {
          this.fallbacks.add(new FallbackResourceManager.PackEntry(s, packResources, predicate));
      }
  
@@ -18,7 +18,7 @@ index 545dd6362633a1fabf73cbcc68e87bd90df23b17..e2ba61d1ecf81c74bd7be2a4cccd0daf
          return ImmutableSet.of(this.namespace);
      }
 diff --git a/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
-index 62e8b49a734836c9ba3511b31ab5c37c93c8c568..a1e674d1e9a63e2ac4c97c15c9e40fc59f1ed3e6 100644
+index d0c8c9373b12db197cb556ddb16753abb8e70e15..52554f30c14fa7ea5e705a44c23f92344d6a0353 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/MultiPackResourceManager.java
 @@ -22,7 +22,7 @@ public class MultiPackResourceManager implements CloseableResourceManager {
@@ -30,7 +30,7 @@ index 62e8b49a734836c9ba3511b31ab5c37c93c8c568..a1e674d1e9a63e2ac4c97c15c9e40fc5
          Map<String, FallbackResourceManager> map = new HashMap();
          List<String> list2 = list.stream().flatMap((packResourcesx) -> packResourcesx.getNamespaces(packType).stream()).distinct().toList();
  
-@@ -106,4 +106,6 @@ public class MultiPackResourceManager implements CloseableResourceManager {
+@@ -114,4 +114,6 @@ public class MultiPackResourceManager implements CloseableResourceManager {
      public void close() {
          this.packs.forEach(PackResources::close);
      }
@@ -39,7 +39,7 @@ index 62e8b49a734836c9ba3511b31ab5c37c93c8c568..a1e674d1e9a63e2ac4c97c15c9e40fc5
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java b/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java
-index 7896ee38c0a600e126f82a607d7559b92abbdbef..e9ab3be3d475b29e06a9eea6c871fa74c91c02f3 100644
+index 5284e16bc26f60f35c5b718da8483c0c7c91ad8b..66d4351b28b6292990cc879c297ad2a3709d7e58 100644
 --- a/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java
 +++ b/src/main/java/net/minecraft/server/packs/resources/ReloadableResourceManager.java
 @@ -66,4 +66,6 @@ public class ReloadableResourceManager implements ResourceManager, AutoCloseable

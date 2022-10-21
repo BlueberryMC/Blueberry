@@ -1,15 +1,15 @@
 package net.blueberrymc.gradle.buildSrc.constants
 
-const val API_VERSION = "1.5.0-SNAPSHOT"
+const val API_VERSION = "1.6.0-SNAPSHOT"
 const val TTS_VERSION = "1.13.9"
 const val LOG4J_VERSION = "2.17.1"
 const val LWJGL_VERSION = "3.3.1"
 @Suppress("unused") // see .github/workflows/build.yml
-const val MAJOR_VERSION = "1.19"
-const val MINECRAFT_VERSION = "1.19.2"
-const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/055b30d860ead928cba3849ba920c88b6950b654/client.jar"
-const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/f69c284232d7c7580bd89a5a4931c3581eae1378/server.jar"
-const val CLIENT_MAPPING_URL = "https://piston-data.mojang.com/v1/objects/8e8c9be5dc27802caba47053d4fdea328f7f89bd/client.txt"
+const val MAJOR_VERSION = "1.20"
+const val MINECRAFT_VERSION = "22w42a"
+const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/7294caf715c4994b7b26f349c823391afb25c495/client.jar"
+const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/008996e2d1e0d49d7f1b477f69106a6d23c5c103/server.jar"
+const val CLIENT_MAPPING_URL = "https://piston-data.mojang.com/v1/objects/10743e772469858f7ac41667e3b581dcfad60b65/client.txt"
 const val MAPPING_VERSION = "22w05a"
 const val KOTLIN_VERSION = "1.7.0"
 
@@ -25,8 +25,8 @@ val SERVER_LIBRARIES_LIST = listOf(
     "io.netty:netty-all:4.1.77.Final",
     "com.mojang:brigadier:1.0.18",
     "com.mojang:datafixerupper:5.0.28",
-    "com.mojang:javabridge:1.2.24",
-    "com.mojang:authlib:3.11.49",
+    "com.mojang:javabridge:2.0.25",
+    "com.mojang:authlib:3.13.56",
     "com.mojang:logging:1.0.0",
     "net.java.dev.jna:jna:5.9.0",
     "net.java.dev.jna:jna-platform:5.9.0",

@@ -18,7 +18,7 @@ index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c
          public void sendSystemMessage(Component component) {
          }
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec067099953c 100644
+index f81912a95ca193676d31393e71dd348e02de5a29..d14bc29a6e4465c94021b26b0bad83d1b40dd5ef 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
 @@ -36,7 +36,7 @@ import net.minecraft.world.level.dimension.DimensionType;
@@ -31,8 +31,8 @@ index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec06
      public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
      private final CommandSource source;
 @@ -344,4 +344,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
-     public RegistryAccess registryAccess() {
-         return this.server.registryAccess();
+     public FeatureFlagSet enabledFeatures() {
+         return this.level.enabledFeatures();
      }
 +
 +    // Blueberry start
@@ -49,10 +49,10 @@ index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec06
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9e310721023ce795febaf36888db202ccbc04b6d..2752f64d5c7587d5b3aebc4de696497a7a3ec8b2 100644
+index 74fab0cccc7bc34d9d0459a36db717c10cbaf588..623b52a5885c2148b7e5559cb159cf04aeb374d6 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1806,4 +1806,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1815,4 +1815,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              };
          }
      }
@@ -93,10 +93,10 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 6511f5f132ff95b7690097ea05b90ae51052ef65..9a65de8e12e0bd954b229bef25e2de9b9be31f36 100644
+index 05c2cece07c73f25caf04665cdab67f6cd4f1e3e..01cac0d2c6867040b8c6d48729df6300806cd56a 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3128,4 +3128,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3149,4 +3149,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              return this.save;
          }
      }
@@ -115,10 +115,10 @@ index 6511f5f132ff95b7690097ea05b90ae51052ef65..9a65de8e12e0bd954b229bef25e2de9b
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index dd5090709b316aa9d4f7578852d0f6104eea0970..25830a73a38b6887c22068e52ec9681691efbcea 100644
+index 27e5f14d8358c2a6c22ef5c0d778132da42cc323..978cbe3fae56e46567481767ffa154cb5c37eb7e 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2019,4 +2019,16 @@ public abstract class Player extends LivingEntity {
+@@ -2002,4 +2002,16 @@ public abstract class Player extends LivingEntity {
              return this.message;
          }
      }

@@ -5,7 +5,7 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index 5e7db30a99bb813e95f26db621cf2b0fbb8fed38..9f5c6aab1af266f41a636b709bae3f632ddc0e6e 100644
+index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6fa67df875 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 @@ -221,9 +221,39 @@ public class ServerPlayerGameMode {
@@ -87,7 +87,7 @@ index 5e7db30a99bb813e95f26db621cf2b0fbb8fed38..9f5c6aab1af266f41a636b709bae3f63
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 21a30bbb025b2aed394c777f6644a848d59f61e1..3a8943c1a5fb90bc92d9961f95271127fabf1266 100644
+index e8ed0735375051276f18e4a4e78882e9f3e29769..51144ba2df484fb1d16a0733e7012419ab5c3eb3 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -105,6 +105,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
@@ -99,7 +99,7 @@ index 21a30bbb025b2aed394c777f6644a848d59f61e1..3a8943c1a5fb90bc92d9961f95271127
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 366026c48fb15c4300d0dd9daaff75f527febc9b..3ed8c0633e223ffc8184a1f2062f7f485f4b2c35 100644
+index 620495d74e58346ff1434b7fe28f1adbc7934768..b680d5b93bb165db7ababb97452df07378ce454e 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
 @@ -317,11 +317,13 @@ public class Block extends BlockBehaviour implements ItemLike {

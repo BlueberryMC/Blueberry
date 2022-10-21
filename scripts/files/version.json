@@ -232,13 +232,13 @@
     {
       "downloads": {
         "artifact": {
-          "path": "com/mojang/javabridge/1.2.24/javabridge-1.2.24.jar",
-          "sha1": "0c876796229b2ef5120f186eab5acc870699d3b9",
-          "size": 6053,
-          "url": "https://libraries.minecraft.net/com/mojang/javabridge/1.2.24/javabridge-1.2.24.jar"
+          "path": "com/mojang/javabridge/2.0.25/javabridge-2.0.25.jar",
+          "sha1": "bfa589b0bd71588fa7e594640114b0cda0cff5f6",
+          "size": 5884,
+          "url": "https://libraries.minecraft.net/com/mojang/javabridge/2.0.25/javabridge-2.0.25.jar"
         }
       },
-      "name": "com.mojang:javabridge:1.2.24"
+      "name": "com.mojang:javabridge:2.0.25"
     },
     {
       "downloads": {
@@ -487,13 +487,13 @@
     {
       "downloads": {
         "artifact": {
-          "path": "com/mojang/authlib/3.11.49/authlib-3.11.49.jar",
-          "sha1": "2e3055ec2a017c7f94b79744b4a68b65695a118c",
-          "size": 120100,
-          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.11.49/authlib-3.11.49.jar"
+          "path": "com/mojang/authlib/3.13.56/authlib-3.13.56.jar",
+          "sha1": "88c5e6091e52fd76e2ee73420957a4cc74deab8d",
+          "size": 117839,
+          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.13.56/authlib-3.13.56.jar"
         }
       },
-      "name": "com.mojang:authlib:3.11.49"
+      "name": "com.mojang:authlib:3.13.56"
     },
     {
       "downloads": {
@@ -1472,4 +1472,4 @@
     }
   ],
   "minimumLauncherVersion": 21,
-  "type": "release",
+  "type": "snapshot",
