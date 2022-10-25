@@ -106,13 +106,13 @@
     ]
   },
   "assetIndex": {
-    "id": "1.19",
-    "sha1": "0ce6c4dd959fab3f85ccbf0d60ae65baf468971f",
-    "size": 385416,
-    "totalSize": 555080986,
-    "url": "https://piston-meta.mojang.com/v1/packages/0ce6c4dd959fab3f85ccbf0d60ae65baf468971f/1.19.json"
+    "id": "1",
+    "sha1": "a1efec2c1becb4b960a7bb26bd7bdab0786d2717",
+    "size": 385260,
+    "totalSize": 558451755,
+    "url": "https://piston-meta.mojang.com/v1/packages/a1efec2c1becb4b960a7bb26bd7bdab0786d2717/1.json"
   },
-  "assets": "1.19",
+  "assets": "1",
   "logging": {
     "client": {
       "argument": "-Dlog4j.configurationFile=${path}",
