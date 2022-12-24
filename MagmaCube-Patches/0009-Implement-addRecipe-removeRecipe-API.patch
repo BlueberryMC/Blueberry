@@ -5,7 +5,7 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index a260340306f4c5d19dcb587a8f09897a11aada06..7c29ebf30e61f1e43c030f18fb01cbda94e2ac12 100644
+index 16e105029cf2c4dc68f4548d650d0b7b20e134be..98d1a036ef6af7678b90fc11d7530b9e6f19f968 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 @@ -33,10 +33,10 @@ import net.minecraft.world.item.ItemStack;

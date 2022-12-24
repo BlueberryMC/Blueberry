@@ -5,10 +5,10 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index ddd45124be6837e4701efbfa8ab0f8e74e8d8296..c099066df8e8671262190331237c204c9f66f84b 100644
+index d0566b508c7ad8aa0b27172142ff0e0eb0c5af0e..30d4cbd23c67846169c33c319d5564ad833cb1a0 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -2257,6 +2257,13 @@ public class ClientPacketListener implements ClientGamePacketListener, net.blueb
+@@ -2261,6 +2261,13 @@ public class ClientPacketListener implements TickablePacketListener, ClientGameP
      }
  
      public void sendChat(String s) {
@@ -43,10 +43,10 @@ index cc8e1e3c7c9b472c24ed895efdbf7da81f5d7911..16a955cf6534eb2955cf4047dc69b9ab
  
      public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 34860550bbde992490c79657d77b6840f36eaf12..7c1a1f80ea17a83a60640f5056f95620d1b4ace2 100644
+index ec010d71006d101c9c63dd778712ffceb1f9a435..397a0546aceb20d1a4625134d601cbb89eb7dcfb 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -195,6 +195,7 @@ public abstract class PlayerList {
+@@ -198,6 +198,7 @@ public abstract class PlayerList {
          this.playersByUUID.put(serverPlayer.getUUID(), serverPlayer);
          this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
          serverLevel2.addNewPlayer(serverPlayer);
@@ -55,7 +55,7 @@ index 34860550bbde992490c79657d77b6840f36eaf12..7c1a1f80ea17a83a60640f5056f95620
          this.sendLevelInfo(serverPlayer, serverLevel2);
          this.server.getServerResourcePack().ifPresent((serverResourcePackInfo) -> serverPlayer.sendTexturePack(serverResourcePackInfo.url(), serverResourcePackInfo.hash(), serverResourcePackInfo.isRequired(), serverResourcePackInfo.prompt()));
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index 3bcf0ff3a29ffe1a14132d2feb6a5c37c0c7de87..741893a34983f8b4d7fe336606458e991b870469 100644
+index 33e257dff605feff5887b6cf08f5e9a75515de26..b0040c534c78dad16a2f34ee34e4cfb223db046a 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
 @@ -288,7 +288,8 @@ public final class Biome {
@@ -69,10 +69,10 @@ index 3bcf0ff3a29ffe1a14132d2feb6a5c37c0c7de87..741893a34983f8b4d7fe336606458e99
                  throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
              }
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index ddf30459c3b7e03fd2d872d46fe3eaa5aa9d78de..9b8fab6e326e35769bd05c8fc8efd5923145ed3e 100644
+index 2cb28b2037ab3e8eb6bf0980fecf1f7930576b31..952e654cd25a6dd1a8aaca140304cc991f4839b4 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-@@ -86,7 +86,8 @@ public class BiomeGenerationSettings {
+@@ -108,7 +108,8 @@ public class BiomeGenerationSettings {
          }
  
          public BiomeGenerationSettings build() {

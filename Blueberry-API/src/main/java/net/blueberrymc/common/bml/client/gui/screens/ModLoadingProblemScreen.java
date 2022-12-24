@@ -58,12 +58,12 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
     protected void init() {
         this.problemList = new ProblemList(Objects.requireNonNull(this.minecraft));
         this.children().add(this.problemList);
-        this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 38, 98, 20, BlueberryText.text("blueberry", "gui.screens.mod_loading_problem.open_log_file"), (button) -> Util.getPlatform().openFile(Blueberry.getLogFile())));
-        this.addRenderableWidget(new Button(this.width / 2 + 2, this.height - 38, 98, 20, CommonComponents.GUI_DONE, (button) -> {
+        this.addRenderableWidget(Button.builder(BlueberryText.text("blueberry", "gui.screens.mod_loading_problem.open_log_file"), (button) -> Util.getPlatform().openFile(Blueberry.getLogFile())).bounds(this.width / 2 - 100, this.height - 38, 98, 20).build());
+        this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> {
             ModLoadingErrors.clear();
             Objects.requireNonNull(this.minecraft).setScreen(screen);
             if (callback != null) callback.run();
-        }));
+        }).bounds(this.width / 2 + 2, this.height - 38, 98, 20).build());
         super.init();
     }
 

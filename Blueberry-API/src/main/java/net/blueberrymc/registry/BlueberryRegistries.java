@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
@@ -36,7 +36,6 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -45,22 +44,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.gameevent.PositionSourceType;
-import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
-import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.featuresize.FeatureSizeType;
-import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
-import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
-import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
-import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -86,68 +75,57 @@ public final class BlueberryRegistries<T> {
 
     static { init(); }
 
-    public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPES = new BlueberryRegistries<>(Registry.PARTICLE_TYPE);
-    public static final BlueberryRegistries<Block> BLOCK = new BlueberryRegistries<>(Registry.BLOCK, block -> {
+    public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPES = new BlueberryRegistries<>(BuiltInRegistries.PARTICLE_TYPE);
+    public static final BlueberryRegistries<Block> BLOCK = new BlueberryRegistries<>(BuiltInRegistries.BLOCK, block -> {
         for (BlockState blockState : block.getStateDefinition().getPossibleStates()) {
             Block.BLOCK_STATE_REGISTRY.add(blockState);
         }
         block.getLootTable(); // initialize loot table key
     });
-    public static final BlueberryRegistries<Item> ITEM = new BlueberryRegistries<>(Registry.ITEM);
-    public static final BlueberryRegistries<MenuType<?>> MENU = new BlueberryRegistries<>(Registry.MENU);
-    public static final BlueberryRegistries<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new BlueberryRegistries<>(Registry.BLOCK_ENTITY_TYPE);
-    public static final BlueberryRegistries<Fluid> FLUID = new BlueberryRegistries<>(Registry.FLUID, fluid -> {
+    public static final BlueberryRegistries<Item> ITEM = new BlueberryRegistries<>(BuiltInRegistries.ITEM);
+    public static final BlueberryRegistries<MenuType<?>> MENU = new BlueberryRegistries<>(BuiltInRegistries.MENU);
+    public static final BlueberryRegistries<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new BlueberryRegistries<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
+    public static final BlueberryRegistries<Fluid> FLUID = new BlueberryRegistries<>(BuiltInRegistries.FLUID, fluid -> {
         for (FluidState fluidState : fluid.getStateDefinition().getPossibleStates()) {
             Fluid.FLUID_STATE_REGISTRY.add(fluidState);
         }
     });
-    public static final BlueberryRegistries<SoundEvent> SOUND_EVENT = new BlueberryRegistries<>(Registry.SOUND_EVENT);
-    public static final BlueberryRegistries<MobEffect> MOB_EFFECT = new BlueberryRegistries<>(Registry.MOB_EFFECT);
-    public static final BlueberryRegistries<Enchantment> ENCHANTMENT = new BlueberryRegistries<>(Registry.ENCHANTMENT);
-    public static final BlueberryRegistries<EntityType<?>> ENTITY_TYPE = new BlueberryRegistries<>(Registry.ENTITY_TYPE);
-    public static final BlueberryRegistries<Potion> POTION = new BlueberryRegistries<>(Registry.POTION);
-    public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPE = new BlueberryRegistries<>(Registry.PARTICLE_TYPE);
-    public static final BlueberryRegistries<ResourceLocation> CUSTOM_STAT = new BlueberryRegistries<>(Registry.CUSTOM_STAT);
-    public static final BlueberryRegistries<ChunkStatus> CHUNK_STATUS = new BlueberryRegistries<>(Registry.CHUNK_STATUS);
-    public static final BlueberryRegistries<RuleTestType<?>> RULE_TEST = new BlueberryRegistries<>(Registry.RULE_TEST);
-    public static final BlueberryRegistries<PosRuleTestType<?>> POS_RULE_TEST = new BlueberryRegistries<>(Registry.POS_RULE_TEST);
-    public static final BlueberryRegistries<RecipeType<?>> RECIPE_TYPE = new BlueberryRegistries<>(Registry.RECIPE_TYPE);
-    public static final BlueberryRegistries<RecipeSerializer<?>> RECIPE_SERIALIZER = new BlueberryRegistries<>(Registry.RECIPE_SERIALIZER);
-    public static final BlueberryRegistries<Attribute> ATTRIBUTE = new BlueberryRegistries<>(Registry.ATTRIBUTE);
-    public static final BlueberryRegistries<PositionSourceType<?>> POSITION_SOURCE_TYPE = new BlueberryRegistries<>(Registry.POSITION_SOURCE_TYPE);
-    public static final BlueberryRegistries<StatType<?>> STAT_TYPE = new BlueberryRegistries<>(Registry.STAT_TYPE);
-    public static final BlueberryRegistries<VillagerType> VILLAGER_TYPE = new BlueberryRegistries<>(Registry.VILLAGER_TYPE);
-    public static final BlueberryRegistries<VillagerProfession> VILLAGER_PROFESSION = new BlueberryRegistries<>(Registry.VILLAGER_PROFESSION);
-    public static final BlueberryRegistries<PoiType> POINT_OF_INTEREST_TYPE = new BlueberryRegistries<>(Registry.POINT_OF_INTEREST_TYPE);
-    public static final BlueberryRegistries<MemoryModuleType<?>> MEMORY_MODULE_TYPE = new BlueberryRegistries<>(Registry.MEMORY_MODULE_TYPE);
-    public static final BlueberryRegistries<SensorType<?>> SENSOR_TYPE = new BlueberryRegistries<>(Registry.SENSOR_TYPE);
-    public static final BlueberryRegistries<Schedule> SCHEDULE = new BlueberryRegistries<>(Registry.SCHEDULE);
-    public static final BlueberryRegistries<Activity> ACTIVITY = new BlueberryRegistries<>(Registry.ACTIVITY);
-    public static final BlueberryRegistries<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = new BlueberryRegistries<>(Registry.LOOT_POOL_ENTRY_TYPE);
-    public static final BlueberryRegistries<LootItemFunctionType> LOOT_FUNCTION_TYPE = new BlueberryRegistries<>(Registry.LOOT_FUNCTION_TYPE);
-    public static final BlueberryRegistries<LootItemConditionType> LOOT_CONDITION_TYPE = new BlueberryRegistries<>(Registry.LOOT_CONDITION_TYPE);
-    public static final BlueberryRegistries<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = new BlueberryRegistries<>(Registry.LOOT_NUMBER_PROVIDER_TYPE);
-    public static final BlueberryRegistries<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = new BlueberryRegistries<>(Registry.LOOT_NBT_PROVIDER_TYPE);
-    public static final BlueberryRegistries<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = new BlueberryRegistries<>(Registry.LOOT_SCORE_PROVIDER_TYPE);
-    public static final BlueberryRegistries<BlockStateProviderType<?>> BLOCKSTATE_PROVIDER_TYPES = new BlueberryRegistries<>(Registry.BLOCKSTATE_PROVIDER_TYPES);
-    public static final BlueberryRegistries<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPES = new BlueberryRegistries<>(Registry.FOLIAGE_PLACER_TYPES);
-    public static final BlueberryRegistries<TrunkPlacerType<?>> TRUNK_PLACER_TYPES = new BlueberryRegistries<>(Registry.TRUNK_PLACER_TYPES);
-    public static final BlueberryRegistries<TreeDecoratorType<?>> TREE_DECORATOR_TYPES = new BlueberryRegistries<>(Registry.TREE_DECORATOR_TYPES);
-    public static final BlueberryRegistries<FeatureSizeType<?>> FEATURE_SIZE_TYPES = new BlueberryRegistries<>(Registry.FEATURE_SIZE_TYPES);
-    public static final BlueberryRegistries<Codec<? extends BiomeSource>> BIOME_SOURCE = new BlueberryRegistries<>(Registry.BIOME_SOURCE);
-    public static final BlueberryRegistries<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = new BlueberryRegistries<>(Registry.CHUNK_GENERATOR);
-    public static final BlueberryRegistries<StructureProcessorType<?>> STRUCTURE_PROCESSOR = new BlueberryRegistries<>(Registry.STRUCTURE_PROCESSOR);
-    public static final BlueberryRegistries<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = new BlueberryRegistries<>(Registry.STRUCTURE_POOL_ELEMENT);
-    public static final BlueberryRegistries<WorldCarver<?>> CARVER = new BlueberryRegistries<>(Registry.CARVER);
-    public static final BlueberryRegistries<Feature<?>> FEATURE = new BlueberryRegistries<>(Registry.FEATURE);
-    public static final BlueberryRegistries<StructurePieceType> STRUCTURE_PIECE = new BlueberryRegistries<>(Registry.STRUCTURE_PIECE);
-    public static final BlueberryRegistries<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = new BlueberryRegistries<>(BuiltinRegistries.CONFIGURED_FEATURE);
-    public static final BlueberryRegistries<ConfiguredWorldCarver<?>> CONFIGURED_CARVER = new BlueberryRegistries<>(BuiltinRegistries.CONFIGURED_CARVER);
-    public static final BlueberryRegistries<StructureProcessorList> PROCESSOR_LIST = new BlueberryRegistries<>(BuiltinRegistries.PROCESSOR_LIST);
-    public static final BlueberryRegistries<StructureTemplatePool> TEMPLATE_POOL = new BlueberryRegistries<>(BuiltinRegistries.TEMPLATE_POOL);
-    public static final BlueberryRegistries<Biome> BIOME = new BlueberryRegistries<>(BuiltinRegistries.BIOME);
-    public static final BlueberryRegistries<NoiseGeneratorSettings> NOISE_GENERATOR_SETTINGS = new BlueberryRegistries<>(BuiltinRegistries.NOISE_GENERATOR_SETTINGS);
-    public static final BlueberryRegistries<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPE = new BlueberryRegistries<>(Registry.COMMAND_ARGUMENT_TYPE);
+    public static final BlueberryRegistries<SoundEvent> SOUND_EVENT = new BlueberryRegistries<>(BuiltInRegistries.SOUND_EVENT);
+    public static final BlueberryRegistries<MobEffect> MOB_EFFECT = new BlueberryRegistries<>(BuiltInRegistries.MOB_EFFECT);
+    public static final BlueberryRegistries<Enchantment> ENCHANTMENT = new BlueberryRegistries<>(BuiltInRegistries.ENCHANTMENT);
+    public static final BlueberryRegistries<EntityType<?>> ENTITY_TYPE = new BlueberryRegistries<>(BuiltInRegistries.ENTITY_TYPE);
+    public static final BlueberryRegistries<Potion> POTION = new BlueberryRegistries<>(BuiltInRegistries.POTION);
+    public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.PARTICLE_TYPE);
+    public static final BlueberryRegistries<ResourceLocation> CUSTOM_STAT = new BlueberryRegistries<>(BuiltInRegistries.CUSTOM_STAT);
+    public static final BlueberryRegistries<ChunkStatus> CHUNK_STATUS = new BlueberryRegistries<>(BuiltInRegistries.CHUNK_STATUS);
+    public static final BlueberryRegistries<RuleTestType<?>> RULE_TEST = new BlueberryRegistries<>(BuiltInRegistries.RULE_TEST);
+    public static final BlueberryRegistries<PosRuleTestType<?>> POS_RULE_TEST = new BlueberryRegistries<>(BuiltInRegistries.POS_RULE_TEST);
+    public static final BlueberryRegistries<RecipeType<?>> RECIPE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.RECIPE_TYPE);
+    public static final BlueberryRegistries<RecipeSerializer<?>> RECIPE_SERIALIZER = new BlueberryRegistries<>(BuiltInRegistries.RECIPE_SERIALIZER);
+    public static final BlueberryRegistries<Attribute> ATTRIBUTE = new BlueberryRegistries<>(BuiltInRegistries.ATTRIBUTE);
+    public static final BlueberryRegistries<PositionSourceType<?>> POSITION_SOURCE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.POSITION_SOURCE_TYPE);
+    public static final BlueberryRegistries<StatType<?>> STAT_TYPE = new BlueberryRegistries<>(BuiltInRegistries.STAT_TYPE);
+    public static final BlueberryRegistries<VillagerType> VILLAGER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.VILLAGER_TYPE);
+    public static final BlueberryRegistries<VillagerProfession> VILLAGER_PROFESSION = new BlueberryRegistries<>(BuiltInRegistries.VILLAGER_PROFESSION);
+    public static final BlueberryRegistries<PoiType> POINT_OF_INTEREST_TYPE = new BlueberryRegistries<>(BuiltInRegistries.POINT_OF_INTEREST_TYPE);
+    public static final BlueberryRegistries<MemoryModuleType<?>> MEMORY_MODULE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.MEMORY_MODULE_TYPE);
+    public static final BlueberryRegistries<SensorType<?>> SENSOR_TYPE = new BlueberryRegistries<>(BuiltInRegistries.SENSOR_TYPE);
+    public static final BlueberryRegistries<Schedule> SCHEDULE = new BlueberryRegistries<>(BuiltInRegistries.SCHEDULE);
+    public static final BlueberryRegistries<Activity> ACTIVITY = new BlueberryRegistries<>(BuiltInRegistries.ACTIVITY);
+    public static final BlueberryRegistries<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE);
+    public static final BlueberryRegistries<LootItemFunctionType> LOOT_FUNCTION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_FUNCTION_TYPE);
+    public static final BlueberryRegistries<LootItemConditionType> LOOT_CONDITION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_CONDITION_TYPE);
+    public static final BlueberryRegistries<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_NUMBER_PROVIDER_TYPE);
+    public static final BlueberryRegistries<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_NBT_PROVIDER_TYPE);
+    public static final BlueberryRegistries<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_SCORE_PROVIDER_TYPE);
+    public static final BlueberryRegistries<Codec<? extends BiomeSource>> BIOME_SOURCE = new BlueberryRegistries<>(BuiltInRegistries.BIOME_SOURCE);
+    public static final BlueberryRegistries<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = new BlueberryRegistries<>(BuiltInRegistries.CHUNK_GENERATOR);
+    public static final BlueberryRegistries<StructureProcessorType<?>> STRUCTURE_PROCESSOR = new BlueberryRegistries<>(BuiltInRegistries.STRUCTURE_PROCESSOR);
+    public static final BlueberryRegistries<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = new BlueberryRegistries<>(BuiltInRegistries.STRUCTURE_POOL_ELEMENT);
+    public static final BlueberryRegistries<WorldCarver<?>> CARVER = new BlueberryRegistries<>(BuiltInRegistries.CARVER);
+    public static final BlueberryRegistries<Feature<?>> FEATURE = new BlueberryRegistries<>(BuiltInRegistries.FEATURE);
+    public static final BlueberryRegistries<StructurePieceType> STRUCTURE_PIECE = new BlueberryRegistries<>(BuiltInRegistries.STRUCTURE_PIECE);
+    public static final BlueberryRegistries<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPE = new BlueberryRegistries<>(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
 
     @NotNull private final Registry<T> registry;
     @Nullable private final Consumer<T> registerAction;
@@ -244,6 +222,6 @@ public final class BlueberryRegistries<T> {
     }
 
     private static void init() {
-        Registry.BLOCK.byId(1);
+        BuiltInRegistries.BLOCK.byId(1);
     }
 }

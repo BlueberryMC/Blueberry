@@ -43,7 +43,7 @@ public class FileDialogScreen extends BlueberryScreen {
         fileList = new FileList(minecraft);
         children().add(fileList);
         // Cancel button
-        addRenderableWidget(cancelButton = new Button(width / 2 - 100, height - 38, 200, 20, CommonComponents.GUI_CANCEL, (button) -> this.onClose()));
+        addRenderableWidget(cancelButton = Button.builder(CommonComponents.GUI_CANCEL, (button) -> this.onClose()).bounds(width / 2 - 100, height - 38, 200, 20).build());
     }
 
     @Override
@@ -148,7 +148,7 @@ public class FileDialogScreen extends BlueberryScreen {
             if (this.getSelected() != null) {
                 this.centerScrollOn(this.getSelected());
             }
-            cdButton = new Button(0, 0, 20, 20, Component.literal(">").withStyle(ChatFormatting.GOLD), (button) -> {
+            cdButton = Button.builder(Component.literal(">").withStyle(ChatFormatting.GOLD), (button) -> {
                 File file = getSelected().file;
                 if (!file.isDirectory()) {
                     LOGGER.warn("Trying to cd to a non-directory: {}", file);
@@ -159,12 +159,12 @@ public class FileDialogScreen extends BlueberryScreen {
                     return;
                 }
                 minecraft.setScreen(FileDialogScreen.create(firstScreen, options.toBuilder().initialDirectory(file).build()));
-            });
+            }).bounds(0, 0, 20, 20).build();
             cdButton.visible = false;
-            selectButton = new Button(0, 0, 20, 20, Component.literal("\u2714").withStyle(ChatFormatting.GREEN), (button) -> {
+            selectButton = Button.builder(Component.literal("✔").withStyle(ChatFormatting.GREEN), (button) -> {
                 minecraft.setScreen(firstScreen);
                 options.runCallback(getSelected().file);
-            });
+            }).bounds(0, 0, 20, 20).build();
             selectButton.visible = false;
             addRenderableWidget(cdButton);
             addRenderableWidget(selectButton);
@@ -203,14 +203,14 @@ public class FileDialogScreen extends BlueberryScreen {
                     int rowWidth = this.getRowWidth();
                     if (this.isSelectedItem(itemIndex)) {
                         if (entry.file.isDirectory()) {
-                            cdButton.x = getRowLeft() + rowWidth;
-                            cdButton.y = rowTop - 3;
+                            cdButton.setX(getRowLeft() + rowWidth);
+                            cdButton.setY(rowTop - 3);
                             cdButton.visible = true;
                             cdButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
                             if (options.fileType() == FileDialogScreenOptions.FileType.DIRECTORY ||
                                     options.fileType() == FileDialogScreenOptions.FileType.ALL) {
-                                selectButton.x = getRowLeft() + rowWidth + 22;
-                                selectButton.y = rowTop - 3;
+                                selectButton.setX(getRowLeft() + rowWidth + 22);
+                                selectButton.setY(rowTop - 3);
                                 selectButton.visible = true;
                                 selectButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
                             } else {
@@ -218,8 +218,8 @@ public class FileDialogScreen extends BlueberryScreen {
                             }
                         } else {
                             cdButton.visible = false;
-                            selectButton.x = getRowLeft() + rowWidth;
-                            selectButton.y = rowTop - 3;
+                            selectButton.setX(getRowLeft() + rowWidth);
+                            selectButton.setY(rowTop - 3);
                             selectButton.visible = true;
                             selectButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
                         }

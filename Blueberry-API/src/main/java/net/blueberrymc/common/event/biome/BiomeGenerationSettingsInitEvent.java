@@ -11,10 +11,10 @@ import java.util.function.Supplier;
  * Called when the biome generation settings is being created from the builder.
  */
 public class BiomeGenerationSettingsInitEvent extends Event {
-    private final BiomeGenerationSettings.Builder builder;
+    private final BiomeGenerationSettings.PlainBuilder builder;
     private Supplier<BiomeGenerationSettings> biomeGenerationSettings;
 
-    public BiomeGenerationSettingsInitEvent(@NotNull BiomeGenerationSettings.Builder builder, @NotNull Supplier<BiomeGenerationSettings> biomeGenerationSettings) {
+    public BiomeGenerationSettingsInitEvent(@NotNull BiomeGenerationSettings.PlainBuilder builder, @NotNull Supplier<BiomeGenerationSettings> biomeGenerationSettings) {
         this.builder = builder;
         this.biomeGenerationSettings = biomeGenerationSettings;
     }
@@ -24,7 +24,7 @@ public class BiomeGenerationSettingsInitEvent extends Event {
      * @return the builder
      */
     @NotNull
-    public BiomeGenerationSettings.Builder getBuilder() {
+    public BiomeGenerationSettings.PlainBuilder getBuilder() {
         return builder;
     }
 

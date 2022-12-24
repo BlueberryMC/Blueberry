@@ -32,6 +32,7 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -86,12 +87,12 @@ public class ModConfigScreen extends BlueberryScreen {
         this.children().clear();
         callbacks.clear();
         ScrollableContainer<AbstractWidget> container = new ScrollableContainer<>(Objects.requireNonNull(this.minecraft), this.width, this.height, 58, this.height - 50, 20, 2);
-        this.addRenderableWidget(this.backButton = new Button(this.width / 2 - 77, this.height - 38, 154, 20, CommonComponents.GUI_BACK, (button) -> {
+        this.addRenderableWidget(this.backButton = Button.builder(CommonComponents.GUI_BACK, (button) -> {
             this.minecraft.setScreen(this.previousScreen);
             if (compoundVisualConfig instanceof RootCompoundVisualConfig root) {
                 root.onChanged();
             }
-        }));
+        }).bounds(this.width / 2 - 77, this.height - 38, 154, 20).build());
         int offset = 38;
         int _maxWidth = 50;
         for (VisualConfig<?> config : this.compoundVisualConfig) {
@@ -112,7 +113,7 @@ public class ModConfigScreen extends BlueberryScreen {
         });
         for (VisualConfig<?> config : this.compoundVisualConfig) {
             Function<PoseStack, BiConsumer<Integer, Integer>> onTooltipFunction;
-            Button.OnTooltip onTooltip;
+            Tooltip onTooltip;
             MutableComponent tooltip = Component.literal("");
             // deprecated
             var deprecatedData = config.getDeprecatedData();
@@ -177,73 +178,56 @@ public class ModConfigScreen extends BlueberryScreen {
             if (tooltip.getSiblings().size() > 0) tooltip.getSiblings().remove(tooltip.getSiblings().size() - 1); // removes last \n
             if (tooltip.toString().length() > 0) {
                 onTooltipFunction = (poseStack) -> (x, y) -> this.renderTooltip(poseStack, this.minecraft.font.split(addDebugInfo(config, tooltip), Math.max(this.width / 3, 170)), x, y);
-                onTooltip = (button, poseStack, x, y) -> onTooltipFunction.apply(poseStack).accept(x, y);
+                //onTooltip = (button, poseStack, x, y) -> onTooltipFunction.apply(poseStack).accept(x, y);
             } else {
                 onTooltipFunction = (poseStack) -> (x, y) -> {};
-                onTooltip = Button.NO_TOOLTIP;
             }
+            onTooltip = Tooltip.create(Component.empty());
             if (config instanceof CompoundVisualConfig compoundVisualConfig) {
                 Component component = Util.getOrDefault(
                         compoundVisualConfig.getComponent(),
                         compoundVisualConfig.getTitle(),
                         UNKNOWN_TEXT
                 );
-                container.children().add(new Button(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20, component, button ->
-                        this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this)), onTooltip)
-                );
+                container.children().add(Button.builder(component, button -> this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this))).tooltip(onTooltip).bounds(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20).build());
             } else if (config instanceof BooleanVisualConfig booleanVisualConfig) {
-                container.children().add(new Button(this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, getButtonMessage(booleanVisualConfig), (button) -> {
+                container.children().add(Button.builder(getButtonMessage(booleanVisualConfig), (button) -> {
                     Boolean curr = booleanVisualConfig.get();
                     booleanVisualConfig.set(!(curr != null && curr));
                     updateBooleanButton(booleanVisualConfig, button);
                     booleanVisualConfig.clicked(button);
-                }, onTooltip));
+                }).bounds(this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20).tooltip(onTooltip).build());
                 addLabel.accept(config, offset);
             } else if (config instanceof CycleVisualConfig<?> cycleVisualConfig) {
                 final int buttonY = offset += 22;
                 Button btn;
                 container.children().add(
-                        btn = new Button(
-                                (this.width / 2) + 6 + 23,
-                                buttonY,
-                                Math.min(maxWidth, this.width / 6 - (24 * 2)),
-                                20,
-                                Component.literal(cycleVisualConfig.getCurrentName()),
-                                (button) -> button.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
-                                onTooltip
-                        )
+                        btn = Button.builder(Component.literal(cycleVisualConfig.getCurrentName()), (button) -> button.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())))
+                                .bounds((this.width / 2) + 6 + 23, buttonY, Math.min(maxWidth, this.width / 6 - (24 * 2)), 20)
+                                .tooltip(onTooltip)
+                                .build()
                 );
                 container.children().add(
-                        new Button(
-                                (this.width / 2) + 6,
-                                buttonY,
-                                22,
-                                20,
-                                Component.literal("<-"),
-                                (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())),
-                                onTooltip
-                        )
+                        Button.builder(Component.literal("<-"), (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getNextName() : cycleVisualConfig.getPreviousName())))
+                                .bounds((this.width / 2) + 6, buttonY, 22, 20)
+                                .tooltip(onTooltip)
+                                .build()
                 );
                 container.children().add(
-                        new Button(
-                                (this.width / 2) + 6 + Math.min(maxWidth + 24, this.width / 6 - 24),
-                                buttonY,
-                                22,
-                                20,
-                                Component.literal("->"),
-                                (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())),
-                                onTooltip
-                        )
+                        Button.builder(Component.literal("->"), (button) -> btn.setMessage(Component.literal(cycleVisualConfig.isReverse() ? cycleVisualConfig.getPreviousName() : cycleVisualConfig.getNextName())))
+                                .bounds((this.width / 2) + 6 + Math.min(maxWidth + 24, this.width / 6 - 24), buttonY, 22, 20)
+                                .tooltip(onTooltip)
+                                .build()
                 );
                 addLabel.accept(config, offset);
             } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
                 int componentWidth = Math.min(maxWidth, this.width / 6);
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal("")) {
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal(""));/* {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
                     }
-                };
+                };*/
                 Number defValue = numberVisualConfig.get();
                 if (defValue == null) defValue = numberVisualConfig.getDefaultValue();
                 if (defValue == null) defValue = numberVisualConfig.getMinAsNumber();
@@ -291,10 +275,12 @@ public class ModConfigScreen extends BlueberryScreen {
                         numberVisualConfig.setPercentage(0.5 - range / 2 + range * value);
                     }
 
+                    /*
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int i, int i2) {
                         onTooltipFunction.apply(poseStack).accept(i, i2);
                     }
+                    */
                 };
                 Consumer<Double> valueUpdater = (value) -> {
                     try {
@@ -306,7 +292,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 slider.setMessage(sliderLabel.get());
                 slider.visible = false;
                 container.children().add(slider);
-                Button toggleButton = new Button(this.width / 2 + 10 + componentWidth, offset, 20, 20, Component.literal("\u262f"), (button) -> {
+                Button toggleButton = Button.builder(Component.literal("☯"), (button) -> {
                     if (editBox.visible) {
                         editBox.visible = false;
                         slider.visible = true;
@@ -318,25 +304,28 @@ public class ModConfigScreen extends BlueberryScreen {
                         editBox.visible = true;
                         editBox.setValue(Objects.requireNonNullElse(numberVisualConfig.get(), numberVisualConfig.getMinAsNumber()).toString());
                     }
-                }, (button, poseStack, mouseX, mouseY) -> {
+                }).bounds(this.width / 2 + 10 + componentWidth, offset, 20, 20).build();
+                /*(button, poseStack, mouseX, mouseY) -> {
                     String path;
                     if (editBox.visible) {
                         path = "gui.screens.mod_config.show_slider";
                     } else {
                         path = "gui.screens.mod_config.show_editbox";
                     }
-                    renderTooltip(poseStack, BlueberryText.text("blueberry", path), mouseX, mouseY);
+                    //renderTooltip(poseStack, BlueberryText.text("blueberry", path), mouseX, mouseY);
                 });
+                */
                 toggleButton.active = true;
                 container.children().add(toggleButton);
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig stringVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));/* {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
                     }
                 };
+                */
                 String defValue = stringVisualConfig.get();
                 if (defValue == null) defValue = stringVisualConfig.getDefaultValue();
                 if (defValue == null) defValue = "";
@@ -354,12 +343,13 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof ClassVisualConfig classVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal("")) {
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));/* {
                     @Override
                     public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
                         onTooltipFunction.apply(poseStack).accept(x, y);
                     }
                 };
+                */
                 Class<?> defValue = classVisualConfig.get();
                 if (defValue == null) defValue = classVisualConfig.getDefaultValue();
                 editBox.setResponder((s) -> {

@@ -18,7 +18,7 @@ public class ModPackResources extends FilePackResources {
     private final BlueberryMod mod;
 
     public ModPackResources(BlueberryMod mod) {
-        super("Mod Resources for " + mod.getName() + " (File)", mod.getFile());
+        super("Mod Resources for " + mod.getName() + " (File)", mod.getFile(), true);
         this.mod = mod;
     }
 

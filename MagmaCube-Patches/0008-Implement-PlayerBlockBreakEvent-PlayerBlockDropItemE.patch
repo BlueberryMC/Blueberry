@@ -87,10 +87,10 @@ index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6f
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e8ed0735375051276f18e4a4e78882e9f3e29769..51144ba2df484fb1d16a0733e7012419ab5c3eb3 100644
+index c209f4872346dffc1c706c2661d3e2086a2fa63c..8cc15cd7f6d88c6a4a99f4a4c2140a55538a1ebd 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -105,6 +105,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
+@@ -108,6 +108,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
      private final BiomeManager biomeManager;
      private final ResourceKey<Level> dimension;
      private long subTickCount;
@@ -99,10 +99,10 @@ index e8ed0735375051276f18e4a4e78882e9f3e29769..51144ba2df484fb1d16a0733e7012419
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 620495d74e58346ff1434b7fe28f1adbc7934768..b680d5b93bb165db7ababb97452df07378ce454e 100644
+index c97c77bdf0bfea5551fd4d254102943660858221..86982baa980c853f1c4b8a1b9152e76919949773 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -317,11 +317,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -315,11 +315,13 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ItemEntity itemEntity = (ItemEntity)supplier.get();
              itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index 620495d74e58346ff1434b7fe28f1adbc7934768..b680d5b93bb165db7ababb97452df073
          if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
          }
-@@ -484,8 +486,14 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -478,8 +480,14 @@ public class Block extends BlockBehaviour implements ItemLike {
          return this.builtInRegistryHolder;
      }
  

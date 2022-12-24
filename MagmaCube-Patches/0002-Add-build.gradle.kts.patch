@@ -6,7 +6,7 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..fb75e6f405b85cc1c56e85ee1c5a3f4beb43bb91
+index 0000000000000000000000000000000000000000..76003bf9458ec46a9608e3ef04e7ab9bbff9dbd3
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,249 @@
@@ -63,13 +63,13 @@ index 0000000000000000000000000000000000000000..fb75e6f405b85cc1c56e85ee1c5a3f4b
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-linux")
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-macos")
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-windows")
-+    compileOnly("com.github.oshi:oshi-core:5.8.5")
++    compileOnly("com.github.oshi:oshi-core:6.2.2")
 +    compileOnly("com.mojang:blocklist:1.0.10")
 +    compileOnly("com.mojang:text2speech:$TTS_VERSION")
 +    compileOnly("com.mojang:text2speech:$TTS_VERSION:natives-linux")
 +    compileOnly("com.mojang:text2speech:$TTS_VERSION:natives-windows")
 +    compileOnly("net.java.jutils:jutils:1.0.0")
-+    compileOnly("com.ibm.icu:icu4j:70.1")
++    compileOnly("com.ibm.icu:icu4j:71.1")
 +    compileOnly("org.apache.commons:commons-lang3:3.12.0")
 +    compileOnly("commons-io:commons-io:2.11.0")
 +    compileOnly("commons-logging:commons-logging:1.2")
@@ -78,8 +78,8 @@ index 0000000000000000000000000000000000000000..fb75e6f405b85cc1c56e85ee1c5a3f4b
 +    compileOnly("org.apache.httpcomponents:httpcore:4.4.14")
 +    compileOnly("org.apache.logging.log4j:log4j-api:$LOG4J_VERSION")
 +    compileOnly("org.apache.logging.log4j:log4j-core:$LOG4J_VERSION")
-+    compileOnly("org.apache.logging.log4j:log4j-slf4j18-impl:$LOG4J_VERSION")
-+    compileOnly("org.slf4j:slf4j-api:1.8.0-beta4")
++    compileOnly("org.apache.logging.log4j:log4j-slf4j2-impl:$LOG4J_VERSION")
++    compileOnly("org.slf4j:slf4j-api:2.0.1")
 +}
 +
 +tasks {

@@ -1,7 +1,6 @@
 package net.blueberrymc.common;
 
 import com.google.common.base.Preconditions;
-import com.mojang.math.Vector3d;
 import net.blueberrymc.world.level.block.Block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -9,6 +8,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;

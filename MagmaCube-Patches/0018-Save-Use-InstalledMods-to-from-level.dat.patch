@@ -5,10 +5,10 @@ Subject: [PATCH] Save/Use InstalledMods to/from level.dat
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-index 3b3917187e777b08ee6ab126e435c71877f67405..3b8d3774cbb4abed05e29b822ddb23e2b2038f9f 100644
+index 52d678b4a2113cd8319fde0bf77745f23ca0abb6..ee676fed7c5df1a565b3013d2dd3f361c85f9b7e 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -168,6 +168,12 @@ public class WorldOpenFlows {
+@@ -169,6 +169,12 @@ public class WorldOpenFlows {
                  return;
              }
  
@@ -22,10 +22,10 @@ index 3b3917187e777b08ee6ab126e435c71877f67405..3b8d3774cbb4abed05e29b822ddb23e2
              boolean flag3 = worldData.worldGenOptions().isOldCustomizedWorld();
              boolean flag4 = worldData.worldGenSettingsLifecycle() != Lifecycle.stable();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index bb1ccded391b0e5cc012f58f23348dfc0e5e3acb..74fab0cccc7bc34d9d0459a36db717c10cbaf588 100644
+index 67cd86b8bada4c35dc541bceee487a53e9b96008..82620967de9bef6467c5950a237cd65ff0a289d2 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -307,6 +307,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -308,6 +308,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          boolean flag = false;
          ProfiledDuration profiledDuration = JvmProfiler.INSTANCE.onWorldLoadedStarted();
          this.worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().shouldReportAsModified());

@@ -5,7 +5,7 @@ Subject: [PATCH] MenuScreens#register PAIL private -> public
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
-index 00ce1a432e9d8571bd6d0ea22b9ace5b791d63f0..4e18ba160a90826c2d5913c1bcc5e47dd2fbcae9 100644
+index 8d0f7a75f8a420c2f6128f413261dbf55981596d..d9722f34ddc2321219195d10093e4fec77e955d1 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
 @@ -54,7 +54,8 @@ public class MenuScreens {
@@ -17,4 +17,4 @@ index 00ce1a432e9d8571bd6d0ea22b9ace5b791d63f0..4e18ba160a90826c2d5913c1bcc5e47d
 +    public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
          MenuScreens.ScreenConstructor<?, ?> screenConstructor2 = (MenuScreens.ScreenConstructor)SCREENS.put(menuType, screenConstructor);
          if (screenConstructor2 != null) {
-             throw new IllegalStateException("Duplicate registration for " + Registry.MENU.getKey(menuType));
+             throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(menuType));
