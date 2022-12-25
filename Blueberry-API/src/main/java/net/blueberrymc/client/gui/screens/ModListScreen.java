@@ -18,6 +18,7 @@ import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -107,17 +108,6 @@ public class ModListScreen extends BlueberryScreen {
                 }
             }
         }).bounds(10, this.height - 78, this.width / 5 / 2 - 11, 20).build())).active = false;
-        /*(button, poseStack, i, i1) -> {
-            ModsList.Entry entry = this.modsList.getSelected();
-            if (entry != null) {
-                if (isReloadSupported(entry.mod)) {
-                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.reload.reload_tooltip"), i, i1);
-                } else {
-                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.reload.unsupported"), i, i1);
-                }
-            }
-        }
-        */
         (this.recompileButton = this.addRenderableWidget(Button.builder(BlueberryText.text("blueberry", "gui.screens.mods.recompile"), button -> {
             try {
                 ModsList.Entry entry = this.modsList.getSelected();
@@ -136,22 +126,6 @@ public class ModListScreen extends BlueberryScreen {
                 }
             }
         }).bounds(2 + this.width / 5 / 2, this.height - 78, this.width / 5 / 2 - 11, 20).build())).active = false;
-        /*
-        (button, poseStack, i, i1) -> {
-            ModsList.Entry entry = this.modsList.getSelected();
-            if (entry != null) {
-                if (entry.mod.isFromSource()) {
-                    if (this.minecraft.level != null) {
-                        renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.recompile.in_world_tooltip"), i, i1);
-                        return;
-                    }
-                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.recompile.recompile_tooltip"), i, i1);
-                } else {
-                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.recompile.unsupported"), i, i1);
-                }
-            }
-        }
-        */
         boolean isUnloadButtonEnabled = InternalBlueberryModConfig.Debug.allowUnload;
         int disableButtonWidth = isUnloadButtonEnabled ? (this.width / 5 / 2 - 11) : (this.width / 5 - 20);
         (this.disableButton = this.addRenderableWidget(Button.builder(BlueberryText.text("blueberry", "gui.screens.mods.disable"), button -> {
@@ -177,16 +151,6 @@ public class ModListScreen extends BlueberryScreen {
                 }
             }
         }).bounds(2 + this.width / 5 / 2, this.height - 56, this.width / 5 / 2 - 11, 20).build())).active = false;
-        /*
-        (button, poseStack, i, i1) -> {
-            ModsList.Entry entry = this.modsList.getSelected();
-            if (entry != null) {
-                if (this.minecraft.level != null) {
-                    renderTooltip(poseStack, BlueberryText.text("blueberry", "gui.screens.mods.unload.in_world_tooltip"), i, i1);
-                }
-            }
-        }
-        */
         this.unloadButton.visible = isUnloadButtonEnabled;
         (this.configButton = this.addRenderableWidget(Button.builder(BlueberryText.text("blueberry", "gui.screens.mods.config"), button -> {
             ModsList.Entry entry = this.modsList.getSelected();
@@ -195,6 +159,32 @@ public class ModListScreen extends BlueberryScreen {
             }
         }).bounds(10, this.height - 34, this.width / 5 - 20, 20).build())).active = false;
         super.init();
+        updateTooltip();
+    }
+
+    private void updateTooltip() {
+        ModsList.Entry entry = this.modsList.getSelected();
+        if (entry == null) {
+            return;
+        }
+        assert this.minecraft != null;
+        if (this.minecraft.level != null) {
+            this.unloadButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.unload.in_world_tooltip")));
+        }
+        if (entry.mod.isFromSource()) {
+            if (this.minecraft.level != null) {
+                this.recompileButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.recompile.in_world_tooltip")));
+            } else {
+                this.recompileButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.recompile.recompile_tooltip")));
+            }
+        } else {
+            this.recompileButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.recompile.unsupported")));
+        }
+        if (isReloadSupported(entry.mod)) {
+            this.reloadButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.reload.reload_tooltip")));
+        } else {
+            this.reloadButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.reload.unsupported")));
+        }
     }
 
     private void tryLoadMod(File file) {
@@ -305,6 +295,7 @@ public class ModListScreen extends BlueberryScreen {
 
         public void setSelected(@Nullable Entry entry) {
             super.setSelected(entry);
+            updateTooltip();
         }
 
         protected void renderBackground(@NotNull PoseStack poseStack) {

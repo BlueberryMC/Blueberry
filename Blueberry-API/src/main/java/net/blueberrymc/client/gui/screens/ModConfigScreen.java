@@ -36,7 +36,6 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +49,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -112,8 +110,6 @@ public class ModConfigScreen extends BlueberryScreen {
             }
         });
         for (VisualConfig<?> config : this.compoundVisualConfig) {
-            Function<PoseStack, BiConsumer<Integer, Integer>> onTooltipFunction;
-            Tooltip onTooltip;
             MutableComponent tooltip = Component.literal("");
             // deprecated
             var deprecatedData = config.getDeprecatedData();
@@ -176,20 +172,19 @@ public class ModConfigScreen extends BlueberryScreen {
             // requiresRestart
             if (config.isRequiresRestart()) tooltip.append(BlueberryText.text("blueberry", "gui.screens.mod_config.requires_restart").withStyle(ChatFormatting.RED)).append("\n");
             if (tooltip.getSiblings().size() > 0) tooltip.getSiblings().remove(tooltip.getSiblings().size() - 1); // removes last \n
+            Tooltip onTooltip;
             if (tooltip.toString().length() > 0) {
-                onTooltipFunction = (poseStack) -> (x, y) -> this.renderTooltip(poseStack, this.minecraft.font.split(addDebugInfo(config, tooltip), Math.max(this.width / 3, 170)), x, y);
-                //onTooltip = (button, poseStack, x, y) -> onTooltipFunction.apply(poseStack).accept(x, y);
+                onTooltip = Tooltip.create(addDebugInfo(config, tooltip));
             } else {
-                onTooltipFunction = (poseStack) -> (x, y) -> {};
+                onTooltip = null;
             }
-            onTooltip = Tooltip.create(Component.empty());
-            if (config instanceof CompoundVisualConfig compoundVisualConfig) {
+            if (config instanceof CompoundVisualConfig compoundVisualConfigIn) {
                 Component component = Util.getOrDefault(
-                        compoundVisualConfig.getComponent(),
-                        compoundVisualConfig.getTitle(),
+                        compoundVisualConfigIn.getComponent(),
+                        compoundVisualConfigIn.getTitle(),
                         UNKNOWN_TEXT
                 );
-                container.children().add(Button.builder(component, button -> this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfig, this))).tooltip(onTooltip).bounds(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20).build());
+                container.children().add(Button.builder(component, button -> this.minecraft.setScreen(new ModConfigScreen(compoundVisualConfigIn, this))).tooltip(onTooltip).bounds(this.width / 2 - this.width / 8, (offset += 22), this.width / 4, 20).build());
             } else if (config instanceof BooleanVisualConfig booleanVisualConfig) {
                 container.children().add(Button.builder(getButtonMessage(booleanVisualConfig), (button) -> {
                     Boolean curr = booleanVisualConfig.get();
@@ -222,12 +217,8 @@ public class ModConfigScreen extends BlueberryScreen {
                 addLabel.accept(config, offset);
             } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
                 int componentWidth = Math.min(maxWidth, this.width / 6);
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal(""));/* {
-                    @Override
-                    public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
-                        onTooltipFunction.apply(poseStack).accept(x, y);
-                    }
-                };*/
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal(""));
+                editBox.setTooltip(onTooltip);
                 Number defValue = numberVisualConfig.get();
                 if (defValue == null) defValue = numberVisualConfig.getDefaultValue();
                 if (defValue == null) defValue = numberVisualConfig.getMinAsNumber();
@@ -274,14 +265,8 @@ public class ModConfigScreen extends BlueberryScreen {
                         }
                         numberVisualConfig.setPercentage(0.5 - range / 2 + range * value);
                     }
-
-                    /*
-                    @Override
-                    public void renderToolTip(@NotNull PoseStack poseStack, int i, int i2) {
-                        onTooltipFunction.apply(poseStack).accept(i, i2);
-                    }
-                    */
                 };
+                slider.setTooltip(onTooltip);
                 Consumer<Double> valueUpdater = (value) -> {
                     try {
                         ReflectionHelper.setField(AbstractSliderButton.class, slider, "value", value);
@@ -296,36 +281,28 @@ public class ModConfigScreen extends BlueberryScreen {
                     if (editBox.visible) {
                         editBox.visible = false;
                         slider.visible = true;
+                        button.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mod_config.show_editbox")));
                         slider.setMessage(sliderLabel.get());
                         valueUpdater.accept(numberVisualConfig.getPercentage());
                         unblock(editBox);
                     } else {
                         slider.visible = false;
                         editBox.visible = true;
+                        button.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mod_config.show_slider")));
                         editBox.setValue(Objects.requireNonNullElse(numberVisualConfig.get(), numberVisualConfig.getMinAsNumber()).toString());
                     }
                 }).bounds(this.width / 2 + 10 + componentWidth, offset, 20, 20).build();
-                /*(button, poseStack, mouseX, mouseY) -> {
-                    String path;
-                    if (editBox.visible) {
-                        path = "gui.screens.mod_config.show_slider";
-                    } else {
-                        path = "gui.screens.mod_config.show_editbox";
-                    }
-                    //renderTooltip(poseStack, BlueberryText.text("blueberry", path), mouseX, mouseY);
-                });
-                */
+                if (editBox.visible) {
+                    toggleButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mod_config.show_slider")));
+                } else {
+                    toggleButton.setTooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mod_config.show_editbox")));
+                }
                 toggleButton.active = true;
                 container.children().add(toggleButton);
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig stringVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));/* {
-                    @Override
-                    public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
-                        onTooltipFunction.apply(poseStack).accept(x, y);
-                    }
-                };
-                */
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));
+                editBox.setTooltip(onTooltip);
                 String defValue = stringVisualConfig.get();
                 if (defValue == null) defValue = stringVisualConfig.getDefaultValue();
                 if (defValue == null) defValue = "";
@@ -343,13 +320,8 @@ public class ModConfigScreen extends BlueberryScreen {
                 container.children().add(editBox);
                 addLabel.accept(config, offset);
             } else if (config instanceof ClassVisualConfig classVisualConfig) {
-                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));/* {
-                    @Override
-                    public void renderToolTip(@NotNull PoseStack poseStack, int x, int y) {
-                        onTooltipFunction.apply(poseStack).accept(x, y);
-                    }
-                };
-                */
+                EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));
+                editBox.setTooltip(onTooltip);
                 Class<?> defValue = classVisualConfig.get();
                 if (defValue == null) defValue = classVisualConfig.getDefaultValue();
                 editBox.setResponder((s) -> {
@@ -371,7 +343,7 @@ public class ModConfigScreen extends BlueberryScreen {
         super.init();
     }
 
-    private static FormattedText addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
+    private static Component addDebugInfo(VisualConfig<?> config, MutableComponent tooltip) {
         if (!InternalBlueberryModConfig.Debug.debugModConfigScreen) return tooltip;
         MutableComponent copy;
         if (tooltip.getSiblings().size() == 0) {
