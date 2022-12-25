@@ -32,6 +32,6 @@ public interface ClientCommandHandler {
             //noinspection ConstantConditions // for some reason, the mod becomes null after ModClassLoader is closed
             if (mod != null) return mod;
         }
-        return Objects.requireNonNull(Blueberry.getModManager().getModById("blueberry"));
+        return Objects.requireNonNull(Blueberry.getModLoader().getModById("blueberry"));
     }
 }

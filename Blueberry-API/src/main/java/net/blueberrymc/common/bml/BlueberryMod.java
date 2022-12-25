@@ -292,7 +292,7 @@ public class BlueberryMod implements VersionedModInfo {
             return mcl.getMod();
         }
         if (ClassLoader.getSystemClassLoader().equals(clazz.getClassLoader()) || (clazz.getClassLoader() instanceof LaunchClassLoader)) {
-            return Blueberry.getModManager().getModById("blueberry");
+            return Blueberry.getModLoader().getModById("blueberry");
         }
         return null;
     }

@@ -83,6 +83,9 @@ public class Blueberry {
         return EVENT_MANAGER;
     }
 
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @DeprecatedReason("All methods in ModManager are deprecated")
+    @Deprecated(forRemoval = true)
     @Contract(pure = true)
     @NotNull
     public static ModManager getModManager() {
@@ -205,7 +208,7 @@ public class Blueberry {
      */
     @NotNull
     public static ModState getCurrentState() {
-        BlueberryMod mod = getModManager().getModById("blueberry");
+        BlueberryMod mod = getModLoader().getModById("blueberry");
         if (mod != null) return mod.getStateList().getCurrentState();
         return ModState.LOADED;
     }
