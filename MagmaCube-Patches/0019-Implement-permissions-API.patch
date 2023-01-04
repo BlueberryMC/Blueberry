@@ -18,10 +18,10 @@ index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c
          public void sendSystemMessage(Component component) {
          }
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec067099953c 100644
+index b54b175e7816b7758bcad03d58aeb38f8af52209..faf0921815dd203b76fe3646035248ad9489b400 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-@@ -36,7 +36,7 @@ import net.minecraft.world.level.dimension.DimensionType;
+@@ -38,7 +38,7 @@ import net.minecraft.world.level.dimension.DimensionType;
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
  
@@ -30,9 +30,9 @@ index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec06
      public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
      public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
      private final CommandSource source;
-@@ -344,4 +344,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
-     public RegistryAccess registryAccess() {
-         return this.server.registryAccess();
+@@ -346,4 +346,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
+     public FeatureFlagSet enabledFeatures() {
+         return this.level.enabledFeatures();
      }
 +
 +    // Blueberry start
@@ -49,10 +49,10 @@ index 7f3b8ab63a5131570ff0e4bfc65fcb1dee6df0b1..f3ef7e3270fb678e811b5b7be894ec06
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9e310721023ce795febaf36888db202ccbc04b6d..2752f64d5c7587d5b3aebc4de696497a7a3ec8b2 100644
+index 82620967de9bef6467c5950a237cd65ff0a289d2..c3b41d38cc97c1c1aac3b74e2ecd0f5cb90bb1b9 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1806,4 +1806,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1815,4 +1815,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              };
          }
      }
@@ -93,10 +93,10 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 6511f5f132ff95b7690097ea05b90ae51052ef65..9a65de8e12e0bd954b229bef25e2de9b9be31f36 100644
+index 6bef24842514b2a422fdbe5d38afbb983e05777f..8d25bcb79e7f9361b3ea1a3021b1b8c52cc5b33a 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3128,4 +3128,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3174,4 +3174,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              return this.save;
          }
      }
@@ -115,10 +115,10 @@ index 6511f5f132ff95b7690097ea05b90ae51052ef65..9a65de8e12e0bd954b229bef25e2de9b
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index dd5090709b316aa9d4f7578852d0f6104eea0970..25830a73a38b6887c22068e52ec9681691efbcea 100644
+index fed3610985c838b484500d8f8a8f98c2c4429bf8..c820661cd86769ab562903bbe4a4f9e833e3a8e8 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2019,4 +2019,16 @@ public abstract class Player extends LivingEntity {
+@@ -2005,4 +2005,16 @@ public abstract class Player extends LivingEntity {
              return this.message;
          }
      }

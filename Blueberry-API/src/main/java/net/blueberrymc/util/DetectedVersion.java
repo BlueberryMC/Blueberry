@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.bridge.game.PackType;
+import net.blueberrymc.common.DeprecatedReason;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +26,10 @@ public class DetectedVersion {
     private final int resourcePackVersion;
     private final int dataPackVersion;
     private final Date buildTime;
-    private final String releaseTarget;
 
     private DetectedVersion(JsonObject json) {
         this.id = json.get("id").getAsString();
         this.name = json.get("name").getAsString();
-        this.releaseTarget = json.get("release_target").getAsString();
         this.stable = json.get("stable").getAsBoolean();
         this.worldVersion = new DataVersion(json.get("world_version").getAsInt(), json.has("series_id") ? json.get("series_id").getAsString() : "main");
         this.protocolVersion = json.get("protocol_version").getAsInt();
@@ -65,9 +64,11 @@ public class DetectedVersion {
         return this.name;
     }
 
+    @Deprecated(forRemoval = true)
+    @DeprecatedReason("release_target is no longer present in version.json")
     @NotNull
     public String getReleaseTarget() {
-        return this.releaseTarget;
+        return "1.20";
     }
 
     @NotNull

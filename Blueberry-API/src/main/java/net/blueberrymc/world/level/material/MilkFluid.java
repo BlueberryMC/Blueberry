@@ -107,6 +107,11 @@ public abstract class MilkFluid extends FlowingFluid {
          builder.add(LEVEL);
       }
 
+      @Override
+      protected boolean canConvertToSource(Level level) {
+         return true;
+      }
+
       public int getAmount(@NotNull FluidState fluidState) {
          return fluidState.getValue(LEVEL);
       }
@@ -118,6 +123,11 @@ public abstract class MilkFluid extends FlowingFluid {
 
    public static class Source extends MilkFluid {
       public static final Source INSTANCE = new Source();
+
+      @Override
+      protected boolean canConvertToSource(Level level) {
+         return false;
+      }
 
       public int getAmount(@NotNull FluidState fluidState) {
          return 8;

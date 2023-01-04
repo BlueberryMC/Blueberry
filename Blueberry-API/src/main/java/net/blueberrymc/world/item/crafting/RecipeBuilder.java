@@ -8,6 +8,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -102,6 +103,7 @@ public abstract class RecipeBuilder {
         private final ResourceLocation id;
         private final ItemStack result;
         private String group = "";
+        private CraftingBookCategory category = CraftingBookCategory.MISC;
         private final List<String> rows = new ArrayList<>();
         private final Map<Character, Ingredient> key = new HashMap<>();
 
@@ -124,6 +126,13 @@ public abstract class RecipeBuilder {
         public Shaped group(@NotNull String group) {
             Preconditions.checkNotNull(group, "group cannot be null");
             this.group = group;
+            return this;
+        }
+
+        @NotNull
+        public Shaped category(@NotNull CraftingBookCategory category) {
+            Preconditions.checkNotNull(category, "category cannot be null");
+            this.category = category;
             return this;
         }
 
@@ -179,7 +188,7 @@ public abstract class RecipeBuilder {
                     index.getAndIncrement();
                 }
             });
-            return new ShapedRecipe(id, group, getWidth(), getHeight(), list, result);
+            return new ShapedRecipe(id, group, category, getWidth(), getHeight(), list, result);
         }
 
         // --- getters
@@ -208,6 +217,7 @@ public abstract class RecipeBuilder {
         private final ItemStack result;
         private String group = "";
         private final NonNullList<Ingredient> ingredients = NonNullList.create();
+        private CraftingBookCategory category = CraftingBookCategory.MISC;
 
         public Shapeless(@NotNull ResourceLocation id, @NotNull Item item) {
             this(id, item, 1);
@@ -226,6 +236,13 @@ public abstract class RecipeBuilder {
         public Shapeless group(@NotNull String group) {
             Preconditions.checkNotNull(group, "group cannot be null");
             this.group = group;
+            return this;
+        }
+
+        @NotNull
+        public Shapeless category(@NotNull CraftingBookCategory category) {
+            Preconditions.checkNotNull(category, "category cannot be null");
+            this.category = category;
             return this;
         }
 
@@ -257,7 +274,7 @@ public abstract class RecipeBuilder {
         @Override
         public ShapelessRecipe build() {
             if (ingredients.isEmpty()) throw new IllegalArgumentException("ingredient list is empty");
-            return new ShapelessRecipe(id, group, result, ingredients);
+            return new ShapelessRecipe(id, group, category, result, ingredients);
         }
 
         // --- getters

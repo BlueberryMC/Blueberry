@@ -1,7 +1,6 @@
 package net.blueberrymc.world.level;
 
 import com.google.common.base.Preconditions;
-import com.mojang.math.Vector3d;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -9,6 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
 
 public interface BlueberryLevelAccessor extends LevelAccessor {
     @Contract("_, _, _, _ -> new")

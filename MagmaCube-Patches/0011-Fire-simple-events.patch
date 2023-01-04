@@ -4,14 +4,14 @@ Date: Fri, 5 Mar 2021 21:38:13 +0900
 Subject: [PATCH] Fire simple events
 
 
-diff --git a/src/main/java/net/minecraft/client/player/LocalPlayer.java b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-index bc9e8723eccc02a77720bf8deb062c9af4298f91..d3576f4b42fc89004c3f96a3c95cdd0ca6f13e25 100644
---- a/src/main/java/net/minecraft/client/player/LocalPlayer.java
-+++ b/src/main/java/net/minecraft/client/player/LocalPlayer.java
-@@ -309,6 +309,13 @@ public class LocalPlayer extends AbstractClientPlayer {
+diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+index d0566b508c7ad8aa0b27172142ff0e0eb0c5af0e..30d4cbd23c67846169c33c319d5564ad833cb1a0 100644
+--- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
++++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -2261,6 +2261,13 @@ public class ClientPacketListener implements TickablePacketListener, ClientGameP
      }
  
-     private void sendChat(String s, @Nullable Component component) {
+     public void sendChat(String s) {
 +        // Blueberry start - fire ClientLocalPlayerChatEvent
 +        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
 +        if (!event.callEvent()) {
@@ -19,9 +19,9 @@ index bc9e8723eccc02a77720bf8deb062c9af4298f91..d3576f4b42fc89004c3f96a3c95cdd0c
 +        }
 +        s = event.getMessage();
 +        // Blueberry end - fire ClientLocalPlayerChatEvent
-         ChatMessageContent chatMessageContent = this.buildSignedContent(s, component);
-         MessageSigner messageSigner = this.createMessageSigner();
-         LastSeenMessages.Update update = this.connection.generateMessageAcknowledgements();
+         Instant instant = Instant.now();
+         long l = Crypt.SaltSupplier.getLong();
+         LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
 index cc8e1e3c7c9b472c24ed895efdbf7da81f5d7911..16a955cf6534eb2955cf4047dc69b9ab9ab0e587 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
@@ -43,19 +43,19 @@ index cc8e1e3c7c9b472c24ed895efdbf7da81f5d7911..16a955cf6534eb2955cf4047dc69b9ab
  
      public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index d06b8673efce982e10d700ee5dfc4905e51f5143..d2842371406e25ad71e81767cbcb45393af5b3a1 100644
+index ec010d71006d101c9c63dd778712ffceb1f9a435..397a0546aceb20d1a4625134d601cbb89eb7dcfb 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -193,6 +193,7 @@ public abstract class PlayerList {
-         }
- 
+@@ -198,6 +198,7 @@ public abstract class PlayerList {
+         this.playersByUUID.put(serverPlayer.getUUID(), serverPlayer);
+         this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
          serverLevel2.addNewPlayer(serverPlayer);
 +        new net.blueberrymc.common.event.player.PlayerJoinEvent(serverPlayer).callEvent(); // Blueberry
          this.server.getCustomBossEvents().onPlayerConnect(serverPlayer);
          this.sendLevelInfo(serverPlayer, serverLevel2);
          this.server.getServerResourcePack().ifPresent((serverResourcePackInfo) -> serverPlayer.sendTexturePack(serverResourcePackInfo.url(), serverResourcePackInfo.hash(), serverResourcePackInfo.isRequired(), serverResourcePackInfo.prompt()));
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index 3bcf0ff3a29ffe1a14132d2feb6a5c37c0c7de87..741893a34983f8b4d7fe336606458e991b870469 100644
+index 33e257dff605feff5887b6cf08f5e9a75515de26..b0040c534c78dad16a2f34ee34e4cfb223db046a 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
 @@ -288,7 +288,8 @@ public final class Biome {
@@ -69,10 +69,10 @@ index 3bcf0ff3a29ffe1a14132d2feb6a5c37c0c7de87..741893a34983f8b4d7fe336606458e99
                  throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
              }
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index ddf30459c3b7e03fd2d872d46fe3eaa5aa9d78de..9b8fab6e326e35769bd05c8fc8efd5923145ed3e 100644
+index 2cb28b2037ab3e8eb6bf0980fecf1f7930576b31..952e654cd25a6dd1a8aaca140304cc991f4839b4 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-@@ -86,7 +86,8 @@ public class BiomeGenerationSettings {
+@@ -108,7 +108,8 @@ public class BiomeGenerationSettings {
          }
  
          public BiomeGenerationSettings build() {

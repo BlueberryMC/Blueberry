@@ -1,9 +1,16 @@
 package net.blueberrymc.common.bml;
 
 import com.google.common.collect.ImmutableList;
+import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.config.ModDescriptionFile;
+import net.blueberrymc.network.mod.ModInfo;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +20,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface ModLoader {
@@ -31,6 +39,23 @@ public interface ModLoader {
 
     @Nullable
     BlueberryMod getModById(@NotNull String modId);
+
+    @Nullable
+    default BlueberryMod getModByName(@NotNull String modName, boolean ignoreCase) {
+        for (BlueberryMod mod : getLoadedMods()) {
+            if (ignoreCase) {
+                if (mod.getName().equalsIgnoreCase(modName)) return mod;
+            } else {
+                if (mod.getName().equals(modName)) return mod;
+            }
+        }
+        return null;
+    }
+
+    @NotNull
+    default List<ModInfo> getModInfos() {
+        return ImmutableList.copyOf(mapLoadedMods(mod -> new ModInfo(mod.getModId(), mod.getVersion())));
+    }
 
     @NotNull
     default <T> List<T> mapLoadedMods(@NotNull Function<BlueberryMod, T> mapFunction) {
@@ -68,7 +93,7 @@ public interface ModLoader {
     File getConfigDir();
 
     /**
-     * Returns the current mods directory.
+     * Returns the current "mods" directory.
      * @return the mods directory
      */
     @NotNull
@@ -154,5 +179,21 @@ public interface ModLoader {
             if ((in = mod.getClass().getResourceAsStream(name)) != null) break;
         }
         return in;
+    }
+
+    default void loadPacks(@NotNull Consumer<Pack> consumer) {
+        for (BlueberryMod mod : getLoadedMods()) {
+            try {
+                PackResources packResources = mod.getResourceManager().getPackResources();
+                Pack.Info info = Pack.readPackInfo(mod.getModId(), (s) -> packResources);
+                if (info == null) {
+                    throw new RuntimeException("Failed to load mod pack info for " + mod.getModId());
+                }
+                Pack pack = Pack.create(mod.getDescription().getModId(), Component.literal(mod.getName()), true, (s) -> packResources, info, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, false, PackSource.BUILT_IN);
+                consumer.accept(pack);
+            } catch (IllegalArgumentException ex) {
+                break; // resource manager has not been loaded yet
+            }
+        }
     }
 }

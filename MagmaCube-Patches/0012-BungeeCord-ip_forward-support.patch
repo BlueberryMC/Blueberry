@@ -37,10 +37,10 @@ index 16a955cf6534eb2955cf4047dc69b9ab9ab0e587..0da4fc7d631739e50cee58aa4a22ca1b
              this.channel.close().awaitUninterruptibly();
              this.disconnectedReason = component;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 3671a437dcc830fbc14f6efa894277924e4edaaf..204e7cd3b082355092111e1b2a7d98551ac09292 100644
+index c924aa21e3030ea9f3e0a11c3c4fe5a67c769860..add3eea38847d7c5253333f82c1503d9c52572b5 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -145,7 +145,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -142,7 +142,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          if (!this.usesAuthentication()) {
              LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
@@ -106,19 +106,19 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 241abccbbe5a96d1a64570263e6a8634df13c467..4f0ef5f80b4291d4f28ee0469de8da9b45fc3b38 100644
+index ceb359f82f2efaa2f1626a384b4c14e6f87985c7..22506d048ab2bb8e37471dd5e3048e3b1ccac570 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -99,7 +99,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -93,7 +93,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+     }
  
      public void handleAcceptedLogin() {
-         ProfilePublicKey profilePublicKey = null;
 -        if (!this.gameProfile.isComplete()) {
 +        if (!net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee && !this.gameProfile.isComplete()) { // Blueberry - handled in initUUID
              this.gameProfile = this.createFakeProfile(this.gameProfile);
-         } else {
-             try {
-@@ -144,6 +144,18 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+         }
+ 
+@@ -127,6 +127,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
  
      }
  
@@ -137,9 +137,9 @@ index 241abccbbe5a96d1a64570263e6a8634df13c467..4f0ef5f80b4291d4f28ee0469de8da9b
      private void placeNewPlayer(ServerPlayer serverPlayer) {
          this.server.getPlayerList().placeNewPlayer(this.connection, serverPlayer);
      }
-@@ -183,6 +195,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -152,6 +164,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
                  this.state = ServerLoginPacketListenerImpl.State.KEY;
-                 this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
+                 this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.challenge));
              } else {
 +                if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee) initUUID(); // Blueberry
                  this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;

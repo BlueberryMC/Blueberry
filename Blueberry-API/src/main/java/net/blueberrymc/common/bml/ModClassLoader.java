@@ -60,10 +60,6 @@ public class ModClassLoader extends URLClassLoader {
     protected BlueberryMod initializedMod = null;
     protected Throwable state;
 
-    static {
-        ClassLoader.registerAsParallelCapable();
-    }
-
     public ModClassLoader(@NotNull BlueberryModLoader modLoader, @NotNull ClassLoader parent, @NotNull ModDescriptionFile description, @NotNull File file) throws IOException {
         super(new URL[]{file.toURI().toURL()}, parent);
         this.file = file;

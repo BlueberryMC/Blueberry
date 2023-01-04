@@ -4,7 +4,7 @@ package net.blueberrymc.gradle.buildSrc.util
 import java.io.File
 import java.util.regex.Pattern
 
-val utf8 = charset("UTF-8")
+private val utf8 = charset("UTF-8")
 
 object MiniUnusedCommentRemover {
     fun walk(from: File) {

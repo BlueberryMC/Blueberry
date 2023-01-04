@@ -5,7 +5,7 @@ Subject: [PATCH] Implement debug packets
 
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
-index d5cc538384d0ffd156be28dddde674d95bd4fadc..81ce0cc9ad5e690f7cef5dcceebdb7c1f615ffd8 100644
+index 4a9e58b3716ee71dc6cf47a259cdceb722c377d4..61a3023a589f6dd6ecb7fe0e866ecb14361849d0 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/DebugPackets.java
 @@ -92,8 +92,19 @@ public class DebugPackets {

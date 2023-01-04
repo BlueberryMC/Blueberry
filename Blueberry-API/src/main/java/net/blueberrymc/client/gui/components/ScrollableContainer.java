@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.renderer.GameRenderer;
@@ -27,7 +26,7 @@ import java.util.Objects;
 /**
  * A scrollable screen
  */
-public class ScrollableContainer<E extends GuiEventListener & Widget> extends AbstractContainerEventHandler implements Widget {
+public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> extends AbstractContainerEventHandler {
     public static final ResourceLocation WHITE_TEXTURE_LOCATION = new ResourceLocation("textures/misc/white.png");
     protected final Minecraft minecraft;
     protected final int itemHeight;
@@ -292,7 +291,7 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
         children.forEach(e -> {
             if (e instanceof AbstractWidget) {
                 if (((AbstractWidget) e).isHoveredOrFocused()) {
-                    ((AbstractWidget) e).renderToolTip(poseStack, mouseX, mouseY);
+                    ((AbstractWidget) e).render(poseStack, mouseX, mouseY, deltaFrameTime);
                 }
             }
         });
@@ -439,13 +438,11 @@ public class ScrollableContainer<E extends GuiEventListener & Widget> extends Ab
             if (rowBottom >= this.top && rowTop <= this.bottom) {
                 E entry = this.getEntry(i);
                 entry.render(poseStack, i3, i4, deltaFrameTime);
-                if (entry instanceof AbstractWidget aw) {
-                    if (prevY == aw.y) {
-                        offset -= 22;
-                    }
-                    prevY = aw.y;
-                    aw.y = (int) (offset - getScrollAmount());
+                if (prevY == entry.getY()) {
+                    offset -= 22;
                 }
+                prevY = entry.getY();
+                entry.setY((int) (offset - getScrollAmount()));
             }
         }
 
