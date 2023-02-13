@@ -24,16 +24,16 @@ import java.util.function.Consumer;
 public class FileDialogScreen extends BlueberryScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Component description;
-    private final Screen firstScreen;
+    private final Screen previousScreen;
     private final FileDialogScreenOptions options;
     private boolean calledCallback = false;
     private FileList fileList;
     private Button cancelButton;
 
-    private FileDialogScreen(@NotNull Screen firstScreen, @NotNull FileDialogScreenOptions options) {
+    private FileDialogScreen(@NotNull Screen previousScreen, @NotNull FileDialogScreenOptions options) {
         super(options.title());
         this.description = generateTitle(options.getInitialDirectory());
-        this.firstScreen = firstScreen;
+        this.previousScreen = previousScreen;
         this.options = options;
     }
 
@@ -49,7 +49,7 @@ public class FileDialogScreen extends BlueberryScreen {
     @Override
     public void onClose() {
         assert minecraft != null;
-        minecraft.setScreen(firstScreen);
+        minecraft.setScreen(previousScreen);
         invokeCallback(null);
     }
 
@@ -158,11 +158,11 @@ public class FileDialogScreen extends BlueberryScreen {
                     LOGGER.warn("Tried to cd to a directory outside of the boundary: {}", file);
                     return;
                 }
-                minecraft.setScreen(FileDialogScreen.create(firstScreen, options.toBuilder().initialDirectory(file).build()));
+                minecraft.setScreen(FileDialogScreen.create(previousScreen, options.toBuilder().initialDirectory(file).build()));
             }).bounds(0, 0, 20, 20).build();
             cdButton.visible = false;
             selectButton = Button.builder(Component.literal("✔").withStyle(ChatFormatting.GREEN), (button) -> {
-                minecraft.setScreen(firstScreen);
+                minecraft.setScreen(previousScreen);
                 options.runCallback(getSelected().file);
             }).bounds(0, 0, 20, 20).build();
             selectButton.visible = false;
