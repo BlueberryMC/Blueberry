@@ -186,7 +186,7 @@ public class FileDialogScreen extends BlueberryScreen {
             FileDialogScreen.this.renderBackground(poseStack);
         }
 
-        protected boolean isFocused() {
+        public boolean isFocused() {
             return FileDialogScreen.this.getFocused() == this;
         }
 

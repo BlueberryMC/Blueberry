@@ -5,7 +5,7 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/DetectedVersion.java b/src/main/java/net/minecraft/DetectedVersion.java
-index 1b288d043121e30b90bf2b0fdd66f5155bfbe451..b09d77ec93e45bfc43dc62c2ec2c85c46fcbffcb 100644
+index 0439b7b1a1cf9d35b7a5f2e9cd3b0460c24233de..d248fce9c3c793b7fb04904b70be356a6526854e 100644
 --- a/src/main/java/net/minecraft/DetectedVersion.java
 +++ b/src/main/java/net/minecraft/DetectedVersion.java
 @@ -25,7 +25,7 @@ public class DetectedVersion implements WorldVersion {
@@ -18,8 +18,8 @@ index 1b288d043121e30b90bf2b0fdd66f5155bfbe451..b09d77ec93e45bfc43dc62c2ec2c85c4
      private DetectedVersion() {
          this.id = UUID.randomUUID().toString().replaceAll("-", "");
 @@ -36,7 +36,7 @@ public class DetectedVersion implements WorldVersion {
-         this.resourcePackVersion = 12;
-         this.dataPackVersion = 10;
+         this.resourcePackVersion = 13;
+         this.dataPackVersion = 12;
          this.buildTime = new Date();
 -        this.magmaCubeVersion = "debug"; // MagmaCube
 +        // this.magmaCubeVersion = "debug"; // MagmaCube // Blueberry
@@ -36,10 +36,10 @@ index 1b288d043121e30b90bf2b0fdd66f5155bfbe451..b09d77ec93e45bfc43dc62c2ec2c85c4
  
      public static WorldVersion tryDetectVersion() {
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 450b36cd13d0be9d4caa4678785bb5269d78ac58..4ee819d11a41f718d3437e3c3766039b627d3ac4 100644
+index 6c71ca2b915b7c779510912eacfab691fce395f7..f9d4c4d75f4d539f750b8de0c5af16dddb15f3cd 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
-@@ -748,7 +748,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
+@@ -766,7 +766,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements
      }
  
      public String getLaunchedVersion() {

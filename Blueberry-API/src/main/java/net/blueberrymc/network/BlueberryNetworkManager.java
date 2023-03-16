@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -116,11 +117,11 @@ public class BlueberryNetworkManager {
     }
 
     public static void sendToClient(@NotNull ServerPlayer player, @NotNull BlueberryPacket<?> packet) {
-        sendToClient(player.connection.connection, packet);
+        sendToClient(player.connection, packet);
     }
 
-    public static void sendToClient(@NotNull Connection connection, @NotNull BlueberryPacket<?> packet) {
-        if (!connection.isConnected()) return;
+    public static void sendToClient(@NotNull ServerGamePacketListenerImpl connection, @NotNull BlueberryPacket<?> packet) {
+        if (!connection.isAcceptingMessages()) return;
         ResourceLocation id = packet.getId();
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {

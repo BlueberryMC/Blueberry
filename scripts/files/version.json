@@ -106,13 +106,13 @@
     ]
   },
   "assetIndex": {
-    "id": "1",
-    "sha1": "a1efec2c1becb4b960a7bb26bd7bdab0786d2717",
-    "size": 385260,
-    "totalSize": 558451755,
-    "url": "https://piston-meta.mojang.com/v1/packages/a1efec2c1becb4b960a7bb26bd7bdab0786d2717/1.json"
+    "id": "3",
+    "sha1": "7530d2254b0154e92738a37b84495cd8ec1c146b",
+    "size": 405783,
+    "totalSize": 554399108,
+    "url": "https://piston-meta.mojang.com/v1/packages/7530d2254b0154e92738a37b84495cd8ec1c146b/3.json"
   },
-  "assets": "1",
+  "assets": "3",
   "logging": {
     "client": {
       "argument": "-Dlog4j.configurationFile=${path}",
@@ -207,13 +207,13 @@
     {
       "downloads": {
         "artifact": {
-          "path": "com/mojang/authlib/3.16.29/authlib-3.16.29.jar",
-          "sha1": "efcca7a2fd33a399287834787f3a899086752b14",
-          "size": 117060,
-          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.16.29/authlib-3.16.29.jar"
+          "path": "com/mojang/authlib/3.18.38/authlib-3.18.38.jar",
+          "sha1": "016106b26bce62bda55bab42785b999e44d77ecb",
+          "size": 118354,
+          "url": "https://libraries.minecraft.net/com/mojang/authlib/3.18.38/authlib-3.18.38.jar"
         }
       },
-      "name": "com.mojang:authlib:3.16.29"
+      "name": "com.mojang:authlib:3.18.38"
     },
     {
       "downloads": {
@@ -240,24 +240,13 @@
     {
       "downloads": {
         "artifact": {
-          "path": "com/mojang/datafixerupper/5.0.28/datafixerupper-5.0.28.jar",
-          "sha1": "e2157e236e529aff80a5fc3ccb506e56d46b130b",
-          "size": 684966,
-          "url": "https://libraries.minecraft.net/com/mojang/datafixerupper/5.0.28/datafixerupper-5.0.28.jar"
+          "path": "com/mojang/datafixerupper/6.0.6/datafixerupper-6.0.6.jar",
+          "sha1": "e38e20946530646e866db03b2b192883d0ea6e84",
+          "size": 689986,
+          "url": "https://libraries.minecraft.net/com/mojang/datafixerupper/6.0.6/datafixerupper-6.0.6.jar"
         }
       },
-      "name": "com.mojang:datafixerupper:5.0.28"
-    },
-    {
-      "downloads": {
-        "artifact": {
-          "path": "com/mojang/javabridge/2.0.25/javabridge-2.0.25.jar",
-          "sha1": "bfa589b0bd71588fa7e594640114b0cda0cff5f6",
-          "size": 5884,
-          "url": "https://libraries.minecraft.net/com/mojang/javabridge/2.0.25/javabridge-2.0.25.jar"
-        }
-      },
-      "name": "com.mojang:javabridge:2.0.25"
+      "name": "com.mojang:datafixerupper:6.0.6"
     },
     {
       "downloads": {

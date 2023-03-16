@@ -4,6 +4,7 @@ import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.DetectedVersion;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.IoSupplier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -56,7 +57,7 @@ public class ModPackResources extends FilePackResources {
         sb.append("{\n");
         sb.append("  \"pack\": {\n");
         sb.append("    \"description\": \"Mod Resources for ").append(mod.getDescription().getModId()).append("\",");
-        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion(com.mojang.bridge.game.PackType.RESOURCE));
+        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion(PackType.CLIENT_RESOURCES));
         sb.append("  }\n");
         sb.append("}\n");
         return new ByteArrayInputStream(sb.toString().getBytes(StandardCharsets.UTF_8));

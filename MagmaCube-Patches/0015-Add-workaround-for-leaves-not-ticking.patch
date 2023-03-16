@@ -5,10 +5,10 @@ Subject: [PATCH] Add workaround for leaves not ticking
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
-index 2c053a6a280163be98242000655e9cfe756b1890..01eec1c62c998f04086696dd7126160c5d5f8aa2 100644
+index 4816ccff6413f2a5e96b09fc79aeb1c0e03a2544..4701adedbaf94fa3f4a54972fa3af9bd7627258d 100644
 --- a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
-@@ -68,7 +68,11 @@ public class LeavesBlock extends Block implements SimpleWaterloggedBlock {
+@@ -69,7 +69,11 @@ public class LeavesBlock extends Block implements SimpleWaterloggedBlock {
  
          int i = getDistanceAt(blockState2) + 1;
          if (i != 1 || blockState.getValue(DISTANCE) != i) {

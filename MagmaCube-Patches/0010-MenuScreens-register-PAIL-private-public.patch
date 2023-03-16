@@ -5,10 +5,10 @@ Subject: [PATCH] MenuScreens#register PAIL private -> public
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
-index 8d0f7a75f8a420c2f6128f413261dbf55981596d..d9722f34ddc2321219195d10093e4fec77e955d1 100644
+index afdcfbd718e31765071958d2a20601f0070552c3..5890a34fb70cd87b4deea935844173eb25eac6a4 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
-@@ -54,7 +54,8 @@ public class MenuScreens {
+@@ -55,7 +55,8 @@ public class MenuScreens {
          return (MenuScreens.ScreenConstructor)SCREENS.get(menuType);
      }
  

@@ -5,10 +5,10 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 16a955cf6534eb2955cf4047dc69b9ab9ab0e587..0da4fc7d631739e50cee58aa4a22ca1becc60a36 100644
+index 5d8d4614fcf361c8386dab39028ea7c4d8de8471..121acb17de96851000c53dbdb8890de3eb7a109c 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -70,6 +70,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -72,6 +72,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private float averageSentPackets;
      private int tickCount;
      private boolean handlingFault;
@@ -20,7 +20,7 @@ index 16a955cf6534eb2955cf4047dc69b9ab9ab0e587..0da4fc7d631739e50cee58aa4a22ca1b
  
      public Connection(PacketFlow packetFlow) {
          this.receiving = packetFlow;
-@@ -79,6 +84,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -81,6 +86,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          super.channelActive(channelHandlerContext);
          this.channel = channelHandlerContext.channel();
          this.address = this.channel.remoteAddress();
@@ -28,7 +28,7 @@ index 16a955cf6534eb2955cf4047dc69b9ab9ab0e587..0da4fc7d631739e50cee58aa4a22ca1b
  
          try {
              this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -258,6 +264,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -265,6 +271,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void disconnect(Component component) {
@@ -57,10 +57,10 @@ index c924aa21e3030ea9f3e0a11c3c4fe5a67c769860..add3eea38847d7c5253333f82c1503d9
          }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-index f61029a5a3a5be18410356ec22173f570b4da655..a862c9d110fe5ca35e97faa174bc2d00c6ff6390 100644
+index 5b461d5ce873bd2719f8a8418f707e4d19d0dffa..e8ca3c68fe7b8e766843e6f235e69dd332863185 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-@@ -145,6 +145,7 @@ public class ServerConnectionListener {
+@@ -144,6 +144,7 @@ public class ServerConnectionListener {
                              connection.setReadOnly();
                          }
                      } else {
@@ -69,10 +69,10 @@ index f61029a5a3a5be18410356ec22173f570b4da655..a862c9d110fe5ca35e97faa174bc2d00
                          connection.handleDisconnection();
                      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4840996a0 100644
+index a2707fabf71fc5bf374692abeb76fb73da98c9a2..ae8edbb902d2d9ae8f63b5c467ee27d958eec4db 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
+@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.status.ServerStatus;
  import net.minecraft.server.MinecraftServer;
  
  public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketListener {
@@ -80,7 +80,7 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
      private static final Component IGNORE_STATUS_REASON = Component.literal("Ignoring status request");
      private final MinecraftServer server;
      private final Connection connection;
-@@ -35,6 +36,24 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+@@ -36,6 +37,24 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
                  this.connection.disconnect(component);
              } else {
                  this.connection.setListener(new ServerLoginPacketListenerImpl(this.server, this.connection));
@@ -106,7 +106,7 @@ index 4a100529fd9180b2701b75111dcdf162dffe4ab9..b82badc1b5af2cda39792f36a6ab08b4
              break;
          case STATUS:
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index ceb359f82f2efaa2f1626a384b4c14e6f87985c7..22506d048ab2bb8e37471dd5e3048e3b1ccac570 100644
+index 1e0faba662da2974eafdab383df1c0d1f3820122..0ecd5515fc2642874db753632932a4fbafa44574 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -93,7 +93,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,

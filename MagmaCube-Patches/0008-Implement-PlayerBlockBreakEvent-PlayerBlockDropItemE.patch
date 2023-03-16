@@ -87,22 +87,22 @@ index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6f
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index c209f4872346dffc1c706c2661d3e2086a2fa63c..8cc15cd7f6d88c6a4a99f4a4c2140a55538a1ebd 100644
+index e9940bd24194c1bf9e1c7d1c3f25b65bebd031a3..fceb22c803953be61f1c7476001b0b9d071d1600 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -108,6 +108,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
-     private final BiomeManager biomeManager;
-     private final ResourceKey<Level> dimension;
+@@ -112,6 +112,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
+     private final RegistryAccess registryAccess;
+     private final DamageSources damageSources;
      private long subTickCount;
 +    public final ThreadLocal<List<net.minecraft.world.entity.item.ItemEntity>> captureDrops = new ThreadLocal<>(); // Blueberry
  
-     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
+     protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, RegistryAccess registryAccess, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index c97c77bdf0bfea5551fd4d254102943660858221..86982baa980c853f1c4b8a1b9152e76919949773 100644
+index 161fcf120ad80be5bd5ac20bee9226f32e8a2754..d018109d605ea8c2255c47fdcdaf5367759d72a7 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -315,11 +315,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -314,11 +314,13 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ItemEntity itemEntity = (ItemEntity)supplier.get();
              itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index c97c77bdf0bfea5551fd4d254102943660858221..86982baa980c853f1c4b8a1b9152e769
          if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
          }
-@@ -478,8 +480,14 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -477,8 +479,14 @@ public class Block extends BlockBehaviour implements ItemLike {
          return this.builtInRegistryHolder;
      }
  

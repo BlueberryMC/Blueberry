@@ -5,10 +5,10 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 2aa598b717b75430ef120bd32ef99b7059b01945..c209f4872346dffc1c706c2661d3e2086a2fa63c 100644
+index e0acfd1303b552ccc117d44ae91ac01c0299836a..e9940bd24194c1bf9e1c7d1c3f25b65bebd031a3 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -69,7 +69,7 @@ import net.minecraft.world.phys.AABB;
+@@ -71,7 +71,7 @@ import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.Scoreboard;
  

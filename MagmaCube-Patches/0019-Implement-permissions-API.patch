@@ -49,10 +49,10 @@ index b54b175e7816b7758bcad03d58aeb38f8af52209..faf0921815dd203b76fe3646035248ad
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 82620967de9bef6467c5950a237cd65ff0a289d2..c3b41d38cc97c1c1aac3b74e2ecd0f5cb90bb1b9 100644
+index 2b4c28c628dae74261845b43578a8d62cccf0406..70afffca9f20358f2324703ad6046099c9b68c95 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1815,4 +1815,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1835,4 +1835,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              };
          }
      }
@@ -93,10 +93,10 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 6bef24842514b2a422fdbe5d38afbb983e05777f..8d25bcb79e7f9361b3ea1a3021b1b8c52cc5b33a 100644
+index e4f22f8f9a525590f9c37e89af73ff9cfad6d17b..4b4f6131cd695701e263d64a6c029276ed180080 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3174,4 +3174,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3247,4 +3247,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              return this.save;
          }
      }
@@ -115,10 +115,10 @@ index 6bef24842514b2a422fdbe5d38afbb983e05777f..8d25bcb79e7f9361b3ea1a3021b1b8c5
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index fed3610985c838b484500d8f8a8f98c2c4429bf8..c820661cd86769ab562903bbe4a4f9e833e3a8e8 100644
+index 5561d50920b2e0a5a54cfbe1f40cfda121358300..f67802ab04bbece5631c37ffd29cf4bf4c834860 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2005,4 +2005,16 @@ public abstract class Player extends LivingEntity {
+@@ -2018,4 +2018,16 @@ public abstract class Player extends LivingEntity {
              return this.message;
          }
      }

@@ -101,7 +101,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
             ModLoadingProblemScreen.this.renderBackground(poseStack);
         }
 
-        protected boolean isFocused() {
+        public boolean isFocused() {
             return ModLoadingProblemScreen.this.getFocused() == this;
         }
 

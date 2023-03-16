@@ -1,18 +1,12 @@
 package net.blueberrymc.client.gui.components;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -186,13 +180,17 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
     protected void clickedHeader(int i, int i2) {
     }
 
-    protected void renderHeader(@NotNull PoseStack poseStack, int i, int i2, @NotNull Tesselator tesselator) {
+    protected void renderHeader(PoseStack poseStack, int i, int i2) {
     }
 
     protected void renderBackground(@NotNull PoseStack poseStack) {
     }
 
     protected void renderDecorations(@NotNull PoseStack poseStack, int i, int i2) {
+    }
+
+    protected void enableScissor() {
+        enableScissor(this.left, this.bottom, this.right, this.top);
     }
 
     /**
@@ -204,98 +202,60 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
      */
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
         this.renderBackground(poseStack);
-        int scrollbarPosition = this.getScrollbarPosition();
-        int i4 = scrollbarPosition + 6;
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        int i3 = this.getScrollbarPosition();
+        int i4 = i3 + 6;
+        //this.hovered = this.isMouseOver((double)mouseX, (double)mouseX) ? this.getEntryAtPosition((double)mouseX, (double)mouseX) : null;
         if (this.renderBackground) {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
+            RenderSystem.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
+            int i5 = 32;
+            blit(poseStack, this.left, this.top, (float)this.right, (float)(this.bottom + (int)this.getScrollAmount()), this.right - this.left, this.bottom - this.top, 32, 32);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.vertex(this.left, this.bottom, 0.0D).uv((float)this.left / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-            bufferBuilder.vertex(this.right, this.bottom, 0.0D).uv((float)this.right / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-            bufferBuilder.vertex(this.right, this.top, 0.0D).uv((float)this.right / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-            bufferBuilder.vertex(this.left, this.top, 0.0D).uv((float)this.left / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-            tesselator.end();
         }
 
-        int rowLeft = this.getRowLeft();
-        int i6 = this.top + 4 - (int)this.getScrollAmount();
+        int i6 = this.getRowLeft();
+        int i7 = this.top + 4 - (int)this.getScrollAmount();
+        this.enableScissor();
         if (this.renderHeader) {
-            this.renderHeader(poseStack, rowLeft, i6, tesselator);
+            this.renderHeader(poseStack, i6, i7);
         }
 
-        this.renderList(poseStack, rowLeft, i6, mouseX, mouseY, deltaFrameTime);
+        this.renderList(poseStack, getRowLeft(), i6, mouseX, mouseY, deltaFrameTime);
+        disableScissor();
         if (this.renderTopAndBottom) {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthFunc(519);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.vertex(this.left, this.top, -100.0D).uv(0.0F, (float)this.top / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left + this.width, this.top, -100.0D).uv((float)this.width / 32.0F, (float)this.top / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left + this.width, 0.0D, -100.0D).uv((float)this.width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left, 0.0D, -100.0D).uv(0.0F, 0.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left, this.height, -100.0D).uv(0.0F, (float)this.height / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left + this.width, this.height, -100.0D).uv((float)this.width / 32.0F, (float)this.height / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left + this.width, this.bottom, -100.0D).uv((float)this.width / 32.0F, (float)this.bottom / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferBuilder.vertex(this.left, this.bottom, -100.0D).uv(0.0F, (float)this.bottom / 32.0F).color(64, 64, 64, 255).endVertex();
-            tesselator.end();
-            RenderSystem.depthFunc(515);
-            RenderSystem.disableDepthTest();
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            RenderSystem.disableTexture();
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderTexture(0, WHITE_TEXTURE_LOCATION);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.vertex(this.left, this.top + 4, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
-            bufferBuilder.vertex(this.right, this.top + 4, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
-            bufferBuilder.vertex(this.right, this.top, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(this.left, this.top, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(this.left, this.bottom, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(this.right, this.bottom, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(this.right, this.bottom - 4, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 0).endVertex();
-            bufferBuilder.vertex(this.left, this.bottom - 4, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 0).endVertex();
-            tesselator.end();
+            int i8 = 32;
+            RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
+            blit(poseStack, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
+            blit(poseStack, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            int i9 = 4;
+            fillGradient(poseStack, this.left, this.top, this.right, this.top + 4, -16777216, 0);
+            fillGradient(poseStack, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
         }
 
-        int maxScroll = this.getMaxScroll();
-        if (maxScroll > 0) {
-            RenderSystem.disableTexture();
-            int i10 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-            i10 = Mth.clamp(i10, 32, this.bottom - this.top - 8);
-            int i11 = (int)this.getScrollAmount() * (this.bottom - this.top - i10) / maxScroll + this.top;
-            if (i11 < this.top) {
-                i11 = this.top;
+        int i10 = this.getMaxScroll();
+        if (i10 > 0) {
+            int i11 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+            i11 = Mth.clamp(i11, 32, this.bottom - this.top - 8);
+            int i12 = (int)this.getScrollAmount() * (this.bottom - this.top - i11) / i10 + this.top;
+            if (i12 < this.top) {
+                i12 = this.top;
             }
 
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.vertex(scrollbarPosition, this.bottom, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(i4, this.bottom, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(i4, this.top, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(scrollbarPosition, this.top, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferBuilder.vertex(scrollbarPosition, i11 + i10, 0.0D).uv(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
-            bufferBuilder.vertex(i4, i11 + i10, 0.0D).uv(1.0F, 1.0F).color(128, 128, 128, 255).endVertex();
-            bufferBuilder.vertex(i4, i11, 0.0D).uv(1.0F, 0.0F).color(128, 128, 128, 255).endVertex();
-            bufferBuilder.vertex(scrollbarPosition, i11, 0.0D).uv(0.0F, 0.0F).color(128, 128, 128, 255).endVertex();
-            bufferBuilder.vertex(scrollbarPosition, i11 + i10 - 1, 0.0D).uv(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
-            bufferBuilder.vertex(i4 - 1, i11 + i10 - 1, 0.0D).uv(1.0F, 1.0F).color(192, 192, 192, 255).endVertex();
-            bufferBuilder.vertex(i4 - 1, i11, 0.0D).uv(1.0F, 0.0F).color(192, 192, 192, 255).endVertex();
-            bufferBuilder.vertex(scrollbarPosition, i11, 0.0D).uv(0.0F, 0.0F).color(192, 192, 192, 255).endVertex();
-            tesselator.end();
+            fill(poseStack, i3, this.top, i4, this.bottom, -16777216);
+            fill(poseStack, i3, i12, i4, i12 + i11, -8355712);
+            fill(poseStack, i3, i12, i4 - 1, i12 + i11 - 1, -4144960);
         }
 
-        this.renderDecorations(poseStack, mouseX, mouseY);
+        this.renderDecorations(poseStack, mouseX, mouseX);
+
         children.forEach(e -> {
-            if (e instanceof AbstractWidget) {
-                if (((AbstractWidget) e).isHoveredOrFocused()) {
-                    ((AbstractWidget) e).render(poseStack, mouseX, mouseY, deltaFrameTime);
-                }
+            if (e.isHoveredOrFocused()) {
+                e.render(poseStack, mouseX, mouseY, deltaFrameTime);
             }
         });
-        RenderSystem.enableTexture();
+
         RenderSystem.disableBlend();
     }
 
@@ -402,21 +362,13 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
         E entry = this.getEntryAtPosition(x, y);
         if (previous != entry) {
             if (previous != null) {
-                if (previous instanceof AbstractWidget) {
-                    if (((AbstractWidget) previous).isFocused()) {
-                        previous.changeFocus(true);
-                    }
-                } else {
-                    previous.changeFocus(true);
+                if (previous.isFocused()) {
+                    previous.setFocused(false);
                 }
             }
             if (entry != null) {
-                if (entry instanceof AbstractWidget) {
-                    if (!((AbstractWidget) entry).isFocused()) {
-                        entry.changeFocus(true);
-                    }
-                } else {
-                    entry.changeFocus(true);
+                if (!entry.isFocused()) {
+                    entry.setFocused(true);
                 }
             }
         }
@@ -464,7 +416,7 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
         return this.getRowTop(i) + this.itemHeight;
     }
 
-    protected boolean isFocused() {
+    public boolean isFocused() {
         return false;
     }
 

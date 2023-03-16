@@ -307,7 +307,7 @@ public class ModListScreen extends BlueberryScreen {
             ModListScreen.this.renderBackground(poseStack);
         }
 
-        protected boolean isFocused() {
+        public boolean isFocused() {
             return ModListScreen.this.getFocused() == this;
         }
 
