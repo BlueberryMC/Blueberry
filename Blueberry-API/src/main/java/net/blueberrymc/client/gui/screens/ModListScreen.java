@@ -157,7 +157,12 @@ public class ModListScreen extends BlueberryScreen {
             if (entry != null && entry.mod.getVisualConfig().isNotEmpty()) {
                 this.minecraft.setScreen(new ModConfigScreen(entry.mod.getVisualConfig(), this));
             }
-        }).bounds(10, this.height - 34, this.width / 5 - 20, 20).build())).active = false;
+        }).bounds(10, this.height - 34, this.width / 5 / 2 - 11, 20).build())).active = false;
+        this.addRenderableWidget(
+                Button.builder(BlueberryText.text("blueberry", "gui.screens.mods.generate"), button -> this.minecraft.setScreen(new GenerateModScreen(this)))
+                        .tooltip(Tooltip.create(BlueberryText.text("blueberry", "gui.screens.mods.generate.tooltip")))
+                        .bounds(2 + this.width / 5 / 2, this.height - 34, this.width / 5 / 2 - 11, 20)
+                        .build());
         super.init();
         updateTooltip();
     }
