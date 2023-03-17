@@ -81,6 +81,8 @@ jobs:
           mkdir -p $HOME/.gradle
           echo "blueberryRepoUsername=${{ secrets.REPO_USERNAME }}" >> $HOME/.gradle/gradle.properties
           echo "blueberryRepoPassword=${{ secrets.REPO_PASSWORD }}" >> $HOME/.gradle/gradle.properties
+          echo "blueberryRepo2Username=${{ secrets.REPO_USERNAME }}" >> $HOME/.gradle/gradle.properties
+          echo "blueberryRepo2Password=${{ secrets.REPO_PASSWORD }}" >> $HOME/.gradle/gradle.properties
       - name: Deploy API to repository
         run: ./gradlew -PBUILD_NUMBER=$BUILD_NUMBER publish
       - name: Bake installer
