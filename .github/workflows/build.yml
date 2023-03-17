@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Get major version"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get major version
         id: getMajorVersion
         run: |
@@ -55,11 +55,11 @@ jobs:
     env:
       MAJOR_VERSION: ${{ needs.update_build_number.outputs.major_version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup git
         run: 'git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"'
       - name: Setup Java JDK
-        uses: actions/setup-java@v2.3.1
+        uses: actions/setup-java@v3.10.0
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
@@ -102,7 +102,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ !startsWith(github.ref_name, 'ver/') && github.ref_name != 'main' && github.ref_name != 'master' }}
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: blueberry-installer-java-${{ matrix.java }}
           path: '*-installer.jar'
