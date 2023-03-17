@@ -82,6 +82,14 @@ subprojects {
             }
         }
     }
+
+    if (name == "blueberry") {
+        tasks.names.forEach { taskName ->
+            if (taskName.startsWith("publish")) {
+                tasks.named(taskName).get().enabled = false
+            }
+        }
+    }
 }
 
 allprojects {
@@ -98,6 +106,10 @@ allprojects {
 
         compileTestKotlin {
             kotlinOptions.jvmTarget = "17"
+        }
+
+        javadoc {
+            options.encoding = "UTF-8"
         }
 
         compileJava {
