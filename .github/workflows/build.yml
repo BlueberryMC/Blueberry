@@ -32,7 +32,7 @@ jobs:
         id: generateNextBuildNumber
         env:
           BN: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
-      - uses: hmanzur/actions-set-secret@v2.0.0
+      - uses: BlueberryMC/actions-set-secret@v3.0.0
         with:
           name: ${{ format('BUILD_NUMBER_{0}', env.MAJOR_VERSION) }}
           value: ${{ steps.generateNextBuildNumber.outputs.value }}
