@@ -94,7 +94,7 @@ object Util {
         if (it == null) {
             if (!warnedBuildNumber) {
                 warnedBuildNumber = true
-                project.logger.warn("Invalid BUILD_NUMBER: ${project.properties["BUILD_NUMBER"]}. Using 0 instead.")
+                project.logger.info("Invalid BUILD_NUMBER: ${project.properties["BUILD_NUMBER"]}. Using 0 instead.")
             }
             0
         } else {

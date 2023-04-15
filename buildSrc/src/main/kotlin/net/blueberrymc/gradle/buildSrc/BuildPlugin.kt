@@ -16,7 +16,12 @@ class BuildPlugin : Plugin<Project> {
                 mkdirs()
             }
         }
+        project.tasks.register("createClientPatch", BaseBlueberryTask::class.java, CreateClientPatchAction())
+        project.tasks.register("createClientPatcherJar", BaseBlueberryTask::class.java, CreateClientPatcherJarAction())
+        project.tasks.register("createServerPatch", BaseBlueberryTask::class.java, CreateServerPatchAction())
+        project.tasks.register("createServerPatcherJar", BaseBlueberryTask::class.java, CreateServerPatcherJarAction())
         project.tasks.register("bakeInstaller", BaseBlueberryTask::class.java, BakeInstallerAction())
+        project.tasks.register("downloadServerJar", BaseBlueberryTask::class.java, DownloadServerJarAction())
         project.tasks.register("patchMinecraft", PatchMinecraft::class.java, PatchMinecraftAction())
         project.tasks.register("applyBlueberryPatches", ApplyBlueberryPatches::class.java, ApplyBlueberryPatchesAction())
         project.tasks.register("applyMinecraftPatches", BaseBlueberryTask::class.java, ApplyMinecraftPatchesAction())
