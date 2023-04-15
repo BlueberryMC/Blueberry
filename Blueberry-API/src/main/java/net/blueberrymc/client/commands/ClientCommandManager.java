@@ -17,7 +17,6 @@ import net.minecraft.Util;
 import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -144,18 +143,15 @@ public class ClientCommandManager {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void fillUsableCommands(@NotNull CommandNode<CommandSourceStack> commandNode, @NotNull CommandNode<SharedSuggestionProvider> commandNode2, CommandSourceStack commandSourceStack, @NotNull Map<CommandNode<CommandSourceStack>, @NotNull CommandNode<SharedSuggestionProvider>> map) {
-        for(CommandNode<CommandSourceStack> commandNode3 : commandNode.getChildren()) {
+        for (CommandNode<CommandSourceStack> commandNode3 : commandNode.getChildren()) {
             if (commandNode3.canUse(commandSourceStack)) {
                 ArgumentBuilder<SharedSuggestionProvider, ?> argumentBuilder = (ArgumentBuilder) commandNode3.createBuilder();
                 argumentBuilder.requires((sharedSuggestionProvider) -> true); // Client commands are always available
                 if (argumentBuilder.getCommand() != null) {
                     argumentBuilder.executes((commandContext) -> 0);
                 }
-                if (argumentBuilder instanceof RequiredArgumentBuilder) {
-                    RequiredArgumentBuilder<SharedSuggestionProvider, ?> requiredArgumentBuilder = (RequiredArgumentBuilder<SharedSuggestionProvider, ?>) argumentBuilder;
-                    if (requiredArgumentBuilder.getSuggestionsProvider() != null) {
-                        requiredArgumentBuilder.suggests(SuggestionProviders.safelySwap(requiredArgumentBuilder.getSuggestionsProvider()));
-                    }
+                if (argumentBuilder instanceof RequiredArgumentBuilder requiredArgumentBuilder) {
+                    requiredArgumentBuilder.suggests(requiredArgumentBuilder.getSuggestionsProvider());
                 }
                 if (argumentBuilder.getRedirect() != null) {
                     argumentBuilder.redirect(map.get(argumentBuilder.getRedirect()));
