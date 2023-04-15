@@ -12,6 +12,7 @@ class CreateServerPatchAction : Action<BaseBlueberryTask> {
         CreateClientPatchAction.initRepository(baseDir)
         val patchFilePath = File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.bz2")
         task.dependsOn("downloadServerJar")
+        task.dependsOn("shadowServerJar")
         task.outputs.file(patchFilePath)
         task.doLast {
             val serverJarBytes = task.project.getTaskByName("downloadServerJar").outputs.files.singleFile.readBytes()
