@@ -250,11 +250,7 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
 
         this.renderDecorations(poseStack, mouseX, mouseX);
 
-        children.forEach(e -> {
-            if (e.isHoveredOrFocused()) {
-                e.render(poseStack, mouseX, mouseY, deltaFrameTime);
-            }
-        });
+        children.forEach(e -> e.render(poseStack, mouseX, mouseY, deltaFrameTime));
 
         RenderSystem.disableBlend();
     }
