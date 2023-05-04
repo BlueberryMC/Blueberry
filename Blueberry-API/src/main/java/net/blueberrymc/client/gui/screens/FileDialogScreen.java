@@ -120,6 +120,7 @@ public class FileDialogScreen extends BlueberryScreen {
                     addEntry(new Entry("[ " + root + " ]", root));
                 }
             }
+            addEntry(new Entry("./", options.getInitialDirectory()));
             File parent = options.getInitialDirectory().getParentFile();
             if (parent != null && FileUtil.isFileInsideBoundary(options.boundary(), parent)) {
                 addEntry(new Entry("../", parent));
@@ -162,8 +163,8 @@ public class FileDialogScreen extends BlueberryScreen {
             }).bounds(0, 0, 20, 20).build();
             cdButton.visible = false;
             selectButton = Button.builder(Component.literal("✔").withStyle(ChatFormatting.GREEN), (button) -> {
-                minecraft.setScreen(previousScreen);
                 options.runCallback(getSelected().file);
+                minecraft.setScreen(previousScreen);
             }).bounds(0, 0, 20, 20).build();
             selectButton.visible = false;
             addRenderableWidget(cdButton);

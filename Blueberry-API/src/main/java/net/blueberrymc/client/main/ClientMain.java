@@ -35,7 +35,7 @@ public class ClientMain {
         OptionSet set = optionParser.parse(args); // use args because we don't need --tweakClass here
         if (!set.has("assetsDir")) {
             LOGGER.info("Auto-detected .minecraft directory: " + FileUtil.getMinecraftDir().getAbsolutePath());
-            arguments.add("--assetsDir=" + new File(FileUtil.getMinecraftDir(), "assets").getAbsolutePath() + "");
+            arguments.add("--assetsDir=" + new File(FileUtil.getMinecraftDir(), "assets").getAbsolutePath());
         }
         ServerMain.launch(Side.CLIENT, arguments, set, gameDirOption, sourceDirOption, includeDirOption);
     }

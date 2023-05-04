@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ModDescriptionFile implements VersionedModInfo {
-    private static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
+    public static final Pattern MOD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
     private static final Logger LOGGER = LogManager.getLogger();
     @NotNull protected final String modId;
     @NotNull protected final String version;

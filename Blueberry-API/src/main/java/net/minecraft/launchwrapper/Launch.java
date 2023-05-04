@@ -160,7 +160,7 @@ public class Launch {
             BlueberryPreBootstrap.destroyUniversalClassLoader();
             String launchTarget = Objects.requireNonNull(primaryTweaker).getLaunchTarget();
             // Class<?> clazz = Class.forName(launchTarget, false, classLoader);
-            Class<?> clazz = classLoader.findClass(launchTarget);
+            Class<?> clazz = Class.forName(launchTarget);
             LOGGER.info("Loaded class {} from {}", clazz.getTypeName(), ClasspathUtil.getClasspath(clazz));
             Method mainMethod = clazz.getMethod("main", String[].class);
             LOGGER.info("Launching wrapped minecraft {}", launchTarget);
