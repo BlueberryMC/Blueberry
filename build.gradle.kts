@@ -24,7 +24,11 @@ tasks {
         group = "blueberry"
 
         doLast {
-            println("$MINECRAFT_VERSION-${API_VERSION.replace("-SNAPSHOT", "")}.${getBuildNumber(project)}")
+            if (project.properties["BUILD_NUMBER"].toString().toLongOrNull() != null) {
+                println("$MINECRAFT_VERSION-${API_VERSION.replace("-SNAPSHOT", "")}.${getBuildNumber(project)}")
+            } else {
+                println("$MINECRAFT_VERSION-${API_VERSION.replace("-SNAPSHOT", "")}")
+            }
         }
     }
 }

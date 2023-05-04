@@ -8,7 +8,7 @@ jobs:
   # the problem is that the numbers are going to be masked because of the secrets
   get_major_version:
     runs-on: ubuntu-latest
-    name: "Get major version"
+    name: "Get version"
     steps:
       - uses: actions/checkout@v3
       - name: Get major version
@@ -89,15 +89,27 @@ jobs:
         run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER bakeInstaller --info --stacktrace'
         env:
           BUILD_NUMBER: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
-      - name: Retrieve version
+      - name: Retrieve mc + api + build number version
         run: 'echo "version=$(./gradlew -q --console plain -PBUILD_NUMBER=$BUILD_NUMBER printVersion)" >> $GITHUB_OUTPUT'
         id: retrieveVersion
         env:
           BUILD_NUMBER: ${{ secrets[format('BUILD_NUMBER_{0}', env.MAJOR_VERSION)] }}
+      - name: Retrieve mc + api version
+        run: 'echo "version=$(./gradlew -q --console plain printVersion)" >> $GITHUB_OUTPUT'
+        id: retrieveApiVersion
       - name: Release new build
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.retrieveVersion.outputs.version }}
+          files: '*-installer.jar'
+          target_commitish: ${{ github.sha }}
+          fail_on_unmatched_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ !startsWith(github.ref_name, 'ver/') && github.ref_name != 'main' && github.ref_name != 'master' }}
+      - name: Update release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.retrieveApiVersion.outputs.version }}
           files: '*-installer.jar'
           target_commitish: ${{ github.sha }}
           fail_on_unmatched_files: true
