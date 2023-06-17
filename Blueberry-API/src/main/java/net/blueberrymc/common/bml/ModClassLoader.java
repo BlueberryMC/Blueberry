@@ -6,6 +6,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.util.Util;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;

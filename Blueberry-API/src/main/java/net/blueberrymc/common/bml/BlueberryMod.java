@@ -24,6 +24,12 @@ import java.net.URL;
 import java.util.function.Function;
 
 public class BlueberryMod implements VersionedModInfo {
+    static {
+        if (!(BlueberryMod.class.getClassLoader() instanceof LaunchClassLoader)) {
+            throw new AssertionError("BlueberryMod loaded from wrong class loader (should be LaunchClassLoader): " + BlueberryMod.class.getClassLoader());
+        }
+    }
+
     private Logger logger = LogManager.getLogger();
     private final ModStateList stateList = new ModStateList();
     private BlueberryModLoader modLoader;
