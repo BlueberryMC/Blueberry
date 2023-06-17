@@ -56,7 +56,7 @@ public class ClientBlueberryCommand implements ClientCommandHandler {
     private static int executeDiscordAccept(@NotNull CommandSourceStack source, long id) {
         DiscordRPCTaskExecutor.submitTask(core -> core.activityManager().sendRequestReply(id, ActivityJoinRequestReply.YES, result -> {
             if (result == Result.OK) {
-                source.sendSuccess(BlueberryText.text("blueberry", "discord.activity.join_request.accept.accepted"), false);
+                source.sendSuccess(() -> BlueberryText.text("blueberry", "discord.activity.join_request.accept.accepted"), false);
             } else {
                 source.sendFailure(BlueberryText.text("blueberry", "discord.error_with_result", result.name()));
             }
@@ -67,7 +67,7 @@ public class ClientBlueberryCommand implements ClientCommandHandler {
     private static int executeDiscordDeny(@NotNull CommandSourceStack source, long id) {
         DiscordRPCTaskExecutor.submitTask(core -> core.activityManager().sendRequestReply(id, ActivityJoinRequestReply.NO, result -> {
             if (result == Result.OK) {
-                source.sendSuccess(BlueberryText.text("blueberry", "discord.activity.join_request.deny.denied"), false);
+                source.sendSuccess(() -> BlueberryText.text("blueberry", "discord.activity.join_request.deny.denied"), false);
             } else {
                 source.sendFailure(BlueberryText.text("blueberry", "discord.error_with_result", result.name()));
             }
@@ -78,7 +78,7 @@ public class ClientBlueberryCommand implements ClientCommandHandler {
     private static int executeDiscordIgnore(@NotNull CommandSourceStack source, long id) {
         DiscordRPCTaskExecutor.submitTask(core -> core.activityManager().sendRequestReply(id, ActivityJoinRequestReply.IGNORE, result -> {
             if (result == Result.OK) {
-                source.sendSuccess(BlueberryText.text("blueberry", "discord.activity.join_request.ignore.ignored"), false);
+                source.sendSuccess(() -> BlueberryText.text("blueberry", "discord.activity.join_request.ignore.ignored"), false);
             } else {
                 source.sendFailure(BlueberryText.text("blueberry", "discord.error_with_result", result.name()));
             }

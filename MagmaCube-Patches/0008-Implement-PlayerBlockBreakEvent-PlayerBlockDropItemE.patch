@@ -5,7 +5,7 @@ Subject: [PATCH] Implement PlayerBlockBreakEvent/PlayerBlockDropItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6fa67df875 100644
+index 42bbd0f808fa9338b2bc495bf0b79719c12a23c3..e703e85acad69fd102787073fd4913625aa93b4c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 @@ -221,9 +221,39 @@ public class ServerPlayerGameMode {
@@ -87,10 +87,10 @@ index 820f60b9518879947ed5fa3cbaf417801498fee5..d905aabdac673b62fb74b427618aaf6f
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e9940bd24194c1bf9e1c7d1c3f25b65bebd031a3..fceb22c803953be61f1c7476001b0b9d071d1600 100644
+index 3b3b6b96e76282a50b07a4f0d9a84b87b8cff19e..bd65486f729531a912aa81b4c43f33f84a112be5 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -112,6 +112,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
+@@ -111,6 +111,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, net.blueber
      private final RegistryAccess registryAccess;
      private final DamageSources damageSources;
      private long subTickCount;
@@ -99,10 +99,10 @@ index e9940bd24194c1bf9e1c7d1c3f25b65bebd031a3..fceb22c803953be61f1c7476001b0b9d
      protected Level(WritableLevelData writableLevelData, ResourceKey<Level> resourceKey, RegistryAccess registryAccess, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag2, long l, int i) {
          this.profiler = supplier;
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index 161fcf120ad80be5bd5ac20bee9226f32e8a2754..d018109d605ea8c2255c47fdcdaf5367759d72a7 100644
+index 7f8b4b8c18eb9367dc1ec18d4da4d108785dba85..eb8a2e67c17154643520d165b04c112cb820a0cd 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -314,11 +314,13 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -306,11 +306,13 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ItemEntity itemEntity = (ItemEntity)supplier.get();
              itemEntity.setDefaultPickUpDelay();
@@ -117,7 +117,7 @@ index 161fcf120ad80be5bd5ac20bee9226f32e8a2754..d018109d605ea8c2255c47fdcdaf5367
          if (level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), exp);
          }
-@@ -477,8 +479,14 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -469,8 +471,14 @@ public class Block extends BlockBehaviour implements ItemLike {
          return this.builtInRegistryHolder;
      }
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e0acfd1303b552ccc117d44ae91ac01c0299836a..e9940bd24194c1bf9e1c7d1c3f25b65bebd031a3 100644
+index 5f4f3fd8e5567d6995e58718f35456dea772ce35..3b3b6b96e76282a50b07a4f0d9a84b87b8cff19e 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -71,7 +71,7 @@ import net.minecraft.world.phys.AABB;

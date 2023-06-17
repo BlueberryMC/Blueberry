@@ -1,12 +1,12 @@
 package net.blueberrymc.client.gui.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -180,36 +180,35 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
     protected void clickedHeader(int i, int i2) {
     }
 
-    protected void renderHeader(PoseStack poseStack, int i, int i2) {
+    protected void renderHeader(@NotNull GuiGraphics guiGraphics, int i, int i2) {
     }
 
-    protected void renderBackground(@NotNull PoseStack poseStack) {
+    protected void renderBackground(@NotNull GuiGraphics guiGraphics) {
     }
 
-    protected void renderDecorations(@NotNull PoseStack poseStack, int i, int i2) {
+    protected void renderDecorations(@NotNull GuiGraphics guiGraphics, int i, int i2) {
     }
 
     protected void enableScissor() {
-        enableScissor(this.left, this.bottom, this.right, this.top);
+        RenderSystem.enableScissor(this.left, this.bottom, this.right, this.top);
     }
 
     /**
      * Renders the container.
-     * @param poseStack pose stack
+     * @param guiGraphics gui graphics
      * @param mouseX mouse x position
      * @param mouseY mouse y position
      * @param deltaFrameTime delta frame time
      */
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
-        this.renderBackground(poseStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        this.renderBackground(guiGraphics);
         int i3 = this.getScrollbarPosition();
         int i4 = i3 + 6;
         //this.hovered = this.isMouseOver((double)mouseX, (double)mouseX) ? this.getEntryAtPosition((double)mouseX, (double)mouseX) : null;
         if (this.renderBackground) {
-            RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
             RenderSystem.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
             int i5 = 32;
-            blit(poseStack, this.left, this.top, (float)this.right, (float)(this.bottom + (int)this.getScrollAmount()), this.right - this.left, this.bottom - this.top, 32, 32);
+            guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.left, this.top, (float)this.right, (float)(this.bottom + (int)this.getScrollAmount()), this.right - this.left, this.bottom - this.top, 32, 32);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
 
@@ -217,21 +216,21 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
         int i7 = this.top + 4 - (int)this.getScrollAmount();
         this.enableScissor();
         if (this.renderHeader) {
-            this.renderHeader(poseStack, i6, i7);
+            this.renderHeader(guiGraphics, i6, i7);
         }
 
-        this.renderList(poseStack, getRowLeft(), i6, mouseX, mouseY, deltaFrameTime);
-        disableScissor();
+        this.renderList(guiGraphics, getRowLeft(), i6, mouseX, mouseY, deltaFrameTime);
+        RenderSystem.disableScissor();
         if (this.renderTopAndBottom) {
-            RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
+            RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
             int i8 = 32;
             RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-            blit(poseStack, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
-            blit(poseStack, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
+            guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
+            guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int i9 = 4;
-            fillGradient(poseStack, this.left, this.top, this.right, this.top + 4, -16777216, 0);
-            fillGradient(poseStack, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
+            guiGraphics.fillGradient(this.left, this.top, this.right, this.top + 4, -16777216, 0);
+            guiGraphics.fillGradient(this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
         }
 
         int i10 = this.getMaxScroll();
@@ -243,14 +242,14 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
                 i12 = this.top;
             }
 
-            fill(poseStack, i3, this.top, i4, this.bottom, -16777216);
-            fill(poseStack, i3, i12, i4, i12 + i11, -8355712);
-            fill(poseStack, i3, i12, i4 - 1, i12 + i11 - 1, -4144960);
+            guiGraphics.fill(i3, this.top, i4, this.bottom, -16777216);
+            guiGraphics.fill(i3, i12, i4, i12 + i11, -8355712);
+            guiGraphics.fill(i3, i12, i4 - 1, i12 + i11 - 1, -4144960);
         }
 
-        this.renderDecorations(poseStack, mouseX, mouseX);
+        this.renderDecorations(guiGraphics, mouseX, mouseX);
 
-        children.forEach(e -> e.render(poseStack, mouseX, mouseY, deltaFrameTime));
+        children.forEach(e -> e.render(guiGraphics, mouseX, mouseY, deltaFrameTime));
 
         RenderSystem.disableBlend();
     }
@@ -375,7 +374,7 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
         return y >= (double)this.top && y <= (double)this.bottom && x >= (double)this.left && x <= (double)this.right;
     }
 
-    protected void renderList(@NotNull PoseStack poseStack, int rowLeft, int adjustedScrollAmount, int i3, int i4, float deltaFrameTime) {
+    protected void renderList(@NotNull GuiGraphics guiGraphics, int rowLeft, int adjustedScrollAmount, int i3, int i4, float deltaFrameTime) {
         int itemCount = this.getItemCount();
         int offset = 38;
         int prevY = Integer.MIN_VALUE;
@@ -385,7 +384,7 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
             int rowBottom = this.getRowBottom(i);
             if (rowBottom >= this.top && rowTop <= this.bottom) {
                 E entry = this.getEntry(i);
-                entry.render(poseStack, i3, i4, deltaFrameTime);
+                entry.render(guiGraphics, i3, i4, deltaFrameTime);
                 if (prevY == entry.getY()) {
                     offset -= 22;
                 }

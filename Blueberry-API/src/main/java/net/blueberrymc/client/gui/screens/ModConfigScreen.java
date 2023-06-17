@@ -1,7 +1,6 @@
 package net.blueberrymc.client.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.components.ScrollableContainer;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
@@ -28,6 +27,7 @@ import net.blueberrymc.util.NumberUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -59,7 +59,7 @@ public class ModConfigScreen extends BlueberryScreen {
     private static final Component UNKNOWN_TEXT = Component.literal("<unknown>").withStyle(ChatFormatting.GRAY);
     private static final Component BOOLEAN_TRUE = Component.literal("true").withStyle(ChatFormatting.GREEN);
     private static final Component BOOLEAN_FALSE = Component.literal("false").withStyle(ChatFormatting.RED);
-    private final List<Consumer<PoseStack>> callbacks = new ArrayList<>();
+    private final List<Consumer<GuiGraphics>> callbacks = new ArrayList<>();
     private final CompoundVisualConfig compoundVisualConfig;
     private final Screen previousScreen;
     private final Component description;
@@ -103,10 +103,10 @@ public class ModConfigScreen extends BlueberryScreen {
             }
         }
         final int maxWidth = _maxWidth;
-        BiConsumer<VisualConfig<?>, Integer> addLabel = (config, finalOffset) -> callbacks.add(poseStack -> {
+        BiConsumer<VisualConfig<?>, Integer> addLabel = (config, finalOffset) -> callbacks.add(guiGraphics -> {
             int y = finalOffset + 6 - (int) container.getScrollAmount();
             if (y > 60 && y < this.height - 54) {
-                drawString(poseStack, font, Util.getOrDefault(config.getComponent(), UNKNOWN_TEXT), this.width / 2 - maxWidth - 6, y, 0xFFFFFF);
+                guiGraphics.drawString(font, Util.getOrDefault(config.getComponent(), UNKNOWN_TEXT), this.width / 2 - maxWidth - 6, y, 0xFFFFFF);
             }
         });
         for (VisualConfig<?> config : this.compoundVisualConfig) {
@@ -431,19 +431,19 @@ public class ModConfigScreen extends BlueberryScreen {
         return bool == null || !bool ? BOOLEAN_FALSE : BOOLEAN_TRUE;
     }
 
-    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
-        this.renderBackground(poseStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
+        this.renderBackground(guiGraphics);
         this.children().forEach(e -> {
             if (e instanceof ScrollableContainer) {
-                ((ScrollableContainer<?>) e).render(poseStack, i, i2, f);
+                ((ScrollableContainer<?>) e).render(guiGraphics, i, i2, f);
             }
         });
-        for (Consumer<PoseStack> callback : callbacks) callback.accept(poseStack);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
+        for (var callback : callbacks) callback.accept(guiGraphics);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
         if (this.description != null) {
-            drawCenteredString(poseStack, this.font, this.description, this.width / 2, 30, 16777215);
+            guiGraphics.drawCenteredString(this.font, this.description, this.width / 2, 30, 16777215);
         }
-        super.render(poseStack, i, i2, f);
+        super.render(guiGraphics, i, i2, f);
     }
 
     @NotNull

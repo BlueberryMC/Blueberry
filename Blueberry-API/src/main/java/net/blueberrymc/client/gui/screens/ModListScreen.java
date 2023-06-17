@@ -1,7 +1,6 @@
 package net.blueberrymc.client.gui.screens;
 
 import com.google.common.base.Joiner;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
@@ -16,6 +15,7 @@ import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
@@ -235,9 +235,9 @@ public class ModListScreen extends BlueberryScreen {
 
     private static final Joiner JOINER = Joiner.on(", ");
 
-    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
-        this.modsList.render(poseStack, i, i2, f);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
+    public void render(@NotNull GuiGraphics guiGraphics , int i, int i2, float f) {
+        this.modsList.render(guiGraphics, i, i2, f);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
         ModsList.Entry entry = this.modsList.getSelected();
         if (entry != null) {
             BlueberryMod mod = entry.mod;
@@ -254,27 +254,27 @@ public class ModListScreen extends BlueberryScreen {
                 this.disableButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.disable"));
             }
             int y = 40;
-            drawString(poseStack, this.font, "Mod Name: " + mod.getName(), this.width / 4, y, 16777215);
-            drawString(poseStack, this.font, "Mod ID: " + mod.getDescription().getModId(), this.width / 4, y += 10, 16777215);
-            drawString(poseStack, this.font, "Version: " + mod.getDescription().getVersion(), this.width / 4, y += 10, 16777215);
+            guiGraphics.drawString(this.font, "Mod Name: " + mod.getName(), this.width / 4, y, 16777215);
+            guiGraphics.drawString(this.font, "Mod ID: " + mod.getDescription().getModId(), this.width / 4, y += 10, 16777215);
+            guiGraphics.drawString(this.font, "Version: " + mod.getDescription().getVersion(), this.width / 4, y += 10, 16777215);
             List<String> authors = mod.getDescription().getAuthors();
             if (authors != null) {
-                drawString(poseStack, this.font, "Authors: " + JOINER.join(authors), this.width / 4, y += 10, 16777215);
+                guiGraphics.drawString(this.font, "Authors: " + JOINER.join(authors), this.width / 4, y += 10, 16777215);
             }
             List<String> credits = mod.getDescription().getCredits();
             if (credits != null) {
-                drawString(poseStack, this.font, "Credits: " + JOINER.join(credits), this.width / 4, y += 10, 16777215);
+                guiGraphics.drawString(this.font, "Credits: " + JOINER.join(credits), this.width / 4, y += 10, 16777215);
             }
-            drawString(poseStack, this.font, "Status: " + mod.getStateList().getCurrentState().getName(), this.width / 4, y += 10, 16777215);
+            guiGraphics.drawString(this.font, "Status: " + mod.getStateList().getCurrentState().getName(), this.width / 4, y += 10, 16777215);
             List<String> description = mod.getDescription().getDescription();
             if (description != null) {
                 y += 10;
                 for (String s : description.stream().flatMap(s -> Arrays.stream(s.split("\\n"))).toList()) {
-                    drawString(poseStack, this.font, s, this.width / 4, y += 10, 16777215);
+                    guiGraphics.drawString(this.font, s, this.width / 4, y += 10, 16777215);
                 }
             }
         }
-        super.render(poseStack, i, i2, f);
+        super.render(guiGraphics, i, i2, f);
     }
 
     class ModsList extends ObjectSelectionList<ModsList.Entry> {
@@ -303,8 +303,8 @@ public class ModListScreen extends BlueberryScreen {
             updateTooltip();
         }
 
-        protected void renderBackground(@NotNull PoseStack poseStack) {
-            ModListScreen.this.renderBackground(poseStack);
+        protected void renderBackground(@NotNull GuiGraphics guiGraphics) {
+            ModListScreen.this.renderBackground(guiGraphics);
         }
 
         public boolean isFocused() {
@@ -318,9 +318,9 @@ public class ModListScreen extends BlueberryScreen {
                 this.mod = mod;
             }
 
-            public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+            public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
                 String s = this.mod.getName();
-                ModListScreen.this.font.drawShadow(poseStack, s, (float)(ModsList.this.width / 2 - ModListScreen.this.font.width(s) / 2), (float)(i2 + 2), 16777215, true);
+                guiGraphics.drawString(ModListScreen.this.font, s, ModsList.this.width / 2 - ModListScreen.this.font.width(s) / 2, i2 + 2, 16777215, true);
             }
 
             public boolean mouseClicked(double d, double d2, int i) {

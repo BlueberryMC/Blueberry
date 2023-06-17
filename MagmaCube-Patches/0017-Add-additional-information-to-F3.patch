@@ -9,10 +9,10 @@ Added to game information:
 - Client Protocol Version
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-index 4168028ea9fea90d5997bdaba1052a3d22caaae5..21db1c0e5a35bdc4212fac500e4837511a57b19b 100644
+index 71d754d78b307bc6d3fbaf84cddd6c6811385c03..ecb24567a9a87ce9eb4c19fb14aedd514d8d6dcd 100644
 --- a/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/src/main/java/net/minecraft/client/gui/components/DebugScreenOverlay.java
-@@ -182,8 +182,9 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -176,8 +176,9 @@ public class DebugScreenOverlay {
          }
  
          BlockPos blockPos = this.minecraft.getCameraEntity().blockPosition();
@@ -23,7 +23,7 @@ index 4168028ea9fea90d5997bdaba1052a3d22caaae5..21db1c0e5a35bdc4212fac500e483751
          } else {
              Entity entity = this.minecraft.getCameraEntity();
              Direction direction = entity.getDirection();
-@@ -213,7 +214,7 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -207,7 +208,7 @@ public class DebugScreenOverlay {
  
              Level level = this.getLevel();
              LongSet longSet = (LongSet)(level instanceof ServerLevel ? ((ServerLevel)level).getForcedChunks() : LongSets.EMPTY_SET);
@@ -32,7 +32,7 @@ index 4168028ea9fea90d5997bdaba1052a3d22caaae5..21db1c0e5a35bdc4212fac500e483751
              String s8 = this.getServerChunkStats();
              if (s8 != null) {
                  list.add(s8);
-@@ -301,8 +302,8 @@ public class DebugScreenOverlay extends GuiComponent {
+@@ -295,8 +296,8 @@ public class DebugScreenOverlay {
              }
  
              list.add(this.minecraft.getSoundManager().getDebugString() + String.format(Locale.ROOT, " (Mood %d%%)", Math.round(this.minecraft.player.getCurrentMood() * 100.0F)));

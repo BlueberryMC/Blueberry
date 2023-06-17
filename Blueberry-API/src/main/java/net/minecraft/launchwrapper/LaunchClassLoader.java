@@ -82,6 +82,8 @@ public class LaunchClassLoader extends URLClassLoader {
         addClassLoaderExclusion("com.google.gson.");
         addClassLoaderExclusion("com.google.common.");
         addClassLoaderExclusion("com.mojang.bridge.");
+        addClassLoaderExclusion("com.mojang.blocklist.");
+        addClassLoaderExclusion("com.mojang.patchy.");
         addClassLoaderExclusion("io.netty.");
         addClassLoaderExclusion("it.unimi.dsi.fastutil.");
         addClassLoaderExclusion("org.slf4j.");

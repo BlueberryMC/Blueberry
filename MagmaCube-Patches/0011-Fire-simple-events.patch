@@ -5,10 +5,10 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index da5c2a3545903d9497e41cf28c91ce874c6f12c5..c329e5ac475502f9561b8fb75c4c3092844af002 100644
+index 2cc69a71245f10bb3ea9565c92ea3b95a3fc1d15..0b0ddc54154ada7605a1210ea77a6dee1eb1e6c3 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -2349,6 +2349,13 @@ public class ClientPacketListener implements TickablePacketListener, ClientGameP
+@@ -2379,6 +2379,13 @@ public class ClientPacketListener implements TickablePacketListener, ClientGameP
      }
  
      public void sendChat(String s) {
@@ -23,18 +23,21 @@ index da5c2a3545903d9497e41cf28c91ce874c6f12c5..c329e5ac475502f9561b8fb75c4c3092
          long l = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 55152736b714086e19c564ba44ea3ae426de9268..5d8d4614fcf361c8386dab39028ea7c4d8de8471 100644
+index f8b439867e23432603bdd78a907e25c40d7be0d2..874bc4cb9a3b2b743bc19ae7bd2195b1011b867c 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -88,6 +88,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to change protocol to handshake", var3);
+@@ -92,8 +92,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 
+         if (this.delayedDisconnect != null) {
+             this.disconnect(this.delayedDisconnect);
++            return; // Blueberry
          }
  
 +        new net.blueberrymc.common.event.network.ConnectionInitEvent(this.channel, this.receiving).callEvent(); // Blueberry
      }
  
      public void setProtocol(ConnectionProtocol connectionProtocol) {
-@@ -380,6 +381,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -398,6 +400,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              }
          }
  
@@ -42,11 +45,18 @@ index 55152736b714086e19c564ba44ea3ae426de9268..5d8d4614fcf361c8386dab39028ea7c4
      }
  
      public void handleDisconnection() {
+@@ -434,4 +437,4 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+             this.listener = packetSendListener;
+         }
+     }
+-}
+\ No newline at end of file
++}
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 372f46bedcae2d72b59c3c314069b74113667354..9eed51527803c06ed3b40f4cd457bae50347997a 100644
+index 61ed5dd71e8d6f8204956253c7862f0a8439cfb8..8a09868b1298ced4adb7fd8df87140b83054525b 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -204,6 +204,7 @@ public abstract class PlayerList {
+@@ -210,6 +210,7 @@ public abstract class PlayerList {
          this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
          this.sendLevelInfo(serverPlayer, serverLevel2);
          serverLevel2.addNewPlayer(serverPlayer);

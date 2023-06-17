@@ -1,10 +1,10 @@
 package net.blueberrymc.client.gui.screens;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class GenerateModScreen extends BlueberryScreen {
     private final Screen previousScreen;
     private final List<Object> blockers = new ArrayList<>();
-    private final List<Consumer<PoseStack>> callbacks = new ArrayList<>();
+    private final List<Consumer<GuiGraphics>> callbacks = new ArrayList<>();
     private String modName = "";
     private String modId = "";
     private String targetDirectory = "";
@@ -53,8 +53,8 @@ public class GenerateModScreen extends BlueberryScreen {
             if (textWidth > _maxWidth) _maxWidth = textWidth;
         }
         final int maxWidth = _maxWidth;
-        BiConsumer<Component, Integer> addLabel = (component, finalOffset) -> callbacks.add(poseStack -> {
-            drawString(poseStack, font, component, this.width / 2 - this.width / 6 - maxWidth - 6, finalOffset + 6, 0xFFFFFF);
+        BiConsumer<Component, Integer> addLabel = (component, finalOffset) -> callbacks.add(guiGraphics -> {
+            guiGraphics.drawString(font, component, this.width / 2 - this.width / 6 - maxWidth - 6, finalOffset + 6, 0xFFFFFF);
         });
         this.addRenderableWidget(
                 Button.builder(CommonComponents.GUI_BACK, (button) -> this.minecraft.setScreen(previousScreen))
@@ -188,9 +188,9 @@ public class GenerateModScreen extends BlueberryScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
-        renderBackground(poseStack);
-        for (var callback : callbacks) callback.accept(poseStack);
-        super.render(poseStack, mouseX, mouseY, deltaFrameTime);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        renderBackground(guiGraphics);
+        for (var callback : callbacks) callback.accept(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 }

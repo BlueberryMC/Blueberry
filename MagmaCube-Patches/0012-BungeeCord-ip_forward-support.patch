@@ -5,13 +5,13 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 5d8d4614fcf361c8386dab39028ea7c4d8de8471..121acb17de96851000c53dbdb8890de3eb7a109c 100644
+index 874bc4cb9a3b2b743bc19ae7bd2195b1011b867c..efbcf9168d2591ec0fa984f337a6cb6a8e25e0a0 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -72,6 +72,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-     private float averageSentPackets;
-     private int tickCount;
+@@ -74,6 +74,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private boolean handlingFault;
+     @Nullable
+     private volatile Component delayedDisconnect;
 +    // Blueberry start
 +    public java.util.UUID spoofedUUID;
 +    public com.mojang.authlib.properties.Property[] spoofedProfile;
@@ -20,7 +20,7 @@ index 5d8d4614fcf361c8386dab39028ea7c4d8de8471..121acb17de96851000c53dbdb8890de3
  
      public Connection(PacketFlow packetFlow) {
          this.receiving = packetFlow;
-@@ -81,6 +86,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -83,6 +88,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          super.channelActive(channelHandlerContext);
          this.channel = channelHandlerContext.channel();
          this.address = this.channel.remoteAddress();
@@ -28,16 +28,16 @@ index 5d8d4614fcf361c8386dab39028ea7c4d8de8471..121acb17de96851000c53dbdb8890de3
  
          try {
              this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -265,6 +271,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -272,6 +278,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void disconnect(Component component) {
 +        this.preparing = false; // Blueberry
-         if (this.channel.isOpen()) {
-             this.channel.close().awaitUninterruptibly();
-             this.disconnectedReason = component;
+         if (this.channel == null) {
+             this.delayedDisconnect = component;
+         }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index c924aa21e3030ea9f3e0a11c3c4fe5a67c769860..add3eea38847d7c5253333f82c1503d9c52572b5 100644
+index a2f3a59203096525b47fbf4c18e487d510d76888..ab1c03f68feab2dd7ac4fcef1402d0c1b35f8906 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -142,7 +142,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -69,7 +69,7 @@ index 5b461d5ce873bd2719f8a8418f707e4d19d0dffa..e8ca3c68fe7b8e766843e6f235e69dd3
                          connection.handleDisconnection();
                      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index a2707fabf71fc5bf374692abeb76fb73da98c9a2..ae8edbb902d2d9ae8f63b5c467ee27d958eec4db 100644
+index 9f811cf7021e070dfd41f5fdb85b87badae3b770..537e5e3ed9aa3f5e95178394a57aa287f137865c 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -11,6 +11,7 @@ import net.minecraft.network.protocol.status.ServerStatus;
@@ -77,7 +77,7 @@ index a2707fabf71fc5bf374692abeb76fb73da98c9a2..ae8edbb902d2d9ae8f63b5c467ee27d9
  
  public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketListener {
 +    private static final com.google.gson.Gson gson = new com.google.gson.Gson(); // Blueberry
-     private static final Component IGNORE_STATUS_REASON = Component.literal("Ignoring status request");
+     private static final Component IGNORE_STATUS_REASON = Component.translatable("disconnect.ignoring_status_request");
      private final MinecraftServer server;
      private final Connection connection;
 @@ -36,6 +37,24 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
@@ -105,6 +105,13 @@ index a2707fabf71fc5bf374692abeb76fb73da98c9a2..ae8edbb902d2d9ae8f63b5c467ee27d9
              }
              break;
          case STATUS:
+@@ -59,4 +78,4 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+     public boolean isAcceptingMessages() {
+         return this.connection.isConnected();
+     }
+-}
+\ No newline at end of file
++}
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 index 1e0faba662da2974eafdab383df1c0d1f3820122..0ecd5515fc2642874db753632932a4fbafa44574 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java

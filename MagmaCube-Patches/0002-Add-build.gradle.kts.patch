@@ -6,10 +6,10 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..76003bf9458ec46a9608e3ef04e7ab9bbff9dbd3
+index 0000000000000000000000000000000000000000..45d2338e6721f8e68897eece2f54e6dda90d0542
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,249 @@
+@@ -0,0 +1,247 @@
 +import net.blueberrymc.gradle.buildSrc.constants.*
 +
 +version = "$MINECRAFT_VERSION-$API_VERSION"
@@ -66,8 +66,6 @@ index 0000000000000000000000000000000000000000..76003bf9458ec46a9608e3ef04e7ab9b
 +    compileOnly("com.github.oshi:oshi-core:6.2.2")
 +    compileOnly("com.mojang:blocklist:1.0.10")
 +    compileOnly("com.mojang:text2speech:$TTS_VERSION")
-+    compileOnly("com.mojang:text2speech:$TTS_VERSION:natives-linux")
-+    compileOnly("com.mojang:text2speech:$TTS_VERSION:natives-windows")
 +    compileOnly("net.java.jutils:jutils:1.0.0")
 +    compileOnly("com.ibm.icu:icu4j:71.1")
 +    compileOnly("org.apache.commons:commons-lang3:3.12.0")

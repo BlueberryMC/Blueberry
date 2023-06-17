@@ -1,6 +1,5 @@
 package net.blueberrymc.common.bml.client.gui.screens;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.blueberrymc.client.gui.screens.BlueberryScreen;
 import net.blueberrymc.common.resources.BlueberryCommonComponents;
 import net.blueberrymc.common.resources.BlueberryText;
@@ -10,6 +9,7 @@ import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
@@ -67,10 +67,10 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
         super.init();
     }
 
-    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
-        this.problemList.render(poseStack, i, i2, f);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
-        super.render(poseStack, i, i2, f);
+    public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
+        this.problemList.render(guiGraphics, i, i2, f);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
+        super.render(guiGraphics, i, i2, f);
     }
 
     class ProblemList extends ObjectSelectionList<ProblemList.Entry> {
@@ -97,8 +97,8 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(@NotNull PoseStack poseStack) {
-            ModLoadingProblemScreen.this.renderBackground(poseStack);
+        protected void renderBackground(@NotNull GuiGraphics guiGraphics) {
+            ModLoadingProblemScreen.this.renderBackground(guiGraphics);
         }
 
         public boolean isFocused() {
@@ -112,10 +112,10 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
                 this.error = error;
             }
 
-            public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+            public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
                 String modName = this.error.modInfo != null ? this.error.modInfo.getName() + ": " : "";
                 String s = modName + this.error.getMessage();
-                ModLoadingProblemScreen.this.font.drawShadow(poseStack, s, (float)(ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2), (float)(i2 + 2), this.error.isWarning ? 0xFFFF55 : 0xFF5555, true);
+                guiGraphics.drawString(ModLoadingProblemScreen.this.font, s, ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2, i2 + 2, this.error.isWarning ? 0xFFFF55 : 0xFF5555, true);
             }
 
             public boolean mouseClicked(double d, double d2, int i) {

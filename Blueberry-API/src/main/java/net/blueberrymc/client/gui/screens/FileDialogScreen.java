@@ -1,10 +1,10 @@
 package net.blueberrymc.client.gui.screens;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.blueberrymc.common.util.FileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
@@ -54,11 +54,11 @@ public class FileDialogScreen extends BlueberryScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
-        fileList.render(poseStack, mouseX, mouseY, deltaFrameTime);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 16777215);
-        drawCenteredString(poseStack, this.font, this.description, this.width / 2, 32, 16777215);
-        cancelButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        fileList.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
+        guiGraphics.drawCenteredString(this.font, this.description, this.width / 2, 32, 16777215);
+        cancelButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 
     public void invokeCallback(@Nullable File file) {
@@ -183,8 +183,8 @@ public class FileDialogScreen extends BlueberryScreen {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(@NotNull PoseStack poseStack) {
-            FileDialogScreen.this.renderBackground(poseStack);
+        protected void renderBackground(@NotNull GuiGraphics guiGraphics) {
+            FileDialogScreen.this.renderBackground(guiGraphics);
         }
 
         public boolean isFocused() {
@@ -192,8 +192,8 @@ public class FileDialogScreen extends BlueberryScreen {
         }
 
         @Override
-        protected void renderList(@NotNull PoseStack poseStack, int mouseX, int mouseY, float deltaFrameTime) {
-            super.renderList(poseStack, mouseX, mouseY, deltaFrameTime);
+        protected void renderList(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+            super.renderList(guiGraphics, mouseX, mouseY, deltaFrameTime);
             int itemCount = this.getItemCount();
 
             for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
@@ -207,13 +207,13 @@ public class FileDialogScreen extends BlueberryScreen {
                             cdButton.setX(getRowLeft() + rowWidth);
                             cdButton.setY(rowTop - 3);
                             cdButton.visible = true;
-                            cdButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
+                            cdButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
                             if (options.fileType() == FileDialogScreenOptions.FileType.DIRECTORY ||
                                     options.fileType() == FileDialogScreenOptions.FileType.ALL) {
                                 selectButton.setX(getRowLeft() + rowWidth + 22);
                                 selectButton.setY(rowTop - 3);
                                 selectButton.visible = true;
-                                selectButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
+                                selectButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
                             } else {
                                 selectButton.visible = false;
                             }
@@ -222,7 +222,7 @@ public class FileDialogScreen extends BlueberryScreen {
                             selectButton.setX(getRowLeft() + rowWidth);
                             selectButton.setY(rowTop - 3);
                             selectButton.visible = true;
-                            selectButton.render(poseStack, mouseX, mouseY, deltaFrameTime);
+                            selectButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
                         }
                     }
                 }
@@ -247,8 +247,8 @@ public class FileDialogScreen extends BlueberryScreen {
                 this.file = file;
             }
 
-            public void render(@NotNull PoseStack poseStack, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
-                FileDialogScreen.this.font.drawShadow(poseStack, name, (float)(FileList.this.width / 2 - FileDialogScreen.this.font.width(name) / 2), (float)(i2 + 2), 16777215, false);
+            public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+                guiGraphics.drawString(FileDialogScreen.this.font, name, FileList.this.width / 2 - FileDialogScreen.this.font.width(name) / 2, i2 + 2, 16777215, false);
             }
 
             public boolean mouseClicked(double d, double d2, int i) {

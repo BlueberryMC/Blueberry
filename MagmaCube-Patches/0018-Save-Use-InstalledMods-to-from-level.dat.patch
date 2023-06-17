@@ -5,10 +5,10 @@ Subject: [PATCH] Save/Use InstalledMods to/from level.dat
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-index ab4f0bac052f18dbfb12691fcfde0f35259fdc5f..4a97a457e9efa1c53c61ef3f42c6833b4d22292a 100644
+index 6a3de0b3b066fbdbbc5390d409877bb8b3aad47a..6ff03574dd5ed18ddee33f7a679ec720a8e23ece 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -175,6 +175,12 @@ public class WorldOpenFlows {
+@@ -181,6 +181,12 @@ public class WorldOpenFlows {
                  return;
              }
  
@@ -22,10 +22,10 @@ index ab4f0bac052f18dbfb12691fcfde0f35259fdc5f..4a97a457e9efa1c53c61ef3f42c6833b
              boolean flag3 = worldData.worldGenOptions().isOldCustomizedWorld();
              boolean flag4 = worldData.worldGenSettingsLifecycle() != Lifecycle.stable();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index d7d5f52fa91e2b7445235f01c070aeebeff1f16a..2b4c28c628dae74261845b43578a8d62cccf0406 100644
+index c7cc5e9191bd611aa7f92ae7f8925155c3fdc1c8..22f8c47c82c0e6999a77feb8afbdc48299915cc5 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -311,6 +311,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -310,6 +310,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          boolean flag = false;
          ProfiledDuration profiledDuration = JvmProfiler.INSTANCE.onWorldLoadedStarted();
          this.worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().shouldReportAsModified());
@@ -34,46 +34,46 @@ index d7d5f52fa91e2b7445235f01c070aeebeff1f16a..2b4c28c628dae74261845b43578a8d62
          this.createLevels(chunkProgressListener);
          this.forceDifficulty();
 diff --git a/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java b/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
-index 8b971a9d9dbdd51cfef525acaacdf0c983b0d5ea..61f300033d0f186242d3888cac3ec27c3b95d9ed 100644
+index 25f6e46a8e3c7806ab4f3ad84c2bd8595c89ba7c..ba63dc9af179f1b4dc8428870d99344521339a2f 100644
 --- a/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -79,6 +79,7 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
-     private final Set<String> knownServerBrands;
+@@ -82,6 +82,7 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
      private boolean wasModded;
+     private final Set<String> removedFeatureFlags;
      private final TimerQueue<MinecraftServer> scheduledEvents;
 +    private final Set<net.blueberrymc.common.bml.VersionedModInfo> installedMods = new java.util.HashSet<>(); // Blueberry
  
-     private PrimaryLevelData(@Nullable DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag, boolean flag, int i2, int i3, int i4, float f, long l, long l2, int i5, int i6, int i7, boolean flag2, int i8, boolean flag3, boolean flag4, boolean flag5, WorldBorder.Settings settings, int i9, int i10, @Nullable UUID uuid, Set<String> set, TimerQueue<MinecraftServer> timerQueue, @Nullable CompoundTag compoundTag2, CompoundTag compoundTag3, LevelSettings levelSettings, WorldOptions worldOptions, PrimaryLevelData.SpecialWorldProperty specialWorldProperty, Lifecycle lifecycle) {
+     private PrimaryLevelData(@Nullable DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag, boolean flag, int i2, int i3, int i4, float f, long l, long l2, int i5, int i6, int i7, boolean flag2, int i8, boolean flag3, boolean flag4, boolean flag5, WorldBorder.Settings settings, int i9, int i10, @Nullable UUID uuid, Set<String> set, Set<String> set2, TimerQueue<MinecraftServer> timerQueue, @Nullable CompoundTag compoundTag2, EndDragonFight.Data data, LevelSettings levelSettings, WorldOptions worldOptions, PrimaryLevelData.SpecialWorldProperty specialWorldProperty, Lifecycle lifecycle) {
          this.fixerUpper = dataFixer;
-@@ -120,7 +121,11 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+@@ -123,7 +124,9 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 
      public static <T> PrimaryLevelData parse(Dynamic<T> dynamic, DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag, LevelSettings levelSettings, LevelVersion levelVersion, PrimaryLevelData.SpecialWorldProperty specialWorldProperty, WorldOptions worldOptions, Lifecycle lifecycle) {
          long l = dynamic.get("Time").asLong(0L);
-         CompoundTag compoundTag2 = (CompoundTag)(dynamic.get("DragonFight").result().orElseGet(() -> dynamic.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap())).convert(NbtOps.INSTANCE).getValue();
--        return new PrimaryLevelData(dataFixer, i, compoundTag, dynamic.get("WasModded").asBoolean(false), dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0), dynamic.get("SpawnAngle").asFloat(0.0F), l, dynamic.get("DayTime").asLong(l), levelVersion.levelDataVersion(), dynamic.get("clearWeatherTime").asInt(0), dynamic.get("rainTime").asInt(0), dynamic.get("raining").asBoolean(false), dynamic.get("thunderTime").asInt(0), dynamic.get("thundering").asBoolean(false), dynamic.get("initialized").asBoolean(true), dynamic.get("DifficultyLocked").asBoolean(false), WorldBorder.Settings.read(dynamic, WorldBorder.DEFAULT_SETTINGS), dynamic.get("WanderingTraderSpawnDelay").asInt(0), dynamic.get("WanderingTraderSpawnChance").asInt(0), (UUID)dynamic.get("WanderingTraderId").read(UUIDUtil.CODEC).result().orElse(null), dynamic.get("ServerBrands").asStream().flatMap((dynamicx) -> dynamicx.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)), new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, dynamic.get("ScheduledEvents").asStream()), (CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(), compoundTag2, levelSettings, worldOptions, specialWorldProperty, lifecycle);
-+        // Blueberry start
-+        PrimaryLevelData data = new PrimaryLevelData(dataFixer, i, compoundTag, dynamic.get("WasModded").asBoolean(false), dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0), dynamic.get("SpawnAngle").asFloat(0.0F), l, dynamic.get("DayTime").asLong(l), levelVersion.levelDataVersion(), dynamic.get("clearWeatherTime").asInt(0), dynamic.get("rainTime").asInt(0), dynamic.get("raining").asBoolean(false), dynamic.get("thunderTime").asInt(0), dynamic.get("thundering").asBoolean(false), dynamic.get("initialized").asBoolean(true), dynamic.get("DifficultyLocked").asBoolean(false), WorldBorder.Settings.read(dynamic, WorldBorder.DEFAULT_SETTINGS), dynamic.get("WanderingTraderSpawnDelay").asInt(0), dynamic.get("WanderingTraderSpawnChance").asInt(0), (UUID)dynamic.get("WanderingTraderId").read(UUIDUtil.CODEC).result().orElse(null), dynamic.get("ServerBrands").asStream().flatMap((dynamicx) -> dynamicx.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)), new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, dynamic.get("ScheduledEvents").asStream()), (CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(), compoundTag2, levelSettings, worldOptions, specialWorldProperty, lifecycle);
+-        return new PrimaryLevelData(dataFixer, i, compoundTag, dynamic.get("WasModded").asBoolean(false), dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0), dynamic.get("SpawnAngle").asFloat(0.0F), l, dynamic.get("DayTime").asLong(l), levelVersion.levelDataVersion(), dynamic.get("clearWeatherTime").asInt(0), dynamic.get("rainTime").asInt(0), dynamic.get("raining").asBoolean(false), dynamic.get("thunderTime").asInt(0), dynamic.get("thundering").asBoolean(false), dynamic.get("initialized").asBoolean(true), dynamic.get("DifficultyLocked").asBoolean(false), WorldBorder.Settings.read(dynamic, WorldBorder.DEFAULT_SETTINGS), dynamic.get("WanderingTraderSpawnDelay").asInt(0), dynamic.get("WanderingTraderSpawnChance").asInt(0), (UUID)dynamic.get("WanderingTraderId").read(UUIDUtil.CODEC).result().orElse(null), dynamic.get("ServerBrands").asStream().flatMap((dynamicx) -> dynamicx.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)), dynamic.get("removed_features").asStream().flatMap((dynamicx) -> dynamicx.asString().result().stream()).collect(Collectors.toSet()), new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, dynamic.get("ScheduledEvents").asStream()), (CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(), (EndDragonFight.Data)dynamic.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT), levelSettings, worldOptions, specialWorldProperty, lifecycle);
++        PrimaryLevelData data = new PrimaryLevelData(dataFixer, i, compoundTag, dynamic.get("WasModded").asBoolean(false), dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0), dynamic.get("SpawnAngle").asFloat(0.0F), l, dynamic.get("DayTime").asLong(l), levelVersion.levelDataVersion(), dynamic.get("clearWeatherTime").asInt(0), dynamic.get("rainTime").asInt(0), dynamic.get("raining").asBoolean(false), dynamic.get("thunderTime").asInt(0), dynamic.get("thundering").asBoolean(false), dynamic.get("initialized").asBoolean(true), dynamic.get("DifficultyLocked").asBoolean(false), WorldBorder.Settings.read(dynamic, WorldBorder.DEFAULT_SETTINGS), dynamic.get("WanderingTraderSpawnDelay").asInt(0), dynamic.get("WanderingTraderSpawnChance").asInt(0), (UUID)dynamic.get("WanderingTraderId").read(UUIDUtil.CODEC).result().orElse(null), dynamic.get("ServerBrands").asStream().flatMap((dynamicx) -> dynamicx.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)), dynamic.get("removed_features").asStream().flatMap((dynamicx) -> dynamicx.asString().result().stream()).collect(Collectors.toSet()), new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, dynamic.get("ScheduledEvents").asStream()), (CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(), (EndDragonFight.Data)dynamic.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT), levelSettings, worldOptions, specialWorldProperty, lifecycle);
 +        data.installedMods.addAll(dynamic.get("InstalledMods").asStream().flatMap((dynamicx) -> net.blueberrymc.util.Util.toStream(net.blueberrymc.common.bml.SimpleVersionedModInfo.load(dynamicx))).collect(Collectors.toCollection(Sets::newLinkedHashSet)));
 +        return data;
-+        // Blueberry end
      }
  
      public CompoundTag createTag(RegistryAccess registryAccess, @Nullable CompoundTag compoundTag) {
-@@ -138,6 +143,11 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
-         ListTag listTag = new ListTag();
-         this.knownServerBrands.stream().map(StringTag::valueOf).forEach(listTag::add);
-         compoundTag.put("ServerBrands", listTag);
+@@ -139,6 +142,11 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 
+     private void setTagData(RegistryAccess registryAccess, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
+         compoundTag.put("ServerBrands", stringCollectionToTag(this.knownServerBrands));
 +        // Blueberry start
-+        listTag.clear();
++        ListTag listTag = new ListTag();
 +        this.installedMods.stream().map(net.blueberrymc.common.bml.VersionedModInfo::save).forEach(listTag::add);
 +        compoundTag.put("InstalledMods", listTag);
 +        // Blueberry end
          compoundTag.putBoolean("WasModded", this.wasModded);
-         CompoundTag compoundTag3 = new CompoundTag();
-         compoundTag3.putString("Name", SharedConstants.getCurrentVersion().getName());
-@@ -467,4 +477,17 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+         if (!this.removedFeatureFlags.isEmpty()) {
+             compoundTag.put("removed_features", stringCollectionToTag(this.removedFeatureFlags));
+@@ -482,4 +490,17 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
          FLAT,
          DEBUG;
      }
+-}
+\ No newline at end of file
 +
 +    // Blueberry start
 +    @Override
@@ -87,14 +87,13 @@ index 8b971a9d9dbdd51cfef525acaacdf0c983b0d5ea..61f300033d0f186242d3888cac3ec27c
 +        return this.installedMods;
 +    }
 +    // Blueberry end
- }
-\ No newline at end of file
++}
 diff --git a/src/main/java/net/minecraft/world/level/storage/WorldData.java b/src/main/java/net/minecraft/world/level/storage/WorldData.java
-index 7b48bd6811fd1aa9a368c8fcbba91cd784bb6248..69a0fc6f6c3dd9c2e20c3cb2393cbf2eb6dce119 100644
+index 092eda39d48152483aa86f009b4cd1657306b76c..226a83f056af21e0e66d95d9e618bc0b447c1b5a 100644
 --- a/src/main/java/net/minecraft/world/level/storage/WorldData.java
 +++ b/src/main/java/net/minecraft/world/level/storage/WorldData.java
-@@ -16,7 +16,7 @@ import net.minecraft.world.level.LevelSettings;
- import net.minecraft.world.level.WorldDataConfiguration;
+@@ -17,7 +17,7 @@ import net.minecraft.world.level.WorldDataConfiguration;
+ import net.minecraft.world.level.dimension.end.EndDragonFight;
  import net.minecraft.world.level.levelgen.WorldOptions;
  
 -public interface WorldData {

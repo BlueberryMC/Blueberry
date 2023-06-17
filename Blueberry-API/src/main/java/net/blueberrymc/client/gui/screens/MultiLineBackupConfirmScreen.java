@@ -1,6 +1,7 @@
 package net.blueberrymc.client.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.MultiLineLabel;
@@ -62,19 +63,19 @@ public class MultiLineBackupConfirmScreen extends Screen {
 
     }
 
-    public void render(@NotNull PoseStack poseStack, int i, int i2, float f) {
-        this.renderBackground(poseStack);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 50, 16777215);
+    public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
+        this.renderBackground(guiGraphics);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 50, 16777215);
         int y = 70;
         for (MultiLineLabel label : this.message) {
-            label.renderCentered(poseStack, this.width / 2, y);
+            label.renderCentered(guiGraphics, this.width / 2, y);
             if (y + 150 > this.height) {
-                drawCenteredString(poseStack, this.font, "...", this.width / 2, y + 9, 16777215);
+                guiGraphics.drawCenteredString(this.font, "...", this.width / 2, y + 9, 16777215);
                 break;
             }
             y += label.getLineCount() * 9;
         }
-        super.render(poseStack, i, i2, f);
+        super.render(guiGraphics, i, i2, f);
     }
 
     @Override
