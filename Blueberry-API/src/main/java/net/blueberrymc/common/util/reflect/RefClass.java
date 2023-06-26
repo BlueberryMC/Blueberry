@@ -1,10 +1,8 @@
 package net.blueberrymc.common.util.reflect;
 
 import com.google.common.base.Preconditions;
-import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.common.util.ThrowableActionableResult;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,17 +43,6 @@ public record RefClass<T>(@NotNull Class<T> clazz) {
     @NotNull
     public RefClass<?> unchecked() {
         return Ref.getClassUnchecked(clazz);
-    }
-
-    /**
-     * @deprecated Use {@link #clazz()} instead
-     */
-    @Deprecated(forRemoval = true)
-    @DeprecatedReason("Use #clazz() instead")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @NotNull
-    public Class<T> getClazz() {
-        return clazz;
     }
 
     @Contract(pure = true)

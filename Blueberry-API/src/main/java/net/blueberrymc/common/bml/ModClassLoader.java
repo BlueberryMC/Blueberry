@@ -74,25 +74,25 @@ public class ModClassLoader extends URLClassLoader {
             try {
                 mainClass = this.findClass(description.getMainClass());
             } catch (ClassNotFoundException ex) {
-                throw new InvalidModException("Cannot find main class '" + description.getMainClass() + "' of mod '" + description.getModId() + "'", ex);
+                throw new InvalidModException("Cannot find main class '" + description.getMainClass() + "' of mod '" + description.modId() + "'", ex);
             }
             Class<? extends BlueberryMod> modClass;
             try {
                 modClass = mainClass.asSubclass(BlueberryMod.class);
             } catch (ClassCastException ex) {
                 LOGGER.info("BlueberryMod is loaded from {} / {}", BlueberryMod.class.getClassLoader(), BlueberryMod.class.getClassLoader().getClass().getTypeName());
-                throw new InvalidModException("Main class '" + description.getMainClass() + "' of mod '" + description.getModId() + "' does not extend BlueberryMod", ex);
+                throw new InvalidModException("Main class '" + description.getMainClass() + "' of mod '" + description.modId() + "' does not extend BlueberryMod", ex);
             }
             mod = modClass.getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | NoSuchMethodException ex) {
             throw new InvalidModException("No public constructor", ex);
         } catch (InstantiationException ex) {
             InvalidModException ex2 = new InvalidModException("Illegal main class type", ex);
-            LOGGER.error("Failed to load mod {} ({})", description.getName(), description.getModId(), ex2);
+            LOGGER.error("Failed to load mod {} ({})", description.name(), description.modId(), ex2);
             throw ex2;
         } catch (InvocationTargetException ex) {
             InvalidModException ex2 = new InvalidModException("Constructor threw exception", ex.getCause());
-            LOGGER.error("Failed to load mod {} ({})", description.getName(), description.getModId(), ex2);
+            LOGGER.error("Failed to load mod {} ({})", description.name(), description.modId(), ex2);
             throw ex2;
         }
     }
@@ -230,8 +230,8 @@ public class ModClassLoader extends URLClassLoader {
         if (mod.getClass().getClassLoader() != this)
             throw new IllegalArgumentException("Cannot initialize mod outside of this class loader");
         if (this.mod != null && this.initializedMod != null)
-            throw new IllegalArgumentException("Cannot reinitialize mod: " + description.getModId(), state);
-        state = new IllegalStateException("Initialization: " + description.getModId());
+            throw new IllegalArgumentException("Cannot reinitialize mod: " + description.modId(), state);
+        state = new IllegalStateException("Initialization: " + description.modId());
         this.initializedMod = mod;
         mod.getStateList().add(ModState.LOADED);
         mod.init(modLoader, description, this, this.file);

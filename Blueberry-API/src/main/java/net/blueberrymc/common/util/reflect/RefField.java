@@ -1,7 +1,5 @@
 package net.blueberrymc.common.util.reflect;
 
-import net.blueberrymc.common.DeprecatedReason;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,17 +14,6 @@ public record RefField<T>(@NotNull Field field) {
     @NotNull
     public String getName() {
         return this.field.getName();
-    }
-
-    /**
-     * @deprecated Use {@link #field()} instead
-     */
-    @Deprecated(forRemoval = true)
-    @DeprecatedReason("Use #field() instead")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @NotNull
-    public Field getField() {
-        return this.field;
     }
 
     @Contract(pure = true)

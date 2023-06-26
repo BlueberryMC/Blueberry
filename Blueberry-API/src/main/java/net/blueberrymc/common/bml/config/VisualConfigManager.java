@@ -52,7 +52,7 @@ public class VisualConfigManager {
                 if (mod == null) {
                     theNamespace = "minecraft";
                 } else {
-                    theNamespace = mod.getModId();
+                    theNamespace = mod.modId();
                 }
                 return BlueberryText.text(theNamespace, path);
             }
@@ -60,7 +60,7 @@ public class VisualConfigManager {
                 return Component.literal(name);
             }
         }
-        if (mod != null) return Component.literal(mod.getName());
+        if (mod != null) return Component.literal(mod.name());
         return null;
     }
 
@@ -513,7 +513,7 @@ public class VisualConfigManager {
                 mod = BlueberryMod.detectModFromClass(clazz);
             }
             if (mod != null) {
-                namespace = mod.getModId();
+                namespace = mod.modId();
             } else {
                 namespace = "minecraft";
             }
@@ -641,8 +641,8 @@ public class VisualConfigManager {
     /**
      * Marks the class as config class. Required on config classes (including root and inner class).
      * The config class must be public (and its fields too), but may be abstract.
-     * @see #createFromClass(BlueberryMod, Component, Class) 
-     * @see #createFromClass(Class) 
+     * @see #createFromClass(BlueberryMod, Component, Class)
+     * @see #createFromClass(Class)
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)

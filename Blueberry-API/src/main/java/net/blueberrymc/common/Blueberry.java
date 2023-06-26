@@ -7,7 +7,6 @@ import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.BlueberryModLoader;
 import net.blueberrymc.common.bml.event.EventManager;
 import net.blueberrymc.common.bml.ModLoader;
-import net.blueberrymc.common.bml.ModManager;
 import net.blueberrymc.common.bml.ModState;
 import net.blueberrymc.common.permission.DefaultPermissionProvider;
 import net.blueberrymc.common.permission.PermissionProvider;
@@ -41,20 +40,12 @@ public class Blueberry {
     private static final Logger LOGGER = LogManager.getLogger();
     private static BlueberryModLoader modLoader;
     private static final EventManager EVENT_MANAGER = new EventManager();
-    private static final ModManager MOD_MANAGER = new ModManager();
     private static final NonNullObject<PermissionProvider> PERMISSION_PROVIDER = new NonNullObject<>(DefaultPermissionProvider.INSTANCE);
     private static Side side;
     private static BlueberryUtil util;
     private static File gameDir;
 
-    /**
-     * Do not change the value please
-     * @deprecated shouldn't be modified by mods. Use #isStopping() to check if the Blueberry is shutting down.
-     */
-    @Deprecated(forRemoval = true, since = "1.5.0-SNAPSHOT")
-    @DeprecatedReason("shouldn't be modified by mods. Use #isStopping() to check if the Blueberry is shutting down.")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    public static boolean stopping = false;
+    private static boolean stopping = false;
 
     @Contract(pure = true)
     public static boolean isStopping() {
@@ -81,15 +72,6 @@ public class Blueberry {
     @NotNull
     public static EventManager getEventManager() {
         return EVENT_MANAGER;
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @DeprecatedReason("All methods in ModManager are deprecated")
-    @Deprecated(forRemoval = true)
-    @Contract(pure = true)
-    @NotNull
-    public static ModManager getModManager() {
-        return MOD_MANAGER;
     }
 
     /**

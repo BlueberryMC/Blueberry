@@ -84,7 +84,7 @@ public class BlueberryCommand {
     }
 
     private static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
-        source.sendSuccess(() -> Component.literal("Mod status of '" + mod.getName() + "': " + mod.getStateList() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
+        source.sendSuccess(() -> Component.literal("Mod status of '" + mod.name() + "': " + mod.getStateList() + " (Current: " + mod.getStateList().getCurrentState().getName() + ")"), false);
         return 1;
     }
 
@@ -94,19 +94,19 @@ public class BlueberryCommand {
             player = source.getPlayerOrException();
         } catch (CommandSyntaxException ignore) {}
         if (new ModReloadEvent(player, mod).callEvent()) {
-            source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.reloading", mod.getName()), true);
+            source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.reloading", mod.name()), true);
             try {
                 if (mod.onReload()) {
-                    Minecraft.getInstance().reloadResourcePacks().thenAccept(v -> source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true));
+                    Minecraft.getInstance().reloadResourcePacks().thenAccept(v -> source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.success", mod.name()), true));
                 } else {
-                    source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.success", mod.getName()), true);
+                    source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.success", mod.name()), true);
                 }
             } catch (RuntimeException ex) {
-                source.sendFailure(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.failure.error", mod.getName(), ex.getMessage()));
-                LOGGER.warn("Failed to reload mod {}", mod.getName(), ex);
+                source.sendFailure(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.failure.error", mod.name(), ex.getMessage()));
+                LOGGER.warn("Failed to reload mod {}", mod.name(), ex);
             }
         } else {
-            source.sendFailure(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.failure.cancelled", mod.getName()));
+            source.sendFailure(BlueberryText.text("blueberry", "blueberry.mod.command.mod.reload.failure.cancelled", mod.name()));
         }
         return 1;
     }

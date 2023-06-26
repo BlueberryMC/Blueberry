@@ -11,9 +11,10 @@ public record SimpleModInfo(@NotNull String name, @NotNull String modId) impleme
     /**
      * @deprecated Use {@link #name()} instead.
      */
+    @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #name() instead")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "3.0.0")
     @NotNull
     @Override
     public String getName() {
@@ -23,9 +24,10 @@ public record SimpleModInfo(@NotNull String name, @NotNull String modId) impleme
     /**
      * @deprecated Use {@link #modId()} instead.
      */
+    @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @DeprecatedReason("Use #modId() instead")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "3.0.0")
     @NotNull
     @Override
     public String getModId() {

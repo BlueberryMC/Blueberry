@@ -3,7 +3,6 @@ package net.blueberrymc.common.bml.event;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import net.blueberrymc.common.Blueberry;
-import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
@@ -11,7 +10,6 @@ import net.blueberrymc.common.util.Nag;
 import net.blueberrymc.common.util.ThrowableConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -27,15 +25,8 @@ public class EventManager {
     private static final ConcurrentHashMap<Class<? extends Event>, HandlerList> HANDLERS = new ConcurrentHashMap<>();
 
     private static void logInvalidHandler(Method method, String message, BlueberryMod mod) {
-        LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod.getModId());
-        ModLoadingErrors.add(new ModLoadingError(mod, String.format("Invalid EventHandler: %s at %s in mod %s", message, method.toGenericString(), mod.getModId()), true));
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @DeprecatedReason("Listener interface is deprecated")
-    @Deprecated(forRemoval = true)
-    public void registerEvents(@NotNull BlueberryMod mod, @NotNull Listener listener) {
-        this.registerEvents(mod, (Object) listener);
+        LOGGER.warn("Invalid EventHandler: {} at {} in mod {}", message, method.toGenericString(), mod.modId());
+        ModLoadingErrors.add(new ModLoadingError(mod, String.format("Invalid EventHandler: %s at %s in mod %s", message, method.toGenericString(), mod.modId()), true));
     }
 
     /**
@@ -112,18 +103,6 @@ public class EventManager {
     public void unregisterEvents(@NotNull BlueberryMod mod) {
         Preconditions.checkNotNull(mod, "mod cannot be null");
         HANDLERS.values().forEach(handlerList -> handlerList.remove(mod));
-    }
-
-    /**
-     * Unregister a listener
-     * @param listener the listener to unregister
-     * @deprecated Listener interface is deprecated
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @DeprecatedReason("Listener interface is deprecated")
-    @Deprecated(forRemoval = true)
-    public void unregisterEvents(@NotNull Listener listener) {
-        unregisterEvents((Object) listener);
     }
 
     /**

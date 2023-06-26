@@ -9,14 +9,14 @@ public interface VersionedModInfo extends Versioned, ModInfo {
     @Contract("_ -> new")
     @NotNull
     static VersionedModInfo copyValues(@NotNull VersionedModInfo info) {
-        return new SimpleVersionedModInfo(info.getName(), info.getModId(), info.getVersion());
+        return new SimpleVersionedModInfo(info.name(), info.modId(), info.getVersion());
     }
 
     @NotNull
     default CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.putString("name", getName());
-        tag.putString("id", getModId());
+        tag.putString("name", name());
+        tag.putString("id", modId());
         tag.putString("version", getVersion());
         return tag;
     }

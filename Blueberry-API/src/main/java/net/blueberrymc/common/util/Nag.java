@@ -45,7 +45,7 @@ public class Nag extends RuntimeException {
                 ? "<unknown>" :
                 String.join(", ", mdf.getAuthors());
         // <unknown> if mdf is null
-        String modId = mdf == null ? "<unknown>" : mdf.getModId();
+        String modId = mdf == null ? "<unknown>" : mdf.modId();
         return "Please notify the mod " + author + " of " + modId + " (" + joinedAuthor + ") about following: ";
     }
 

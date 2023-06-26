@@ -16,10 +16,10 @@ public class BlueberryResourceManager extends FallbackResourceManager {
     @NotNull private final PackResources packResources;
 
     public BlueberryResourceManager(@NotNull BlueberryMod mod) {
-        super(PackType.CLIENT_RESOURCES, mod.getDescription().getModId());
+        super(PackType.CLIENT_RESOURCES, mod.getDescription().modId());
         this.mod = mod;
         if (this.mod.getFile().isDirectory()) {
-            packResources = new PathPackResources("Mod Resources for " + mod.getName() + " (Folder)", this.mod.getFile().toPath(), true) {
+            packResources = new PathPackResources("Mod Resources for " + mod.name() + " (Folder)", this.mod.getFile().toPath(), true) {
                 @Nullable
                 @Override
                 public IoSupplier<InputStream> getRootResource(String @NotNull ... paths) {

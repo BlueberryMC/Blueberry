@@ -7,12 +7,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.blueberrymc.common.DeprecatedReason;
-import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.BlueberryMod;
+import net.blueberrymc.common.resources.BlueberryText;
 import net.minecraft.commands.SharedSuggestionProvider;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,18 +41,6 @@ public record ModIdArgument(@NotNull Mode mode) implements ArgumentType<Blueberr
         return commandContext.getArgument(s, BlueberryMod.class);
     }
 
-    /**
-     * @deprecated Use {@link #mode()} instead.
-     */
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    @DeprecatedReason("Use #mode() instead")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @NotNull
-    public Mode getMode() {
-        return mode;
-    }
-
     @NotNull
     @Override
     public BlueberryMod parse(@NotNull StringReader stringReader) throws CommandSyntaxException {
@@ -68,8 +54,8 @@ public record ModIdArgument(@NotNull Mode mode) implements ArgumentType<Blueberr
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
         List<String> list = switch (mode) {
-            case ONLY_ACTIVE_MODS -> Blueberry.getModLoader().mapActiveMods(BlueberryMod::getModId);
-            case ALL_MODS -> Blueberry.getModLoader().mapLoadedMods(BlueberryMod::getModId);
+            case ONLY_ACTIVE_MODS -> Blueberry.getModLoader().mapActiveMods(BlueberryMod::modId);
+            case ALL_MODS -> Blueberry.getModLoader().mapLoadedMods(BlueberryMod::modId);
         };
         return SharedSuggestionProvider.suggest(list, builder);
     }

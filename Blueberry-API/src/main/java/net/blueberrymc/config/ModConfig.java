@@ -37,7 +37,7 @@ public class ModConfig {
     }
 
     public ModConfig(@NotNull ModDescriptionFile modDescriptionFile) {
-        this(getDefaultFileName(modDescriptionFile.getModId()), modDescriptionFile);
+        this(getDefaultFileName(modDescriptionFile.modId()), modDescriptionFile);
     }
 
     private static String getDefaultFileName(String modId) {

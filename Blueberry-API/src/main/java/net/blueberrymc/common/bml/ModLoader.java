@@ -44,9 +44,9 @@ public interface ModLoader {
     default BlueberryMod getModByName(@NotNull String modName, boolean ignoreCase) {
         for (BlueberryMod mod : getLoadedMods()) {
             if (ignoreCase) {
-                if (mod.getName().equalsIgnoreCase(modName)) return mod;
+                if (mod.name().equalsIgnoreCase(modName)) return mod;
             } else {
-                if (mod.getName().equals(modName)) return mod;
+                if (mod.name().equals(modName)) return mod;
             }
         }
         return null;
@@ -54,7 +54,7 @@ public interface ModLoader {
 
     @NotNull
     default List<ModInfo> getModInfos() {
-        return ImmutableList.copyOf(mapLoadedMods(mod -> new ModInfo(mod.getModId(), mod.getVersion())));
+        return ImmutableList.copyOf(mapLoadedMods(mod -> new ModInfo(mod.modId(), mod.getVersion())));
     }
 
     @NotNull
@@ -185,11 +185,11 @@ public interface ModLoader {
         for (BlueberryMod mod : getLoadedMods()) {
             try {
                 PackResources packResources = mod.getResourceManager().getPackResources();
-                Pack.Info info = Pack.readPackInfo(mod.getModId(), (s) -> packResources);
+                Pack.Info info = Pack.readPackInfo(mod.modId(), (s) -> packResources);
                 if (info == null) {
-                    throw new RuntimeException("Failed to load mod pack info for " + mod.getModId());
+                    throw new RuntimeException("Failed to load mod pack info for " + mod.modId());
                 }
-                Pack pack = Pack.create(mod.getDescription().getModId(), Component.literal(mod.getName()), true, (s) -> packResources, info, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, false, PackSource.BUILT_IN);
+                Pack pack = Pack.create(mod.getDescription().modId(), Component.literal(mod.name()), true, (s) -> packResources, info, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, false, PackSource.BUILT_IN);
                 consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
                 break; // resource manager has not been loaded yet

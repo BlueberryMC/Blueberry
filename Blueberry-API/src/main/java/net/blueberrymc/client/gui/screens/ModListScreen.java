@@ -90,7 +90,7 @@ public class ModListScreen extends BlueberryScreen {
                 ModsList.Entry entry = this.modsList.getSelected();
                 if (entry != null) {
                     if (new ModReloadEvent(null, entry.mod).callEvent()) {
-                        LOGGER.info("Reloading mod: {} ({})", entry.mod.getName(), entry.mod.getModId());
+                        LOGGER.info("Reloading mod: {} ({})", entry.mod.name(), entry.mod.modId());
                         try {
                             if (entry.mod.onReload()) {
                                 this.minecraft.reloadResourcePacks().thenAccept(v -> this.minecraft.setScreen(new ModListScreen(this.previousScreen)));
@@ -254,8 +254,8 @@ public class ModListScreen extends BlueberryScreen {
                 this.disableButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.disable"));
             }
             int y = 40;
-            guiGraphics.drawString(this.font, "Mod Name: " + mod.getName(), this.width / 4, y, 16777215);
-            guiGraphics.drawString(this.font, "Mod ID: " + mod.getDescription().getModId(), this.width / 4, y += 10, 16777215);
+            guiGraphics.drawString(this.font, "Mod Name: " + mod.name(), this.width / 4, y, 16777215);
+            guiGraphics.drawString(this.font, "Mod ID: " + mod.getDescription().modId(), this.width / 4, y += 10, 16777215);
             guiGraphics.drawString(this.font, "Version: " + mod.getDescription().getVersion(), this.width / 4, y += 10, 16777215);
             List<String> authors = mod.getDescription().getAuthors();
             if (authors != null) {
@@ -319,7 +319,7 @@ public class ModListScreen extends BlueberryScreen {
             }
 
             public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
-                String s = this.mod.getName();
+                String s = this.mod.name();
                 guiGraphics.drawString(ModListScreen.this.font, s, ModsList.this.width / 2 - ModListScreen.this.font.width(s) / 2, i2 + 2, 16777215, true);
             }
 
@@ -338,7 +338,7 @@ public class ModListScreen extends BlueberryScreen {
 
             @Override
             public @NotNull Component getNarration() {
-                return Component.translatable("narrator.select", this.mod.getName());
+                return Component.translatable("narrator.select", this.mod.name());
             }
         }
     }

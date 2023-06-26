@@ -1,12 +1,14 @@
 package net.blueberrymc.config;
 
 import com.google.common.base.Preconditions;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.bml.VersionedModInfo;
 import net.blueberrymc.config.yaml.YamlArray;
 import net.blueberrymc.config.yaml.YamlObject;
 import net.blueberrymc.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,9 +65,18 @@ public class ModDescriptionFile implements VersionedModInfo {
         this.include = include;
     }
 
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true)
+    @DeprecatedReason("Use #modId() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "3.0.0")
     @Override
     @NotNull
     public String getModId() {
+        return modId;
+    }
+
+    @Override
+    public @NotNull String modId() {
         return modId;
     }
 
@@ -80,9 +91,18 @@ public class ModDescriptionFile implements VersionedModInfo {
         return mainClass;
     }
 
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true)
+    @DeprecatedReason("Use #name() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "3.0.0")
     @Override
     @NotNull
     public String getName() {
+        return name;
+    }
+
+    @Override
+    public @NotNull String name() {
         return name;
     }
 

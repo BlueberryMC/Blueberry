@@ -2,6 +2,7 @@ package net.blueberrymc.common.bml;
 
 import com.google.common.base.Preconditions;
 import net.blueberrymc.common.Blueberry;
+import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.common.bml.config.CompoundVisualConfig;
 import net.blueberrymc.common.bml.config.RootCompoundVisualConfig;
 import net.blueberrymc.common.bml.config.VisualConfig;
@@ -13,6 +14,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +75,7 @@ public class BlueberryMod implements VersionedModInfo {
 
     final void doEnable() {
         getStateList().add(ModState.LOADED);
-        setVisualConfig(new RootCompoundVisualConfig(Component.literal(getName())));
+        setVisualConfig(new RootCompoundVisualConfig(Component.literal(name())));
         onLoad();
         getStateList().add(ModState.PRE_INIT);
         onPreInit();
@@ -90,13 +92,13 @@ public class BlueberryMod implements VersionedModInfo {
             this.description = description;
             this.classLoader = classLoader;
             this.config = new ModConfig(this.description);
-            this.logger = LogManager.getLogger(this.description.getName());
+            this.logger = LogManager.getLogger(this.description.name());
             this.file = file;
-            this.visualConfig = new RootCompoundVisualConfig(Component.literal(this.description.getName()));
+            this.visualConfig = new RootCompoundVisualConfig(Component.literal(this.description.name()));
             this.onLoad();
         } catch (Throwable throwable) {
             this.stateList.add(ModState.ERRORED);
-            Blueberry.crash(throwable, "Loading mod " + this.description.getName() + " (" + this.description.getModId() + ")");
+            Blueberry.crash(throwable, "Loading mod " + this.description.name() + " (" + this.description.modId() + ")");
         }
     }
 
@@ -144,16 +146,36 @@ public class BlueberryMod implements VersionedModInfo {
         return classLoader;
     }
 
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true)
+    @DeprecatedReason("Use #name() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "3.0.0")
     @NotNull
     @Override
     public final String getName() {
-        return this.description.getName();
+        return this.description.name();
+    }
+
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true)
+    @DeprecatedReason("Use #modId() instead")
+    @ApiStatus.ScheduledForRemoval(inVersion = "3.0.0")
+    @NotNull
+    @Override
+    public final String getModId() {
+        return this.description.modId();
     }
 
     @NotNull
     @Override
-    public final String getModId() {
-        return this.description.getModId();
+    public final String name() {
+        return this.description.name();
+    }
+
+    @NotNull
+    @Override
+    public final String modId() {
+        return this.description.modId();
     }
 
     @NotNull

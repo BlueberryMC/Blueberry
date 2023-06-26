@@ -27,7 +27,7 @@ public class BlueberryNetworkManager {
     private static final Map<ResourceLocation, PacketConstructor<?>> serverBoundPacketMap = new Object2ObjectOpenHashMap<>();
 
     public static void register(@NotNull BlueberryMod mod, @NotNull String id, @NotNull PacketConstructor<?> packetConstructor, @NotNull BlueberryPacketFlow flow) {
-        register(mod.getModId(), id, packetConstructor, flow);
+        register(mod.modId(), id, packetConstructor, flow);
     }
 
     public static void register(@NotNull String namespace, @NotNull String id, @NotNull PacketConstructor<?> packetConstructor, @NotNull BlueberryPacketFlow flow) {
@@ -46,7 +46,7 @@ public class BlueberryNetworkManager {
 
     @Nullable
     public static PacketConstructor<?> getPacket(@NotNull BlueberryMod mod, @NotNull String id, @NotNull BlueberryPacketFlow flow) {
-        return getPacket(mod.getModId(), id, flow);
+        return getPacket(mod.modId(), id, flow);
     }
 
     @Nullable

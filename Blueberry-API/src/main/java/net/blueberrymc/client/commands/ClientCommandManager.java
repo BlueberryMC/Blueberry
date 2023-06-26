@@ -109,8 +109,8 @@ public class ClientCommandManager {
     public static void register(@NotNull String name, @NotNull ClientCommandHandler handler) {
         if (has(name)) {
             ClientCommandHandler existingHandler = Objects.requireNonNull(get(name));
-            String provided = ClientCommandHandler.getMod(handler).getModId();
-            String existing = ClientCommandHandler.getMod(existingHandler).getModId();
+            String provided = ClientCommandHandler.getMod(handler).modId();
+            String existing = ClientCommandHandler.getMod(existingHandler).modId();
             LOGGER.warn("Client command conflict (/{}): {} (provided) and {} (existing)", name, provided, existing);
             LOGGER.warn("Replacing {}'s client command (/{}) with {}'s ClientCommandHandler.", existing, name, provided);
         }

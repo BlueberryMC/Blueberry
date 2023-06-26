@@ -156,7 +156,7 @@ public final class BlueberryRegistries<T> {
 
     public void register(@NotNull String id, @NotNull T object) {
         if (object.getClass().getClassLoader() instanceof ModClassLoader) {
-            register(((ModClassLoader) object.getClass().getClassLoader()).getMod().getDescription().getModId().toLowerCase(Locale.ROOT), id, object);
+            register(((ModClassLoader) object.getClass().getClassLoader()).getMod().getDescription().modId().toLowerCase(Locale.ROOT), id, object);
         }
     }
 

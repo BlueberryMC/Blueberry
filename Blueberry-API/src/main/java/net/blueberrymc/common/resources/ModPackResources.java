@@ -19,7 +19,7 @@ public class ModPackResources extends FilePackResources {
     private final BlueberryMod mod;
 
     public ModPackResources(BlueberryMod mod) {
-        super("Mod Resources for " + mod.getName() + " (File)", mod.getFile(), true);
+        super("Mod Resources for " + mod.name() + " (File)", mod.getFile(), true);
         this.mod = mod;
     }
 
@@ -45,7 +45,7 @@ public class ModPackResources extends FilePackResources {
 
     @Override
     public @NotNull String packId() {
-        return mod.getModId();
+        return mod.modId();
     }
 
     @Contract("_ -> new")
@@ -56,7 +56,7 @@ public class ModPackResources extends FilePackResources {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
         sb.append("  \"pack\": {\n");
-        sb.append("    \"description\": \"Mod Resources for ").append(mod.getDescription().getModId()).append("\",");
+        sb.append("    \"description\": \"Mod Resources for ").append(mod.getDescription().modId()).append("\",");
         sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion(PackType.CLIENT_RESOURCES));
         sb.append("  }\n");
         sb.append("}\n");

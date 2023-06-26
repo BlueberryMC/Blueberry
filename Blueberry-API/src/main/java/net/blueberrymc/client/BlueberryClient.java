@@ -185,8 +185,8 @@ public class BlueberryClient extends BlueberryUtil {
             Set<SimpleEntry<VersionedModInfo, VersionedModInfo>> set = TinyTime.measureTime("getIncompatibleVersionedModInfo", () -> ListUtils.getIncompatibleVersionedModInfo(((InstalledModsContainer) worldStem.worldData()).getInstalledMods(), Blueberry.getModLoader().getActiveMods()));
             LOGGER.info("Mod incompatibility detected:");
             for (SimpleEntry<VersionedModInfo, VersionedModInfo> entry : set) {
-                String key = Optional.ofNullable(entry.getKey()).map(i -> i.getName() + " [" + i.getModId() + "] @ " + i.getVersion()).orElse("");
-                String value = Optional.ofNullable(entry.getValue()).map(i -> i.getName() + " [" + i.getModId() + "] @ " + i.getVersion()).orElse("");
+                String key = Optional.ofNullable(entry.getKey()).map(i -> i.name() + " [" + i.modId() + "] @ " + i.getVersion()).orElse("");
+                String value = Optional.ofNullable(entry.getValue()).map(i -> i.name() + " [" + i.modId() + "] @ " + i.getVersion()).orElse("");
                 lines.add(Component.literal(key + " -> " + value));
                 LOGGER.info("  - {} -> {}", key, value);
             }

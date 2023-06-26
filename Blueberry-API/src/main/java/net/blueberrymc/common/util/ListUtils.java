@@ -59,13 +59,13 @@ public class ListUtils {
         int matches = 0;
         for (VersionedModInfo s : server) {
             for (VersionedModInfo c : client) {
-                if (Objects.equals(s.getVersion(), c.getVersion()) && Objects.equals(s.getModId(), c.getModId()) && Objects.equals(s.getName(), c.getName())) matches++;
+                if (Objects.equals(s.getVersion(), c.getVersion()) && Objects.equals(s.modId(), c.modId()) && Objects.equals(s.name(), c.name())) matches++;
             }
         }
         return matches == server.size()/* && matches >= client.size()*/;
     }
 
-    // TODO: really inefficient (client * server * 2 + client + server, so 'for' loops 80400 times if client and server has 200 mods)
+    // TO/DO: really inefficient (client * server * 2 + client + server, so 'for' loops 80400 times if client and server has 200 mods)
     @NotNull
     public static Set<SimpleEntry<VersionedModInfo, VersionedModInfo>> getIncompatibleVersionedModInfo(@NotNull Collection<? extends VersionedModInfo> server, @NotNull Collection<? extends VersionedModInfo> client) {
         if (server.size() > client.size()) return Collections.emptySet();
@@ -86,7 +86,7 @@ public class ListUtils {
         }
         for (VersionedModInfo s : server) {
             for (VersionedModInfo c : client) {
-                if (Objects.equals(s.getModId(), c.getModId()) && Objects.equals(s.getName(), c.getName())) {
+                if (Objects.equals(s.modId(), c.modId()) && Objects.equals(s.name(), c.name())) {
                     if (!Objects.equals(s.getVersion(), c.getVersion())) {
                         set.removeIf(entry -> entry.getValue() == null && VersionedModInfo.copyValues(s).equals(entry.getKey()));
                         set.removeIf(entry -> entry.getKey() == null && VersionedModInfo.copyValues(c).equals(entry.getValue()));

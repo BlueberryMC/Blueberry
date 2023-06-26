@@ -65,40 +65,12 @@ public class ActionableResult<T> {
         return new ActionableResult<>(value);
     }
 
-    // TODO: remove this method in 2.0.0
-    /**
-     * @deprecated Use {@link #getOrThrow()} instead
-     */
-    @Deprecated(forRemoval = true)
-    @DeprecatedReason("Use #getOrThrow() instead")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @NotNull
-    public T value() {
-        return get();
-    }
-
-    // TODO: remove this method in 2.0.0
-    /**
-     * @deprecated Warning: this method will be removed and {@link #get()} will return nullable value in a future
-     * version.
-     */
-    @Deprecated(forRemoval = true)
-    @DeprecatedReason("You will have to use #get() after 2.0.0")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.0.0")
-    @Nullable
-    public T nullableValue() {
-        return value;
-    }
-
-    // TODO: make it return nullable value in 2.0.0
     /**
      * Gets the value if present, otherwise throws {@link NoSuchElementException}.
-     * Warning: this method will return nullable value in a future version.
      * @return the value
      */
-    @NotNull
+    @Nullable
     public T get() {
-        if (value == null) throw new NoSuchElementException("No value present");
         return value;
     }
 
