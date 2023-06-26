@@ -19,7 +19,7 @@ public class ModConfigTracker {
 
     void register(@NotNull ModConfig config) {
         if (fileMap.containsKey(config.getFilename())) {
-            throw new IllegalArgumentException("Config file conflict: " + fileMap.get(config.getFilename()).modId() + " and " + config.modId());
+            throw new IllegalArgumentException("Config file conflict: " + fileMap.get(config.getFilename()).getModId() + " and " + config.getModId());
         }
     }
 
