@@ -171,22 +171,26 @@ public class FileDialogScreen extends BlueberryScreen {
             addRenderableWidget(selectButton);
         }
 
+        @Override
         protected int getScrollbarPosition() {
             return super.getScrollbarPosition() + 20;
         }
 
+        @Override
         public int getRowWidth() {
             return super.getRowWidth() - 30;
         }
 
+        @Override
         public void setSelected(@Nullable FileDialogScreen.FileList.Entry entry) {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(@NotNull GuiGraphics guiGraphics) {
-            FileDialogScreen.this.renderBackground(guiGraphics);
+        protected void renderBackground(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
+            FileDialogScreen.this.renderBackground(guiGraphics, i, i2, f);
         }
 
+        @Override
         public boolean isFocused() {
             return FileDialogScreen.this.getFocused() == this;
         }
@@ -247,10 +251,12 @@ public class FileDialogScreen extends BlueberryScreen {
                 this.file = file;
             }
 
+            @Override
             public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
                 guiGraphics.drawString(FileDialogScreen.this.font, name, FileList.this.width / 2 - FileDialogScreen.this.font.width(name) / 2, i2 + 2, 16777215, false);
             }
 
+            @Override
             public boolean mouseClicked(double d, double d2, int i) {
                 if (i == 0) {
                     this.select();

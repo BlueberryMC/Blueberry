@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonDeserializer;
-import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
 import io.netty.buffer.ByteBuf;
@@ -67,7 +66,6 @@ public class JavaCompiler {
         cp.add(ClasspathUtil.getClasspath(JsonDeserializer.class)); // Gson
         cp.add(ClasspathUtil.getClasspath(Type.class)); // DataFixerUpper
         cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
-        cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         cp.add(ClasspathUtil.getClasspath(NotNull.class)); // jetbrains annotations
         cp.add(ClasspathUtil.getClasspath(IOUtils.class)); // commons-io
         cp.add(ClasspathUtil.getClasspath(AttributeKey.class)); // netty-common

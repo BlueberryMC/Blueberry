@@ -5,10 +5,10 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index 2cc69a71245f10bb3ea9565c92ea3b95a3fc1d15..0b0ddc54154ada7605a1210ea77a6dee1eb1e6c3 100644
+index c413938633c63f5803111187a791d96e46e51270..8fdf2caf818e1bd7de04a06c4ec54c339078a38e 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -2379,6 +2379,13 @@ public class ClientPacketListener implements TickablePacketListener, ClientGameP
+@@ -2093,6 +2093,13 @@ public class ClientPacketListener extends ClientCommonPacketListenerImpl impleme
      }
  
      public void sendChat(String s) {
@@ -23,11 +23,11 @@ index 2cc69a71245f10bb3ea9565c92ea3b95a3fc1d15..0b0ddc54154ada7605a1210ea77a6dee
          long l = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index f8b439867e23432603bdd78a907e25c40d7be0d2..874bc4cb9a3b2b743bc19ae7bd2195b1011b867c 100644
+index 1663af005ad40c159d494be6f8b04bef01aae628..484fac408e0e053752d6e6f14928706d020408b9 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -92,8 +92,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
- 
+@@ -102,8 +102,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         this.address = this.channel.remoteAddress();
          if (this.delayedDisconnect != null) {
              this.disconnect(this.delayedDisconnect);
 +            return; // Blueberry
@@ -36,8 +36,8 @@ index f8b439867e23432603bdd78a907e25c40d7be0d2..874bc4cb9a3b2b743bc19ae7bd2195b1
 +        new net.blueberrymc.common.event.network.ConnectionInitEvent(this.channel, this.receiving).callEvent(); // Blueberry
      }
  
-     public void setProtocol(ConnectionProtocol connectionProtocol) {
-@@ -398,6 +400,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     public static void setInitialProtocolAttributes(Channel channel) {
+@@ -536,6 +538,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              }
          }
  
@@ -45,25 +45,25 @@ index f8b439867e23432603bdd78a907e25c40d7be0d2..874bc4cb9a3b2b743bc19ae7bd2195b1
      }
  
      public void handleDisconnection() {
-@@ -434,4 +437,4 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-             this.listener = packetSendListener;
-         }
+@@ -566,4 +569,4 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     public void setBandwidthLogger(SampleLogger sampleLogger) {
+         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(sampleLogger);
      }
 -}
 \ No newline at end of file
 +}
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 61ed5dd71e8d6f8204956253c7862f0a8439cfb8..8a09868b1298ced4adb7fd8df87140b83054525b 100644
+index 085eba8cf07ec54bb33fdc223b4f038762668211..2bbeaa58c7b021c883deb34614c60799d7868596 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -210,6 +210,7 @@ public abstract class PlayerList {
+@@ -197,6 +197,7 @@ public abstract class PlayerList {
          this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
          this.sendLevelInfo(serverPlayer, serverLevel2);
          serverLevel2.addNewPlayer(serverPlayer);
 +        new net.blueberrymc.common.event.player.PlayerJoinEvent(serverPlayer).callEvent(); // Blueberry
          this.server.getCustomBossEvents().onPlayerConnect(serverPlayer);
-         this.server.getServerResourcePack().ifPresent((serverResourcePackInfo) -> serverPlayer.sendTexturePack(serverResourcePackInfo.url(), serverResourcePackInfo.hash(), serverResourcePackInfo.isRequired(), serverResourcePackInfo.prompt()));
  
+         for(MobEffectInstance mobEffectInstance : serverPlayer.getActiveEffects()) {
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
 index 3111cec4b7f9b2ce5634cd83c2f04b29b25368a4..da84704b11ff81ae99a51cc325abb878c97c8a05 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java

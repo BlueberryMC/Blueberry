@@ -5,6 +5,7 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.network.mod.ModInfo;
+import net.blueberrymc.util.DetectedVersion;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackResources;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -185,11 +187,30 @@ public interface ModLoader {
         for (BlueberryMod mod : getLoadedMods()) {
             try {
                 PackResources packResources = mod.getResourceManager().getPackResources();
-                Pack.Info info = Pack.readPackInfo(mod.modId(), (s) -> packResources);
+                var resourcesSupplier = new Pack.ResourcesSupplier() {
+                    @Override
+                    public @NotNull PackResources openPrimary(@NotNull String s) {
+                        return packResources;
+                    }
+
+                    @Override
+                    public @NotNull PackResources openFull(@NotNull String s, Pack.@NotNull Info info) {
+                        return packResources;
+                    }
+                };
+                Pack.Info info = Pack.readPackInfo(mod.modId(), resourcesSupplier, Objects.requireNonNull(DetectedVersion.tryDetectVersion()).getPackVersion(PackType.CLIENT_RESOURCES));
                 if (info == null) {
                     throw new RuntimeException("Failed to load mod pack info for " + mod.modId());
                 }
-                Pack pack = Pack.create(mod.getDescription().modId(), Component.literal(mod.name()), true, (s) -> packResources, info, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, false, PackSource.BUILT_IN);
+                Pack pack = Pack.create(
+                        mod.getDescription().modId(),
+                        Component.literal(mod.name()),
+                        true,
+                        resourcesSupplier,
+                        info,
+                        Pack.Position.BOTTOM,
+                        false,
+                        PackSource.BUILT_IN);
                 consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
                 break; // resource manager has not been loaded yet

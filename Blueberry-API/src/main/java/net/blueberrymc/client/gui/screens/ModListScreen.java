@@ -303,8 +303,8 @@ public class ModListScreen extends BlueberryScreen {
             updateTooltip();
         }
 
-        protected void renderBackground(@NotNull GuiGraphics guiGraphics) {
-            ModListScreen.this.renderBackground(guiGraphics);
+        protected void renderBackground(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
+            ModListScreen.this.renderBackground(guiGraphics, i, i2, f);
         }
 
         public boolean isFocused() {

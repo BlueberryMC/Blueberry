@@ -1,5 +1,6 @@
 package net.blueberrymc.network;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.blueberrymc.common.bml.BlueberryMod;
@@ -7,8 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -71,9 +74,10 @@ public class BlueberryNetworkManager {
      * @return non-null if created, null otherwise
      */
     @Nullable
-    public static BlueberryPacket<?> handle(@NotNull ClientboundCustomPayloadPacket packet) {
-        PacketConstructor<?> blueberryPacketConstructor = getPacket(packet.getIdentifier(), BlueberryPacketFlow.TO_CLIENT);
-        return createBlueberryPacket(blueberryPacketConstructor, packet.getData());
+    public static BlueberryPacket<?> handle(@NotNull CustomPacketPayload packet) {
+        PacketConstructor<?> blueberryPacketConstructor = getPacket(packet.id(), BlueberryPacketFlow.TO_CLIENT);
+        if (!(packet instanceof BlueberryCustomPayload customPayload)) return null;
+        return createBlueberryPacket(blueberryPacketConstructor, new FriendlyByteBuf(Unpooled.wrappedBuffer(customPayload.payload())));
     }
 
     /**
@@ -83,8 +87,9 @@ public class BlueberryNetworkManager {
      */
     @Nullable
     public static BlueberryPacket<?> handle(@NotNull ServerboundCustomPayloadPacket packet) {
-        PacketConstructor<?> blueberryPacketConstructor = getPacket(packet.getIdentifier(), BlueberryPacketFlow.TO_SERVER);
-        return createBlueberryPacket(blueberryPacketConstructor, packet.getData());
+        PacketConstructor<?> blueberryPacketConstructor = getPacket(packet.payload().id(), BlueberryPacketFlow.TO_SERVER);
+        if (!(packet.payload() instanceof BlueberryCustomPayload customPayload)) return null;
+        return createBlueberryPacket(blueberryPacketConstructor, new FriendlyByteBuf(Unpooled.wrappedBuffer(customPayload.payload())));
     }
 
     @Nullable
@@ -112,7 +117,7 @@ public class BlueberryNetworkManager {
         } catch (IOException ex) {
             LOGGER.warn("Failed to handle outgoing server bound packet for " + id, ex);
         }
-        ServerboundCustomPayloadPacket customPayloadPacket = new ServerboundCustomPayloadPacket(id, buf);
+        ServerboundCustomPayloadPacket customPayloadPacket = new ServerboundCustomPayloadPacket(createCustomPayload(id, buf));
         connection.send(customPayloadPacket);
     }
 
@@ -129,7 +134,18 @@ public class BlueberryNetworkManager {
         } catch (IOException ex) {
             LOGGER.warn("Failed to handle outgoing client bound packet for " + id, ex);
         }
-        ClientboundCustomPayloadPacket customPayloadPacket = new ClientboundCustomPayloadPacket(id, buf);
+        ClientboundCustomPayloadPacket customPayloadPacket = new ClientboundCustomPayloadPacket(createCustomPayload(id, buf));
         connection.send(customPayloadPacket);
+    }
+
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    private static @NotNull DiscardedPayload createCustomPayload(ResourceLocation id, ByteBuf buf) {
+        byte[] bytes = new byte[buf.readableBytes()];
+        buf.readBytes(bytes);
+        try {
+            return DiscardedPayload.class.getConstructor(ResourceLocation.class, byte[].class).newInstance(id, bytes);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

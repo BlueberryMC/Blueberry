@@ -5,30 +5,30 @@ Subject: [PATCH] BungeeCord ip_forward support
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 874bc4cb9a3b2b743bc19ae7bd2195b1011b867c..efbcf9168d2591ec0fa984f337a6cb6a8e25e0a0 100644
+index 484fac408e0e053752d6e6f14928706d020408b9..98682093f825cbe61feed377b3a7f49c6e6c95dc 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -74,6 +74,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-     private boolean handlingFault;
-     @Nullable
+@@ -91,6 +91,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private volatile Component delayedDisconnect;
+     @Nullable
+     BandwidthDebugMonitor bandwidthDebugMonitor;
 +    // Blueberry start
-+    public java.util.UUID spoofedUUID;
-+    public com.mojang.authlib.properties.Property[] spoofedProfile;
++    public @Nullable java.util.UUID spoofedUUID;
++    public @Nullable com.mojang.authlib.properties.Property[] spoofedProfile;
 +    public boolean preparing = true;
 +    // Blueberry end
  
      public Connection(PacketFlow packetFlow) {
          this.receiving = packetFlow;
-@@ -83,6 +88,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -100,6 +105,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          super.channelActive(channelHandlerContext);
          this.channel = channelHandlerContext.channel();
          this.address = this.channel.remoteAddress();
 +        this.preparing = false; // Blueberry
- 
-         try {
-             this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -272,6 +278,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         if (this.delayedDisconnect != null) {
+             this.disconnect(this.delayedDisconnect);
+             return; // Blueberry
+@@ -384,6 +390,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void disconnect(Component component) {
@@ -36,8 +36,84 @@ index 874bc4cb9a3b2b743bc19ae7bd2195b1011b867c..efbcf9168d2591ec0fa984f337a6cb6a
          if (this.channel == null) {
              this.delayedDisconnect = component;
          }
+diff --git a/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java b/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
+index 60859566adfc9ac37b370a5dff4054f9d1162833..3d9f0385007225eb07d8b14dcf9111c783c51c3d 100644
+--- a/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
++++ b/src/main/java/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
+@@ -3,9 +3,23 @@ package net.minecraft.network.protocol.handshake;
+ import net.minecraft.network.ConnectionProtocol;
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.network.protocol.Packet;
++// Blueberry start - convert record to class
++import java.util.Objects;
+ 
+-public record ClientIntentionPacket(int protocolVersion, String hostName, int port, ClientIntent intention) implements Packet<ServerHandshakePacketListener> {
++public final class ClientIntentionPacket implements Packet<ServerHandshakePacketListener> {
+     private static final int MAX_HOST_LENGTH = 255;
++    private final int protocolVersion;
++    public String hostName;
++    private final int port;
++    private final ClientIntent intention;
++
++    public ClientIntentionPacket(int protocolVersion, String hostName, int port, ClientIntent intention) {
++        this.protocolVersion = protocolVersion;
++        this.hostName = hostName;
++        this.port = port;
++        this.intention = intention;
++    }
++    // Blueberry end - convert record to class
+ 
+     public ClientIntentionPacket(FriendlyByteBuf friendlyByteBuf) {
+         this(friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(255), friendlyByteBuf.readUnsignedShort(), ClientIntent.byId(friendlyByteBuf.readVarInt()));
+@@ -25,4 +39,46 @@ public record ClientIntentionPacket(int protocolVersion, String hostName, int po
+     public ConnectionProtocol nextProtocol() {
+         return this.intention.protocol();
+     }
++    // Blueberry start - convert record to class
++    public int protocolVersion() {
++        return protocolVersion;
++    }
++
++    public String hostName() {
++        return hostName;
++    }
++
++    public int port() {
++        return port;
++    }
++
++    public ClientIntent intention() {
++        return intention;
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if (obj == this) return true;
++        if (obj == null || obj.getClass() != this.getClass()) return false;
++        var that = (ClientIntentionPacket) obj;
++        return this.protocolVersion == that.protocolVersion &&
++                Objects.equals(this.hostName, that.hostName) &&
++                this.port == that.port &&
++                Objects.equals(this.intention, that.intention);
++    }
++
++    @Override
++    public int hashCode() {
++        return Objects.hash(protocolVersion, hostName, port, intention);
++    }
++
++    @Override
++    public String toString() {
++        return "ClientIntentionPacket[" +
++                "protocolVersion=" + protocolVersion + ", " +
++                "hostName=" + hostName + ", " +
++                "port=" + port + ", " +
++                "intention=" + intention + ']';
++    }
++    // Blueberry end - convert record to class
+ }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index a2f3a59203096525b47fbf4c18e487d510d76888..ab1c03f68feab2dd7ac4fcef1402d0c1b35f8906 100644
+index 6fc31ba6f3a761425be52de2a352c890e8b8412f..1c1ca794bcb13309ea95283153652c1675d1b337 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -142,7 +142,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -57,10 +133,10 @@ index a2f3a59203096525b47fbf4c18e487d510d76888..ab1c03f68feab2dd7ac4fcef1402d0c1
          }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-index 5b461d5ce873bd2719f8a8418f707e4d19d0dffa..e8ca3c68fe7b8e766843e6f235e69dd332863185 100644
+index 432291ddf987819a43b5cffb8ce95a28d107650c..6b0ae47c854334e7b6970b6b004e4dbd8514313a 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
-@@ -144,6 +144,7 @@ public class ServerConnectionListener {
+@@ -150,6 +150,7 @@ public class ServerConnectionListener {
                              connection.setReadOnly();
                          }
                      } else {
@@ -69,7 +145,7 @@ index 5b461d5ce873bd2719f8a8418f707e4d19d0dffa..e8ca3c68fe7b8e766843e6f235e69dd3
                          connection.handleDisconnection();
                      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index 9f811cf7021e070dfd41f5fdb85b87badae3b770..537e5e3ed9aa3f5e95178394a57aa287f137865c 100644
+index 45684b2e49f0bf16933a23bfa86d8c7558849de1..a9c3c57f2d80283f1bd458bdaff3569c8a5e6b60 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -11,6 +11,7 @@ import net.minecraft.network.protocol.status.ServerStatus;
@@ -86,11 +162,11 @@ index 9f811cf7021e070dfd41f5fdb85b87badae3b770..537e5e3ed9aa3f5e95178394a57aa287
                  this.connection.setListener(new ServerLoginPacketListenerImpl(this.server, this.connection));
 +                // Blueberry start
 +                if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee) {
-+                    String[] split = clientIntentionPacket.hostName.split("\00");
++                    String[] split = clientIntentionPacket.hostName().split("\00");
 +                    if (split.length == 3 || split.length == 4) {
 +                        clientIntentionPacket.hostName = split[0];
 +                        connection.address = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) connection.getRemoteAddress()).getPort());
-+                        connection.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
++                        connection.spoofedUUID = com.mojang.util.UndashedUuid.fromStringLenient(split[2]);
 +                    } else {
 +                        Component text = Component.literal("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
 +                        connection.send(new ClientboundLoginDisconnectPacket(text));
@@ -113,55 +189,54 @@ index 9f811cf7021e070dfd41f5fdb85b87badae3b770..537e5e3ed9aa3f5e95178394a57aa287
 \ No newline at end of file
 +}
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 1e0faba662da2974eafdab383df1c0d1f3820122..0ecd5515fc2642874db753632932a4fbafa44574 100644
+index e530b267d6275388a9061ac2c8622a56e6817832..9ca76e51359859b31c92be51da81f94758f54e26 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -93,7 +93,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -123,7 +123,19 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      }
  
-     public void handleAcceptedLogin() {
--        if (!this.gameProfile.isComplete()) {
-+        if (!net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee && !this.gameProfile.isComplete()) { // Blueberry - handled in initUUID
-             this.gameProfile = this.createFakeProfile(this.gameProfile);
-         }
- 
-@@ -127,6 +127,18 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
- 
-     }
- 
-+    // Blueberry start
-+    private void initUUID() {
-+        UUID uuid = connection.spoofedUUID != null ? connection.spoofedUUID : UUIDUtil.createOfflinePlayerUUID(this.gameProfile.getName());
-+        this.gameProfile = new GameProfile(uuid, this.gameProfile.getName());
-+        if (connection.spoofedProfile != null) {
-+            for (com.mojang.authlib.properties.Property property : connection.spoofedProfile) {
-+                this.gameProfile.getProperties().put(property.getName(), property);
+     void startClientVerification(GameProfile gameProfile) {
+-        this.authenticatedProfile = gameProfile;
++        // Blueberry start
++        if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee) {
++            UUID uuid = connection.spoofedUUID != null ? connection.spoofedUUID : UUIDUtil.createOfflinePlayerUUID(gameProfile.getName());
++            this.authenticatedProfile = new GameProfile(uuid, gameProfile.getName());
++            if (connection.spoofedProfile != null) {
++                for (com.mojang.authlib.properties.Property property : connection.spoofedProfile) {
++                    this.authenticatedProfile.getProperties().put(property.name(), property);
++                }
 +            }
++        } else {
++            this.authenticatedProfile = gameProfile;
 +        }
-+    }
-+    // Blueberry end
-+
-     private void placeNewPlayer(ServerPlayer serverPlayer) {
-         this.server.getPlayerList().placeNewPlayer(this.connection, serverPlayer);
++        // Blueberry end
+         this.state = ServerLoginPacketListenerImpl.State.VERIFYING;
      }
-@@ -152,6 +164,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
-                 this.state = ServerLoginPacketListenerImpl.State.KEY;
-                 this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.challenge));
-             } else {
-+                if (net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee) initUUID(); // Blueberry
-                 this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
-             }
  
+@@ -243,4 +255,4 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+         PROTOCOL_SWITCHING,
+         ACCEPTED;
+     }
+-}
+\ No newline at end of file
++}
 diff --git a/src/main/java/net/minecraft/server/players/OldUsersConverter.java b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
-index 475b0fbf4212e452eef390b76b394690ed2b7c64..b3dbd8f1a7d415f52a781bd307c2ad5ae8a56d12 100644
+index 3a777f07a0f572c9e5ab9b40b86fcece92daf09d..06dd017df8442af8ee7b4c5d6d9c147114c61916 100644
 --- a/src/main/java/net/minecraft/server/players/OldUsersConverter.java
 +++ b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
-@@ -50,7 +50,7 @@ public class OldUsersConverter {
+@@ -49,7 +49,7 @@ public class OldUsersConverter {
  
      private static void lookupPlayers(MinecraftServer minecraftServer, Collection<String> collection, ProfileLookupCallback profileLookupCallback) {
          String[] strings = (String[])collection.stream().filter((sx) -> !StringUtil.isNullOrEmpty(sx)).toArray((i) -> new String[i]);
 -        if (minecraftServer.usesAuthentication()) {
 +        if (minecraftServer.usesAuthentication() || net.blueberrymc.common.bml.InternalBlueberryModConfig.Server.bungee) { // Blueberry - bungee = online mode, for now
-             minecraftServer.getProfileRepository().findProfilesByNames(strings, Agent.MINECRAFT, profileLookupCallback);
+             minecraftServer.getProfileRepository().findProfilesByNames(strings, profileLookupCallback);
          } else {
              for(String s : strings) {
+@@ -442,4 +442,4 @@ public class OldUsersConverter {
+             super(s);
+         }
+     }
+-}
+\ No newline at end of file
++}

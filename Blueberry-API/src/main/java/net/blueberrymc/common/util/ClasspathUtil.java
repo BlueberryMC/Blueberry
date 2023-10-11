@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.Message;
 import com.mojang.datafixers.types.Type;
 import it.unimi.dsi.fastutil.floats.Float2FloatOpenHashMap;
@@ -49,7 +48,6 @@ public class ClasspathUtil {
         cp.add(ClasspathUtil.getClasspath(JsonDeserializer.class)); // Gson
         cp.add(ClasspathUtil.getClasspath(Type.class)); // DataFixerUpper
         cp.add(ClasspathUtil.getClasspath(Message.class)); // Brigadier
-        cp.add(ClasspathUtil.getClasspath(GameVersion.class)); // javabridge
         try {
             // these classes are not in classpath of Blueberry-API, so we need to do this
             cp.add(ClasspathUtil.getClasspath(Class.forName("net.minecraft.client.gui.ScreenManager"))); // MinecraftForge-API

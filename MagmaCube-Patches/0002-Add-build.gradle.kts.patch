@@ -6,7 +6,7 @@ Subject: [PATCH] Add build.gradle.kts
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..45d2338e6721f8e68897eece2f54e6dda90d0542
+index 0000000000000000000000000000000000000000..601f678f8fdd944df523ee055e25920bc2f65a0b
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,247 @@
@@ -15,7 +15,7 @@ index 0000000000000000000000000000000000000000..45d2338e6721f8e68897eece2f54e6dd
 +version = "$MINECRAFT_VERSION-$API_VERSION"
 +
 +plugins {
-+    id("com.github.johnrengelman.shadow") version "7.0.0"
++    id("com.github.johnrengelman.shadow") version "8.1.1"
 +}
 +
 +dependencies {
@@ -63,17 +63,17 @@ index 0000000000000000000000000000000000000000..45d2338e6721f8e68897eece2f54e6dd
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-linux")
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-macos")
 +    compileOnly("org.lwjgl:lwjgl-jemalloc:$LWJGL_VERSION:natives-windows")
-+    compileOnly("com.github.oshi:oshi-core:6.2.2")
++    compileOnly("com.github.oshi:oshi-core:6.4.5")
 +    compileOnly("com.mojang:blocklist:1.0.10")
 +    compileOnly("com.mojang:text2speech:$TTS_VERSION")
 +    compileOnly("net.java.jutils:jutils:1.0.0")
-+    compileOnly("com.ibm.icu:icu4j:71.1")
-+    compileOnly("org.apache.commons:commons-lang3:3.12.0")
-+    compileOnly("commons-io:commons-io:2.11.0")
++    compileOnly("com.ibm.icu:icu4j:73.2")
++    compileOnly("org.apache.commons:commons-lang3:3.13.0")
++    compileOnly("commons-io:commons-io:2.13.0")
 +    compileOnly("commons-logging:commons-logging:1.2")
-+    compileOnly("org.apache.commons:commons-compress:1.21")
-+    compileOnly("org.apache.httpcomponents:httpclient:4.5.13")
-+    compileOnly("org.apache.httpcomponents:httpcore:4.4.14")
++    compileOnly("org.apache.commons:commons-compress:1.22")
++    compileOnly("org.apache.httpcomponents:httpclient:4.5.14")
++    compileOnly("org.apache.httpcomponents:httpcore:4.4.16")
 +    compileOnly("org.apache.logging.log4j:log4j-api:$LOG4J_VERSION")
 +    compileOnly("org.apache.logging.log4j:log4j-core:$LOG4J_VERSION")
 +    compileOnly("org.apache.logging.log4j:log4j-slf4j2-impl:$LOG4J_VERSION")
@@ -163,7 +163,7 @@ index 0000000000000000000000000000000000000000..45d2338e6721f8e68897eece2f54e6dd
 +    // server jar
 +    register("shadowServerJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class.java) {
 +        from(sourceSets.main.get().output)
-+        configurations = listOf(project.configurations.runtimeClasspath.get())
++        //configurations = listOf(project.configurations.runtimeClasspath.get())
 +        dependencies {
 +            exclude(dependency(project.dependencies.gradleApi()))
 +        }
@@ -176,9 +176,9 @@ index 0000000000000000000000000000000000000000..45d2338e6721f8e68897eece2f54e6dd
 +            )
 +        }
 +        val shadowJar = project.tasks.getByName<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar")
-+        //configurations.addAll(shadowJar.configurations)
++        configurations.addAll(shadowJar.configurations)
 +        dependsOn(shadowJar.dependsOn)
-+        includedDependencies.files.addAll(shadowJar.includedDependencies.files)
++        //includedDependencies.files.addAll(shadowJar.includedDependencies.files)
 +        setExcludes(shadowJar.excludes)
 +        dependencies(filterDependencies)
 +        includes.addAll(shadowJar.includes)

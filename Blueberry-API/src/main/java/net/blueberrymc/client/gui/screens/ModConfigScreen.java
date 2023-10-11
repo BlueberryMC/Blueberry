@@ -431,11 +431,11 @@ public class ModConfigScreen extends BlueberryScreen {
         return bool == null || !bool ? BOOLEAN_FALSE : BOOLEAN_TRUE;
     }
 
-    public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
-        this.renderBackground(guiGraphics);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        this.renderBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
         this.children().forEach(e -> {
             if (e instanceof ScrollableContainer) {
-                ((ScrollableContainer<?>) e).render(guiGraphics, i, i2, f);
+                ((ScrollableContainer<?>) e).render(guiGraphics, mouseX, mouseY, deltaFrameTime);
             }
         });
         for (var callback : callbacks) callback.accept(guiGraphics);
@@ -443,7 +443,7 @@ public class ModConfigScreen extends BlueberryScreen {
         if (this.description != null) {
             guiGraphics.drawCenteredString(this.font, this.description, this.width / 2, 30, 16777215);
         }
-        super.render(guiGraphics, i, i2, f);
+        super.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 
     @NotNull

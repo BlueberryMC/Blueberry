@@ -3,7 +3,7 @@ package net.blueberrymc.network.server;
 import net.blueberrymc.network.BlueberryNetworkManager;
 import net.blueberrymc.network.BlueberryPacket;
 import net.blueberrymc.network.BlueberryPacketListener;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.NotNull;
 
 public interface ServerBlueberryPacketListener extends BlueberryPacketListener {

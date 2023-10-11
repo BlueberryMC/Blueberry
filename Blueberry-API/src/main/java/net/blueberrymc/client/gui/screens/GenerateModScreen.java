@@ -189,7 +189,7 @@ public class GenerateModScreen extends BlueberryScreen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
         for (var callback : callbacks) callback.accept(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }

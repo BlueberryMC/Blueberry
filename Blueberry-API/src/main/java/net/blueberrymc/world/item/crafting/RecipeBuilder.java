@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class RecipeBuilder {
-    private static final Map<ResourceLocation, Recipe<?>> RECIPES = new HashMap<>();
+    private static final Map<ResourceLocation, RecipeHolder<?>> RECIPES = new HashMap<>();
     public static final WeakList<RecipeManager> knownRecipeManagers = new WeakList<>();
     @NotNull
     public static final Ingredient AIR = Ingredient.of(Items.AIR);
@@ -69,34 +69,34 @@ public abstract class RecipeBuilder {
     }
 
     @NotNull
-    public static Map<ResourceLocation, Recipe<?>> getRecipes() {
+    public static Map<ResourceLocation, RecipeHolder<?>> getRecipes() {
         return RECIPES;
     }
 
     @Nullable
-    public static Recipe<?> removeFromRecipeManager(@NotNull Recipe<?> recipe) {
-        return removeFromRecipeManager(recipe.getType(), recipe.getId());
+    public static RecipeHolder<?> removeFromRecipeManager(@NotNull RecipeHolder<?> recipe) {
+        return removeFromRecipeManager(recipe.value().getType(), recipe.id());
     }
 
     @Nullable
-    public static Recipe<?> removeFromRecipeManager(@NotNull RecipeType<?> type, @NotNull ResourceLocation id) {
+    public static RecipeHolder<?> removeFromRecipeManager(@NotNull RecipeType<?> type, @NotNull ResourceLocation id) {
         knownRecipeManagers.bake().forEach(rm -> ((BlueberryRecipeManager) rm).removeRecipe(type, id));
         return getRecipes().remove(id);
     }
 
     @NotNull
-    public abstract Recipe<?> build();
+    public abstract RecipeHolder<?> build();
 
     public final void addToRecipeManager() {
-        Recipe<?> recipe = build();
-        if (getRecipes().containsKey(recipe.getId())) throw new IllegalArgumentException("Duplicate recipe: " + recipe.getId() + ", " + recipe);
-        getRecipes().put(recipe.getId(), recipe);
+        RecipeHolder<?> recipe = build();
+        if (getRecipes().containsKey(recipe.id())) throw new IllegalArgumentException("Duplicate recipe: " + recipe.id() + ", " + recipe);
+        getRecipes().put(recipe.id(), recipe);
         knownRecipeManagers.bake().forEach(rm -> ((BlueberryRecipeManager) rm).addRecipe(recipe));
     }
 
     public final void removeFromRecipeManager() {
-        Recipe<?> recipe = build();
-        removeFromRecipeManager(recipe.getType(), recipe.getId());
+        RecipeHolder<?> recipe = build();
+        removeFromRecipeManager(recipe.value().getType(), recipe.id());
     }
 
     public static class Shaped extends RecipeBuilder {
@@ -173,7 +173,7 @@ public abstract class RecipeBuilder {
 
         @NotNull
         @Override
-        public ShapedRecipe build() {
+        public RecipeHolder<ShapedRecipe> build() {
             if (rows.isEmpty()) throw new IllegalArgumentException("row list is empty");
             if (key.isEmpty()) throw new IllegalArgumentException("key list is empty");
             NonNullList<Ingredient> list = NonNullList.withSize(rows.get(0).length() * rows.size(), AIR);
@@ -188,7 +188,7 @@ public abstract class RecipeBuilder {
                     index.getAndIncrement();
                 }
             });
-            return new ShapedRecipe(id, group, category, getWidth(), getHeight(), list, result);
+            return new RecipeHolder<>(id, new ShapedRecipe(group, category, getWidth(), getHeight(), list, result));
         }
 
         // --- getters
@@ -272,9 +272,9 @@ public abstract class RecipeBuilder {
 
         @NotNull
         @Override
-        public ShapelessRecipe build() {
+        public RecipeHolder<ShapelessRecipe> build() {
             if (ingredients.isEmpty()) throw new IllegalArgumentException("ingredient list is empty");
-            return new ShapelessRecipe(id, group, category, result, ingredients);
+            return new RecipeHolder<>(id, new ShapelessRecipe(group, category, result, ingredients));
         }
 
         // --- getters

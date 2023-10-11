@@ -18,7 +18,7 @@ index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c
          public void sendSystemMessage(Component component) {
          }
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index c571d3746321f638ca8ec96e2ac65662e3a1641e..eb19230239009b0393e5c9fe595e8797b41ecfdf 100644
+index 85f645e6aff5a44f2ad5d1c982fe08fc5fb2dcf7..b431d4e026ac87046b00243b9c0d248f6ab39797 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
 @@ -40,7 +40,7 @@ import net.minecraft.world.level.dimension.DimensionType;
@@ -30,7 +30,7 @@ index c571d3746321f638ca8ec96e2ac65662e3a1641e..eb19230239009b0393e5c9fe595e8797
      public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
      public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
      private final CommandSource source;
-@@ -364,4 +364,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
+@@ -360,4 +360,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
      public FeatureFlagSet enabledFeatures() {
          return this.level.enabledFeatures();
      }
@@ -49,13 +49,14 @@ index c571d3746321f638ca8ec96e2ac65662e3a1641e..eb19230239009b0393e5c9fe595e8797
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 22f8c47c82c0e6999a77feb8afbdc48299915cc5..c420c40e822d9800750914405096538e151be492 100644
+index c2aa67412e8efdf9537d85c4fa83bc792f136219..3d888854195acea47db758e2335ada71386ae43d 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1828,4 +1828,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1833,4 +1833,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              };
          }
      }
+-}
 +
 +    // Blueberry start
 +    @Override
@@ -68,7 +69,7 @@ index 22f8c47c82c0e6999a77feb8afbdc48299915cc5..c420c40e822d9800750914405096538e
 +        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForConsole(permission);
 +    }
 +    // Blueberry end
- }
++}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
 index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c137f8769 100644
@@ -93,10 +94,10 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 3b4af69f07fdf70ff6e3b048f45d563ea4f7a218..a3fd06b5cd2e70f00d930da5c4d32ab69b14ee09 100644
+index bfdc113a9d9e3168e48f4d25c9ab2e1a146d66cd..111287c14bec9bead205878b560ebade117c5bff 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3372,4 +3372,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3413,4 +3413,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              return this.save;
          }
      }
@@ -115,7 +116,7 @@ index 3b4af69f07fdf70ff6e3b048f45d563ea4f7a218..a3fd06b5cd2e70f00d930da5c4d32ab6
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 18dceb9991c8357eda3d6fe4a399af5622e0a771..b0c4c9d9d24f95136d3025f56838f780812cfaa0 100644
+index a0feaab81526d96e02717008cdaf09390e2d13a5..2eb0341f607d4a6fee0b963f7eda269c8d758ece 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -2043,4 +2043,16 @@ public abstract class Player extends LivingEntity {

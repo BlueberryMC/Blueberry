@@ -3,8 +3,8 @@ package net.blueberrymc.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.bridge.game.PackType;
 import net.blueberrymc.common.DeprecatedReason;
+import net.minecraft.server.packs.PackType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +81,7 @@ public class DetectedVersion {
     }
 
     public int getPackVersion(@NotNull PackType packType) {
-        return packType == PackType.DATA ? this.dataPackVersion : this.resourcePackVersion;
+        return packType == PackType.SERVER_DATA ? this.dataPackVersion : this.resourcePackVersion;
     }
 
     @NotNull

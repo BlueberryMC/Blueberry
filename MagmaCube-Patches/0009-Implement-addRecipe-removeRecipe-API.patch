@@ -5,10 +5,10 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index b076fbfebb2478540da15f6848c48a9bd75b21a8..645b17163981c352c6dbc86f27f6dc0af1d21900 100644
+index 98667c82f0c940cef127577431f9d5e42c960499..ec5b3a62c0577221112c052be7e4db3b167de25a 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -33,10 +33,10 @@ import net.minecraft.world.item.ItemStack;
+@@ -36,10 +36,10 @@ import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  import org.slf4j.Logger;
  
@@ -16,12 +16,12 @@ index b076fbfebb2478540da15f6848c48a9bd75b21a8..645b17163981c352c6dbc86f27f6dc0a
 +public class RecipeManager extends SimpleJsonResourceReloadListener implements net.blueberrymc.world.item.crafting.BlueberryRecipeManager { // Blueberry
      private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
      private static final Logger LOGGER = LogUtils.getLogger();
--    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = ImmutableMap.of();
-+    private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = Maps.newHashMap(); // Blueberry - use HashMap instead
-     private Map<ResourceLocation, Recipe<?>> byName = ImmutableMap.of();
+-    private Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> recipes = ImmutableMap.of();
++    private Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> recipes = Maps.newHashMap(); // Blueberry - use HashMap instead
+     private Map<ResourceLocation, RecipeHolder<?>> byName = ImmutableMap.of();
      private boolean hasErrors;
  
-@@ -61,8 +61,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -64,8 +64,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
              }
          }
  
@@ -32,27 +32,27 @@ index b076fbfebb2478540da15f6848c48a9bd75b21a8..645b17163981c352c6dbc86f27f6dc0a
          LOGGER.info("Loaded {} recipes", map2.size());
      }
  
-@@ -169,4 +170,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+@@ -174,4 +175,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
      public interface CachedCheck<C extends Container, T extends Recipe<C>> {
-         Optional<T> getRecipeFor(C var1, Level var2);
+         Optional<RecipeHolder<T>> getRecipeFor(C var1, Level var2);
      }
 +
 +    // Blueberry start - implement addRecipe/removeRecipe
 +    @Override
-+    public void addRecipe(Recipe<?> recipe) {
++    public void addRecipe(RecipeHolder<?> recipe) {
 +        if (!net.blueberrymc.world.item.crafting.RecipeBuilder.knownRecipeManagers.contains(this))
 +            net.blueberrymc.world.item.crafting.RecipeBuilder.knownRecipeManagers.add(this);
-+        Map<ResourceLocation, Recipe<?>> map = this.recipes.get(recipe.getType());
++        Map<ResourceLocation, RecipeHolder<?>> map = this.recipes.get(recipe.value().getType());
 +        boolean doAdd = false;
 +        if (map instanceof ImmutableMap) {
 +            map = new java.util.HashMap<>(map);
 +            doAdd = true;
 +        }
-+        if (map.containsKey(recipe.getId())) {
-+            throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
++        if (map.containsKey(recipe.id())) {
++            throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.id());
 +        } else {
-+            map.put(recipe.getId(), recipe);
-+            if (doAdd) this.recipes.put(recipe.getType(), map);
++            map.put(recipe.id(), recipe);
++            if (doAdd) this.recipes.put(recipe.value().getType(), map);
 +        }
 +    }
 +
@@ -62,4 +62,3 @@ index b076fbfebb2478540da15f6848c48a9bd75b21a8..645b17163981c352c6dbc86f27f6dc0a
 +    }
 +    // Blueberry end - implement addRecipe/removeRecipe
  }
-\ No newline at end of file

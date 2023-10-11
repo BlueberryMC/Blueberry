@@ -58,7 +58,7 @@ subprojects {
         maven { url = uri("https://jitpack.io"); name = "Jitpack" }
         maven { url = uri("https://libraries.minecraft.net/"); name = "Minecraft" }
         maven { url = uri("https://repo.spongepowered.org/maven/"); name = "Sponge Powered" }
-        maven { url = uri("https://repo.blueberrymc.net/repository/maven-public/"); name = "blueberrymc-repo" }
+        maven { url = uri("https://repo.azisaba.net/repository/maven-public/"); name = "Azisaba" }
         mavenLocal() // use mavenLocal to provide net.blueberrymc.minecraft:minecraft, for now.
     }
 

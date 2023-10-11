@@ -63,8 +63,8 @@ public class MultiLineBackupConfirmScreen extends Screen {
 
     }
 
-    public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
-        this.renderBackground(guiGraphics);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        this.renderBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 50, 16777215);
         int y = 70;
         for (MultiLineLabel label : this.message) {
@@ -75,7 +75,7 @@ public class MultiLineBackupConfirmScreen extends Screen {
             }
             y += label.getLineCount() * 9;
         }
-        super.render(guiGraphics, i, i2, f);
+        super.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 
     @Override

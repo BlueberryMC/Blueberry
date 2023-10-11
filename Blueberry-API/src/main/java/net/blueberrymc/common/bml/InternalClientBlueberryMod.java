@@ -85,11 +85,11 @@ public class InternalClientBlueberryMod {
                 LAST_SCREEN.set(null);
                 return;
             }
-            if (minecraft.isConnectedToRealms()) {
-                Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
-                LAST_SCREEN.set(null);
-                return;
-            }
+//            if (minecraft.isConnectedToRealms()) {
+//                Blueberry.getUtil().updateDiscordStatus("Playing on Minecraft Realms", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
+//                LAST_SCREEN.set(null);
+//                return;
+//            }
             if (serverData != null) {
                 if (serverData.isLan()) {
                     Blueberry.getUtil().updateDiscordStatus("Playing on LAN server", null, BlueberryUtil.BLUEBERRY_ICON, null, System.currentTimeMillis());
