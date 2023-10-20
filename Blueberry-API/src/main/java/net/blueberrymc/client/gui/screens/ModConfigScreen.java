@@ -218,6 +218,7 @@ public class ModConfigScreen extends BlueberryScreen {
             } else if (config instanceof NumberVisualConfig<?> numberVisualConfig) {
                 int componentWidth = Math.min(maxWidth, this.width / 6);
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), componentWidth, 20, Component.literal(""));
+                editBox.setMaxLength(1024);
                 editBox.setTooltip(onTooltip);
                 Number defValue = numberVisualConfig.get();
                 if (defValue == null) defValue = numberVisualConfig.getDefaultValue();
@@ -302,6 +303,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 addLabel.accept(config, offset);
             } else if (config instanceof StringVisualConfig stringVisualConfig) {
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));
+                editBox.setMaxLength(1024);
                 editBox.setTooltip(onTooltip);
                 String defValue = stringVisualConfig.get();
                 if (defValue == null) defValue = stringVisualConfig.getDefaultValue();
@@ -321,6 +323,7 @@ public class ModConfigScreen extends BlueberryScreen {
                 addLabel.accept(config, offset);
             } else if (config instanceof ClassVisualConfig classVisualConfig) {
                 EditBox editBox = new EditBox(font, this.width / 2 + 6, (offset += 22), Math.min(maxWidth, this.width / 6), 20, Component.literal(""));
+                editBox.setMaxLength(1024);
                 editBox.setTooltip(onTooltip);
                 Class<?> defValue = classVisualConfig.get();
                 if (defValue == null) defValue = classVisualConfig.getDefaultValue();
