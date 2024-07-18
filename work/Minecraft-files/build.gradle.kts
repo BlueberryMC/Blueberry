@@ -48,6 +48,7 @@ tasks {
                                 if (entry.isDirectory) {
                                     file.mkdirs()
                                 } else {
+                                    file.parentFile.mkdirs()
                                     file.writeBytes(stream.readAllBytes())
                                 }
                             }
