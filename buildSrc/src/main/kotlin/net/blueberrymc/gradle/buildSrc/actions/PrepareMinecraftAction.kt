@@ -6,6 +6,8 @@ import net.blueberrymc.gradle.buildSrc.tasks.BaseBlueberryTask
 import org.eclipse.jgit.api.Git
 import org.gradle.api.Action
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 import java.text.SimpleDateFormat
 
 open class PrepareMinecraftAction : Action<BaseBlueberryTask> {
@@ -36,6 +38,12 @@ open class PrepareMinecraftAction : Action<BaseBlueberryTask> {
                     from.copyRecursively(File(minecraftRoot, fileName), true)
                 } else {
                     from.copyTo(File(minecraftRoot, fileName), true)
+                    if (fileName == "gradlew" && !System.getProperty("os.name").lowercase().contains("win")) {
+                        Files.setPosixFilePermissions(
+                            File(minecraftRoot, fileName).toPath(),
+                            PosixFilePermissions.fromString("rwxrwxrwx")
+                        )
+                    }
                 }
             }
             val isWindows = System.getProperty("os.name").lowercase().contains("win")
