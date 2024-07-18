@@ -22,7 +22,7 @@ class CreateClientPatcherJarAction : Action<BaseBlueberryTask> {
         task.dependsOn("createClientPatch")
         task.outputs.file(patcherJar)
         task.doLast {
-            val clientJarBytes = File(baseDir, "MagmaCube/work/Minecraft/$MINECRAFT_VERSION/client.jar").readBytes()
+            val clientJarBytes = File(baseDir, "work/Minecraft/$MINECRAFT_VERSION/client.jar").readBytes()
             val patchedClientJarBytes =
                 task.project.getTaskByName("shadowJar", "blueberry")!!.outputs.files.singleFile.readBytes()
             val vanillaHash = Util.sha256sum(clientJarBytes)

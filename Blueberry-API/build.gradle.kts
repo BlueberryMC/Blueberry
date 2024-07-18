@@ -62,4 +62,8 @@ tasks {
             filter(org.apache.tools.ant.filters.EscapeUnicode::class.java)
         }
     }
+
+    remapJar {
+        enabled = false
+    }
 }

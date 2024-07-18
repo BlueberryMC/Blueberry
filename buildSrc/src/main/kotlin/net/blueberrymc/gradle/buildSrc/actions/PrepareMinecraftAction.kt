@@ -23,13 +23,8 @@ open class PrepareMinecraftAction : Action<BaseBlueberryTask> {
     override fun execute(t: BaseBlueberryTask) {
         t.doLast {
             val minecraftRoot = File(t.project.rootDir, "work/Minecraft")
-            // setup files
-            minecraftRoot.mkdirs()
-            minecraftRoot.resolve("src").let {
-                if (it.exists()) it.deleteRecursively()
-            }
-            minecraftRoot.resolve(".git").let {
-                if (it.exists()) it.deleteRecursively()
+            if (minecraftRoot.exists()) {
+                minecraftRoot.deleteRecursively()
             }
             files.forEach { file ->
                 val fileName = file.split("/").last()

@@ -21,6 +21,7 @@ class BuildPlugin : Plugin<Project> {
         project.tasks.register("createServerPatcherJar", BaseBlueberryTask::class.java, CreateServerPatcherJarAction())
         project.tasks.register("bakeInstaller", BaseBlueberryTask::class.java, BakeInstallerAction())
         project.tasks.register("downloadServerJar", BaseBlueberryTask::class.java, DownloadServerJarAction())
+        project.tasks.register("downloadClientJar", BaseBlueberryTask::class.java, DownloadClientJarAction())
         project.tasks.register("applyBlueberryPatches", ApplyBlueberryPatches::class.java, ApplyBlueberryPatchesAction())
         project.tasks.register("applyMinecraftPatches", BaseBlueberryTask::class.java, ApplyMinecraftPatchesAction())
         project.tasks.register("rebuildBlueberryPatches", RebuildBlueberryPatches::class.java, RebuildBlueberryPatchesAction())
