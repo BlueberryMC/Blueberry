@@ -75,7 +75,7 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
 
     class ProblemList extends ObjectSelectionList<ProblemList.Entry> {
         public ProblemList(@NotNull Minecraft minecraft) {
-            super(minecraft, ModLoadingProblemScreen.this.width, ModLoadingProblemScreen.this.height, 32, ModLoadingProblemScreen.this.height - 65 + 4, 18);
+            super(minecraft/*, ModLoadingProblemScreen.this.width*/, ModLoadingProblemScreen.this.height, 32, ModLoadingProblemScreen.this.height - 65 + 4, 18);
 
             for (ModLoadingError error : ModLoadingErrors.getErrors()) {
                 this.addEntry(new Entry(error));

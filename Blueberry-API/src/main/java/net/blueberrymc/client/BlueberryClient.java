@@ -38,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class BlueberryClient extends BlueberryUtil {
         Preconditions.checkNotNull(crashReport, "crashReport cannot be null");
         Minecraft.fillReport(Minecraft.getInstance(), null, "unknown", null, crashReport);
         LOGGER.fatal(crashReport.getFriendlyReport());
-        Minecraft.crash(crashReport);
+        Minecraft.crash(Minecraft.getInstance(), new File(Blueberry.getGameDir(), "crash-reports"), crashReport);
     }
 
     @Override
@@ -192,7 +193,7 @@ public class BlueberryClient extends BlueberryUtil {
             }
             Minecraft.getInstance().setScreen(new MultiLineBackupConfirmScreen(null, (backup, eraseCache) -> {
                 if (backup) {
-                    EditWorldScreen.makeBackupAndShowToast(Minecraft.getInstance().getLevelSource(), levelId);
+                    EditWorldScreen.makeBackupAndShowToast(levelStorageAccess);
                 }
                 runnable.run();
             }, title, description, false, lines));

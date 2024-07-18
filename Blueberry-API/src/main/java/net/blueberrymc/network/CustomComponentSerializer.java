@@ -5,17 +5,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface CustomComponentSerializer<T extends ComponentContents> {
     @NotNull
     Map<Class<?>, CustomComponentSerializer<?>> SERIALIZERS = new ConcurrentHashMap<>();
-    Component.Serializer COMPONENT_SERIALIZER = new Component.Serializer();
 
     @NotNull
     @SuppressWarnings("unchecked")
@@ -35,7 +32,8 @@ public interface CustomComponentSerializer<T extends ComponentContents> {
 
     @NotNull
     default Object deserializeGlobal(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
-        return COMPONENT_SERIALIZER.deserialize(element, element.getClass(), context);
+        // TODO
+        return Component.Serializer.fromJson(element, null);
     }
 
     static <T extends ComponentContents> void registerSerializer(@NotNull Class<T> componentClass, @NotNull CustomComponentSerializer<T> componentSerializerClass) {

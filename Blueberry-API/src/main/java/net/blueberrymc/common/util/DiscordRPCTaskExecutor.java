@@ -180,8 +180,8 @@ public class DiscordRPCTaskExecutor {
                                 lobbyManager.openNetworkChannel(lobby, NETWORK_SYSTEM_MESSAGE_ID, true);
                                 var me = core.userManager().getCurrentUser();
                                 var tag = me.getUsername() + "#" + me.getDiscriminator();
-                                // TODO: translate
-                                byte[] data = Component.Serializer.toJson(Component.literal(tag + " joined the lobby!").withStyle(ChatFormatting.YELLOW)).getBytes(StandardCharsets.UTF_8);
+                                // TODO: translate & fix nulls
+                                byte[] data = Component.Serializer.toJson(Component.literal(tag + " joined the lobby!").withStyle(ChatFormatting.YELLOW), null).getBytes(StandardCharsets.UTF_8);
                                 for (DiscordUser user : lobbyManager.getMemberUsers(lobby)) {
                                     lobbyManager.sendNetworkMessage(lobby, user.getUserId(), NETWORK_SYSTEM_MESSAGE_ID, data);
                                 }
@@ -193,7 +193,8 @@ public class DiscordRPCTaskExecutor {
                         public void onNetworkMessage(long lobbyId, long userId, byte channelId, byte @NotNull [] data) {
                             if (channelId == NETWORK_SYSTEM_MESSAGE_ID) {
                                 try {
-                                    Component component = Component.Serializer.fromJson(new String(data));
+                                    // TODO: fix null
+                                    Component component = Component.Serializer.fromJson(new String(data), null);
                                     if (component != null && currentUserId.get() == userId) {
                                         var player = Minecraft.getInstance().player;
                                         if (player != null) {

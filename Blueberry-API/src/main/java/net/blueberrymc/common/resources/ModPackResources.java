@@ -4,10 +4,14 @@ import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.DetectedVersion;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.KnownPack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -20,9 +24,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.Cleaner;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -34,7 +40,7 @@ public class ModPackResources extends AbstractPackResources {
     private final String prefix;
 
     public ModPackResources(BlueberryMod mod) {
-        super("Mod Resources for " + mod.name() + " (File)", true);
+        super(new PackLocationInfo(mod.modId(), Component.literal("Mod Resources for " + mod.name() + " (File)"), PackSource.FEATURE, Optional.of(KnownPack.vanilla(mod.modId()))));
         this.mod = mod;
         this.zipFileAccess = new SharedZipFileAccess(mod.getFile());
         this.prefix = "";
@@ -178,6 +184,7 @@ public class ModPackResources extends AbstractPackResources {
 
         SharedZipFileAccess(File file) {
             this.file = file;
+            Cleaner.create().register(this, () -> LOGGER.error("WARNING: SharedZipFileAccess " + file.getAbsolutePath() + " was not cleaned. This will cause problems."));
         }
 
         @Nullable ZipFile getOrCreateZipFile() {
@@ -204,12 +211,6 @@ public class ModPackResources extends AbstractPackResources {
                 this.zipFile = null;
             }
 
-        }
-
-        @Deprecated
-        protected void finalize() throws Throwable {
-            this.close();
-            super.finalize();
         }
     }
 }

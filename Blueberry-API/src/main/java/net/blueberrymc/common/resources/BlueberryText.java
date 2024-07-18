@@ -145,6 +145,12 @@ public class BlueberryText implements ComponentContents {
     }
 
     @Override
+    public @NotNull Type<?> type() {
+        // TODO
+        return new Type<>(null, "blueberry");
+    }
+
+    @Override
     public <T> @NotNull Optional<T> visit(@NotNull FormattedText.StyledContentConsumer<T> styledContentConsumer, @NotNull Style style) {
         return styledContentConsumer.accept(style, getContents());
     }

@@ -112,7 +112,7 @@ public class FileDialogScreen extends BlueberryScreen {
         private final Button selectButton;
 
         public FileList(@NotNull Minecraft minecraft) {
-            super(minecraft, FileDialogScreen.this.width, FileDialogScreen.this.height, 52, FileDialogScreen.this.height - 50, 18);
+            super(minecraft, FileDialogScreen.this.width, FileDialogScreen.this.height, 52, FileDialogScreen.this.height - 50/*, 18*/);
 
             if (FileUtil.isRoot(options.getInitialDirectory()) && FileUtil.hasMultipleRoots()) {
                 for (File root : File.listRoots()) {
@@ -196,14 +196,14 @@ public class FileDialogScreen extends BlueberryScreen {
         }
 
         @Override
-        protected void renderList(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
-            super.renderList(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        protected void renderListItems(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+            super.renderListItems(guiGraphics, mouseX, mouseY, deltaFrameTime);
             int itemCount = this.getItemCount();
 
             for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
                 int rowTop = this.getRowTop(itemIndex);
                 int rowBottom = this.getRowTop(itemIndex) + this.itemHeight;
-                if (rowBottom >= this.y0 && rowTop <= this.y1) {
+                if (rowBottom >= this.getY() && rowTop <= this.getBottom()) {
                     Entry entry = this.getEntry(itemIndex);
                     int rowWidth = this.getRowWidth();
                     if (this.isSelectedItem(itemIndex)) {

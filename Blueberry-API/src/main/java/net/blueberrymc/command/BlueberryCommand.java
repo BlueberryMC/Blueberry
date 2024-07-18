@@ -120,7 +120,7 @@ public class BlueberryCommand {
             server = util.asClient().getIntegratedServer();
         }
         if (server == null) throw UNAVAILABLE_IN_THIS_ENVIRONMENT.create();
-        long[] tickTimes = server.tickTimes;
+        long[] tickTimes = server.getTickTimesNanos();
         double last100t = round(getAverageTPS(tickTimes));
         double l100t = round(getLowestTPS(tickTimes));
         double last20t = round(getAverageTPS(Arrays.stream(tickTimes).limit(20)));

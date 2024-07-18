@@ -208,7 +208,7 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
         if (this.renderBackground) {
             RenderSystem.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
             int i5 = 32;
-            guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.left, this.top, (float)this.right, (float)(this.bottom + (int)this.getScrollAmount()), this.right - this.left, this.bottom - this.top, 32, 32);
+            guiGraphics.blit(Screen.MENU_BACKGROUND, this.left, this.top, (float)this.right, (float)(this.bottom + (int)this.getScrollAmount()), this.right - this.left, this.bottom - this.top, 32, 32);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
 
@@ -222,11 +222,11 @@ public class ScrollableContainer<E extends AbstractWidget & GuiEventListener> ex
         this.renderList(guiGraphics, getRowLeft(), i6, mouseX, mouseY, deltaFrameTime);
         RenderSystem.disableScissor();
         if (this.renderTopAndBottom) {
-            RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
+            RenderSystem.setShaderTexture(0, Screen.MENU_BACKGROUND);
             int i8 = 32;
             RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-            guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
-            guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
+            guiGraphics.blit(Screen.MENU_BACKGROUND, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
+            guiGraphics.blit(Screen.MENU_BACKGROUND, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int i9 = 4;
             guiGraphics.fillGradient(this.left, this.top, this.right, this.top + 4, -16777216, 0);

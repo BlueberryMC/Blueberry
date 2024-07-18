@@ -1,15 +1,16 @@
 package net.blueberrymc.common.bml;
 
 import com.google.common.collect.ImmutableList;
-import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.DeprecatedReason;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.blueberrymc.network.mod.ModInfo;
-import net.blueberrymc.util.DetectedVersion;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import org.jetbrains.annotations.ApiStatus;
@@ -20,7 +21,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -189,28 +189,23 @@ public interface ModLoader {
                 PackResources packResources = mod.getResourceManager().getPackResources();
                 var resourcesSupplier = new Pack.ResourcesSupplier() {
                     @Override
-                    public @NotNull PackResources openPrimary(@NotNull String s) {
+                    public @NotNull PackResources openPrimary(@NotNull PackLocationInfo packLocationInfo) {
                         return packResources;
                     }
 
                     @Override
-                    public @NotNull PackResources openFull(@NotNull String s, Pack.@NotNull Info info) {
+                    public @NotNull PackResources openFull(@NotNull PackLocationInfo packLocationInfo, Pack.@NotNull Metadata metadata) {
                         return packResources;
                     }
                 };
-                Pack.Info info = Pack.readPackInfo(mod.modId(), resourcesSupplier, Objects.requireNonNull(DetectedVersion.tryDetectVersion()).getPackVersion(PackType.CLIENT_RESOURCES));
-                if (info == null) {
-                    throw new RuntimeException("Failed to load mod pack info for " + mod.modId());
-                }
-                Pack pack = Pack.create(
+                PackLocationInfo locationInfo = new PackLocationInfo(
                         mod.getDescription().modId(),
                         Component.literal(mod.name()),
-                        true,
-                        resourcesSupplier,
-                        info,
-                        Pack.Position.BOTTOM,
-                        false,
-                        PackSource.BUILT_IN);
+                        PackSource.FEATURE,
+                        Optional.of(KnownPack.vanilla(mod.getDescription().modId()))
+                );
+                PackSelectionConfig config = new PackSelectionConfig(true, Pack.Position.BOTTOM, false);
+                Pack pack = Pack.readMetaAndCreate(locationInfo, resourcesSupplier, PackType.CLIENT_RESOURCES, config);
                 consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
                 break; // resource manager has not been loaded yet

@@ -1,7 +1,7 @@
 package net.blueberrymc.registry;
 
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.blueberrymc.client.EarlyLoadingMessageManager;
 import net.blueberrymc.client.renderer.blockentity.MinecraftBlockEntityRenderDispatcher;
 import net.blueberrymc.common.Blueberry;
@@ -42,7 +42,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.gameevent.PositionSourceType;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -97,7 +96,6 @@ public final class BlueberryRegistries<T> {
     public static final BlueberryRegistries<Potion> POTION = new BlueberryRegistries<>(BuiltInRegistries.POTION);
     public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.PARTICLE_TYPE);
     public static final BlueberryRegistries<ResourceLocation> CUSTOM_STAT = new BlueberryRegistries<>(BuiltInRegistries.CUSTOM_STAT);
-    public static final BlueberryRegistries<ChunkStatus> CHUNK_STATUS = new BlueberryRegistries<>(BuiltInRegistries.CHUNK_STATUS);
     public static final BlueberryRegistries<RuleTestType<?>> RULE_TEST = new BlueberryRegistries<>(BuiltInRegistries.RULE_TEST);
     public static final BlueberryRegistries<PosRuleTestType<?>> POS_RULE_TEST = new BlueberryRegistries<>(BuiltInRegistries.POS_RULE_TEST);
     public static final BlueberryRegistries<RecipeType<?>> RECIPE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.RECIPE_TYPE);
@@ -113,13 +111,13 @@ public final class BlueberryRegistries<T> {
     public static final BlueberryRegistries<Schedule> SCHEDULE = new BlueberryRegistries<>(BuiltInRegistries.SCHEDULE);
     public static final BlueberryRegistries<Activity> ACTIVITY = new BlueberryRegistries<>(BuiltInRegistries.ACTIVITY);
     public static final BlueberryRegistries<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE);
-    public static final BlueberryRegistries<LootItemFunctionType> LOOT_FUNCTION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_FUNCTION_TYPE);
+    public static final BlueberryRegistries<LootItemFunctionType<?>> LOOT_FUNCTION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_FUNCTION_TYPE);
     public static final BlueberryRegistries<LootItemConditionType> LOOT_CONDITION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_CONDITION_TYPE);
     public static final BlueberryRegistries<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_NUMBER_PROVIDER_TYPE);
     public static final BlueberryRegistries<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_NBT_PROVIDER_TYPE);
     public static final BlueberryRegistries<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_SCORE_PROVIDER_TYPE);
-    public static final BlueberryRegistries<Codec<? extends BiomeSource>> BIOME_SOURCE = new BlueberryRegistries<>(BuiltInRegistries.BIOME_SOURCE);
-    public static final BlueberryRegistries<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = new BlueberryRegistries<>(BuiltInRegistries.CHUNK_GENERATOR);
+    public static final BlueberryRegistries<MapCodec<? extends BiomeSource>> BIOME_SOURCE = new BlueberryRegistries<>(BuiltInRegistries.BIOME_SOURCE);
+    public static final BlueberryRegistries<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATOR = new BlueberryRegistries<>(BuiltInRegistries.CHUNK_GENERATOR);
     public static final BlueberryRegistries<StructureProcessorType<?>> STRUCTURE_PROCESSOR = new BlueberryRegistries<>(BuiltInRegistries.STRUCTURE_PROCESSOR);
     public static final BlueberryRegistries<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = new BlueberryRegistries<>(BuiltInRegistries.STRUCTURE_POOL_ELEMENT);
     public static final BlueberryRegistries<WorldCarver<?>> CARVER = new BlueberryRegistries<>(BuiltInRegistries.CARVER);

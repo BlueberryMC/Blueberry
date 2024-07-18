@@ -14,7 +14,6 @@ import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
-import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.ClickEvent;
@@ -181,8 +180,6 @@ public class ClientCommandManager {
 
         try {
             return DISPATCHER.execute(reader, commandSourceStack);
-        } catch (CommandRuntimeException commandRuntimeException) {
-            commandSourceStack.sendFailure(commandRuntimeException.getComponent());
         } catch (CommandSyntaxException commandSyntaxException) {
             commandSourceStack.sendFailure(ComponentUtils.fromMessage(commandSyntaxException.getRawMessage()));
             if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
