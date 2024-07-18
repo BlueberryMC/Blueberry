@@ -70,8 +70,6 @@ jobs:
         run: './gradlew prepareMinecraft --info --stacktrace'
       - name: "Apply patches (Blueberry)"
         run: './gradlew applyBlueberryPatches --info --stacktrace'
-      - name: Install MagmaCube
-        run: 'cd MagmaCube && mvn -B clean install'
       - name: Run test
         run: './gradlew -PBUILD_NUMBER=$BUILD_NUMBER test --info --stacktrace'
         env:
