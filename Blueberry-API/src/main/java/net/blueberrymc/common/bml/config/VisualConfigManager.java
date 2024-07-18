@@ -652,7 +652,7 @@ public class VisualConfigManager {
     /**
      * Specifies the title of config class or friendly name of field. If <code>path</code> (and/or
      * <code>namespace</code>) was provided, {@link BlueberryText} will be used for the text. If <code>path</code> was
-     * not provided but <code>value</code> was provided, {@link net.minecraft.network.chat.contents.LiteralContents}
+     * not provided but <code>value</code> was provided, LiteralContents
      * will be used for the text.
      */
     @Retention(RetentionPolicy.RUNTIME)
