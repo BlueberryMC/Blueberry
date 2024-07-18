@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusPacketListener> {
+public class ClientboundBlueberryHandshakePacket /*implements Packet<ClientStatusPacketListener>*/ {
     private final List<ModInfo> modInfos;
 
     public ClientboundBlueberryHandshakePacket(@NotNull List<ModInfo> modInfos) {
@@ -26,7 +26,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
         }
     }
 
-    @Override
+//    @Override
     public void write(@NotNull FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeCollection(modInfos, (buf, modInfo) -> {
             buf.writeUtf(modInfo.modId());
@@ -34,7 +34,7 @@ public class ClientboundBlueberryHandshakePacket implements Packet<ClientStatusP
         });
     }
 
-    @Override
+//    @Override
     public void handle(@NotNull ClientStatusPacketListener clientBlueberryPacketListener) {
         ((ClientBlueberryHandshakePacketListener) clientBlueberryPacketListener).handleBlueberryHandshakeResponse(this);
     }

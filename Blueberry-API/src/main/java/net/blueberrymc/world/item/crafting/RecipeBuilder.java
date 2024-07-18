@@ -8,22 +8,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class RecipeBuilder {
@@ -188,7 +179,8 @@ public abstract class RecipeBuilder {
                     index.getAndIncrement();
                 }
             });
-            return new RecipeHolder<>(id, new ShapedRecipe(group, category, getWidth(), getHeight(), list, result));
+            ShapedRecipePattern pattern = new ShapedRecipePattern(getWidth(), getHeight(), list, Optional.of(new ShapedRecipePattern.Data(key, rows)));
+            return new RecipeHolder<>(id, new ShapedRecipe(group, category, pattern, result));
         }
 
         // --- getters

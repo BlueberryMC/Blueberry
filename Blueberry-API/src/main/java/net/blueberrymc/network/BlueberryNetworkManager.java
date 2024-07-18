@@ -75,8 +75,8 @@ public class BlueberryNetworkManager {
      */
     @Nullable
     public static BlueberryPacket<?> handle(@NotNull CustomPacketPayload packet) {
-        PacketConstructor<?> blueberryPacketConstructor = getPacket(packet.id(), BlueberryPacketFlow.TO_CLIENT);
         if (!(packet instanceof BlueberryCustomPayload customPayload)) return null;
+        PacketConstructor<?> blueberryPacketConstructor = getPacket(customPayload.id(), BlueberryPacketFlow.TO_CLIENT);
         return createBlueberryPacket(blueberryPacketConstructor, new FriendlyByteBuf(Unpooled.wrappedBuffer(customPayload.payload())));
     }
 
@@ -87,8 +87,8 @@ public class BlueberryNetworkManager {
      */
     @Nullable
     public static BlueberryPacket<?> handle(@NotNull ServerboundCustomPayloadPacket packet) {
-        PacketConstructor<?> blueberryPacketConstructor = getPacket(packet.payload().id(), BlueberryPacketFlow.TO_SERVER);
         if (!(packet.payload() instanceof BlueberryCustomPayload customPayload)) return null;
+        PacketConstructor<?> blueberryPacketConstructor = getPacket(customPayload.id(), BlueberryPacketFlow.TO_SERVER);
         return createBlueberryPacket(blueberryPacketConstructor, new FriendlyByteBuf(Unpooled.wrappedBuffer(customPayload.payload())));
     }
 

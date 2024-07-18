@@ -5,7 +5,7 @@ Subject: [PATCH] Add build.gradle.kts
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 44b4e8cea7d59c5fd3431576a3a5233c33856422..ec1d23d5b8c276638b77b8be3d5f9c1189a34247 100644
+index 44b4e8cea7d59c5fd3431576a3a5233c33856422..7e04d252b5d40968d4702c6f0e8d281613d7adc2 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -1,12 +1,13 @@
@@ -32,12 +32,11 @@ index 44b4e8cea7d59c5fd3431576a3a5233c33856422..ec1d23d5b8c276638b77b8be3d5f9c11
      // To change the versions see the gradle.properties file
      minecraft("com.mojang:minecraft:${project.properties["minecraft_version"]}")
      mappings(loom.officialMojangMappings())
-@@ -56,4 +58,184 @@ tasks {
+@@ -56,4 +58,182 @@ tasks {
              }
          }
      }
 +
-+    tasks {
 +        val filterDependencies =
 +            org.gradle.api.Action<com.github.jengelman.gradle.plugins.shadow.internal.DependencyFilter> {
 +                exclude(dependency("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION"))
@@ -208,12 +207,21 @@ index 44b4e8cea7d59c5fd3431576a3a5233c33856422..ec1d23d5b8c276638b77b8be3d5f9c11
 +            file.writeText("""
 +                name=blueberry
 +                version=${API_VERSION.replace("-SNAPSHOT", "")}
-+                magmaCubeCommit=${net.blueberrymc.gradle.buildSrc.Util.getHEAD(File(project.parent!!.projectDir, ".git/modules/MagmaCube"))}
++                magmaCubeCommit=0000000000000000000000000000000000000000
 +                commit=${net.blueberrymc.gradle.buildSrc.Util.getHEAD(project.parent!!.projectDir)}
 +                builtAt=${net.blueberrymc.gradle.buildSrc.Util.getMojangDateTime()}
 +                buildNumber=${net.blueberrymc.gradle.buildSrc.Util.getBuildNumber(project.parent!!)}
 +                branch=${net.blueberrymc.gradle.buildSrc.Util.getBranch(project.parent!!.projectDir)}
 +            """.trimIndent())
 +        }
-+    }
  }
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index c3ff821132baabbbcbdeb8768da855285094aa85..6e55b9ebd68b40bbbaf314bdd2d168a85e1e829c 100644
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -1,4 +1,4 @@
+-rootProject.name = "MagmaCube"
++//rootProject.name = "MagmaCube"
+ 
+ pluginManagement {
+     repositories {

@@ -5,7 +5,7 @@ Subject: [PATCH] CommandRegistrationEvent to register commands easily
 
 
 diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
-index 595b8085bf8340c2b4ec2ffdb4a90f56d54c5f29..3678bba11010d719a17d7ad613e5c0a133b93f76 100644
+index 2e2efb55deb5d22bbd98bc4226da6b0926c6520a..25d663eab2e7f7850b177887e8cd934a111f3b37 100644
 --- a/src/main/java/net/minecraft/commands/Commands.java
 +++ b/src/main/java/net/minecraft/commands/Commands.java
 @@ -209,6 +209,7 @@ public class Commands {

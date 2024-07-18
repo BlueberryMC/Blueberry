@@ -22,7 +22,7 @@ index 570a5fbe0ed8078d9f281a1f1b9bbd81c8870c05..743c9c1c9a9a61e48bac851fc6420cdd
  
  	private void openWorldCheckWorldStemCompatibility(
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index c5fbcd5cb7761ed6c72c115c8680a81c22652f4b..15e8a4aa1342b50b1d6fb1d5c4a992a5691c6c31 100644
+index 1aa50770bb4b3b7238412331cf8f795a1c6d3e1e..5cfbac966da6dd1776af20bebb5e8b152c6c5b64 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -336,6 +336,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

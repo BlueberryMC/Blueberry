@@ -5,7 +5,7 @@ Subject: [PATCH] Get our version instead of magmacube's
 
 
 diff --git a/src/main/java/net/minecraft/client/Minecraft.java b/src/main/java/net/minecraft/client/Minecraft.java
-index 1b0976b4108bfedb530b9d8f7980994b755d5598..843b43d50231c1d10ce9e7ee8cb48a8935360a78 100644
+index 797c8530d79532afc8b12a173ba58392cb234bfc..0c1d00140bdfebc8a65735f686332906d16dbac1 100644
 --- a/src/main/java/net/minecraft/client/Minecraft.java
 +++ b/src/main/java/net/minecraft/client/Minecraft.java
 @@ -873,7 +873,7 @@ public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements

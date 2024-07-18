@@ -23,7 +23,7 @@ index d7df20b40c4585b84658c830aef66e56ace0ac82..1d630e0c19b9985ab7cf82f9af1cfae5
  		long l = Crypt.SaltSupplier.getLong();
  		LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 47a2bc7cd8181d6a910768d0e15e8d88c4c2805b..51e3d473df89899e1dffeec146710ef8a10a7501 100644
+index 5d79c2e7b393c212bca8a191b8e839072ca63694..c28469432fb30297f4ab161bb63c9b3ee948483b 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -118,7 +118,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -78,7 +78,7 @@ index ddcc9705c6ec74350d45b72da81676c98032beb2..93d31033ff8d051ceed723b3a11d4628
  				throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
  			}
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index aa634a65cab592612f1ff0e0520779eb52484c2a..3e003075acd5508412e8f97f23f6b36b05f0b0ce 100644
+index cd24cf0696e48bed5804e808a2a394d72f96d2d7..4788c58c68552ee911e99b323c3f9290ae25ce78 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 @@ -129,13 +129,14 @@ public class BiomeGenerationSettings {
@@ -92,7 +92,7 @@ index aa634a65cab592612f1ff0e0520779eb52484c2a..3e003075acd5508412e8f97f23f6b36b
 +				this.carvers
  					.entrySet()
  					.stream()
- 					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> HolderSet.direct((List)entry.getValue()))),
+ 					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> HolderSet.direct(entry.getValue()))),
 -				(List<HolderSet<PlacedFeature>>)this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList())
 -			);
 +				this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList())

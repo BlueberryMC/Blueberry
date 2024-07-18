@@ -1,7 +1,6 @@
 package net.blueberrymc.world.item;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -17,10 +16,7 @@ public class ItemStackBuilder {
     public final Item item;
     public int amount;
     public int damageValue = 0;
-    @Nullable public CompoundTag tag;
-    @Nullable public Component hoverName;
     @NotNull public final Map<Enchantment, Integer> enchantments = new ConcurrentHashMap<>();
-    public int repairCost = 0;
 
     protected ItemStackBuilder(@NotNull Item item, int amount) {
         this.item = item;
@@ -30,7 +26,7 @@ public class ItemStackBuilder {
     @Contract(pure = true)
     @NotNull
     public static ItemStackBuilder builder(@NotNull ItemLike itemLike, int amount, @Nullable CompoundTag tag) {
-        return builder(itemLike.asItem(), amount).tag(tag);
+        return builder(itemLike.asItem(), amount);
     }
 
     @Contract(pure = true)
@@ -43,19 +39,6 @@ public class ItemStackBuilder {
     @NotNull
     public static ItemStackBuilder builder(@NotNull ItemLike itemLike) {
         return builder(itemLike.asItem(), 1);
-    }
-
-    @Contract(pure = true)
-    @NotNull
-    public CompoundTag getOrCreateTag() {
-        return this.tag != null ? this.tag : (this.tag = new CompoundTag());
-    }
-
-    @Contract(pure = true)
-    @NotNull
-    public ItemStackBuilder tag(@Nullable CompoundTag tag) {
-        this.tag = tag;
-        return this;
     }
 
     @Contract(pure = true)
@@ -91,17 +74,6 @@ public class ItemStackBuilder {
     @NotNull
     public ItemStackBuilder damageValue(int damageValue) {
         this.damageValue = damageValue;
-        return this;
-    }
-
-    /**
-     * Sets the name that is shown when a player hovers the item. also known as display name.
-     * @param hoverName the hover name
-     */
-    @Contract(pure = true)
-    @NotNull
-    public ItemStackBuilder hoverName(@Nullable Component hoverName) {
-        this.hoverName = hoverName;
         return this;
     }
 
@@ -142,20 +114,10 @@ public class ItemStackBuilder {
 
     @Contract(pure = true)
     @NotNull
-    public ItemStackBuilder repairCost(int repairCost) {
-        this.repairCost = repairCost;
-        return this;
-    }
-
-    @Contract(pure = true)
-    @NotNull
     public ItemStack build() {
         ItemStack stack = new ItemStack(item, amount);
         if (damageValue != 0) stack.setDamageValue(damageValue);
-        if (tag != null) stack.setTag(tag);
-        if (hoverName != null) stack.setHoverName(hoverName);
         if (!enchantments.isEmpty()) enchantments.forEach(stack::enchant);
-        if (repairCost != 0) stack.setRepairCost(repairCost);
         return stack;
     }
 }

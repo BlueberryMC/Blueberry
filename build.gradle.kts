@@ -122,7 +122,8 @@ allprojects {
             options.compilerArgs.add("-Xmaxerrs")
             options.compilerArgs.add("99999")
             options.encoding = "UTF-8"
-            options.isDeprecation = true
+            options.isDeprecation = false
+            options.isWarnings = false
         }
 
         test {

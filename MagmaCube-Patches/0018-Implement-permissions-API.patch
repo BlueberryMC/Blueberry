@@ -48,7 +48,7 @@ index 739119068a4559f99d2598b546b6016f5280f5e3..ea17084766f5d1806bd48c88a430f781
 +    // Blueberry end
  }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 15e8a4aa1342b50b1d6fb1d5c4a992a5691c6c31..ad4f5111d2bc3a7898f634703b122629e73674b1 100644
+index 5cfbac966da6dd1776af20bebb5e8b152c6c5b64..9889152fd58239691acda2cd1556ec5e92788c78 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -2112,4 +2112,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -132,10 +132,10 @@ index 4819c04f886954254c9122de421aaae798c767c2..e38cd01ded5b96abd9479edc8e5a1375
 +    // Blueberry end
  }
 diff --git a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
-index 5531600708b5bc7209bea4bef0d78c17956dacea..f23a47059926ab67068f3bd86c06287db6b3364d 100644
+index 5531600708b5bc7209bea4bef0d78c17956dacea..7bc8cda8fc076a0d88263612033bec02ca264390 100644
 --- a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
 +++ b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
-@@ -216,4 +216,17 @@ public abstract class BaseCommandBlock implements CommandSource {
+@@ -216,4 +216,16 @@ public abstract class BaseCommandBlock implements CommandSource {
  	}
  
  	public abstract boolean isValid();
@@ -151,5 +151,4 @@ index 5531600708b5bc7209bea4bef0d78c17956dacea..f23a47059926ab67068f3bd86c06287d
 +        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForCommandBlock(this, permission);
 +    }
 +    // Blueberry end
-+}
  }
