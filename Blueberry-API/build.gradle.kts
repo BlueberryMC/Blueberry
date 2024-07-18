@@ -66,4 +66,10 @@ tasks {
     remapJar {
         enabled = false
     }
+
+    jar {
+        // restore default configuration
+        destinationDirectory.set(destinationDirectory.get().asFile.parentFile.resolve("libs"))
+        archiveClassifier.set("")
+    }
 }

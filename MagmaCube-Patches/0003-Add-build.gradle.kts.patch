@@ -5,7 +5,7 @@ Subject: [PATCH] Add build.gradle.kts
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 44b4e8cea7d59c5fd3431576a3a5233c33856422..7e04d252b5d40968d4702c6f0e8d281613d7adc2 100644
+index 44b4e8cea7d59c5fd3431576a3a5233c33856422..dab96c7a9768e93394ff7d338f34b882b4895d43 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -1,12 +1,13 @@
@@ -24,15 +24,27 @@ index 44b4e8cea7d59c5fd3431576a3a5233c33856422..7e04d252b5d40968d4702c6f0e8d2816
  
  java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
  
-@@ -14,6 +15,7 @@ repositories {
+@@ -14,6 +15,8 @@ repositories {
  }
  
  dependencies {
++    api(kotlin("stdlib"))
 +    api(project(":blueberry-api"))
      // To change the versions see the gradle.properties file
      minecraft("com.mojang:minecraft:${project.properties["minecraft_version"]}")
      mappings(loom.officialMojangMappings())
-@@ -56,4 +58,182 @@ tasks {
+@@ -25,6 +28,10 @@ java {
+ }
+ 
+ tasks {
++    remapJar {
++        enabled = false
++    }
++
+     register("unzipSourcesJar") {
+         doLast {
+             configurations.runtimeClasspath.get().resolve().forEach { dependency ->
+@@ -56,4 +63,182 @@ tasks {
              }
          }
      }
