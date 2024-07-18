@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17' ]
+        java: [ '21' ]
     name: "Gradle (Java ${{ matrix.Java }})"
     needs:
       - get_major_version
