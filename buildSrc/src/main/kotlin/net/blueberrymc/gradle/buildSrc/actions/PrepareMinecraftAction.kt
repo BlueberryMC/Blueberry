@@ -41,7 +41,7 @@ open class PrepareMinecraftAction : Action<BaseBlueberryTask> {
             val isWindows = System.getProperty("os.name").lowercase().contains("win")
             val exitCode = ProcessBuilder()
                 .directory(minecraftRoot)
-                .command(*if (isWindows) arrayOf("gradlew.bat", "genSources", "unzipSourcesJar") else arrayOf("bash", "-c", "gradlew genSources unzipSourcesJar"))
+                .command(*if (isWindows) arrayOf("gradlew.bat", "genSources", "unzipSourcesJar") else arrayOf("bash", "-c", "./gradlew genSources unzipSourcesJar"))
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .start()
                 .apply {
