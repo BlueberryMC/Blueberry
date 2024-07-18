@@ -5,16 +5,16 @@ Subject: [PATCH] MenuScreens#register PAIL private -> public
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
-index 8d0f7a75f8a420c2f6128f413261dbf55981596d..d9722f34ddc2321219195d10093e4fec77e955d1 100644
+index 20f9815a9981e24bcdf379f799a5be9f0f6499ce..610bbd3f103f2f339ca91440ba51f7d8e467f976 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/MenuScreens.java
 @@ -54,7 +54,8 @@ public class MenuScreens {
-         return (MenuScreens.ScreenConstructor)SCREENS.get(menuType);
-     }
+ 		return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(menuType);
+ 	}
  
--    private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
-+    // Blueberry - PAIL private -> public
-+    public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor) {
-         MenuScreens.ScreenConstructor<?, ?> screenConstructor2 = (MenuScreens.ScreenConstructor)SCREENS.put(menuType, screenConstructor);
-         if (screenConstructor2 != null) {
-             throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(menuType));
+-	private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
++	// Blueberry - private -> public
++	public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
+ 		MenuType<? extends M> menuType, MenuScreens.ScreenConstructor<M, U> screenConstructor
+ 	) {
+ 		MenuScreens.ScreenConstructor<?, ?> screenConstructor2 = (MenuScreens.ScreenConstructor<?, ?>)SCREENS.put(menuType, screenConstructor);

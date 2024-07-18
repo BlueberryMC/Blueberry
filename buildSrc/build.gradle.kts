@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "2.0.0"
 }
 
 repositories {
@@ -10,8 +12,19 @@ repositories {
 
 dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r")
+
+    // TODO: remove
     implementation("net.minecraftforge:forgeflower:1.5.498.29")
-    implementation("net.minecraftforge:accesstransformers:8.0.4")
+    implementation("net.minecraftforge:accesstransformers:8.0.4") {
+        exclude("org.ow2.asm", "asm")
+        exclude("org.ow2.asm", "asm-tree")
+        exclude("org.ow2.asm", "asm-common")
+    }
+    implementation("org.ow2.asm:asm:9.7")
+    implementation("org.ow2.asm:asm-tree:9.7")
+    implementation("org.ow2.asm:asm-analysis:9.7")
+    implementation("org.ow2.asm:asm-commons:9.7")
+    implementation("org.ow2.asm:asm-util:9.7")
 
     // ingredients for baking installer
     implementation("io.sigpipe:jbsdiff:1.0")
@@ -20,8 +33,8 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions {
-            jvmTarget = compileJava.get().targetCompatibility
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 }

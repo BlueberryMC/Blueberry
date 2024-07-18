@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Sun, 7 Nov 2021 21:40:40 +0900
+Subject: [PATCH] Add workaround for leaves not ticking
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
+index 4dd84bb1c02b55f756c94e06e507a5eeccabdc39..d07ec2ee26ad5c68a981bc15079f588d5afd6445 100644
+--- a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
+@@ -86,7 +86,11 @@ public class LeavesBlock extends Block implements SimpleWaterloggedBlock {
+ 
+ 		int i = getDistanceAt(blockState2) + 1;
+ 		if (i != 1 || (Integer)blockState.getValue(DISTANCE) != i) {
+-			levelAccessor.scheduleTick(blockPos, this, 1);
++			// Blueberry start
++			//levelAccessor.scheduleTick(blockPos, this, 1);
++			// TODO: workaround for leaves not ticking
++			if (levelAccessor instanceof ServerLevel sl) tick(blockState, sl, blockPos, sl.random);
++			// Blueberry end
+ 		}
+ 
+ 		return blockState;

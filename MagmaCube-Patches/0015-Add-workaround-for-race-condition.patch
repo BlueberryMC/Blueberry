@@ -6,13 +6,13 @@ Subject: [PATCH] Add workaround for race condition
 CrudeIncrementalIntIdentityHashBiMap#byId returns null... for some reason
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java b/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
-index 600611c61daa3af6ce96451adc402a3e463bfb11..8d31a303f9fe0b9bf96900a28b6a31c76a7a3231 100644
+index 35d81aaf5abbcc94928c0a351985aee29856b4cf..40be3ab00763fcd5d537677cb0b2c55a61d95459 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/HashMapPalette.java
-@@ -59,6 +59,17 @@ public class HashMapPalette<T> implements Palette<T> {
-     public T valueFor(int i) {
-         T object = this.values.byId(i);
-         if (object == null) {
+@@ -62,6 +62,17 @@ public class HashMapPalette<T> implements Palette<T> {
+ 	public T valueFor(int i) {
+ 		T object = this.values.byId(i);
+ 		if (object == null) {
 +            // Blueberry start
 +            // TODO: figure out why Thread.sleep(1) works; maybe race condition?
 +            try {
@@ -24,6 +24,6 @@ index 600611c61daa3af6ce96451adc402a3e463bfb11..8d31a303f9fe0b9bf96900a28b6a31c7
 +            if (object != null) return object;
 +            try { return (T) net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(); } catch (ClassCastException ignore) {}
 +            // Blueberry end
-             throw new MissingPaletteEntryException(i);
-         } else {
-             return object;
+ 			throw new MissingPaletteEntryException(i);
+ 		} else {
+ 			return object;

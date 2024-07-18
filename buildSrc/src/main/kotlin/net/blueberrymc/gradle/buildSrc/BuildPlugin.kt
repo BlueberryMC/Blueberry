@@ -26,5 +26,6 @@ class BuildPlugin : Plugin<Project> {
         project.tasks.register("applyBlueberryPatches", ApplyBlueberryPatches::class.java, ApplyBlueberryPatchesAction())
         project.tasks.register("applyMinecraftPatches", BaseBlueberryTask::class.java, ApplyMinecraftPatchesAction())
         project.tasks.register("rebuildBlueberryPatches", RebuildBlueberryPatches::class.java, RebuildBlueberryPatchesAction())
+        project.tasks.register("prepareMinecraft", BaseBlueberryTask::class.java, PrepareMinecraftAction())
     }
 }

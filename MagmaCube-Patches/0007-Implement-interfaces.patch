@@ -5,15 +5,15 @@ Subject: [PATCH] Implement interfaces
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 5f4f3fd8e5567d6995e58718f35456dea772ce35..3b3b6b96e76282a50b07a4f0d9a84b87b8cff19e 100644
+index 9093b77f95f932ae1aa64b82179bd4ae4e7091c4..0fd3bd4931061cbb3bfd73e482979265f909ba17 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -71,7 +71,7 @@ import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
+@@ -76,7 +76,7 @@ import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.Scoreboard;
+ import org.jetbrains.annotations.Nullable;
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
 +public abstract class Level implements LevelAccessor, AutoCloseable, net.blueberrymc.world.level.BlueberryLevelAccessor { // Blueberry - implement BlueberryLevelAccessor
-     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
-     public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
-     public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));
+ 	public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
+ 	public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
+ 	public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));

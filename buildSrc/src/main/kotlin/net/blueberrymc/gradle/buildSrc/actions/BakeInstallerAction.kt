@@ -17,8 +17,8 @@ class BakeInstallerAction : Action<BaseBlueberryTask> {
         task.dependsOn("createClientPatcherJar")
         task.dependsOn("createServerPatcherJar")
         task.doLast {
-            val clientPatcherJar = task.project.getTaskByName("createClientPatcherJar").outputs.files.singleFile
-            val serverPatcherJar = task.project.getTaskByName("createServerPatcherJar").outputs.files.singleFile
+            val clientPatcherJar = task.project.getTaskByName("createClientPatcherJar")!!.outputs.files.singleFile
+            val serverPatcherJar = task.project.getTaskByName("createServerPatcherJar")!!.outputs.files.singleFile
             val patcherJar = PatcherJar(clientPatcherJar, serverPatcherJar)
             // prepare files and compile installer
             val installerJar = bakeInstaller(task.project, patcherJar)

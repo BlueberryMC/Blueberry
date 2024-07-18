@@ -2,12 +2,14 @@ import net.blueberrymc.gradle.buildSrc.Util.getBuildNumber
 import net.blueberrymc.gradle.buildSrc.constants.KOTLIN_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.API_VERSION
 import net.blueberrymc.gradle.buildSrc.constants.MINECRAFT_VERSION
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     java
     kotlin("jvm") version net.blueberrymc.gradle.buildSrc.constants.KOTLIN_VERSION
     `maven-publish`
     `java-library`
+    id("fabric-loom") version "1.7-SNAPSHOT" apply false
 }
 
 apply<net.blueberrymc.gradle.buildSrc.BuildPlugin>()
@@ -99,17 +101,17 @@ subprojects {
 allprojects {
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
 
     tasks {
         compileKotlin {
-            kotlinOptions.jvmTarget = "17"
+            compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
         }
 
         compileTestKotlin {
-            kotlinOptions.jvmTarget = "17"
+            compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
         }
 
         javadoc {

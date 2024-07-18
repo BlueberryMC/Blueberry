@@ -5,60 +5,70 @@ Subject: [PATCH] Implement addRecipe/removeRecipe API
 
 
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index 98667c82f0c940cef127577431f9d5e42c960499..ec5b3a62c0577221112c052be7e4db3b167de25a 100644
+index d7bc305cee56782c9b84cbe8ed3feb670f4fee00..5aba7fd50866a072e9ea91f7eb0b3d652980c9da 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -36,10 +36,10 @@ import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
+@@ -33,12 +33,12 @@ import net.minecraft.world.level.Level;
+ import org.jetbrains.annotations.Nullable;
  import org.slf4j.Logger;
  
 -public class RecipeManager extends SimpleJsonResourceReloadListener {
 +public class RecipeManager extends SimpleJsonResourceReloadListener implements net.blueberrymc.world.item.crafting.BlueberryRecipeManager { // Blueberry
-     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-     private static final Logger LOGGER = LogUtils.getLogger();
--    private Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> recipes = ImmutableMap.of();
-+    private Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> recipes = Maps.newHashMap(); // Blueberry - use HashMap instead
-     private Map<ResourceLocation, RecipeHolder<?>> byName = ImmutableMap.of();
-     private boolean hasErrors;
+ 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+ 	private static final Logger LOGGER = LogUtils.getLogger();
+ 	private final HolderLookup.Provider registries;
+-	private Multimap<RecipeType<?>, RecipeHolder<?>> byType = ImmutableMultimap.of();
+-	private Map<ResourceLocation, RecipeHolder<?>> byName = ImmutableMap.of();
++	private Multimap<RecipeType<?>, RecipeHolder<?>> byType = com.google.common.collect.Multimaps.newListMultimap(com.google.common.collect.Maps.newHashMap(), java.util.ArrayList::new);
++	private Map<ResourceLocation, RecipeHolder<?>> byName = com.google.common.collect.Maps.newHashMap(); // Blueberry - use HashMap instead
+ 	private boolean hasErrors;
  
-@@ -64,8 +64,9 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
-             }
-         }
+ 	public RecipeManager(HolderLookup.Provider provider) {
+@@ -58,15 +58,16 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+ 			try {
+ 				Recipe<?> recipe = Recipe.CODEC.parse(registryOps, (JsonElement)entry.getValue()).getOrThrow(JsonParseException::new);
+ 				RecipeHolder<?> recipeHolder = new RecipeHolder<>(resourceLocation, recipe);
+-				builder.put(recipe.getType(), recipeHolder);
+-				builder2.put(resourceLocation, recipeHolder);
++				byType.put(recipe.getType(), recipeHolder); // Blueberry
++				byName.put(resourceLocation, recipeHolder); // Blueberry
+ 			} catch (IllegalArgumentException | JsonParseException var12) {
+ 				LOGGER.error("Parsing error loading recipe {}", resourceLocation, var12);
+ 			}
+ 		}
  
--        this.recipes = map2.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entryx) -> ((Builder)entryx.getValue()).build()));
-+        this.recipes = map2.entrySet().stream().collect(Collectors.toMap(Entry::getKey, (entryx) -> entryx.getValue().build(), (a, b) -> a)); // Blueberry - use normal map
-         this.byName = builder.build();
-+        net.blueberrymc.world.item.crafting.RecipeBuilder.getRecipes().forEach((id, recipe) -> addRecipe(recipe)); // Blueberry - add recipes now
-         LOGGER.info("Loaded {} recipes", map2.size());
-     }
+-		this.byType = builder.build();
+-		this.byName = builder2.build();
++//		this.byType = builder.build(); // Blueberry
++//		this.byName = builder2.build(); // Blueberry
++		net.blueberrymc.world.item.crafting.RecipeBuilder.getRecipes().forEach((id, recipe) -> addRecipe(recipe)); // Blueberry - add recipes now
+ 		LOGGER.info("Loaded {} recipes", this.byType.size());
+ 	}
  
-@@ -174,4 +175,29 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
-     public interface CachedCheck<C extends Container, T extends Recipe<C>> {
-         Optional<RecipeHolder<T>> getRecipeFor(C var1, Level var2);
-     }
+@@ -185,6 +186,26 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+ 		};
+ 	}
+ 
++	// Blueberry start - implement addRecipe/removeRecipe
++	@Override
++	public void addRecipe(RecipeHolder<?> recipe) {
++		if (!net.blueberrymc.world.item.crafting.RecipeBuilder.knownRecipeManagers.contains(this))
++			net.blueberrymc.world.item.crafting.RecipeBuilder.knownRecipeManagers.add(this);
++		if (byName.containsKey(recipe.id())) {
++			throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.id());
++		} else {
++			byType.put(recipe.value().getType(), recipe);
++			byName.put(recipe.id(), recipe);
++		}
++	}
 +
-+    // Blueberry start - implement addRecipe/removeRecipe
-+    @Override
-+    public void addRecipe(RecipeHolder<?> recipe) {
-+        if (!net.blueberrymc.world.item.crafting.RecipeBuilder.knownRecipeManagers.contains(this))
-+            net.blueberrymc.world.item.crafting.RecipeBuilder.knownRecipeManagers.add(this);
-+        Map<ResourceLocation, RecipeHolder<?>> map = this.recipes.get(recipe.value().getType());
-+        boolean doAdd = false;
-+        if (map instanceof ImmutableMap) {
-+            map = new java.util.HashMap<>(map);
-+            doAdd = true;
-+        }
-+        if (map.containsKey(recipe.id())) {
-+            throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.id());
-+        } else {
-+            map.put(recipe.id(), recipe);
-+            if (doAdd) this.recipes.put(recipe.value().getType(), map);
-+        }
-+    }
++	@Override
++	public void removeRecipe(RecipeType<?> type, ResourceLocation id) {
++		var holder = this.byName.remove(id);
++		this.byType.get(type).remove(holder);
++	}
++	// Blueberry end - implement addRecipe/removeRecipe
 +
-+    @Override
-+    public void removeRecipe(RecipeType<?> type, ResourceLocation id) {
-+        this.recipes.get(type).remove(id);
-+    }
-+    // Blueberry end - implement addRecipe/removeRecipe
- }
+ 	public interface CachedCheck<C extends Container, T extends Recipe<C>> {
+ 		Optional<RecipeHolder<T>> getRecipeFor(C container, Level level);
+ 	}

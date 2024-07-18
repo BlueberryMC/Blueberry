@@ -10,6 +10,7 @@ import org.gradle.api.Project
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.net.URI
 import java.net.URL
 import java.net.URLClassLoader
 import java.security.MessageDigest
@@ -23,7 +24,7 @@ import kotlin.io.path.outputStream
 
 object Util {
     fun downloadFile(url: String, destination: File) {
-        URL(url).openStream().use { it.transferTo(destination.outputStream()) }
+        URI(url).toURL().openStream().use { it.transferTo(destination.outputStream()) }
     }
 
     fun applyPatches(baseDir: File, targetDirName: String, patchesDirName: String, upstreamPath: File) {

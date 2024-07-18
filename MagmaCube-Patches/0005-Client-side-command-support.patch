@@ -5,38 +5,38 @@ Subject: [PATCH] Client-side command support
 
 
 diff --git a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-index 26c2d06cb2ab7a0fc92b2566d22f592662786e07..747f06b3fbdb276210db7b8714fdc2a8c9020542 100644
+index 95a552bcbd1fc0f6f1cfe7a2bead615482db4400..e85fc47477c59a265c725fbbab9ba4ff8af85718 100644
 --- a/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
 +++ b/src/main/java/net/minecraft/client/gui/components/CommandSuggestions.java
-@@ -190,7 +190,13 @@ public class CommandSuggestions {
-         boolean flag2 = this.commandsOnly || flag;
-         int i = this.input.getCursorPosition();
-         if (flag2) {
--            CommandDispatcher<SharedSuggestionProvider> commandDispatcher = this.minecraft.player.connection.getCommands();
-+            // Blueberry start - client-side command completion
-+            CommandDispatcher<SharedSuggestionProvider> commandDispatcher = net.blueberrymc.client.commands.ClientCommandManager.getRoot(this.minecraft.player);
-+            CommandDispatcher<SharedSuggestionProvider> mojangCommandDispatcher = this.minecraft.player.connection.getCommands();
-+            for (CommandNode<SharedSuggestionProvider> child : mojangCommandDispatcher.getRoot().getChildren()) {
-+                commandDispatcher.getRoot().addChild(child);
-+            }
-+            // Blueberry end - client-side command completion
-             if (this.currentParse == null) {
-                 this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
-             }
+@@ -199,7 +199,13 @@ public class CommandSuggestions {
+ 		boolean bl2 = this.commandsOnly || bl;
+ 		int i = this.input.getCursorPosition();
+ 		if (bl2) {
+-			CommandDispatcher<SharedSuggestionProvider> commandDispatcher = this.minecraft.player.connection.getCommands();
++			// Blueberry start - client-side command completion
++			CommandDispatcher<SharedSuggestionProvider> commandDispatcher = net.blueberrymc.client.commands.ClientCommandManager.getRoot(this.minecraft.player);
++			CommandDispatcher<SharedSuggestionProvider> mojangCommandDispatcher = this.minecraft.player.connection.getCommands();
++			for (CommandNode<SharedSuggestionProvider> child : mojangCommandDispatcher.getRoot().getChildren()) {
++				commandDispatcher.getRoot().addChild(child);
++			}
++			// Blueberry end - client-side command completion
+ 			if (this.currentParse == null) {
+ 				this.currentParse = commandDispatcher.parse(stringReader, this.minecraft.player.connection.getSuggestionsProvider());
+ 			}
 diff --git a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-index a6e68811a44feb79737f27b411d7b9e17e879b4e..38536e35c30ddd7a24255311f3ae2376a7bd2285 100644
+index 429622223e31bd1ef75aa05090b146668c67f3c1..e13e53db0296c3525bb4a56607bedb40168cd88e 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -217,6 +217,12 @@ public class ChatScreen extends Screen {
-             }
+@@ -231,6 +231,12 @@ public class ChatScreen extends Screen {
+ 			}
  
-             if (s.startsWith("/")) {
-+                // Blueberry start
-+                if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(s)) {
-+                    net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.minecraft.player.createCommandSourceStack(), s);
-+                    return true;
-+                }
-+                // Blueberry end
-                 this.minecraft.player.connection.sendCommand(s.substring(1));
-             } else {
-                 this.minecraft.player.connection.sendChat(s);
+ 			if (string.startsWith("/")) {
++				// Blueberry start
++				if (net.blueberrymc.client.commands.ClientCommandManager.hasCommand(string)) {
++					net.blueberrymc.client.commands.ClientCommandManager.performCommand(this.minecraft.player.createCommandSourceStack(), string);
++					return;
++				}
++				// Blueberry end
+ 				this.minecraft.player.connection.sendCommand(string.substring(1));
+ 			} else {
+ 				this.minecraft.player.connection.sendChat(string);

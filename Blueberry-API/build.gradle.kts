@@ -1,9 +1,16 @@
 import net.blueberrymc.gradle.buildSrc.constants.*
 
+plugins {
+    id("fabric-loom") version "1.7-SNAPSHOT"
+}
+
 version = API_VERSION
 
 dependencies {
-    compileOnly("net.blueberrymc.magmacube:magmacube:$MINECRAFT_VERSION")
+    // To change the versions see the gradle.properties file
+    minecraft("com.mojang:minecraft:$MINECRAFT_VERSION")
+    mappings(loom.officialMojangMappings())
+
     implementation("org.jetbrains:annotations:24.0.1")
     compileOnlyApi("org.jetbrains:annotations:24.0.1")
     api("com.github.JnCrMx:discord-game-sdk4j:v0.5.5")
@@ -17,11 +24,11 @@ dependencies {
     api("io.netty:netty-all:4.1.97.Final")
     api("org.apache.commons:commons-lang3:3.13.0")
     api("org.yaml:snakeyaml:2.2")
-    api("org.ow2.asm:asm:9.4")
-    api("org.ow2.asm:asm-tree:9.4")
-    api("org.ow2.asm:asm-analysis:9.4")
-    api("org.ow2.asm:asm-commons:9.4")
-    api("org.ow2.asm:asm-util:9.4")
+    api("org.ow2.asm:asm:9.7")
+    api("org.ow2.asm:asm-tree:9.7")
+    api("org.ow2.asm:asm-analysis:9.7")
+    api("org.ow2.asm:asm-commons:9.7")
+    api("org.ow2.asm:asm-util:9.7")
     api("org.spongepowered:mixin:0.8.5")
     api("net.blueberrymc:native-util:2.1.0")
     api("ca.weblite:java-objc-bridge:1.1")

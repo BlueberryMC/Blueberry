@@ -15,9 +15,9 @@ class CreateServerPatcherJarAction : Action<BaseBlueberryTask> {
         task.dependsOn("createServerPatch")
         task.outputs.file(patcherJar)
         task.doLast {
-            val serverJarBytes = task.project.getTaskByName("downloadServerJar").outputs.files.singleFile.readBytes()
+            val serverJarBytes = task.project.getTaskByName("downloadServerJar")!!.outputs.files.singleFile.readBytes()
             val patchedServerJarBytes =
-                task.project.getTaskByName("shadowServerJar", "blueberry").outputs.files.singleFile.readBytes()
+                task.project.getTaskByName("shadowServerJar", "blueberry")!!.outputs.files.singleFile.readBytes()
             val vanillaHash = Util.sha256sum(serverJarBytes)
             val patchedHash = Util.sha256sum(patchedServerJarBytes)
             File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.properties").writeText("""

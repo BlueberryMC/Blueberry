@@ -5,91 +5,98 @@ Subject: [PATCH] Fire simple events
 
 
 diff --git a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-index c413938633c63f5803111187a791d96e46e51270..8fdf2caf818e1bd7de04a06c4ec54c339078a38e 100644
+index d7df20b40c4585b84658c830aef66e56ace0ac82..1d630e0c19b9985ab7cf82f9af1cfae5da3d0db2 100644
 --- a/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/src/main/java/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -2093,6 +2093,13 @@ public class ClientPacketListener extends ClientCommonPacketListenerImpl impleme
-     }
+@@ -2445,6 +2445,13 @@ public class ClientPacketListener extends ClientCommonPacketListenerImpl impleme
+ 	}
  
-     public void sendChat(String s) {
-+        // Blueberry start - fire ClientLocalPlayerChatEvent
-+        var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(s);
-+        if (!event.callEvent()) {
-+            return;
-+        }
-+        s = event.getMessage();
-+        // Blueberry end - fire ClientLocalPlayerChatEvent
-         Instant instant = Instant.now();
-         long l = Crypt.SaltSupplier.getLong();
-         LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
+ 	public void sendChat(String string) {
++		// Blueberry start - fire ClientLocalPlayerChatEvent
++		var event = new net.blueberrymc.client.event.player.ClientLocalPlayerChatEvent(string);
++		if (!event.callEvent()) {
++			return;
++		}
++		string = event.getMessage();
++		// Blueberry end - fire ClientLocalPlayerChatEvent
+ 		Instant instant = Instant.now();
+ 		long l = Crypt.SaltSupplier.getLong();
+ 		LastSeenMessagesTracker.Update update = this.lastSeenMessages.generateAndApplyUpdate();
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 1663af005ad40c159d494be6f8b04bef01aae628..484fac408e0e053752d6e6f14928706d020408b9 100644
+index 47a2bc7cd8181d6a910768d0e15e8d88c4c2805b..51e3d473df89899e1dffeec146710ef8a10a7501 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -102,8 +102,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-         this.address = this.channel.remoteAddress();
-         if (this.delayedDisconnect != null) {
-             this.disconnect(this.delayedDisconnect);
+@@ -118,7 +118,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 		this.address = this.channel.remoteAddress();
+ 		if (this.delayedDisconnect != null) {
+ 			this.disconnect(this.delayedDisconnect);
 +            return; // Blueberry
-         }
- 
+ 		}
++
 +        new net.blueberrymc.common.event.network.ConnectionInitEvent(this.channel, this.receiving).callEvent(); // Blueberry
-     }
+ 	}
  
-     public static void setInitialProtocolAttributes(Channel channel) {
-@@ -536,6 +538,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-             }
-         }
- 
+ 	@Override
+@@ -585,6 +588,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 				this.channel.pipeline().remove("compress");
+ 			}
+ 		}
++
 +        new net.blueberrymc.common.event.network.ConnectionSetupCompressionEvent(this.channel, this.receiving, i).callEvent(); // Blueberry
-     }
+ 	}
  
-     public void handleDisconnection() {
-@@ -566,4 +569,4 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-     public void setBandwidthLogger(SampleLogger sampleLogger) {
-         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(sampleLogger);
-     }
--}
-\ No newline at end of file
-+}
+ 	public void handleDisconnection() {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 085eba8cf07ec54bb33fdc223b4f038762668211..2bbeaa58c7b021c883deb34614c60799d7868596 100644
+index 31d70416e30c7262e329725ba5948c7913ec55bc..7ea6a5f39a921831ba6ca809f40dfa1b7664f6ad 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -197,6 +197,7 @@ public abstract class PlayerList {
-         this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
-         this.sendLevelInfo(serverPlayer, serverLevel2);
-         serverLevel2.addNewPlayer(serverPlayer);
+@@ -225,6 +225,7 @@ public abstract class PlayerList {
+ 		this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(serverPlayer)));
+ 		this.sendLevelInfo(serverPlayer, serverLevel2);
+ 		serverLevel2.addNewPlayer(serverPlayer);
 +        new net.blueberrymc.common.event.player.PlayerJoinEvent(serverPlayer).callEvent(); // Blueberry
-         this.server.getCustomBossEvents().onPlayerConnect(serverPlayer);
+ 		this.server.getCustomBossEvents().onPlayerConnect(serverPlayer);
  
-         for(MobEffectInstance mobEffectInstance : serverPlayer.getActiveEffects()) {
+ 		for (MobEffectInstance mobEffectInstance : serverPlayer.getActiveEffects()) {
 diff --git a/src/main/java/net/minecraft/world/level/biome/Biome.java b/src/main/java/net/minecraft/world/level/biome/Biome.java
-index 3111cec4b7f9b2ce5634cd83c2f04b29b25368a4..da84704b11ff81ae99a51cc325abb878c97c8a05 100644
+index ddcc9705c6ec74350d45b72da81676c98032beb2..93d31033ff8d051ceed723b3a11d46286ea94d0c 100644
 --- a/src/main/java/net/minecraft/world/level/biome/Biome.java
 +++ b/src/main/java/net/minecraft/world/level/biome/Biome.java
-@@ -283,7 +283,8 @@ public final class Biome {
+@@ -312,12 +312,12 @@ public final class Biome {
  
-         public Biome build() {
-             if (this.temperature != null && this.downfall != null && this.specialEffects != null && this.mobSpawnSettings != null && this.generationSettings != null) {
--                return new Biome(new Biome.ClimateSettings(this.hasPrecipitation, this.temperature, this.temperatureModifier, this.downfall), this.specialEffects, this.generationSettings, this.mobSpawnSettings);
-+                // Blueberry - call BiomeInitEvent
-+                return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeInitEvent(this, () -> new Biome(new Biome.ClimateSettings(this.hasPrecipitation, this.temperature, this.temperatureModifier, this.downfall), this.specialEffects, this.generationSettings, this.mobSpawnSettings))).getBiome().get();
-             } else {
-                 throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
-             }
+ 		public Biome build() {
+ 			if (this.temperature != null && this.downfall != null && this.specialEffects != null && this.mobSpawnSettings != null && this.generationSettings != null) {
+-				return new Biome(
++				return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeInitEvent(this, () -> new Biome(
+ 					new Biome.ClimateSettings(this.hasPrecipitation, this.temperature, this.temperatureModifier, this.downfall),
+ 					this.specialEffects,
+ 					this.generationSettings,
+ 					this.mobSpawnSettings
+-				);
++				))).getBiome().get();
+ 			} else {
+ 				throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
+ 			}
 diff --git a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-index 2cb28b2037ab3e8eb6bf0980fecf1f7930576b31..952e654cd25a6dd1a8aaca140304cc991f4839b4 100644
+index aa634a65cab592612f1ff0e0520779eb52484c2a..3e003075acd5508412e8f97f23f6b36b05f0b0ce 100644
 --- a/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/BiomeGenerationSettings.java
-@@ -108,7 +108,8 @@ public class BiomeGenerationSettings {
-         }
+@@ -129,13 +129,14 @@ public class BiomeGenerationSettings {
+ 		}
  
-         public BiomeGenerationSettings build() {
--            return new BiomeGenerationSettings(this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> HolderSet.direct(entry.getValue()))), this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList()));
+ 		public BiomeGenerationSettings build() {
+-			return new BiomeGenerationSettings(
+-				(Map<GenerationStep.Carving, HolderSet<ConfiguredWorldCarver<?>>>)this.carvers
 +            // Blueberry - call BiomeGenerationSettingsInitEvent
-+            return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeGenerationSettingsInitEvent(this, () -> new BiomeGenerationSettings(this.carvers.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> HolderSet.direct(entry.getValue()))), this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList())))).getBiomeGenerationSettings().get();
-         }
-     }
++            return net.blueberrymc.common.bml.event.Event.callEvent(new net.blueberrymc.common.event.biome.BiomeGenerationSettingsInitEvent(this, () -> new BiomeGenerationSettings(
++				this.carvers
+ 					.entrySet()
+ 					.stream()
+ 					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> HolderSet.direct((List)entry.getValue()))),
+-				(List<HolderSet<PlacedFeature>>)this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList())
+-			);
++				this.features.stream().map(HolderSet::direct).collect(ImmutableList.toImmutableList())
++			))).getBiomeGenerationSettings().get();
+ 		}
+ 	}
  }
-\ No newline at end of file

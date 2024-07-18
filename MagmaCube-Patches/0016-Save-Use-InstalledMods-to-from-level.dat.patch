@@ -1,0 +1,109 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: acrylic-style <me@acrylicstyle.xyz>
+Date: Fri, 24 Dec 2021 14:48:22 +0900
+Subject: [PATCH] Save/Use InstalledMods to/from level.dat
+
+
+diff --git a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
+index 570a5fbe0ed8078d9f281a1f1b9bbd81c8870c05..743c9c1c9a9a61e48bac851fc6420cdda1cc3b74 100644
+--- a/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
++++ b/src/main/java/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
+@@ -361,7 +361,11 @@ public class WorldOpenFlows {
+ 			return;
+ 		}
+ 
+-		this.openWorldCheckWorldStemCompatibility(levelStorageAccess, worldStem, packRepository, runnable);
++		// Blueberry start
++		if (net.blueberrymc.client.BlueberryClient.showIncompatibleWorldModScreen(worldStem.worldData().getLevelName(), levelStorageAccess, worldStem, () -> this.openWorldCheckWorldStemCompatibility(levelStorageAccess, worldStem, packRepository, runnable))) {
++			this.openWorldCheckWorldStemCompatibility(levelStorageAccess, worldStem, packRepository, runnable);
++		}
++		// Blueberry end
+ 	}
+ 
+ 	private void openWorldCheckWorldStemCompatibility(
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index c5fbcd5cb7761ed6c72c115c8680a81c22652f4b..15e8a4aa1342b50b1d6fb1d5c4a992a5691c6c31 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -336,6 +336,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 		boolean bl = false;
+ 		ProfiledDuration profiledDuration = JvmProfiler.INSTANCE.onWorldLoadedStarted();
+ 		this.worldData.setModdedInfo(this.getServerModName(), this.getModdedStatus().shouldReportAsModified());
++		this.worldData.setInstalledMods(net.blueberrymc.common.Blueberry.getModLoader().getActiveMods()); // Blueberry
+ 		ChunkProgressListener chunkProgressListener = this.progressListenerFactory.create(this.worldData.getGameRules().getInt(GameRules.RULE_SPAWN_CHUNK_RADIUS));
+ 		this.createLevels(chunkProgressListener);
+ 		this.forceDifficulty();
+diff --git a/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java b/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
+index 2091d2244507f1c37827294d397bd96e0b5cf384..d083ce1597d392625ffc98f4bd6b88777afacc11 100644
+--- a/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
++++ b/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
+@@ -73,6 +73,7 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 	private boolean wasModded;
+ 	private final Set<String> removedFeatureFlags;
+ 	private final TimerQueue<MinecraftServer> scheduledEvents;
++	private final Set<net.blueberrymc.common.bml.VersionedModInfo> installedMods = new java.util.HashSet<>(); // Blueberry
+ 
+ 	private PrimaryLevelData(
+ 		@Nullable CompoundTag compoundTag,
+@@ -170,7 +171,7 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 		Dynamic<T> dynamic, LevelSettings levelSettings, PrimaryLevelData.SpecialWorldProperty specialWorldProperty, WorldOptions worldOptions, Lifecycle lifecycle
+ 	) {
+ 		long l = dynamic.get("Time").asLong(0L);
+-		return new PrimaryLevelData(
++		PrimaryLevelData data = new PrimaryLevelData( // Blueberry
+ 			(CompoundTag)dynamic.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
+ 			dynamic.get("WasModded").asBoolean(false),
+ 			new BlockPos(dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0)),
+@@ -202,6 +203,10 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 			specialWorldProperty,
+ 			lifecycle
+ 		);
++		// Blueberry start
++		data.installedMods.addAll(dynamic.get("InstalledMods").asStream().flatMap((dynamicx) -> net.blueberrymc.util.Util.toStream(net.blueberrymc.common.bml.SimpleVersionedModInfo.load(dynamicx))).collect(Collectors.toCollection(Sets::newLinkedHashSet)));
++		return data;
++		// Blueberry end
+ 	}
+ 
+ 	@Override
+@@ -217,6 +222,11 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 
+ 	private void setTagData(RegistryAccess registryAccess, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
+ 		compoundTag.put("ServerBrands", stringCollectionToTag(this.knownServerBrands));
++		// Blueberry start
++		ListTag listTag = new ListTag();
++		this.installedMods.stream().map(net.blueberrymc.common.bml.VersionedModInfo::save).forEach(listTag::add);
++		compoundTag.put("InstalledMods", listTag);
++		// Blueberry end
+ 		compoundTag.putBoolean("WasModded", this.wasModded);
+ 		if (!this.removedFeatureFlags.isEmpty()) {
+ 			compoundTag.put("removed_features", stringCollectionToTag(this.removedFeatureFlags));
+@@ -579,4 +589,16 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+ 		FLAT,
+ 		DEBUG;
+ 	}
++
++	// Blueberry start
++	@Override
++	public void setInstalledMods(java.util.Collection<? extends net.blueberrymc.common.bml.VersionedModInfo> collection) {
++		this.installedMods.clear();
++		this.installedMods.addAll(collection);
++	}
++	@Override
++	public Set<net.blueberrymc.common.bml.VersionedModInfo> getInstalledMods() {
++		return this.installedMods;
++	}
++	// Blueberry end
+ }
+diff --git a/src/main/java/net/minecraft/world/level/storage/WorldData.java b/src/main/java/net/minecraft/world/level/storage/WorldData.java
+index 5dd0904e9ab79ce3bfbe180fd3da32ba44c3c315..ca4c0610a0572aaa1ddfa7ef6d8f030d62c7e264 100644
+--- a/src/main/java/net/minecraft/world/level/storage/WorldData.java
++++ b/src/main/java/net/minecraft/world/level/storage/WorldData.java
+@@ -17,7 +17,7 @@ import net.minecraft.world.level.dimension.end.EndDragonFight;
+ import net.minecraft.world.level.levelgen.WorldOptions;
+ import org.jetbrains.annotations.Nullable;
+ 
+-public interface WorldData {
++public interface WorldData extends net.blueberrymc.common.util.InstalledModsContainer { // Blueberry
+ 	int ANVIL_VERSION_ID = 19133;
+ 	int MCREGION_VERSION_ID = 19132;
+ 

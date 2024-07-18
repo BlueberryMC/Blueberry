@@ -1,4 +1,4 @@
-rootProject.name = "Blueberry-Parent"
+rootProject.name = "MagmaCube"
 
 pluginManagement {
     repositories {
@@ -13,12 +13,4 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version("0.8.0")
-}
-
-include("blueberry-api")
-project(":blueberry-api").projectDir = File("Blueberry-API")
-
-if (File("Blueberry-Client").exists()) {
-    include("blueberry")
-    project(":blueberry").projectDir = File("Blueberry-Client")
 }

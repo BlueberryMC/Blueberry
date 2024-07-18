@@ -6,12 +6,12 @@ const val LOG4J_VERSION = "2.19.0"
 const val LWJGL_VERSION = "3.3.2"
 @Suppress("unused") // see .github/workflows/build.yml
 const val MAJOR_VERSION = "1.20"
-const val MINECRAFT_VERSION = "1.20.2"
+const val MINECRAFT_VERSION = "1.20.6"
 const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/82d1974e75fc984c5ed4b038e764e50958ac61a0/client.jar"
 const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/5b868151bd02b41319f54c8d4061b8cae84e665c/server.jar"
 const val CLIENT_MAPPING_URL = "https://piston-data.mojang.com/v1/objects/5c292ff7d3161977041116698e295083fd5ec8f5/client.txt"
 const val MAPPING_VERSION = "22w05a"
-const val KOTLIN_VERSION = "1.9.10"
+const val KOTLIN_VERSION = "2.0.0"
 
 val SERVER_REPOSITORIES_LIST = listOf(
     "https://repo.azisaba.net/repository/maven-public/",

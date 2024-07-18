@@ -5,14 +5,14 @@ Subject: [PATCH] CommandRegistrationEvent to register commands easily
 
 
 diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
-index 1bf78e316e1e211fdd90d8f62fc2ff47c3200733..8446eef665e5d6674e5c33761c43221e9b622d64 100644
+index 595b8085bf8340c2b4ec2ffdb4a90f56d54c5f29..3678bba11010d719a17d7ad613e5c0a133b93f76 100644
 --- a/src/main/java/net/minecraft/commands/Commands.java
 +++ b/src/main/java/net/minecraft/commands/Commands.java
-@@ -193,6 +193,7 @@ public class Commands {
-         TriggerCommand.register(this.dispatcher);
-         WeatherCommand.register(this.dispatcher);
-         WorldBorderCommand.register(this.dispatcher);
+@@ -209,6 +209,7 @@ public class Commands {
+ 		TriggerCommand.register(this.dispatcher);
+ 		WeatherCommand.register(this.dispatcher);
+ 		WorldBorderCommand.register(this.dispatcher);
 +        net.blueberrymc.common.event.EventFactory.callCommandRegistrationEvent(this.dispatcher, commandSelection); // Blueberry
-         if (JvmProfiler.INSTANCE.isAvailable()) {
-             JfrCommand.register(this.dispatcher);
-         }
+ 		if (JvmProfiler.INSTANCE.isAvailable()) {
+ 			JfrCommand.register(this.dispatcher);
+ 		}

@@ -10,13 +10,6 @@ dependency-reduced-pom.xml
 /MinecraftForge-API/out/
 target/
 /target/
-/work/testClient/
-/work/testServer/
-/work/mcdev/
-/work/jbsdiff/
-/work/jbsdiffPatcher/
-/work/Installer/
-/work/temp/
 /logs/
 /Blueberry-Client
 *.release[bB]ackup

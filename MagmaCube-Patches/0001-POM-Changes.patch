@@ -6,36 +6,41 @@ Subject: [PATCH] POM Changes
 
 diff --git a/.gitignore b/.gitignore
 new file mode 100644
-index 0000000000000000000000000000000000000000..93d79a837f61bb4b17c531702c0ead10726b29dc
+index 0000000000000000000000000000000000000000..411d8a0e5dc5b56f34d2a2ca1d03c11362ea81ad
 --- /dev/null
 +++ b/.gitignore
 @@ -0,0 +1,3 @@
-++target/
-++*.iml
-++build/
++target/
++*.iml
++build/
+\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/client/ClientBrandRetriever.java b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-index fb84bbcd532981037e97b33e7b8bdef539dbbd2c..871ca99691b10950eeeb6d4b7630708f34f3bef7 100644
+index a251d2fbe5376fe8772b96f546946661392ade85..87a093c129acff5fb880c3930d7b6a667577bed8 100644
 --- a/src/main/java/net/minecraft/client/ClientBrandRetriever.java
 +++ b/src/main/java/net/minecraft/client/ClientBrandRetriever.java
-@@ -3,7 +3,7 @@ package net.minecraft.client;
- import net.minecraft.obfuscate.DontObfuscate;
+@@ -6,10 +6,10 @@ import net.minecraft.obfuscate.DontObfuscate;
  
+ @Environment(EnvType.CLIENT)
  public class ClientBrandRetriever {
--    public static final String VANILLA_NAME = "magmacube"; // MagmaCube > vanilla!
-+    public static final String VANILLA_NAME = "blueberry"; // Blueberry > // MagmaCube > vanilla!;
+-	public static final String VANILLA_NAME = "vanilla";
++	public static final String VANILLA_NAME = "blueberry"; // Blueberry > vanilla
  
-     @DontObfuscate
-     public static String getClientModName() {
+ 	@DontObfuscate
+ 	public static String getClientModName() {
+-		return "vanilla";
++		return VANILLA_NAME;
+ 	}
+ }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index e7ca55d6860645896beffcd40a00eb23f455fa2f..4c2c530b37d9431b893300472a52da767ea1dbf5 100644
+index c776c3612a4565076e8fa974695f104590123b6d..d971e37b8884a4390827091a28761776e7e52ac7 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -949,7 +949,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1098,7 +1098,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
-     @DontObfuscate
-     public String getServerModName() {
--        return "magmacube"; // MagmaCube > vanilla!
-+        return "blueberry"; // Blueberry > // MagmaCube > vanilla!
-     }
+ 	@DontObfuscate
+ 	public String getServerModName() {
+-		return "vanilla";
++		return "blueberry"; // Blueberry > vanilla
+ 	}
  
-     public SystemReport fillSystemReport(SystemReport systemReport) {
+ 	public SystemReport fillSystemReport(SystemReport systemReport) {

@@ -14,12 +14,12 @@ class CreateClientPatchAction : Action<BaseBlueberryTask> {
         val baseDir = task.project.projectDir
         initRepository(baseDir)
         val patchFilePath = File(baseDir, "work/jbsdiffPatcher/src/main/resources/patch.bz2")
-        task.dependsOn(task.project.getTaskByName("shadowJar", "blueberry"))
+        task.project.getTaskByName("shadowJar", "blueberry")?.let { task.dependsOn(it) }
         task.outputs.file(patchFilePath)
         task.doLast {
             val clientJarBytes = File(baseDir, "MagmaCube/work/Minecraft/$MINECRAFT_VERSION/client.jar").readBytes()
             val patchedClientJarBytes =
-                task.project.getTaskByName("shadowJar", "blueberry").outputs.files.singleFile.readBytes()
+                task.project.getTaskByName("shadowJar", "blueberry")!!.outputs.files.singleFile.readBytes()
             patchFilePath.delete()
             patchFilePath.parentFile.mkdirs()
             patchFilePath.outputStream().use { stream -> Diff.diff(clientJarBytes, patchedClientJarBytes, stream) }

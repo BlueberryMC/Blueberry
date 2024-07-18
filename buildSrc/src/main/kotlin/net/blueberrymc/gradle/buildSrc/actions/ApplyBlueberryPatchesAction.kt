@@ -12,7 +12,7 @@ open class ApplyBlueberryPatchesAction : Action<ApplyBlueberryPatches> {
                 t.project.projectDir,
                 "Blueberry-Client",
                 "MagmaCube-Patches",
-                File(t.project.projectDir, "MagmaCube/Minecraft"),
+                File(t.project.projectDir, "work/Minecraft"),
             )
         }
     }

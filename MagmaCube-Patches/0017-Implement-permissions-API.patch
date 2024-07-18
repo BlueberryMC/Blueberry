@@ -5,7 +5,7 @@ Subject: [PATCH] Implement permissions API
 
 
 diff --git a/src/main/java/net/minecraft/commands/CommandSource.java b/src/main/java/net/minecraft/commands/CommandSource.java
-index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c040788f9 100644
+index a74fdb945c085ee2ae12080c6726cd87c78e509b..3cbb96c8f64960c0cb226344e097fd232967b855 100644
 --- a/src/main/java/net/minecraft/commands/CommandSource.java
 +++ b/src/main/java/net/minecraft/commands/CommandSource.java
 @@ -2,7 +2,7 @@ package net.minecraft.commands;
@@ -14,26 +14,26 @@ index da359dc9037eae090646ebb56831b0d54fec2d87..9b09393e545cae57248e6eb7a0c7041c
  
 -public interface CommandSource {
 +public interface CommandSource extends net.blueberrymc.common.permission.PermissionHolder { // Blueberry
-     CommandSource NULL = new CommandSource() {
-         public void sendSystemMessage(Component component) {
-         }
+ 	CommandSource NULL = new CommandSource() {
+ 		@Override
+ 		public void sendSystemMessage(Component component) {
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index 85f645e6aff5a44f2ad5d1c982fe08fc5fb2dcf7..b431d4e026ac87046b00243b9c0d248f6ab39797 100644
+index 739119068a4559f99d2598b546b6016f5280f5e3..ea17084766f5d1806bd48c88a430f7812849ce98 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-@@ -40,7 +40,7 @@ import net.minecraft.world.level.dimension.DimensionType;
- import net.minecraft.world.phys.Vec2;
+@@ -43,7 +43,7 @@ import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
+ import org.jetbrains.annotations.Nullable;
  
--public class CommandSourceStack implements SharedSuggestionProvider {
-+public class CommandSourceStack implements SharedSuggestionProvider, net.blueberrymc.common.permission.PermissionHolder { // Blueberry
-     public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
-     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
-     private final CommandSource source;
-@@ -360,4 +360,16 @@ public class CommandSourceStack implements SharedSuggestionProvider {
-     public FeatureFlagSet enabledFeatures() {
-         return this.level.enabledFeatures();
-     }
+-public class CommandSourceStack implements ExecutionCommandSource<CommandSourceStack>, SharedSuggestionProvider {
++public class CommandSourceStack implements ExecutionCommandSource<CommandSourceStack>, SharedSuggestionProvider, net.blueberrymc.common.permission.PermissionHolder { // Blueberry
+ 	public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
+ 	public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
+ 	private final CommandSource source;
+@@ -591,4 +591,16 @@ public class CommandSourceStack implements ExecutionCommandSource<CommandSourceS
+ 	public boolean isSilent() {
+ 		return this.silent;
+ 	}
 +
 +    // Blueberry start
 +    @Override
@@ -47,16 +47,14 @@ index 85f645e6aff5a44f2ad5d1c982fe08fc5fb2dcf7..b431d4e026ac87046b00243b9c0d248f
 +    }
 +    // Blueberry end
  }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index c2aa67412e8efdf9537d85c4fa83bc792f136219..3d888854195acea47db758e2335ada71386ae43d 100644
+index 15e8a4aa1342b50b1d6fb1d5c4a992a5691c6c31..ad4f5111d2bc3a7898f634703b122629e73674b1 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1833,4 +1833,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             };
-         }
-     }
--}
+@@ -2112,4 +2112,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 			};
+ 		}
+ 	}
 +
 +    // Blueberry start
 +    @Override
@@ -69,16 +67,15 @@ index c2aa67412e8efdf9537d85c4fa83bc792f136219..3d888854195acea47db758e2335ada71
 +        return net.blueberrymc.common.Blueberry.getPermissionProvider().getPermissionStateForConsole(permission);
 +    }
 +    // Blueberry end
-+}
-\ No newline at end of file
+ }
 diff --git a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
-index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c137f8769 100644
+index 81fbd6eb61e1a2ac4df1de828fa76e596d0afb26..d4a73c9cb942f477a5d9edd6f23c0c79e7c2faaa 100644
 --- a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
 +++ b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
-@@ -47,4 +47,16 @@ public class RconConsoleSource implements CommandSource {
-     public boolean shouldInformAdmins() {
-         return this.server.shouldRconBroadcast();
-     }
+@@ -52,4 +52,16 @@ public class RconConsoleSource implements CommandSource {
+ 	public boolean shouldInformAdmins() {
+ 		return this.server.shouldRconBroadcast();
+ 	}
 +
 +    // Blueberry start
 +    @Override
@@ -92,15 +89,14 @@ index 836b4209ce8be8c0234feed4fa8a9a96086b94cd..105e0ed8d8dc66bb9d0ecd50660da61c
 +    }
 +    // Blueberry end
  }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index bfdc113a9d9e3168e48f4d25c9ab2e1a146d66cd..111287c14bec9bead205878b560ebade117c5bff 100644
+index 9b363c3e528a513cf28e76f33c9a15a0420b4dcf..6deb0faedd82d130d9b9943520d755f2cfa13595 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3413,4 +3413,16 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-             return this.save;
-         }
-     }
+@@ -3479,4 +3479,16 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+ 			return this.save;
+ 		}
+ 	}
 +
 +    // Blueberry start
 +    @Override
@@ -114,15 +110,14 @@ index bfdc113a9d9e3168e48f4d25c9ab2e1a146d66cd..111287c14bec9bead205878b560ebade
 +    }
 +    // Blueberry end
  }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index a0feaab81526d96e02717008cdaf09390e2d13a5..2eb0341f607d4a6fee0b963f7eda269c8d758ece 100644
+index 4819c04f886954254c9122de421aaae798c767c2..e38cd01ded5b96abd9479edc8e5a1375db417d2f 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2043,4 +2043,16 @@ public abstract class Player extends LivingEntity {
-             return this.message;
-         }
-     }
+@@ -2150,4 +2150,16 @@ public abstract class Player extends LivingEntity {
+ 			return this.message;
+ 		}
+ 	}
 +
 +    // Blueberry start
 +    @Override
@@ -136,17 +131,14 @@ index a0feaab81526d96e02717008cdaf09390e2d13a5..2eb0341f607d4a6fee0b963f7eda269c
 +    }
 +    // Blueberry end
  }
-\ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
-index c4aeef7a468b4912742bb17cf812f24782d22e99..057de8df8f1e1477b72ab265a604b66b3335b5bf 100644
+index 5531600708b5bc7209bea4bef0d78c17956dacea..f23a47059926ab67068f3bd86c06287db6b3364d 100644
 --- a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
 +++ b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
-@@ -209,4 +209,16 @@ public abstract class BaseCommandBlock implements CommandSource {
-     }
+@@ -216,4 +216,17 @@ public abstract class BaseCommandBlock implements CommandSource {
+ 	}
  
-     public abstract boolean isValid();
--}
-\ No newline at end of file
+ 	public abstract boolean isValid();
 +
 +    // Blueberry start
 +    @Override
@@ -160,3 +152,4 @@ index c4aeef7a468b4912742bb17cf812f24782d22e99..057de8df8f1e1477b72ab265a604b66b
 +    }
 +    // Blueberry end
 +}
+ }
