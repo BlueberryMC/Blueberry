@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ServerMain {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -97,6 +98,15 @@ public class ServerMain {
         blackboard.put("universe", universe);
         blackboard.put("debug", set.has("debug"));
         BlueberryPreBootstrap.preBootstrap(side, universe);
+        AtomicInteger minecraftCount = new AtomicInteger();
+        NativeUtil.registerClassLoadHook((classLoader, s, aClass, protectionDomain, bytes) -> {
+            if (minecraftCount.get() < 5 && s.startsWith("net/minecraft")) {
+                LOGGER.info("{} loaded by {} / {}", s, classLoader, (classLoader == null ? "null" : classLoader).getClass());
+                Thread.dumpStack();
+                minecraftCount.incrementAndGet();
+            }
+            return null;
+        });
         Launch.main(newArgs);
     }
 }

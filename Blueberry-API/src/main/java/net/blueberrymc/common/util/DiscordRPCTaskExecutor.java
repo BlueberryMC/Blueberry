@@ -373,6 +373,7 @@ public class DiscordRPCTaskExecutor {
             thread = null;
             init = false;
             LOGGER.info("Successfully disconnected from Discord.");
+            Thread.dumpStack();
         } catch (Throwable ignore) {}
     }
 

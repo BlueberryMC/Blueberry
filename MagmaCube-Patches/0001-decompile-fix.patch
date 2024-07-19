@@ -1030,9 +1030,33 @@ index 254da406433ee2229284cc8d30c326bed4589074..bf97c9ed6142be9237f9c115f41be251
  	}
  
 diff --git a/src/main/java/net/minecraft/core/BlockPos.java b/src/main/java/net/minecraft/core/BlockPos.java
-index 625898f0aa8efef5ecf96e81a3aead81133042bd..5de50377686dfc3ee61a67adabec38b5008dbfaa 100644
+index 625898f0aa8efef5ecf96e81a3aead81133042bd..47989e2b424879993303a6aa676e95e96cb8b945 100644
 --- a/src/main/java/net/minecraft/core/BlockPos.java
 +++ b/src/main/java/net/minecraft/core/BlockPos.java
+@@ -378,10 +378,10 @@ public class BlockPos extends Vec3i {
+ 		return StreamSupport.stream(betweenClosed(i, j, k, l, m, n).spliterator(), false);
+ 	}
+ 
+-	public static Iterable<BlockPos> betweenClosed(int i, int j, int k, int l, int m, int n) {
+-		int o = l - i + 1;
+-		int p = m - j + 1;
+-		int q = n - k + 1;
++	public static Iterable<BlockPos> betweenClosed(int startX, int startY, int startZ, int endX, int endY, int endZ) {
++		int o = endX - startX + 1;
++		int p = endY - startY + 1;
++		int q = endZ - startZ + 1;
+ 		int r = o * p * q;
+ 		return () -> new AbstractIterator<BlockPos>() {
+ 				private final BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+@@ -396,7 +396,7 @@ public class BlockPos extends Vec3i {
+ 						int k = j % p;
+ 						int l = j / p;
+ 						this.index++;
+-						return this.cursor.set(i + i, j + k, k + l);
++						return this.cursor.set(startX + i, startY + k, startZ + l);
+ 					}
+ 				}
+ 			};
 @@ -453,7 +453,7 @@ public class BlockPos extends Vec3i {
  				}
  
@@ -1519,6 +1543,27 @@ index 46863b597998600653f5cf9418ec4e581facfcf9..299662c5564c181dbf360880e91618a0
  		} else {
  			List<T> list = Lists.<T>newArrayList(collection);
  			list.sort(Comparable::compareTo);
+diff --git a/src/main/java/net/minecraft/network/chat/FormattedText.java b/src/main/java/net/minecraft/network/chat/FormattedText.java
+index 112e3f3965ab2f297876edb2c97ec1d4c5ef8445..dbcbad3634b1a6ca1e6d47f978cc75cb024d3595 100644
+--- a/src/main/java/net/minecraft/network/chat/FormattedText.java
++++ b/src/main/java/net/minecraft/network/chat/FormattedText.java
+@@ -38,6 +38,7 @@ public interface FormattedText {
+ 	}
+ 
+ 	static FormattedText of(String string, Style style) {
++		Style param = style;
+ 		return new FormattedText() {
+ 			@Override
+ 			public <T> Optional<T> visit(FormattedText.ContentConsumer<T> contentConsumer) {
+@@ -46,7 +47,7 @@ public interface FormattedText {
+ 
+ 			@Override
+ 			public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> styledContentConsumer, Style style) {
+-				return styledContentConsumer.accept(style.applyTo(style), string);
++				return styledContentConsumer.accept(param.applyTo(style), string);
+ 			}
+ 		};
+ 	}
 diff --git a/src/main/java/net/minecraft/network/chat/LastSeenMessages.java b/src/main/java/net/minecraft/network/chat/LastSeenMessages.java
 index 85a978c2e67022e5d98fa0fa6de93f175dd178db..f0580dc1857d6fc9f73f418a999b2958d7abdc31 100644
 --- a/src/main/java/net/minecraft/network/chat/LastSeenMessages.java
@@ -1565,19 +1610,29 @@ index 6a41e7bac4a7fc17c861fce344cf5892f1661453..b37880399072994c26c9dae9ff562d21
  					V object2 = streamCodec2.decode(byteBuf);
  					map.put(object, object2);
 diff --git a/src/main/java/net/minecraft/network/codec/StreamCodec.java b/src/main/java/net/minecraft/network/codec/StreamCodec.java
-index 07a552f31227981ac60ed460f8ffa679ae065e50..17a867f1b4b1cb9f5c8b4df060b55dd2e42286b5 100644
+index 07a552f31227981ac60ed460f8ffa679ae065e50..ea6d67c9d9dc33aa47ccf051b43279858dba7176 100644
 --- a/src/main/java/net/minecraft/network/codec/StreamCodec.java
 +++ b/src/main/java/net/minecraft/network/codec/StreamCodec.java
-@@ -44,7 +44,7 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
+@@ -41,15 +41,16 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
+ 	}
+ 
+ 	static <B, V> StreamCodec<B, V> unit(V object) {
++		V param = object;
  		return new StreamCodec<B, V>() {
  			@Override
  			public V decode(B object) {
 -				return object;
-+				return (V) object;
++				return param;
  			}
  
  			@Override
-@@ -283,18 +283,18 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
+ 			public void encode(B object, V object2) {
+-				if (!object2.equals(object)) {
++				if (!object2.equals(param)) {
+ 					throw new IllegalStateException("Can't encode '" + object2 + "', expected '" + object + "'");
+ 				}
+ 			}
+@@ -283,18 +284,18 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
  
  			@Override
  			public T decode(B object) {

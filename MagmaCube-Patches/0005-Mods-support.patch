@@ -355,10 +355,22 @@ index bff59290b676b800fbbc889b706b83e6422b796a..73901a1697845c78add0de3090b56d9b
  				RenderSystem.enableDepthTest();
  				this.realmsNotificationsScreen.render(guiGraphics, i, j, f);
 diff --git a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-index c4f7ad8de9b05716ce9782e15ec24123f5b7c167..f25c75bef47f6f2f2908d6f69a7e73d94fabe9d7 100644
+index c4f7ad8de9b05716ce9782e15ec24123f5b7c167..af443a3c0c0f1480fffd72eff1dd8ef72e60552e 100644
 --- a/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
 +++ b/src/main/java/net/minecraft/client/gui/screens/multiplayer/ServerSelectionList.java
-@@ -312,6 +312,13 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
+@@ -25,10 +25,7 @@ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.multiplayer.ServerData;
+ import net.minecraft.client.multiplayer.ServerList;
+ import net.minecraft.client.server.LanServer;
+-import net.minecraft.network.chat.CommonComponents;
+-import net.minecraft.network.chat.Component;
+-import net.minecraft.network.chat.ComponentUtils;
+-import net.minecraft.network.chat.MutableComponent;
++import net.minecraft.network.chat.*;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.FormattedCharSequence;
+ import org.jetbrains.annotations.Nullable;
+@@ -312,6 +309,13 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
  				guiGraphics.blitSprite(this.statusIcon, p, j, 10, 8);
  			}
  
@@ -372,7 +384,7 @@ index c4f7ad8de9b05716ce9782e15ec24123f5b7c167..f25c75bef47f6f2f2908d6f69a7e73d9
  			byte[] bs = this.serverData.getIconBytes();
  			if (!Arrays.equals(bs, this.lastIconBytes)) {
  				if (this.uploadServerIcon(bs)) {
-@@ -330,6 +337,12 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
+@@ -330,6 +334,12 @@ public class ServerSelectionList extends ObjectSelectionList<ServerSelectionList
  			guiGraphics.drawString(this.minecraft.font, component, r, j + 1, -8355712, false);
  			if (this.statusIconTooltip != null && n >= p && n <= p + 10 && o >= j && o <= j + 8) {
  				this.screen.setTooltipForNextRenderPass(this.statusIconTooltip);
@@ -380,13 +392,13 @@ index c4f7ad8de9b05716ce9782e15ec24123f5b7c167..f25c75bef47f6f2f2908d6f69a7e73d9
 +            } else if (serverData.serverType != null && n >= p - 18 && n <= p - 5 && o >= 0 && o <= 22) {
 +                String text = serverData.serverType.getBlueberryText().getContents();
 +                if (text.contains("%d")) text = String.format(text, serverData.modsCount);
-+                this.screen.setTooltipForNextRenderPass(java.util.Collections.singletonList((FormattedCharSequence) Component.literal(text)));
++                this.screen.setTooltipForNextRenderPass(java.util.Collections.singletonList(FormattedCharSequence.forward(text, Style.EMPTY)));
 +                // Blueberry end
  			} else if (this.onlinePlayersTooltip != null && n >= r && n <= r + q && o >= j && o <= j - 1 + 9) {
  				this.screen.setTooltipForNextRenderPass(Lists.transform(this.onlinePlayersTooltip, Component::getVisualOrderText));
  			}
 diff --git a/src/main/java/net/minecraft/client/main/Main.java b/src/main/java/net/minecraft/client/main/Main.java
-index 251c4dda28c48b8c38480e44a8f3ee19268b0e1f..e4e864b97d6de2df587703de9a47f28e0f349b5e 100644
+index 251c4dda28c48b8c38480e44a8f3ee19268b0e1f..3a69cf50b1464c2d7da504fdfbec50f3d4e9b81f 100644
 --- a/src/main/java/net/minecraft/client/main/Main.java
 +++ b/src/main/java/net/minecraft/client/main/Main.java
 @@ -57,8 +57,8 @@ public class Main {
@@ -406,7 +418,7 @@ index 251c4dda28c48b8c38480e44a8f3ee19268b0e1f..e4e864b97d6de2df587703de9a47f28e
  		List<String> list = optionSet.valuesOf(optionSpec28);
 +		// Blueberry start
 +		net.blueberrymc.common.Blueberry.preBootstrap();
-+		net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.server.BlueberryServerImpl());
++		net.blueberrymc.common.Blueberry.bootstrap(new net.blueberrymc.client.BlueberryClientImpl());
 +		SharedConstants.tryDetectVersion();
 +		SharedConstants.enableDataFixerOptimizations();
 +		// Blueberry end

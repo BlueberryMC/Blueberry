@@ -161,8 +161,9 @@ public class Launch {
             String launchTarget = Objects.requireNonNull(primaryTweaker).getLaunchTarget();
             Class<?> clazz;
             try {
-                clazz = Class.forName(launchTarget, false, classLoader);
-            } catch (Exception ignored) {
+                clazz = classLoader.findClass(launchTarget);//Class.forName(launchTarget, false, classLoader);
+            } catch (Exception e) {
+                LOGGER.warn("Failed to load class from LaunchClassLoader", e);
                 clazz = Class.forName(launchTarget);
             }
             LOGGER.info("Loaded class {} from {} ({})", clazz.getTypeName(), ClasspathUtil.getClasspath(clazz), clazz.getClassLoader());

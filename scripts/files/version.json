@@ -162,28 +162,6 @@
   },
   "assets": "16",
   "complianceLevel": 1,
-  "downloads": {
-    "client": {
-      "sha1": "05b6f1c6b46a29d6ea82b4e0d42190e42402030f",
-      "size": 26565641,
-      "url": "https://piston-data.mojang.com/v1/objects/05b6f1c6b46a29d6ea82b4e0d42190e42402030f/client.jar"
-    },
-    "client_mappings": {
-      "sha1": "de46c8f33d7826eb83e8ef0e9f80dc1f08cb9498",
-      "size": 9422442,
-      "url": "https://piston-data.mojang.com/v1/objects/de46c8f33d7826eb83e8ef0e9f80dc1f08cb9498/client.txt"
-    },
-    "server": {
-      "sha1": "145ff0858209bcfc164859ba735d4199aafa1eea",
-      "size": 51420480,
-      "url": "https://piston-data.mojang.com/v1/objects/145ff0858209bcfc164859ba735d4199aafa1eea/server.jar"
-    },
-    "server_mappings": {
-      "sha1": "9e96100f573a46ef44caab3e716d5eb974594bb7",
-      "size": 7283803,
-      "url": "https://piston-data.mojang.com/v1/objects/9e96100f573a46ef44caab3e716d5eb974594bb7/server.txt"
-    }
-  },
   "javaVersion": {
     "component": "java-runtime-delta",
     "majorVersion": 21
@@ -1663,6 +1641,50 @@
         }
       },
       "name": "org.slf4j:slf4j-api:2.0.9"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm/9.7/asm-9.7.jar",
+          "sha1": "073d7b3086e14beb604ced229c302feff6449723",
+          "size": 125428,
+          "url": "https://repository.ow2.org/nexus/content/repositories/releases/org/ow2/asm/asm/9.7/asm-9.7.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm:9.7"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar",
+          "sha1": "e86dda4696d3c185fcc95d8d311904e7ce38a53f",
+          "size": 73426,
+          "url": "https://repository.ow2.org/nexus/content/repositories/releases/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-commons:9.7"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar",
+          "sha1": "e446a17b175bfb733b87c5c2560ccb4e57d69f1a",
+          "size": 51934,
+          "url": "https://repository.ow2.org/nexus/content/repositories/releases/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-tree:9.7"
+    },
+    {
+      "downloads": {
+        "artifact": {
+          "path": "org/yaml/snakeyaml/1.33/snakeyaml-1.33.jar",
+          "sha1": "2cd0a87ff7df953f810c344bdf2fe3340b954c69",
+          "size": 331715,
+          "url": "https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/1.33/snakeyaml-1.33.jar"
+        }
+      },
+      "name": "org.yaml:snakeyaml:1.33"
     }
   ],
   "logging": {

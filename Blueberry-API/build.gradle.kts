@@ -1,4 +1,6 @@
 import net.blueberrymc.gradle.buildSrc.constants.*
+import org.gradle.jvm.component.internal.DefaultJvmSoftwareComponent
+import org.gradle.jvm.component.internal.JvmSoftwareComponentInternal
 
 plugins {
     id("fabric-loom") version "1.7-SNAPSHOT"
@@ -54,6 +56,12 @@ publishing {
             )
         }
     }
+
+    publications {
+        filterIsInstance<MavenPublication>().forEach {
+            it.artifact(tasks.jar.get())
+        }
+    }
 }
 
 tasks {
@@ -71,5 +79,8 @@ tasks {
         // restore default configuration
         destinationDirectory.set(destinationDirectory.get().asFile.parentFile.resolve("libs"))
         archiveClassifier.set("")
+        doLast {
+            println(project.components["java"])
+        }
     }
 }
