@@ -1678,6 +1678,17 @@
     {
       "downloads": {
         "artifact": {
+          "path": "org/ow2/asm/asm-util/9.7/asm-util-9.7.jar",
+          "sha1": "c0655519f24d92af2202cb681cd7c1569df6ead6",
+          "size": 93784,
+          "url": "https://repository.ow2.org/nexus/content/repositories/releases/org/ow2/asm/asm-util/9.7/asm-util-9.7.jar"
+        }
+      },
+      "name": "org.ow2.asm:asm-util:9.7"
+    },
+    {
+      "downloads": {
+        "artifact": {
           "path": "org/yaml/snakeyaml/1.33/snakeyaml-1.33.jar",
           "sha1": "2cd0a87ff7df953f810c344bdf2fe3340b954c69",
           "size": 331715,
