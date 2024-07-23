@@ -73,7 +73,7 @@ public class DiscordRPCTaskExecutor {
      */
     public static void init(@NotNull String clientId, boolean discordRpc) {
         if (init) return;
-        if (!downloadedLibrary) {
+        if (discordRpc && !downloadedLibrary) {
             downloadAndLoadLibrary();
             downloadedLibrary = true;
         }
