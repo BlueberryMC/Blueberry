@@ -32,7 +32,7 @@ dependencies {
     api("org.ow2.asm:asm-analysis:9.7")
     api("org.ow2.asm:asm-commons:9.7")
     api("org.ow2.asm:asm-util:9.7")
-    api("org.spongepowered:mixin:0.8.5")
+    api("org.spongepowered:mixin:0.8.7")
     api("net.blueberrymc:native-util:2.1.0")
     api("ca.weblite:java-objc-bridge:1.1")
     api("org.joml:joml:1.10.5")
