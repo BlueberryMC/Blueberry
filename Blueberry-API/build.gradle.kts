@@ -1,4 +1,5 @@
 import net.blueberrymc.gradle.buildSrc.constants.*
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
 import org.gradle.jvm.component.internal.DefaultJvmSoftwareComponent
 import org.gradle.jvm.component.internal.JvmSoftwareComponentInternal
 
@@ -56,10 +57,14 @@ publishing {
             )
         }
     }
+}
 
-    publications {
-        filterIsInstance<MavenPublication>().forEach {
-            it.artifact(tasks.jar.get())
+(components.getByName("java") as DefaultJvmSoftwareComponent).let {
+    it.mainFeature.apiElementsConfiguration.artifacts.forEach { pa ->
+        if (pa is ArchivePublishArtifact) {
+            ArchivePublishArtifact::class.java.getDeclaredField("archiveTask")
+                .apply { isAccessible = true }
+                .set(pa, tasks.jar.get())
         }
     }
 }
@@ -79,8 +84,5 @@ tasks {
         // restore default configuration
         destinationDirectory.set(destinationDirectory.get().asFile.parentFile.resolve("libs"))
         archiveClassifier.set("")
-        doLast {
-            println(project.components["java"])
-        }
     }
 }
