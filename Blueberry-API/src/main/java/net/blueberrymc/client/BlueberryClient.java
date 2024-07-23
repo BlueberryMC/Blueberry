@@ -104,25 +104,27 @@ public class BlueberryClient extends BlueberryUtil {
     // <start or end>
     @Override
     public void updateDiscordStatus(@Nullable String details, @Nullable String state, @Nullable SimpleEntry<String, String> bigImage, @Nullable SimpleEntry<String, String> smallImage, long start) {
-        Activity activity = new Activity();
-        if (details != null) {
-            activity.setDetails(details);
+        if (DiscordRPCTaskExecutor.discordRpcEnabled) {
+            Activity activity = new Activity();
+            if (details != null) {
+                activity.setDetails(details);
+            }
+            if (state != null) {
+                activity.setState(state);
+            }
+            if (bigImage != null) {
+                activity.assets().setLargeImage(bigImage.getKey());
+                activity.assets().setLargeText(bigImage.getValue());
+            }
+            if (smallImage != null) {
+                activity.assets().setSmallImage(smallImage.getKey());
+                activity.assets().setSmallText(smallImage.getValue());
+            }
+            if (start > 0) {
+                activity.timestamps().setStart(Instant.ofEpochMilli(start));
+            }
+            setDiscordRichPresenceQueue(activity);
         }
-        if (state != null) {
-            activity.setState(state);
-        }
-        if (bigImage != null) {
-            activity.assets().setLargeImage(bigImage.getKey());
-            activity.assets().setLargeText(bigImage.getValue());
-        }
-        if (smallImage != null) {
-            activity.assets().setSmallImage(smallImage.getKey());
-            activity.assets().setSmallText(smallImage.getValue());
-        }
-        if (start > 0) {
-            activity.timestamps().setStart(Instant.ofEpochMilli(start));
-        }
-        setDiscordRichPresenceQueue(activity);
     }
 
     @Nullable
