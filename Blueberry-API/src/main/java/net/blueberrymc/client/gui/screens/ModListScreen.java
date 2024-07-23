@@ -279,7 +279,7 @@ public class ModListScreen extends BlueberryScreen {
 
     class ModsList extends ObjectSelectionList<ModsList.Entry> {
         public ModsList(@NotNull Minecraft minecraft) {
-            super(minecraft/*, ModListScreen.this.width / 5*/, ModListScreen.this.height, 32, ModListScreen.this.height - 87 + 4, 18);
+            super(minecraft, /*width*/ModListScreen.this.width / 5, /*ModListScreen.this.height, */ /*height*/ModListScreen.this.height - 87 + 4, /*y*/32, /*itemHeight*/18);
 
             for(BlueberryMod mod : Blueberry.getModLoader().getLoadedMods()) {
                 Entry entry = new Entry(mod);

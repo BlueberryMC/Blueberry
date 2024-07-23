@@ -112,7 +112,7 @@ public class FileDialogScreen extends BlueberryScreen {
         private final Button selectButton;
 
         public FileList(@NotNull Minecraft minecraft) {
-            super(minecraft, FileDialogScreen.this.width, FileDialogScreen.this.height, 52, FileDialogScreen.this.height - 50/*, 18*/);
+            super(minecraft, /*width*/FileDialogScreen.this.width, /*FileDialogScreen.this.height, */ /*height*/FileDialogScreen.this.height - 50, /*y*/52, 18);
 
             if (FileUtil.isRoot(options.getInitialDirectory()) && FileUtil.hasMultipleRoots()) {
                 for (File root : File.listRoots()) {
