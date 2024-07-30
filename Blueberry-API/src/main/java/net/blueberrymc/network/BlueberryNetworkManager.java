@@ -138,7 +138,7 @@ public class BlueberryNetworkManager {
         connection.send(customPayloadPacket);
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
+    @SuppressWarnings("JavaReflectionMemberAccess") // constructor is defined in Blueberry-Client
     private static @NotNull DiscardedPayload createCustomPayload(ResourceLocation id, ByteBuf buf) {
         byte[] bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes);

@@ -687,10 +687,10 @@ index 33827434b04f08893431f622c5aeed89b6471c74..d45f7e26f20272b0bfc02f0ca821ed3a
  		iterable.forEach(blockState -> this.modelGroups.put(blockState, i));
  	}
 diff --git a/src/main/java/net/minecraft/network/protocol/common/custom/DiscardedPayload.java b/src/main/java/net/minecraft/network/protocol/common/custom/DiscardedPayload.java
-index 5fda67ba06ee75fe0c62a00e0b9ca2a82827e97c..ee8e117c6d2e11f55d86a3c4817bd665cb214551 100644
+index 5fda67ba06ee75fe0c62a00e0b9ca2a82827e97c..4b179c0be98e26007704253052e4310a750b2ca0 100644
 --- a/src/main/java/net/minecraft/network/protocol/common/custom/DiscardedPayload.java
 +++ b/src/main/java/net/minecraft/network/protocol/common/custom/DiscardedPayload.java
-@@ -4,7 +4,24 @@ import net.minecraft.network.FriendlyByteBuf;
+@@ -4,14 +4,33 @@ import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.codec.StreamCodec;
  import net.minecraft.resources.ResourceLocation;
  
@@ -715,7 +715,18 @@ index 5fda67ba06ee75fe0c62a00e0b9ca2a82827e97c..ee8e117c6d2e11f55d86a3c4817bd665
 +
  	public static <T extends FriendlyByteBuf> StreamCodec<T, DiscardedPayload> codec(ResourceLocation resourceLocation, int i) {
  		return CustomPacketPayload.codec((discardedPayload, friendlyByteBuf) -> {
++			friendlyByteBuf.writeBytes(discardedPayload.payload());
  		}, friendlyByteBuf -> {
+ 			int j = friendlyByteBuf.readableBytes();
+ 			if (j >= 0 && j <= i) {
+-				friendlyByteBuf.skipBytes(j);
+-				return new DiscardedPayload(resourceLocation);
++				byte[] bytes = new byte[j];
++				friendlyByteBuf.readBytes(bytes);
++				return new DiscardedPayload(resourceLocation, bytes);
+ 			} else {
+ 				throw new IllegalArgumentException("Payload may not be larger than " + i + " bytes");
+ 			}
 diff --git a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java b/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
 index 8a52addea7666e52c7e396cde2d69b69d5da11c4..445b9aa0e77bfee21057cfd1c43a2a23aac67f4e 100644
 --- a/src/main/java/net/minecraft/network/protocol/status/ClientStatusPacketListener.java
