@@ -18,7 +18,5 @@ plugins {
 include("blueberry-api")
 project(":blueberry-api").projectDir = File("Blueberry-API")
 
-if (File("Blueberry-Client").exists()) {
-    include("blueberry")
-    project(":blueberry").projectDir = File("Blueberry-Client")
-}
+include("blueberry")
+project(":blueberry").projectDir = File("Blueberry-Client")

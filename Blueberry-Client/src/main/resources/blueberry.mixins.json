@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "package": "net.blueberrymc.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8.7",
+  "client": [
+    "client.MixinClientBrandRetriever",
+    "client.MixinMinecraft",
+    "client.blaze3d.platform.MixinWindow",
+    "client.gui.components.MixinChatComponent",
+    "client.gui.components.MixinDebugScreenOverlay",
+    "client.gui.font.MixinFontManager",
+    "client.gui.screens.MixinLoadingOverlay",
+    "client.gui.screens.MixinPauseScreen",
+    "client.gui.screens.MixinReceivingLevelScreen",
+    "client.gui.screens.MixinScreenAccessor",
+    "client.gui.screens.MixinTitleScreen",
+    "client.main.MixinMain",
+    "client.multiplayer.MixinClientPacketListener",
+    "client.renderer.MixinBlockEntityWithoutLevelRenderer",
+    "client.renderer.blockentity.MixinBlockEntityRenderDispatcher"
+  ],
+  "mixins": [
+    "MixinSystemReport",
+    "server.MixinBootstrap",
+    "server.MixinMinecraftServer",
+    "server.packs.repository.MixinBuiltInPackSource"
+  ]
+}

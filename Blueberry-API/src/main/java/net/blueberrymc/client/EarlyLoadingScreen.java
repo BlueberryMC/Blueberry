@@ -10,7 +10,6 @@ import net.blueberrymc.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.font.FontManager;
-import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.InactiveProfiler;
 import org.jetbrains.annotations.Contract;
@@ -315,14 +314,14 @@ public class EarlyLoadingScreen {
         blockUntilFinish();
         Minecraft mc = Minecraft.getInstance();
         Objects.requireNonNull(mc);
-        boolean isFontReady = (boolean) Objects.requireNonNull(ReflectionHelper.getFieldWithoutException(LoadingOverlay.class, null, "isFontReady"));
+        boolean isFontReady = BlueberryClient.isFontReady;
         if (!isFontReady && !loadingFont) {
             loadingFont = true;
             // load fonts early to show logs early
             FontManager fontManager = (FontManager) ReflectionHelper.getFieldWithoutException(Minecraft.class, mc, "fontManager");
             Objects.requireNonNull(fontManager)
                     .reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Runnable::run, Runnable::run);
-            isFontReady = (boolean) Objects.requireNonNull(ReflectionHelper.getFieldWithoutException(LoadingOverlay.class, null, "isFontReady"));
+            isFontReady = BlueberryClient.isFontReady;
         }
         if (isFontReady && mc.getWindow().getWindow() == this.window) {
             renderMessages(TextRenderer.minecraft(guiGraphics));

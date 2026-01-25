@@ -1,4 +1,4 @@
-package net.blueberrymc.mixin.client;
+package net.blueberrymc.mixin.client.gui.screens;
 
 import net.blueberrymc.common.bml.InternalBlueberryModConfig;
 import net.minecraft.client.Minecraft;

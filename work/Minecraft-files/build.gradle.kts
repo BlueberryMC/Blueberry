@@ -1,7 +1,7 @@
 import java.util.zip.ZipInputStream
 
 plugins {
-    id("fabric-loom") version "1.7-SNAPSHOT"
+    id("fabric-loom") version "1.15-SNAPSHOT"
     `maven-publish`
 }
 

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.3.0"
 }
 
 repositories {
@@ -28,13 +28,7 @@ dependencies {
 
     // ingredients for baking installer
     implementation("io.sigpipe:jbsdiff:1.0")
-    implementation("net.blueberrymc:native-util:2.1.0")
+    implementation("net.blueberrymc:native-util:2.1.2")
 }
 
-tasks {
-    compileKotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-        }
-    }
-}
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))

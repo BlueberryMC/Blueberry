@@ -9,7 +9,7 @@ plugins {
     kotlin("jvm") version net.blueberrymc.gradle.buildSrc.constants.KOTLIN_VERSION
     `maven-publish`
     `java-library`
-    id("fabric-loom") version "1.7-SNAPSHOT" apply false
+    id("fabric-loom") version "1.15-SNAPSHOT" apply false
 }
 
 apply<net.blueberrymc.gradle.buildSrc.BuildPlugin>()
@@ -150,5 +150,6 @@ subprojects {
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$KOTLIN_VERSION")
         testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 }

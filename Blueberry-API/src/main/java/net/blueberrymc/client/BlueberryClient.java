@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +50,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class BlueberryClient extends BlueberryUtil {
+    @ApiStatus.Internal
+    public static boolean isFontReady = false;
     private static final Logger LOGGER = LogManager.getLogger();
     private final BlueberryClientScheduler clientScheduler = new BlueberryClientScheduler();
     private final BlueberryServerScheduler serverScheduler = new BlueberryServerScheduler();

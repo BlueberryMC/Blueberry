@@ -1,0 +1,2 @@
+TweakClass: org.spongepowered.asm.launch.MixinTweaker
+MixinConfigs: blueberry.mixins.json

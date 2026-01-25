@@ -4,14 +4,11 @@ dependency-reduced-pom.xml
 /MagmaCube/
 /Blueberry-API/src/main/resources/api-version.properties
 /Blueberry-API/out/
-/Blueberry-Client/src/*
-/Blueberry-Client/
 /Blueberry-Client/target/
 /MinecraftForge-API/out/
 target/
 /target/
 /logs/
-/Blueberry-Client
 *.release[bB]ackup
 /blueberry-*.jar
 /*-installer.jar
@@ -23,3 +20,4 @@ build/
 *.gz
 *.zip
 *.class
+run/

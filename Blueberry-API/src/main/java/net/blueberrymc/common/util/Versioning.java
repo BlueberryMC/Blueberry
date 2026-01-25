@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public class Versioning {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final BlueberryVersion UNKNOWN = new BlueberryVersion("blueberry", "1.0.0", "unknown", "unknown", "9999-12-31T23:59:59+00:00", "main", 0);
+    public static final BlueberryVersion UNKNOWN = new BlueberryVersion("blueberry", "1.0.0", "unknown", "unknown", "2000-01-01T00:00:00+00:00", "main", 0);
     // cached version info
     private static BlueberryVersion VERSION = null;
 

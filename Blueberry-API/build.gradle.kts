@@ -4,7 +4,7 @@ import org.gradle.jvm.component.internal.DefaultJvmSoftwareComponent
 import org.gradle.jvm.component.internal.JvmSoftwareComponentInternal
 
 plugins {
-    id("fabric-loom") version "1.7-SNAPSHOT"
+    id("fabric-loom") version "1.15-SNAPSHOT"
 }
 
 version = API_VERSION
@@ -16,6 +16,7 @@ dependencies {
 
     implementation("org.jetbrains:annotations:24.0.1")
     compileOnlyApi("org.jetbrains:annotations:24.0.1")
+    compileOnlyApi("net.fabricmc:fabric-loader:0.18.4")
     api("com.github.JnCrMx:discord-game-sdk4j:v0.5.5")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.google.code.gson:gson:2.10")
@@ -33,7 +34,7 @@ dependencies {
     api("org.ow2.asm:asm-commons:9.7")
     api("org.ow2.asm:asm-util:9.7")
     api("org.spongepowered:mixin:0.8.7")
-    api("net.blueberrymc:native-util:2.1.0")
+    api("net.blueberrymc:native-util:2.1.2")
     api("ca.weblite:java-objc-bridge:1.1")
     api("org.joml:joml:1.10.5")
     api("net.minecraft:launchwrapper:1.12") {
@@ -59,6 +60,7 @@ publishing {
     }
 }
 
+/*
 (components.getByName("java") as DefaultJvmSoftwareComponent).let {
     it.mainFeature.apiElementsConfiguration.artifacts.forEach { pa ->
         if (pa is ArchivePublishArtifact) {
@@ -67,6 +69,11 @@ publishing {
                 .set(pa, tasks.jar.get())
         }
     }
+}
+*/
+
+loom {
+    accessWidenerPath = file("src/main/resources/blueberry.accesswidener")
 }
 
 tasks {

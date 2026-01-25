@@ -612,14 +612,14 @@ public class BlueberryModLoader implements ModLoader {
         if (resourceManager instanceof ReloadableResourceManager rm) {
             CloseableResourceManager crm = (CloseableResourceManager) ReflectionHelper.getFieldWithoutException(ReloadableResourceManager.class, rm, "resources");
             if (crm instanceof MultiPackResourceManager) {
-                List<PackResources> packs = (List<PackResources>) ReflectionHelper.getFieldWithoutException(MultiPackResourceManager.class, crm, "packs");
-                assert packs != null;
+                List<PackResources> packs = new ArrayList<>(((MultiPackResourceManager) crm).packs);
                 packs.add(blueberryResourceManager.getPackResources());
+                ((MultiPackResourceManager) crm).packs = packs;
             }
         } else if (resourceManager instanceof MultiPackResourceManager rm) {
-            List<PackResources> packs = (List<PackResources>) ReflectionHelper.getFieldWithoutException(MultiPackResourceManager.class, rm, "packs");
-            assert packs != null;
+            List<PackResources> packs = new ArrayList<>(rm.packs);
             packs.add(blueberryResourceManager.getPackResources());
+            rm.packs = packs;
         } else if (resourceManager instanceof FallbackResourceManager rm) {
             rm.push(blueberryResourceManager.getPackResources());
         } else {
