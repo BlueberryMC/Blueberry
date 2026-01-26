@@ -6,9 +6,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = MinecraftServer.class, remap = false)
+@Mixin(MinecraftServer.class)
 public class MixinMinecraftServer {
-    @Inject(at = @At("RETURN"), method = "getServerModName", cancellable = true)
+    @Inject(at = @At("RETURN"), method = "getServerModName", cancellable = true, remap = false)
     public void getServerModName(CallbackInfoReturnable<String> cir) {
         cir.setReturnValue("blueberry");
     }

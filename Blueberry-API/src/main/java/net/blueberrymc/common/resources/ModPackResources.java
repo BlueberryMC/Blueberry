@@ -178,7 +178,7 @@ public class ModPackResources extends AbstractPackResources {
 
     static class SharedZipFileAccess implements AutoCloseable {
         final File file;
-        @javax.annotation.Nullable
+        @Nullable
         private ZipFile zipFile;
         private boolean failedToLoad;
 

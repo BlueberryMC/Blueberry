@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Map;
 
-@Mixin(value = BlockEntityRenderDispatcher.class, remap = false)
+@Mixin(value = BlockEntityRenderDispatcher.class, remap = true)
 public class MixinBlockEntityRenderDispatcher implements MinecraftBlockEntityRenderDispatcher {
     @Shadow
     private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers;

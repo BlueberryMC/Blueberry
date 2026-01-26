@@ -3,7 +3,7 @@ package net.blueberrymc.gradle.buildSrc.constants
 const val API_VERSION = "2.0.0-SNAPSHOT"
 const val TTS_VERSION = "1.17.9"
 const val LOG4J_VERSION = "2.19.0"
-const val LWJGL_VERSION = "3.3.2"
+const val LWJGL_VERSION = "3.3.3"
 @Suppress("unused") // see .github/workflows/build.yml
 const val MAJOR_VERSION = "1.20"
 const val MINECRAFT_VERSION = "1.20.6"
@@ -12,7 +12,6 @@ const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/145ff08582
 const val KOTLIN_VERSION = "2.0.0"
 
 val SERVER_REPOSITORIES_LIST = listOf(
-    "https://repo.azisaba.net/repository/maven-public/",
     "https://repo.spongepowered.org/maven/",
     "https://jitpack.io",
     "https://libraries.minecraft.net/",
@@ -45,11 +44,11 @@ val SERVER_LIBRARIES_LIST = listOf(
     "org.slf4j:slf4j-api:2.0.1",
     "ca.weblite:java-objc-bridge:1.1",
     "org.yaml:snakeyaml:2.2",
-    "org.ow2.asm:asm:9.4",
-    "org.ow2.asm:asm-tree:9.4",
-    "org.ow2.asm:asm-analysis:9.4",
-    "org.ow2.asm:asm-commons:9.4",
-    "org.ow2.asm:asm-util:9.4",
+    "org.ow2.asm:asm:9.7",
+    "org.ow2.asm:asm-tree:9.7",
+    "org.ow2.asm:asm-analysis:9.7",
+    "org.ow2.asm:asm-commons:9.7",
+    "org.ow2.asm:asm-util:9.7",
     "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION",
     "org.jetbrains.kotlin:kotlin-stdlib-common:$KOTLIN_VERSION",
     "org.joml:joml:1.10.5",

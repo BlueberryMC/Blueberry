@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = BlockEntityWithoutLevelRenderer.class, remap = false)
+@Mixin(value = BlockEntityWithoutLevelRenderer.class, remap = true)
 public class MixinBlockEntityWithoutLevelRenderer {
     @Inject(at = @At("TAIL"), method = "<init>")
     public void assignStatic(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelSet entityModelSet, CallbackInfo ci) {

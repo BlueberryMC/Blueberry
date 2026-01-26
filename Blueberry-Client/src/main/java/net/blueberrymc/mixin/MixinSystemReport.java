@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Supplier;
 
-@Mixin(value = SystemReport.class, remap = false)
+@Mixin(SystemReport.class)
 public abstract class MixinSystemReport {
     @Shadow
     public abstract void setDetail(String string, String string2);

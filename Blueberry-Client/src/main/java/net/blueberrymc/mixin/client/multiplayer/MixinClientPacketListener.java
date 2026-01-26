@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = ClientPacketListener.class, remap = false)
+@Mixin(value = ClientPacketListener.class, remap = true)
 public class MixinClientPacketListener implements ClientBlueberryPacketListener {
     @Inject(at = @At("HEAD"), method = "handleCustomPayload", cancellable = true)
     public void handleCustomPayload(CustomPacketPayload customPacketPayload, CallbackInfo ci) {

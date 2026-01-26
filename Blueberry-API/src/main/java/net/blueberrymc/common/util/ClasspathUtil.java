@@ -20,7 +20,6 @@ import org.lwjgl.glfw.GLFW;
 import org.objectweb.asm.ClassVisitor;
 import org.spongepowered.asm.mixin.Mixin;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -36,7 +35,6 @@ public class ClasspathUtil {
         Set<String> cp = new HashSet<>();
         cp.add(ClasspathUtil.getClasspath(ServerMain.class)); // Blueberry-API
         cp.add(ClasspathUtil.getClasspath(MinecraftServer.class)); // Minecraft
-        cp.add(ClasspathUtil.getClasspath(Nonnull.class)); // javax
         cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper
         cp.add(ClasspathUtil.getClasspath(GLFW.class)); // OpenGL
         cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));// ASM

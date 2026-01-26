@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(value = TitleScreen.class, remap = false)
+@Mixin(value = TitleScreen.class, priority = 900)
 public abstract class MixinTitleScreen extends Screen {
     @Shadow
     @Nullable
@@ -33,8 +33,8 @@ public abstract class MixinTitleScreen extends Screen {
         Component multiplayerDisabledReason = getMultiplayerDisabledReason();
         Tooltip tooltip = multiplayerDisabledReason != null ? Tooltip.create(multiplayerDisabledReason) : null;
         ((MixinScreenAccessor) this).getRenderables().removeLast();
-        (this.addRenderableWidget(Button.builder(BlueberryText.text("blueberry", "gui.screens.mods"), (button) -> ModListScreen.switchToModListScreen()).bounds(this.width / 2 - 100, i + j * 2, 98, 20).tooltip(tooltip).build())).active = multiplayerDisabledReason == null;
-        this.addRenderableWidget(Button.builder(Component.translatable("menu.online"), (button) -> this.minecraft.setScreen(new RealmsMainScreen(this))).bounds(this.width / 2 + 2, i + j * 2, 98, 20).build());
+        this.addRenderableWidget(Button.builder(BlueberryText.text("blueberry", "gui.screens.mods"), (button) -> ModListScreen.switchToModListScreen()).bounds(this.width / 2 - 100, i + j * 2, 98, 20).tooltip(tooltip).build());
+        (this.addRenderableWidget(Button.builder(Component.translatable("menu.online"), (button) -> this.minecraft.setScreen(new RealmsMainScreen(this))).bounds(this.width / 2 + 2, i + j * 2, 98, 20).build())).active = multiplayerDisabledReason == null;
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I"), method = "render", locals = LocalCapture.CAPTURE_FAILHARD)

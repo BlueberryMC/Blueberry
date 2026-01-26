@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = ChatComponent.class, remap = false)
+@Mixin(value = ChatComponent.class, remap = true)
 public class MixinChatComponent {
     @Inject(at = @At("RETURN"), method = "getWidth(D)I", cancellable = true)
     private static void getWidth(double d, CallbackInfoReturnable<Integer> cir) {

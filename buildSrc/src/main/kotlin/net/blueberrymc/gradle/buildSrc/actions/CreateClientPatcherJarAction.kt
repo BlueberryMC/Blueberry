@@ -63,7 +63,7 @@ class CreateClientPatcherJarAction : Action<BaseBlueberryTask> {
             // nativeutil
             // why not use `FileUtil.shade(Paths.get(ClasspathUtil.getClasspath(NativeUtil::class.java)), resources)`?
             // because gradle automatically converts the `System.getProperty` calls, ruining the application
-            Util.downloadFile("https://repo.blueberrymc.net/repository/maven-public/net/blueberrymc/native-util/2.1.0/native-util-2.1.0.jar")
+            Util.downloadFile("https://repo1.maven.org/maven2/net/blueberrymc/native-util/2.2.0/native-util-2.2.0.jar")
                 .use {
                     FileUtil.shade(it.path, resources)
                 }

@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -19,8 +20,8 @@ import java.util.Set;
 @ApiStatus.Internal
 public class ClientEventFactory {
     @NotNull
-    public static LiquidBlockRenderEvent callLiquidBlockRenderEvent(@NotNull FluidState fluidState, @NotNull BlockPos blockPos, int color) {
-        return Blueberry.getEventManager().callEvent(new LiquidBlockRenderEvent(fluidState, blockPos, color));
+    public static LiquidBlockRenderEvent callLiquidBlockRenderEvent(@NotNull BlockAndTintGetter blockAndTintGetter, @NotNull FluidState fluidState, @NotNull BlockPos blockPos, int color) {
+        return Blueberry.getEventManager().callEvent(new LiquidBlockRenderEvent(blockAndTintGetter, fluidState, blockPos, color));
     }
 
     public static void callScreenChangedEvent(@Nullable Screen screen) {

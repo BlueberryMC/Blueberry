@@ -15,11 +15,11 @@ import java.io.File
 class BakeInstallerAction : Action<BaseBlueberryTask> {
     override fun execute(task: BaseBlueberryTask) {
         task.dependsOn("createClientPatcherJar")
-        task.dependsOn("createServerPatcherJar")
+        //task.dependsOn("createServerPatcherJar")
         task.doLast {
             val clientPatcherJar = task.project.getTaskByName("createClientPatcherJar")!!.outputs.files.singleFile
-            val serverPatcherJar = task.project.getTaskByName("createServerPatcherJar")!!.outputs.files.singleFile
-            val patcherJar = PatcherJar(clientPatcherJar, serverPatcherJar)
+            //val serverPatcherJar = task.project.getTaskByName("createServerPatcherJar")!!.outputs.files.singleFile
+            val patcherJar = PatcherJar(clientPatcherJar, clientPatcherJar)
             // prepare files and compile installer
             val installerJar = bakeInstaller(task.project, patcherJar)
             println()

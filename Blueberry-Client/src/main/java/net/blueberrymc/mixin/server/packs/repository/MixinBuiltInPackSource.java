@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Consumer;
 
-@Mixin(value = BuiltInPackSource.class, remap = false)
+@Mixin(BuiltInPackSource.class)
 public class MixinBuiltInPackSource {
     @Inject(at = @At("TAIL"), method = "loadPacks")
     public void loadPacks(Consumer<Pack> consumer, CallbackInfo ci) {

@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassVisitor;
 import org.spongepowered.asm.mixin.Mixin;
 
-import javax.annotation.Nonnull;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +55,6 @@ public class JavaCompiler {
         Set<String> cp = new HashSet<>();
         cp.add(ClasspathUtil.getClasspath(Blueberry.class)); // Blueberry-API
         cp.add(ClasspathUtil.getClasspath(MinecraftServer.class)); // Minecraft
-        cp.add(ClasspathUtil.getClasspath(Nonnull.class)); // javax
         cp.add(ClasspathUtil.getClasspath(Launch.class)); // Launch Wrapper
         cp.add(ClasspathUtil.getClasspath(ClassVisitor.class));// ASM
         cp.add(ClasspathUtil.getClasspath(Mixin.class)); // Mixin

@@ -3,6 +3,7 @@
   "package": "net.blueberrymc.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8.7",
+  "refmap": "blueberry.mixins.refmap.json",
   "client": [
     "client.MixinClientBrandRetriever",
     "client.MixinMinecraft",
@@ -18,12 +19,19 @@
     "client.main.MixinMain",
     "client.multiplayer.MixinClientPacketListener",
     "client.renderer.MixinBlockEntityWithoutLevelRenderer",
-    "client.renderer.blockentity.MixinBlockEntityRenderDispatcher"
+    "client.renderer.block.MixinBlockRenderDispatcher",
+    "client.renderer.block.MixinLiquidBlockRenderer",
+    "client.renderer.blockentity.MixinBlockEntityRenderDispatcher",
+    "client.resources.model.MixinModelBakery"
   ],
   "mixins": [
     "MixinSystemReport",
+    "network.protocol.common.custom.MixinDiscardedPayload",
+    "network.protocol.status.MixinClientStatusPacketListener",
     "server.MixinBootstrap",
     "server.MixinMinecraftServer",
+    "server.network.MixinServerCommonPacketListenerImpl",
+    "server.network.MixinServerStatusPacketListenerImpl",
     "server.packs.repository.MixinBuiltInPackSource"
   ]
 }

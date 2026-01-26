@@ -7,13 +7,18 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class BlueberryClientImpl extends BlueberryClient {
     public static BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRendererInstance = null;
+    public static final Set<ResourceLocation> specialModels = new HashSet<>();
 
     public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
         ((MinecraftBlockEntityRenderDispatcher) Minecraft.getInstance().getBlockEntityRenderDispatcher())
@@ -22,5 +27,9 @@ public class BlueberryClientImpl extends BlueberryClient {
 
     public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerMenuScreensFactory(@NotNull MenuType<? extends M> menuType, @NotNull ScreenConstructor<M, U> screenConstructor) {
         MenuScreens.register(menuType, screenConstructor::create);
+    }
+
+    public static void addSpecialModel(ResourceLocation resourceLocation) {
+        specialModels.add(resourceLocation);
     }
 }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = PauseScreen.class, remap = false)
+@Mixin(value = PauseScreen.class, remap = true)
 public abstract class MixinPauseScreen extends Screen {
     protected MixinPauseScreen(Component component) {
         super(component);

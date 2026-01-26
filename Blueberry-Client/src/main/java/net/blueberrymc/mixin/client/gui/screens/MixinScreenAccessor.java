@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-@Mixin(value = Screen.class, remap = false)
+@Mixin(value = Screen.class, remap = true)
 public interface MixinScreenAccessor {
     @Accessor
     List<Renderable> getRenderables();

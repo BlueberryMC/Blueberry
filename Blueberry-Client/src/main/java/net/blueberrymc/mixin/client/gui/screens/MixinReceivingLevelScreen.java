@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = ReceivingLevelScreen.class, remap = false)
+@Mixin(ReceivingLevelScreen.class)
 public abstract class MixinReceivingLevelScreen {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(@NotNull CallbackInfo ci) {

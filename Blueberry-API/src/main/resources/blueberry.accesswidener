@@ -4,3 +4,4 @@ accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/mi
 accessible class net/minecraft/client/gui/font/FontManager$Preparation
 accessible field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
 mutable field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
+accessible method net/minecraft/client/renderer/blockentity/BlockEntityRenderers register (Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/client/renderer/blockentity/BlockEntityRendererProvider;)V

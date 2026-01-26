@@ -32,7 +32,7 @@ import java.io.File;
 import java.util.List;
 import java.util.function.Function;
 
-@Mixin(value = Minecraft.class, remap = false)
+@Mixin(value = Minecraft.class, remap = true)
 public class MixinMinecraft {
     @Shadow
     @Nullable

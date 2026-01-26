@@ -10,6 +10,7 @@ plugins {
     `maven-publish`
     `java-library`
     id("fabric-loom") version "1.15-SNAPSHOT" apply false
+    id("com.gradleup.shadow") version "9.3.1" apply false
 }
 
 apply<net.blueberrymc.gradle.buildSrc.BuildPlugin>()

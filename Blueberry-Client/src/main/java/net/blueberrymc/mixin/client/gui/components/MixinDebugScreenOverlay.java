@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(value = DebugScreenOverlay.class, remap = false)
+@Mixin(value = DebugScreenOverlay.class, remap = true)
 public abstract class MixinDebugScreenOverlay {
     @Shadow
     protected abstract void renderLines(GuiGraphics guiGraphics, List<String> list, boolean bl);
