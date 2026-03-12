@@ -1,5 +1,6 @@
 package net.blueberrymc.world.item;
 
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +17,7 @@ public class ItemStackBuilder {
     public final Item item;
     public int amount;
     public int damageValue = 0;
-    @NotNull public final Map<Enchantment, Integer> enchantments = new ConcurrentHashMap<>();
+    @NotNull public final Map<Holder<Enchantment>, Integer> enchantments = new ConcurrentHashMap<>();
 
     protected ItemStackBuilder(@NotNull Item item, int amount) {
         this.item = item;
@@ -84,7 +85,7 @@ public class ItemStackBuilder {
      */
     @Contract(pure = true)
     @NotNull
-    public ItemStackBuilder enchant(@NotNull Enchantment enchantment, int level) {
+    public ItemStackBuilder enchant(@NotNull Holder<Enchantment> enchantment, int level) {
         this.enchantments.put(enchantment, level);
         return this;
     }
@@ -95,7 +96,7 @@ public class ItemStackBuilder {
      */
     @Contract(pure = true)
     @NotNull
-    public ItemStackBuilder removeEnchant(@NotNull Enchantment enchantment) {
+    public ItemStackBuilder removeEnchant(@NotNull Holder<Enchantment> enchantment) {
         this.enchantments.remove(enchantment);
         return this;
     }
@@ -107,7 +108,7 @@ public class ItemStackBuilder {
      */
     @Contract(pure = true)
     @NotNull
-    public ItemStackBuilder removeEnchant(@NotNull Enchantment enchantment, int level) {
+    public ItemStackBuilder removeEnchant(@NotNull Holder<Enchantment> enchantment, int level) {
         this.enchantments.remove(enchantment, level);
         return this;
     }

@@ -5,9 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,10 +16,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BlueberryClientImpl extends BlueberryClient {
-    public static BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRendererInstance = null;
-    public static final Set<ResourceLocation> specialModels = new HashSet<>();
+    public static final Set<Identifier> specialModels = new HashSet<>();
 
-    public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
+    public void registerSpecialBlockEntityRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?, ?> blockEntityRenderer) {
         ((MinecraftBlockEntityRenderDispatcher) Minecraft.getInstance().getBlockEntityRenderDispatcher())
                 .registerSpecialRenderer(blockEntityType, blockEntityRenderer);
     }
@@ -29,7 +27,7 @@ public class BlueberryClientImpl extends BlueberryClient {
         MenuScreens.register(menuType, screenConstructor::create);
     }
 
-    public static void addSpecialModel(ResourceLocation resourceLocation) {
+    public static void addSpecialModel(@NotNull Identifier resourceLocation) {
         specialModels.add(resourceLocation);
     }
 }

@@ -8,10 +8,10 @@ import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.common.util.Versioning;
 import net.blueberrymc.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.font.FontManager;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.Mth;
-import net.minecraft.util.profiling.InactiveProfiler;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4d;
@@ -138,7 +138,7 @@ public class EarlyLoadingScreen {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            GLFW.glfwMakeContextCurrent(Minecraft.getInstance().getWindow().getWindow());
+            GLFW.glfwMakeContextCurrent(Minecraft.getInstance().getWindow().handle());
             GL.createCapabilities();
         }
     }
@@ -310,7 +310,7 @@ public class EarlyLoadingScreen {
         glfwMakeContextCurrent(0);
     }
 
-    public void renderMessagesFromGUI(@NotNull GuiGraphics guiGraphics) {
+    public void renderMessagesFromGUI(@NotNull GuiGraphicsExtractor guiGraphics) {
         blockUntilFinish();
         Minecraft mc = Minecraft.getInstance();
         Objects.requireNonNull(mc);
@@ -320,10 +320,10 @@ public class EarlyLoadingScreen {
             // load fonts early to show logs early
             FontManager fontManager = (FontManager) ReflectionHelper.getFieldWithoutException(Minecraft.class, mc, "fontManager");
             Objects.requireNonNull(fontManager)
-                    .reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Runnable::run, Runnable::run);
+                    .reload(new PreparableReloadListener.SharedState(mc.getResourceManager()), Runnable::run, CompletableFuture::completedFuture, Runnable::run);
             isFontReady = BlueberryClient.isFontReady;
         }
-        if (isFontReady && mc.getWindow().getWindow() == this.window) {
+        if (isFontReady && mc.getWindow().handle() == this.window) {
             renderMessages(TextRenderer.minecraft(guiGraphics));
         }
     }
@@ -399,7 +399,7 @@ public class EarlyLoadingScreen {
         }
 
         @Contract(pure = true)
-        static @NotNull TextRenderer minecraft(@NotNull GuiGraphics guiGraphics) {
+        static @NotNull TextRenderer minecraft(@NotNull GuiGraphicsExtractor guiGraphics) {
             return (message, color, line, alpha) -> {
                 if (alpha <= 0.02) {
                     return;
@@ -409,7 +409,7 @@ public class EarlyLoadingScreen {
                 int b = (int) (color[2] * 255);
                 int a = (int) (alpha * 255);
                 int rgba = (r << 16) | (g << 8) | b | (a << 24);
-                guiGraphics.drawString(Minecraft.getInstance().font, message, 10, line * 10, rgba);
+                guiGraphics.text(Minecraft.getInstance().font, message, 10, line * 10, rgba);
             };
         }
     }

@@ -1,7 +1,8 @@
-accessWidener	v1	named
+accessWidener	v1	official
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
 accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/client/gui/screens/MenuScreens$ScreenConstructor;)V
 accessible class net/minecraft/client/gui/font/FontManager$Preparation
 accessible field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
 mutable field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
 accessible method net/minecraft/client/renderer/blockentity/BlockEntityRenderers register (Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/client/renderer/blockentity/BlockEntityRendererProvider;)V
+accessible field net/minecraft/client/gui/screens/Screen INWORLD_MENU_BACKGROUND Lnet/minecraft/resources/Identifier;

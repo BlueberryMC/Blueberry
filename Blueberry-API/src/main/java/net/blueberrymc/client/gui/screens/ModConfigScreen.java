@@ -27,7 +27,7 @@ import net.blueberrymc.util.NumberUtil;
 import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -59,7 +59,7 @@ public class ModConfigScreen extends BlueberryScreen {
     private static final Component UNKNOWN_TEXT = Component.literal("<unknown>").withStyle(ChatFormatting.GRAY);
     private static final Component BOOLEAN_TRUE = Component.literal("true").withStyle(ChatFormatting.GREEN);
     private static final Component BOOLEAN_FALSE = Component.literal("false").withStyle(ChatFormatting.RED);
-    private final List<Consumer<GuiGraphics>> callbacks = new ArrayList<>();
+    private final List<Consumer<GuiGraphicsExtractor>> callbacks = new ArrayList<>();
     private final CompoundVisualConfig compoundVisualConfig;
     private final Screen previousScreen;
     private final Component description;
@@ -106,7 +106,7 @@ public class ModConfigScreen extends BlueberryScreen {
         BiConsumer<VisualConfig<?>, Integer> addLabel = (config, finalOffset) -> callbacks.add(guiGraphics -> {
             int y = finalOffset + 6 - (int) container.getScrollAmount();
             if (y > 60 && y < this.height - 54) {
-                guiGraphics.drawString(font, Util.getOrDefault(config.getComponent(), UNKNOWN_TEXT), this.width / 2 - maxWidth - 6, y, 0xFFFFFF);
+                guiGraphics.text(font, Util.getOrDefault(config.getComponent(), UNKNOWN_TEXT), this.width / 2 - maxWidth - 6, y, 0xFFFFFF);
             }
         });
         for (VisualConfig<?> config : this.compoundVisualConfig) {
@@ -247,19 +247,19 @@ public class ModConfigScreen extends BlueberryScreen {
                     @Override
                     protected void applyValue() {
                         double range = 1.0;
-                        if (hasShiftDown()) {
+                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_RSHIFT)) {
                             range *= 0.25;
                         }
-                        if (hasControlDown()) {
+                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LCONTROL) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_RCONTROL)) {
                             range *= 0.2; // shift + control = 6.25% = 0.0625
                         }
-                        if (hasAltDown()) {
+                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LALT) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_RALT)) {
                             // shift + control + alt = 0.5% = 0.005
                             // shift + alt = 2.5% = 0.025
                             // control + alt = 2% = 0.02
                             range *= 0.1;
                         }
-                        boolean hasSpaceDown = InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_SPACE);
+                        boolean hasSpaceDown = InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_SPACE);
                         if (hasSpaceDown) {
                             // shift + control + alt + space = 0.0125% = 0.000125
                             range *= 0.025;
@@ -434,19 +434,20 @@ public class ModConfigScreen extends BlueberryScreen {
         return bool == null || !bool ? BOOLEAN_FALSE : BOOLEAN_TRUE;
     }
 
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
+    @Override
+    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        this.extractBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
         this.children().forEach(e -> {
             if (e instanceof ScrollableContainer) {
-                ((ScrollableContainer<?>) e).render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+                ((ScrollableContainer<?>) e).extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
             }
         });
         for (var callback : callbacks) callback.accept(guiGraphics);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, 16, 16777215);
         if (this.description != null) {
-            guiGraphics.drawCenteredString(this.font, this.description, this.width / 2, 30, 16777215);
+            guiGraphics.centeredText(this.font, this.description, this.width / 2, 30, 16777215);
         }
-        super.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        super.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 
     @NotNull

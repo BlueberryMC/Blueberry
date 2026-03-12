@@ -15,7 +15,7 @@ import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.ReflectionHelper;
 import net.blueberrymc.config.ModDescriptionFile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
@@ -235,9 +235,9 @@ public class ModListScreen extends BlueberryScreen {
 
     private static final Joiner JOINER = Joiner.on(", ");
 
-    public void render(@NotNull GuiGraphics guiGraphics , int i, int i2, float f) {
-        this.modsList.render(guiGraphics, i, i2, f);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics , int i, int i2, float f) {
+        this.modsList.extractRenderState(guiGraphics, i, i2, f);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, 16, 16777215);
         ModsList.Entry entry = this.modsList.getSelected();
         if (entry != null) {
             BlueberryMod mod = entry.mod;
@@ -254,27 +254,27 @@ public class ModListScreen extends BlueberryScreen {
                 this.disableButton.setMessage(BlueberryText.text("blueberry", "gui.screens.mods.disable"));
             }
             int y = 40;
-            guiGraphics.drawString(this.font, "Mod Name: " + mod.name(), this.width / 4, y, 16777215);
-            guiGraphics.drawString(this.font, "Mod ID: " + mod.getDescription().modId(), this.width / 4, y += 10, 16777215);
-            guiGraphics.drawString(this.font, "Version: " + mod.getDescription().getVersion(), this.width / 4, y += 10, 16777215);
+            guiGraphics.text(this.font, "Mod Name: " + mod.name(), this.width / 4, y, 16777215);
+            guiGraphics.text(this.font, "Mod ID: " + mod.getDescription().modId(), this.width / 4, y += 10, 16777215);
+            guiGraphics.text(this.font, "Version: " + mod.getDescription().getVersion(), this.width / 4, y += 10, 16777215);
             List<String> authors = mod.getDescription().getAuthors();
             if (authors != null) {
-                guiGraphics.drawString(this.font, "Authors: " + JOINER.join(authors), this.width / 4, y += 10, 16777215);
+                guiGraphics.text(this.font, "Authors: " + JOINER.join(authors), this.width / 4, y += 10, 16777215);
             }
             List<String> credits = mod.getDescription().getCredits();
             if (credits != null) {
-                guiGraphics.drawString(this.font, "Credits: " + JOINER.join(credits), this.width / 4, y += 10, 16777215);
+                guiGraphics.text(this.font, "Credits: " + JOINER.join(credits), this.width / 4, y += 10, 16777215);
             }
-            guiGraphics.drawString(this.font, "Status: " + mod.getStateList().getCurrentState().getName(), this.width / 4, y += 10, 16777215);
+            guiGraphics.text(this.font, "Status: " + mod.getStateList().getCurrentState().getName(), this.width / 4, y += 10, 16777215);
             List<String> description = mod.getDescription().getDescription();
             if (description != null) {
                 y += 10;
                 for (String s : description.stream().flatMap(s -> Arrays.stream(s.split("\\n"))).toList()) {
-                    guiGraphics.drawString(this.font, s, this.width / 4, y += 10, 16777215);
+                    guiGraphics.text(this.font, s, this.width / 4, y += 10, 16777215);
                 }
             }
         }
-        super.render(guiGraphics, i, i2, f);
+        super.extractRenderState(guiGraphics, i, i2, f);
     }
 
     class ModsList extends ObjectSelectionList<ModsList.Entry> {
@@ -290,8 +290,8 @@ public class ModListScreen extends BlueberryScreen {
             }
         }
 
-        protected int getScrollbarPosition() {
-            return super.getScrollbarPosition() + 20;
+        public int scrollBarY() {
+            return super.scrollBarY() + 20;
         }
 
         public int getRowWidth() {
@@ -303,8 +303,8 @@ public class ModListScreen extends BlueberryScreen {
             updateTooltip();
         }
 
-        protected void renderBackground(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
-            ModListScreen.this.renderBackground(guiGraphics, i, i2, f);
+        protected void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int i, int i2, float f) {
+            ModListScreen.this.extractBackground(guiGraphics, i, i2, f);
         }
 
         public boolean isFocused() {
@@ -318,9 +318,10 @@ public class ModListScreen extends BlueberryScreen {
                 this.mod = mod;
             }
 
-            public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+            @Override
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
                 String s = this.mod.name();
-                guiGraphics.drawString(ModListScreen.this.font, s, ModsList.this.width / 2 - ModListScreen.this.font.width(s) / 2, i2 + 2, 16777215, true);
+                graphics.text(ModListScreen.this.font, s, ModsList.this.width / 2 - ModListScreen.this.font.width(s) / 2, graphics.guiHeight() + 2, 16777215, true);
             }
 
             public boolean mouseClicked(double d, double d2, int i) {

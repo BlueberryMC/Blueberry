@@ -1,8 +1,8 @@
 package net.blueberrymc.network;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface BlueberryCustomPayload {
-    ResourceLocation id();
+    Identifier id();
     byte[] payload();
 }

@@ -4,10 +4,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.blueberrymc.common.util.FileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
@@ -54,11 +55,11 @@ public class FileDialogScreen extends BlueberryScreen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
-        fileList.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
-        guiGraphics.drawCenteredString(this.font, this.description, this.width / 2, 32, 16777215);
-        cancelButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        fileList.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        guiGraphics.text(this.font, this.title, this.width / 2, 16, 16777215);
+        guiGraphics.text(this.font, this.description, this.width / 2, 32, 16777215);
+        cancelButton.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 
     public void invokeCallback(@Nullable File file) {
@@ -172,8 +173,8 @@ public class FileDialogScreen extends BlueberryScreen {
         }
 
         @Override
-        protected int getScrollbarPosition() {
-            return super.getScrollbarPosition() + 20;
+        public int scrollBarY() {
+            return super.scrollBarY() + 20;
         }
 
         @Override
@@ -186,8 +187,8 @@ public class FileDialogScreen extends BlueberryScreen {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
-            FileDialogScreen.this.renderBackground(guiGraphics, i, i2, f);
+        protected void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int i, int i2, float f) {
+            FileDialogScreen.this.extractBackground(guiGraphics, i, i2, f);
         }
 
         @Override
@@ -196,28 +197,28 @@ public class FileDialogScreen extends BlueberryScreen {
         }
 
         @Override
-        protected void renderListItems(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
-            super.renderListItems(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        protected void extractListItems(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+            super.extractListItems(guiGraphics, mouseX, mouseY, deltaFrameTime);
             int itemCount = this.getItemCount();
 
             for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
                 int rowTop = this.getRowTop(itemIndex);
-                int rowBottom = this.getRowTop(itemIndex) + this.itemHeight;
+                int rowBottom = this.getRowTop(itemIndex) + /* itemHeight = */ 20;
                 if (rowBottom >= this.getY() && rowTop <= this.getBottom()) {
-                    Entry entry = this.getEntry(itemIndex);
+                    Entry entry = this.children().get(itemIndex);
                     int rowWidth = this.getRowWidth();
-                    if (this.isSelectedItem(itemIndex)) {
+                    if (this.getSelected() == entry) {
                         if (entry.file.isDirectory()) {
                             cdButton.setX(getRowLeft() + rowWidth);
                             cdButton.setY(rowTop - 3);
                             cdButton.visible = true;
-                            cdButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+                            cdButton.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
                             if (options.fileType() == FileDialogScreenOptions.FileType.DIRECTORY ||
                                     options.fileType() == FileDialogScreenOptions.FileType.ALL) {
                                 selectButton.setX(getRowLeft() + rowWidth + 22);
                                 selectButton.setY(rowTop - 3);
                                 selectButton.visible = true;
-                                selectButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+                                selectButton.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
                             } else {
                                 selectButton.visible = false;
                             }
@@ -226,7 +227,7 @@ public class FileDialogScreen extends BlueberryScreen {
                             selectButton.setX(getRowLeft() + rowWidth);
                             selectButton.setY(rowTop - 3);
                             selectButton.visible = true;
-                            selectButton.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+                            selectButton.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
                         }
                     }
                 }
@@ -252,13 +253,13 @@ public class FileDialogScreen extends BlueberryScreen {
             }
 
             @Override
-            public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
-                guiGraphics.drawString(FileDialogScreen.this.font, name, FileList.this.width / 2 - FileDialogScreen.this.font.width(name) / 2, i2 + 2, 16777215, false);
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+                graphics.text(FileDialogScreen.this.font, name, FileList.this.width / 2 - FileDialogScreen.this.font.width(name) / 2, graphics.guiHeight() /*mouseY?*/ + 2, 16777215, false);
             }
 
             @Override
-            public boolean mouseClicked(double d, double d2, int i) {
-                if (i == 0) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+                if (event.button() == 0) {
                     this.select();
                     return true;
                 } else {

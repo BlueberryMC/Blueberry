@@ -12,11 +12,13 @@ import net.blueberrymc.common.util.VoidSafeExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
@@ -25,17 +27,13 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.entity.schedule.Activity;
-import net.minecraft.world.entity.schedule.Schedule;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -52,12 +50,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraft.world.level.storage.loot.providers.nbt.LootNbtProviderType;
-import net.minecraft.world.level.storage.loot.providers.number.LootNumberProviderType;
-import net.minecraft.world.level.storage.loot.providers.score.LootScoreProviderType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -91,11 +83,10 @@ public final class BlueberryRegistries<T> {
     });
     public static final BlueberryRegistries<SoundEvent> SOUND_EVENT = new BlueberryRegistries<>(BuiltInRegistries.SOUND_EVENT);
     public static final BlueberryRegistries<MobEffect> MOB_EFFECT = new BlueberryRegistries<>(BuiltInRegistries.MOB_EFFECT);
-    public static final BlueberryRegistries<Enchantment> ENCHANTMENT = new BlueberryRegistries<>(BuiltInRegistries.ENCHANTMENT);
     public static final BlueberryRegistries<EntityType<?>> ENTITY_TYPE = new BlueberryRegistries<>(BuiltInRegistries.ENTITY_TYPE);
     public static final BlueberryRegistries<Potion> POTION = new BlueberryRegistries<>(BuiltInRegistries.POTION);
     public static final BlueberryRegistries<ParticleType<?>> PARTICLE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.PARTICLE_TYPE);
-    public static final BlueberryRegistries<ResourceLocation> CUSTOM_STAT = new BlueberryRegistries<>(BuiltInRegistries.CUSTOM_STAT);
+    public static final BlueberryRegistries<Identifier> CUSTOM_STAT = new BlueberryRegistries<>(BuiltInRegistries.CUSTOM_STAT);
     public static final BlueberryRegistries<RuleTestType<?>> RULE_TEST = new BlueberryRegistries<>(BuiltInRegistries.RULE_TEST);
     public static final BlueberryRegistries<PosRuleTestType<?>> POS_RULE_TEST = new BlueberryRegistries<>(BuiltInRegistries.POS_RULE_TEST);
     public static final BlueberryRegistries<RecipeType<?>> RECIPE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.RECIPE_TYPE);
@@ -103,19 +94,10 @@ public final class BlueberryRegistries<T> {
     public static final BlueberryRegistries<Attribute> ATTRIBUTE = new BlueberryRegistries<>(BuiltInRegistries.ATTRIBUTE);
     public static final BlueberryRegistries<PositionSourceType<?>> POSITION_SOURCE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.POSITION_SOURCE_TYPE);
     public static final BlueberryRegistries<StatType<?>> STAT_TYPE = new BlueberryRegistries<>(BuiltInRegistries.STAT_TYPE);
-    public static final BlueberryRegistries<VillagerType> VILLAGER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.VILLAGER_TYPE);
-    public static final BlueberryRegistries<VillagerProfession> VILLAGER_PROFESSION = new BlueberryRegistries<>(BuiltInRegistries.VILLAGER_PROFESSION);
     public static final BlueberryRegistries<PoiType> POINT_OF_INTEREST_TYPE = new BlueberryRegistries<>(BuiltInRegistries.POINT_OF_INTEREST_TYPE);
     public static final BlueberryRegistries<MemoryModuleType<?>> MEMORY_MODULE_TYPE = new BlueberryRegistries<>(BuiltInRegistries.MEMORY_MODULE_TYPE);
     public static final BlueberryRegistries<SensorType<?>> SENSOR_TYPE = new BlueberryRegistries<>(BuiltInRegistries.SENSOR_TYPE);
-    public static final BlueberryRegistries<Schedule> SCHEDULE = new BlueberryRegistries<>(BuiltInRegistries.SCHEDULE);
     public static final BlueberryRegistries<Activity> ACTIVITY = new BlueberryRegistries<>(BuiltInRegistries.ACTIVITY);
-    public static final BlueberryRegistries<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE);
-    public static final BlueberryRegistries<LootItemFunctionType<?>> LOOT_FUNCTION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_FUNCTION_TYPE);
-    public static final BlueberryRegistries<LootItemConditionType> LOOT_CONDITION_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_CONDITION_TYPE);
-    public static final BlueberryRegistries<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_NUMBER_PROVIDER_TYPE);
-    public static final BlueberryRegistries<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_NBT_PROVIDER_TYPE);
-    public static final BlueberryRegistries<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = new BlueberryRegistries<>(BuiltInRegistries.LOOT_SCORE_PROVIDER_TYPE);
     public static final BlueberryRegistries<MapCodec<? extends BiomeSource>> BIOME_SOURCE = new BlueberryRegistries<>(BuiltInRegistries.BIOME_SOURCE);
     public static final BlueberryRegistries<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATOR = new BlueberryRegistries<>(BuiltInRegistries.CHUNK_GENERATOR);
     public static final BlueberryRegistries<StructureProcessorType<?>> STRUCTURE_PROCESSOR = new BlueberryRegistries<>(BuiltInRegistries.STRUCTURE_PROCESSOR);
@@ -161,17 +143,17 @@ public final class BlueberryRegistries<T> {
     @NotNull
     public <R extends T> R register(@NotNull String namespace, @NotNull String id, @NotNull R object) {
         //if (has(namespace, id)) return; // TODO: figure out why it returns true even if it's not yet registered
-        return register(new ResourceLocation(namespace, id), object);
+        return register(Identifier.fromNamespaceAndPath(namespace, id), object);
     }
 
     @Nullable
-    public T get(@NotNull ResourceLocation location) {
-        return registry.get(location);
+    public T get(@NotNull Identifier location) {
+        return registry.get(location).map(Holder.Reference::value).orElse(null);
     }
 
     @Nullable
     public T get(@NotNull String namespace, @NotNull String id) {
-        return get(new ResourceLocation(namespace, id));
+        return get(Identifier.fromNamespaceAndPath(namespace, id));
     }
 
     public int getId(@NotNull T t) {
@@ -183,7 +165,7 @@ public final class BlueberryRegistries<T> {
         return registry.byId(id);
     }
 
-    public boolean has(@NotNull ResourceLocation location) {
+    public boolean has(@NotNull Identifier location) {
         return get(location) != null;
     }
 
@@ -192,8 +174,8 @@ public final class BlueberryRegistries<T> {
     }
 
     @NotNull
-    public <R extends T> R register(@NotNull ResourceLocation location, @NotNull R object) {
-        Preconditions.checkNotNull(location, "ResourceLocation cannot be null");
+    public <R extends T> R register(@NotNull Identifier location, @NotNull R object) {
+        Preconditions.checkNotNull(location, "Identifier cannot be null");
         Preconditions.checkNotNull(object, "value cannot be null");
         String message = "Registering " + object.getClass().getCanonicalName() + ": " + location;
         LOGGER.info(message);
@@ -212,9 +194,9 @@ public final class BlueberryRegistries<T> {
     }
 
     @SideOnly(Side.CLIENT)
-    public static synchronized <T extends BlockEntity> void bindTileEntityRenderer(
+    public static synchronized <T extends BlockEntity, S extends BlockEntityRenderState> void bindTileEntityRenderer(
             @NotNull BlockEntityType<T> blockEntityType,
-            @NotNull Function<? super BlockEntityRenderDispatcher, ? extends BlockEntityRenderer<? super T>> rendererFactory
+            @NotNull Function<? super BlockEntityRenderDispatcher, ? extends BlockEntityRenderer<? super T, ? super S>> rendererFactory
     ) {
         ((MinecraftBlockEntityRenderDispatcher) Minecraft.getInstance().getBlockEntityRenderDispatcher()).registerSpecialRenderer(blockEntityType, rendererFactory.apply(Minecraft.getInstance().getBlockEntityRenderDispatcher()));
     }

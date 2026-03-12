@@ -1,7 +1,7 @@
 package net.blueberrymc.client.gui.screens;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.MultiLineLabel;
@@ -64,19 +64,15 @@ public class MultiLineBackupConfirmScreen extends Screen {
 
     }
 
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 50, 16777215);
+    public void render(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaFrameTime) {
+        this.extractBackground(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, 50, 16777215);
         int y = 70;
         for (MultiLineLabel label : this.message) {
-            label.renderCentered(guiGraphics, this.width / 2, y);
-            if (y + 150 > this.height) {
-                guiGraphics.drawCenteredString(this.font, "...", this.width / 2, y + 9, 16777215);
-                break;
-            }
+            label.visitLines(TextAlignment.CENTER, this.width / 2, 70, 9, guiGraphics.textRenderer());
             y += label.getLineCount() * 9;
         }
-        super.render(guiGraphics, mouseX, mouseY, deltaFrameTime);
+        super.extractRenderState(guiGraphics, mouseX, mouseY, deltaFrameTime);
     }
 
     @Override

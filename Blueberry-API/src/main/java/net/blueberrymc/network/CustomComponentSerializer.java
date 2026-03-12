@@ -3,7 +3,6 @@ package net.blueberrymc.network;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,12 +28,6 @@ public interface CustomComponentSerializer<T extends ComponentContents> {
 
     @NotNull
     T deserialize(@NotNull JsonElement element, @NotNull JsonDeserializationContext context);
-
-    @NotNull
-    default Object deserializeGlobal(@NotNull JsonElement element, @NotNull JsonDeserializationContext context) {
-        // TODO
-        return Component.Serializer.fromJson(element, null);
-    }
 
     static <T extends ComponentContents> void registerSerializer(@NotNull Class<T> componentClass, @NotNull CustomComponentSerializer<T> componentSerializerClass) {
         SERIALIZERS.put(componentClass, componentSerializerClass);

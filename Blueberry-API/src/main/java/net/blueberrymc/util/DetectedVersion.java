@@ -23,8 +23,6 @@ public class DetectedVersion {
     private final boolean stable;
     private final DataVersion worldVersion;
     private final int protocolVersion;
-    private final int resourcePackVersion;
-    private final int dataPackVersion;
     private final Date buildTime;
 
     private DetectedVersion(JsonObject json) {
@@ -33,9 +31,6 @@ public class DetectedVersion {
         this.stable = json.get("stable").getAsBoolean();
         this.worldVersion = new DataVersion(json.get("world_version").getAsInt(), json.has("series_id") ? json.get("series_id").getAsString() : "main");
         this.protocolVersion = json.get("protocol_version").getAsInt();
-        JsonObject packVersion = json.get("pack_version").getAsJsonObject();
-        this.resourcePackVersion = packVersion.get("resource").getAsInt();
-        this.dataPackVersion = packVersion.get("data").getAsInt();
         this.buildTime = Date.from(ZonedDateTime.parse(json.get("build_time").getAsString()).toInstant());
     }
 
@@ -64,13 +59,6 @@ public class DetectedVersion {
         return this.name;
     }
 
-    @Deprecated(forRemoval = true)
-    @DeprecatedReason("release_target is no longer present in version.json")
-    @NotNull
-    public String getReleaseTarget() {
-        return "1.20";
-    }
-
     @NotNull
     public DataVersion getDataVersion() {
         return this.worldVersion;
@@ -80,8 +68,10 @@ public class DetectedVersion {
         return this.protocolVersion;
     }
 
+    @Deprecated
+    @DeprecatedReason("Use SharedConstants instead")
     public int getPackVersion(@NotNull PackType packType) {
-        return packType == PackType.SERVER_DATA ? this.dataPackVersion : this.resourcePackVersion;
+        return 0;
     }
 
     @NotNull

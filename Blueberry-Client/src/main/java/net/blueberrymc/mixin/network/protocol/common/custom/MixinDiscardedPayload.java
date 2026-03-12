@@ -3,7 +3,7 @@ package net.blueberrymc.mixin.network.protocol.common.custom;
 import net.blueberrymc.network.BlueberryCustomPayload;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,9 +17,9 @@ public abstract class MixinDiscardedPayload implements BlueberryCustomPayload, D
     private byte[] payload;
 
     @Shadow
-    public abstract ResourceLocation shadow$id();
+    public abstract Identifier shadow$id();
 
-    public ResourceLocation blueberry$id() {
+    public Identifier blueberry$id() {
         return shadow$id();
     }
 
@@ -44,13 +44,13 @@ public abstract class MixinDiscardedPayload implements BlueberryCustomPayload, D
         return bytes;
     }
 
-    @Inject(at = @At("HEAD"), method = "method_56493")
+    @Inject(at = @At("HEAD"), method = "lambda$codec$0")
     private static void codecEncode(DiscardedPayload discardedPayload, FriendlyByteBuf friendlyByteBuf, CallbackInfo ci) {
         friendlyByteBuf.writeBytes(((DiscardedPayloadExtension) (Object) discardedPayload).blueberry2$getPayload());
     }
 
-    @Inject(at = @At("RETURN"), method = "method_56491")
-    private static void codecDecode(int i, ResourceLocation resourceLocation, FriendlyByteBuf friendlyByteBuf, CallbackInfoReturnable<DiscardedPayload> cir) {
+    @Inject(at = @At("RETURN"), method = "lambda$codec$1")
+    private static void codecDecode(int i, Identifier resourceLocation, FriendlyByteBuf friendlyByteBuf, CallbackInfoReturnable<DiscardedPayload> cir) {
         ((DiscardedPayloadExtension) (Object) cir.getReturnValue()).blueberry2$setPayload(readRemainingBytes(friendlyByteBuf));
     }
 }

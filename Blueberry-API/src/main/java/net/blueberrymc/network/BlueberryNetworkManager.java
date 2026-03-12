@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.logging.log4j.LogManager;
@@ -26,22 +26,22 @@ import java.util.Map;
 
 public class BlueberryNetworkManager {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<ResourceLocation, PacketConstructor<?>> clientBoundPacketMap = new Object2ObjectOpenHashMap<>();
-    private static final Map<ResourceLocation, PacketConstructor<?>> serverBoundPacketMap = new Object2ObjectOpenHashMap<>();
+    private static final Map<Identifier, PacketConstructor<?>> clientBoundPacketMap = new Object2ObjectOpenHashMap<>();
+    private static final Map<Identifier, PacketConstructor<?>> serverBoundPacketMap = new Object2ObjectOpenHashMap<>();
 
     public static void register(@NotNull BlueberryMod mod, @NotNull String id, @NotNull PacketConstructor<?> packetConstructor, @NotNull BlueberryPacketFlow flow) {
         register(mod.modId(), id, packetConstructor, flow);
     }
 
     public static void register(@NotNull String namespace, @NotNull String id, @NotNull PacketConstructor<?> packetConstructor, @NotNull BlueberryPacketFlow flow) {
-        register(new ResourceLocation(namespace.toLowerCase(Locale.ROOT), id.toLowerCase(Locale.ROOT)), packetConstructor, flow);
+        register(Identifier.fromNamespaceAndPath(namespace.toLowerCase(Locale.ROOT), id.toLowerCase(Locale.ROOT)), packetConstructor, flow);
     }
 
-    public static void register(@NotNull ResourceLocation resourceLocation, @NotNull PacketConstructor<?> packetConstructor, @NotNull BlueberryPacketFlow flow) {
+    public static void register(@NotNull Identifier Identifier, @NotNull PacketConstructor<?> packetConstructor, @NotNull BlueberryPacketFlow flow) {
         if (flow == BlueberryPacketFlow.TO_CLIENT) {
-            clientBoundPacketMap.put(resourceLocation, packetConstructor);
+            clientBoundPacketMap.put(Identifier, packetConstructor);
         } else if (flow == BlueberryPacketFlow.TO_SERVER) {
-            serverBoundPacketMap.put(resourceLocation, packetConstructor);
+            serverBoundPacketMap.put(Identifier, packetConstructor);
         } else {
             throw new IllegalArgumentException();
         }
@@ -54,15 +54,15 @@ public class BlueberryNetworkManager {
 
     @Nullable
     public static PacketConstructor<?> getPacket(@NotNull String namespace, @NotNull String id, @NotNull BlueberryPacketFlow flow) {
-        return getPacket(new ResourceLocation(namespace.toLowerCase(Locale.ROOT), id.toLowerCase(Locale.ROOT)), flow);
+        return getPacket(Identifier.fromNamespaceAndPath(namespace.toLowerCase(Locale.ROOT), id.toLowerCase(Locale.ROOT)), flow);
     }
 
     @Nullable
-    public static PacketConstructor<?> getPacket(@NotNull ResourceLocation resourceLocation, @NotNull BlueberryPacketFlow flow) {
+    public static PacketConstructor<?> getPacket(@NotNull Identifier Identifier, @NotNull BlueberryPacketFlow flow) {
         if (flow == BlueberryPacketFlow.TO_CLIENT) {
-            return clientBoundPacketMap.get(resourceLocation);
+            return clientBoundPacketMap.get(Identifier);
         } else if (flow == BlueberryPacketFlow.TO_SERVER) {
-            return serverBoundPacketMap.get(resourceLocation);
+            return serverBoundPacketMap.get(Identifier);
         } else {
             throw new IllegalArgumentException();
         }
@@ -110,7 +110,7 @@ public class BlueberryNetworkManager {
 
     public static void sendToServer(@NotNull Connection connection, @NotNull BlueberryPacket<?> packet) {
         if (!connection.isConnected()) return;
-        ResourceLocation id = packet.getId();
+        Identifier id = packet.getId();
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
             packet.write(buf);
@@ -127,7 +127,7 @@ public class BlueberryNetworkManager {
 
     public static void sendToClient(@NotNull ServerGamePacketListenerImpl connection, @NotNull BlueberryPacket<?> packet) {
         if (!connection.isAcceptingMessages()) return;
-        ResourceLocation id = packet.getId();
+        Identifier id = packet.getId();
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
             packet.write(buf);
@@ -139,11 +139,11 @@ public class BlueberryNetworkManager {
     }
 
     @SuppressWarnings("JavaReflectionMemberAccess") // constructor is defined in Blueberry-Client
-    private static @NotNull DiscardedPayload createCustomPayload(ResourceLocation id, ByteBuf buf) {
+    private static @NotNull DiscardedPayload createCustomPayload(Identifier id, ByteBuf buf) {
         byte[] bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes);
         try {
-            return DiscardedPayload.class.getConstructor(ResourceLocation.class, byte[].class).newInstance(id, bytes);
+            return DiscardedPayload.class.getConstructor(Identifier.class, byte[].class).newInstance(id, bytes);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

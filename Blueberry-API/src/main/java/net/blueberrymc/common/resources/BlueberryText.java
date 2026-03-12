@@ -5,6 +5,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.util.SafeExecutor;
 import net.blueberrymc.network.CustomComponentSerializer;
@@ -17,6 +20,7 @@ import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -127,7 +131,7 @@ public class BlueberryText implements ComponentContents {
             cache.put(cachePath, text);
         }
         String text = cache.get(cachePath);
-        if (args != null && args.size() > 0) {
+        if (args != null && !args.isEmpty()) {
             text = String.format(text, args.toArray());
         }
         return text;
@@ -145,9 +149,12 @@ public class BlueberryText implements ComponentContents {
     }
 
     @Override
-    public @NotNull Type<?> type() {
-        // TODO
-        return new Type<>(null, "blueberry");
+    public @NonNull MapCodec<? extends ComponentContents> codec() {
+        return RecordCodecBuilder.<BlueberryText>create(i -> i.group(
+                Codec.STRING.fieldOf("namespace").forGetter(BlueberryText::getNamespace),
+                Codec.STRING.fieldOf("path").forGetter(BlueberryText::getPath),
+                Codec.STRING.listOf().fieldOf("args").forGetter(t -> t.args.stream().map(String::valueOf).toList()) // TODO: converting Object -> String
+        ).apply(i, BlueberryText::new)).fieldOf("BlueberryText");
     }
 
     @Override
@@ -174,7 +181,7 @@ public class BlueberryText implements ComponentContents {
             JsonObject json = new JsonObject();
             json.addProperty("namespace", component.namespace);
             json.addProperty("path", component.path);
-            if (component.args != null && component.args.size() > 0) {
+            if (component.args != null && !component.args.isEmpty()) {
                 JsonArray array = new JsonArray();
                 for (Object arg : component.args) {
                     array.add(context.serialize(arg));

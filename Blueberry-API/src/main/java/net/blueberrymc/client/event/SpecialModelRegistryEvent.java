@@ -3,7 +3,7 @@ package net.blueberrymc.client.event;
 import net.blueberrymc.common.bml.event.Event;
 
 /**
- * SpecialModelRegistryEvent can be used to call ModelBakery#addSpecialModel(ResourceLocation).
+ * SpecialModelRegistryEvent can be used to call ModelBakery#addSpecialModel(Identifier).
  * This event is always called asynchronously.
  */
 public class SpecialModelRegistryEvent extends Event {

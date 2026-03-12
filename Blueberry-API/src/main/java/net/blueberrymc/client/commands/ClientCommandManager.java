@@ -13,8 +13,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
-import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.util.Util;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.Objects;
 public class ClientCommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Object2ObjectMap<String, ClientCommandHandler> COMMANDS = new Object2ObjectOpenHashMap<>();
-    private static final CommandDispatcher<CommandSourceStack> DISPATCHER = new CommandDispatcher<>();
+    private static final CommandDispatcher<CommandSource> DISPATCHER = new CommandDispatcher<>();
 
     /**
      * Strips the leading slash if present.
@@ -122,7 +123,7 @@ public class ClientCommandManager {
      * @return command dispatcher
      */
     @NotNull
-    public static CommandDispatcher<CommandSourceStack> getDispatcher() {
+    public static CommandDispatcher<CommandSource> getDispatcher() {
         return DISPATCHER;
     }
 
@@ -133,17 +134,37 @@ public class ClientCommandManager {
      */
     @NotNull
     public static CommandDispatcher<SharedSuggestionProvider> getRoot(@NotNull Player player) {
-        Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
+        Map<CommandNode<CommandSource>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
         RootCommandNode<SharedSuggestionProvider> rootCommandNode = new RootCommandNode<>();
         map.put(DISPATCHER.getRoot(), rootCommandNode);
-        fillUsableCommands(DISPATCHER.getRoot(), rootCommandNode, player.createCommandSourceStack(), map);
+        fillUsableCommands(DISPATCHER.getRoot(), rootCommandNode, new CommandSource() {
+            @Override
+            public void sendSystemMessage(@NonNull Component message) {
+                player.sendSystemMessage(message);
+            }
+
+            @Override
+            public boolean acceptsSuccess() {
+                return true;
+            }
+
+            @Override
+            public boolean acceptsFailure() {
+                return true;
+            }
+
+            @Override
+            public boolean shouldInformAdmins() {
+                return false;
+            }
+        }, map);
         return new CommandDispatcher<>(rootCommandNode);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void fillUsableCommands(@NotNull CommandNode<CommandSourceStack> commandNode, @NotNull CommandNode<SharedSuggestionProvider> commandNode2, CommandSourceStack commandSourceStack, @NotNull Map<CommandNode<CommandSourceStack>, @NotNull CommandNode<SharedSuggestionProvider>> map) {
-        for (CommandNode<CommandSourceStack> commandNode3 : commandNode.getChildren()) {
-            if (commandNode3.canUse(commandSourceStack)) {
+    private static void fillUsableCommands(@NotNull CommandNode<CommandSource> commandNode, @NotNull CommandNode<SharedSuggestionProvider> commandNode2, CommandSource commandSource, @NotNull Map<CommandNode<CommandSource>, @NotNull CommandNode<SharedSuggestionProvider>> map) {
+        for (CommandNode<CommandSource> commandNode3 : commandNode.getChildren()) {
+            if (commandNode3.canUse(commandSource)) {
                 ArgumentBuilder<SharedSuggestionProvider, ?> argumentBuilder = (ArgumentBuilder) commandNode3.createBuilder();
                 argumentBuilder.requires((sharedSuggestionProvider) -> true); // Client commands are always available
                 if (argumentBuilder.getCommand() != null) {
@@ -159,7 +180,7 @@ public class ClientCommandManager {
                 map.put(commandNode3, commandNode4);
                 commandNode2.addChild(commandNode4);
                 if (!commandNode3.getChildren().isEmpty()) {
-                    fillUsableCommands(commandNode3, commandNode4, commandSourceStack, map);
+                    fillUsableCommands(commandNode3, commandNode4, commandSource, map);
                 }
             }
         }
@@ -168,23 +189,23 @@ public class ClientCommandManager {
 
     /**
      * Executes a command.
-     * @param commandSourceStack command source
+     * @param commandSource command source
      * @param input input string which can contain leading slash
      * @return command result
      */
-    public static int performCommand(@NotNull CommandSourceStack commandSourceStack, @NotNull String input) {
+    public static int performCommand(@NotNull CommandSource commandSource, @NotNull String input) {
         StringReader reader = new StringReader(input);
         if (reader.canRead() && reader.peek() == '/') {
             reader.skip();
         }
 
         try {
-            return DISPATCHER.execute(reader, commandSourceStack);
+            return DISPATCHER.execute(reader, commandSource);
         } catch (CommandSyntaxException commandSyntaxException) {
-            commandSourceStack.sendFailure(ComponentUtils.fromMessage(commandSyntaxException.getRawMessage()));
+            sendFailure(commandSource, ComponentUtils.fromMessage(commandSyntaxException.getRawMessage()));
             if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
                 int i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
-                MutableComponent mutableComponent = Component.literal("").withStyle(ChatFormatting.GRAY).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)));
+                MutableComponent mutableComponent = Component.literal("").withStyle(ChatFormatting.GRAY).withStyle((style) -> style.withClickEvent(new ClickEvent.SuggestCommand(input)));
                 if (i > 10) {
                     mutableComponent.append("...");
                 }
@@ -196,7 +217,7 @@ public class ClientCommandManager {
                 }
 
                 mutableComponent.append(Component.translatable("command.context.here").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC));
-                commandSourceStack.sendFailure(mutableComponent);
+                sendFailure(commandSource, mutableComponent);
             }
         } catch (Exception ex) {
             MutableComponent exceptionComponent = Component.literal(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
@@ -215,13 +236,21 @@ public class ClientCommandManager {
                 }
             }
 
-            commandSourceStack.sendFailure(Component.translatable("command.failed").withStyle((style) -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, exceptionComponent))));
+            sendFailure(commandSource, Component.translatable("command.failed").withStyle((style) -> style.withHoverEvent(new HoverEvent.ShowText(exceptionComponent))));
             if (SharedConstants.IS_RUNNING_IN_IDE) {
-                commandSourceStack.sendFailure(Component.literal(Util.describeError(ex)));
-                LOGGER.error("'" + input + "' threw an exception", ex);
+                sendFailure(commandSource, Component.literal(Util.describeError(ex)));
+                LOGGER.error("'{}' threw an exception", input, ex);
             }
         }
 
         return 0;
+    }
+
+    private static void sendFailure(@NotNull CommandSource source, @NotNull Component message) {
+        source.sendSystemMessage(message.copy().withStyle(ChatFormatting.RED));
+    }
+
+    private static void sendSuccess(@NotNull CommandSource source, @NotNull Component message) {
+        source.sendSystemMessage(message);
     }
 }

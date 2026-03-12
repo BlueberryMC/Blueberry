@@ -14,11 +14,11 @@ import java.util.Map;
 @Mixin(value = BlockEntityRenderDispatcher.class, remap = true)
 public class MixinBlockEntityRenderDispatcher implements MinecraftBlockEntityRenderDispatcher {
     @Shadow
-    private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers;
+    private Map<BlockEntityType<?>, BlockEntityRenderer<?, ?>> renderers;
 
     @Unique
     @Override
-    public void registerSpecialRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer) {
+    public void registerSpecialRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?, ?> blockEntityRenderer) {
         this.renderers.put(blockEntityType, blockEntityRenderer);
     }
 }

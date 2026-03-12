@@ -5,6 +5,7 @@ import net.blueberrymc.common.BlueberryUtil;
 import net.blueberrymc.common.scheduler.AbstractBlueberryScheduler;
 import net.blueberrymc.server.scheduler.BlueberryServerScheduler;
 import net.minecraft.CrashReport;
+import net.minecraft.ReportType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +52,7 @@ public class BlueberryServer extends BlueberryUtil {
     }
 
     public void stopServer() {
-        this.server.stopServer();
+        this.server.close();
     }
 
     @NotNull
@@ -64,8 +65,8 @@ public class BlueberryServer extends BlueberryUtil {
     public void crash(@NotNull CrashReport crashReport) {
         Preconditions.checkNotNull(crashReport, "crashReport cannot be null");
         File file = new File(new File("crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
-        LOGGER.error(crashReport.getFriendlyReport());
-        if (crashReport.saveToFile(file)) {
+        LOGGER.error(crashReport.getFriendlyReport(ReportType.CRASH));
+        if (crashReport.saveToFile(file.toPath(), ReportType.CRASH)) {
             LOGGER.error("This crash report has been saved to: {}", file.getAbsolutePath());
         } else {
             LOGGER.error("We were unable to save this crash report to disk.");

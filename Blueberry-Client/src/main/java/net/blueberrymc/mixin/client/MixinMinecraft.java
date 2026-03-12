@@ -1,7 +1,6 @@
 package net.blueberrymc.mixin.client;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import net.blueberrymc.client.BlueberryClientImpl;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.blueberrymc.client.EarlyLoadingScreen;
 import net.blueberrymc.client.event.ClientEventFactory;
 import net.blueberrymc.common.Blueberry;
@@ -20,6 +19,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,23 +27,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.File;
 import java.util.List;
 import java.util.function.Function;
 
-@Mixin(value = Minecraft.class, remap = true)
+@Mixin(value = Minecraft.class)
 public class MixinMinecraft {
     @Shadow
     @Nullable
     public Screen screen;
 
-    @Shadow
-    private ProfilerFiller profiler;
-
-    @Redirect(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;clear(Z)V"), method = "<init>")
-    public void startRenderEarlyLoadingScreen(RenderTarget instance, boolean bl) {
-        instance.clear(bl);
+    @Redirect(at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;)V", ordinal = 2), method = "<init>")
+    public void startRenderEarlyLoadingScreen(Logger instance, String s, Object o) {
+        instance.info(s, o);
         EarlyLoadingScreen.getInstance().startRender(false);
     }
 
@@ -66,18 +64,18 @@ public class MixinMinecraft {
     }
 
     @Inject(at = @At("TAIL"), method = "addInitialScreens")
-    public void addModLoadingProblemScreen(List<Function<Runnable, Screen>> list, CallbackInfo ci) {
+    public void addModLoadingProblemScreen(List<Function<Runnable, Screen>> screens, CallbackInfoReturnable<Boolean> cir) {
         if (ModLoadingErrors.hasErrorOrWarning()) {
-            list.add(ModLoadingProblemScreen::new);
+            screens.add(ModLoadingProblemScreen::new);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/Bootstrap;realStdoutPrintln(Ljava/lang/String;)V", ordinal = 0), method = "crash")
+    @Inject(at = @At("HEAD"), method = "crash")
     private static void shutdownDiscordRpcOnCrash(Minecraft minecraft, File file, CrashReport crashReport, CallbackInfo ci) {
         DiscordRPCTaskExecutor.shutdownNow();
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferUploader;reset()V"), method = "setScreen")
+    @Inject(at = @At("TAIL"), method = "setScreen")
     public void callScreenChangedEvent(Screen screen, CallbackInfo ci) {
         ClientEventFactory.callScreenChangedEvent(this.screen);
     }
@@ -92,8 +90,8 @@ public class MixinMinecraft {
         Blueberry.shutdown();
     }
 
-    @Inject(at = @At("TAIL"), method = "tick")
-    public void postTick(CallbackInfo ci) {
+    @Inject(at = @At("TAIL"), method = "tick", locals = LocalCapture.CAPTURE_FAILHARD)
+    public void postTick(CallbackInfo ci, ProfilerFiller profiler) {
         profiler.push("blueberryClientScheduler");
         Blueberry.getUtil().getClientScheduler().tick();
         profiler.pop();

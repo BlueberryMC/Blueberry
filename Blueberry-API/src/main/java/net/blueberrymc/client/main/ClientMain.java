@@ -9,6 +9,7 @@ import net.blueberrymc.server.main.ServerMain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,11 @@ public class ClientMain {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(@NotNull String@NotNull[] args) throws IOException {
-        org.lwjgl.glfw.GLFW.glfwInit();
+        System.out.println("WAYLAND_DISPLAY: " + System.getenv("WAYLAND_DISPLAY"));
+//        GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
+        if (!GLFW.glfwInit()) {
+            throw new RuntimeException("Failed to initialize GLFW");
+        }
         List<String> arguments = new ArrayList<>();
         arguments.add("--tweakClass=net.blueberrymc.client.main.BlueberryClientTweaker");
         arguments.addAll(Arrays.asList(args));

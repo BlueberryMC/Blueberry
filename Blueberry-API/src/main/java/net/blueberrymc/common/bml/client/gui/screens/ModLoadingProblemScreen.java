@@ -7,9 +7,9 @@ import net.blueberrymc.common.Blueberry;
 import net.blueberrymc.common.bml.loading.ModLoadingError;
 import net.blueberrymc.common.bml.loading.ModLoadingErrors;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
@@ -67,10 +67,11 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
         super.init();
     }
 
-    public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
-        this.problemList.render(guiGraphics, i, i2, f);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
-        super.render(guiGraphics, i, i2, f);
+    @Override
+    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int i, int i2, float f) {
+        this.problemList.extractRenderState(guiGraphics, i, i2, f);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, 16, 16777215);
+        super.extractRenderState(guiGraphics, i, i2, f);
     }
 
     class ProblemList extends ObjectSelectionList<ProblemList.Entry> {
@@ -85,20 +86,23 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
             }
         }
 
-        protected int getScrollbarPosition() {
-            return super.getScrollbarPosition() + 20;
+        @Override
+        public int scrollBarY() {
+            return super.scrollBarY() + 20;
         }
 
+        @Override
         public int getRowWidth() {
             return ModLoadingProblemScreen.this.width - 10;
         }
 
+        @Override
         public void setSelected(@Nullable Entry entry) {
             super.setSelected(entry);
         }
 
-        protected void renderBackground(@NotNull GuiGraphics guiGraphics, int i, int i2, float f) {
-            ModLoadingProblemScreen.this.renderBackground(guiGraphics, i, i2, f);
+        protected void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int i, int i2, float f) {
+            ModLoadingProblemScreen.this.extractBackground(guiGraphics, i, i2, f);
         }
 
         public boolean isFocused() {
@@ -112,10 +116,11 @@ public class ModLoadingProblemScreen extends BlueberryScreen {
                 this.error = error;
             }
 
-            public void render(@NotNull GuiGraphics guiGraphics, int i, int i2, int i3, int i4, int i5, int i6, int i7, boolean flag, float f) {
+            @Override
+            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
                 String modName = this.error.modInfo != null ? this.error.modInfo.name() + ": " : "";
                 String s = modName + this.error.getMessage();
-                guiGraphics.drawString(ModLoadingProblemScreen.this.font, s, ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2, i2 + 2, this.error.isWarning ? 0xFFFF55 : 0xFF5555, true);
+                graphics.text(ModLoadingProblemScreen.this.font, s, ProblemList.this.width / 2 - ModLoadingProblemScreen.this.font.width(s) / 2, graphics.guiHeight() + 2, this.error.isWarning ? 0xFFFF55 : 0xFF5555);
             }
 
             public boolean mouseClicked(double d, double d2, int i) {

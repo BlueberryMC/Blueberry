@@ -124,12 +124,10 @@ public class DiscordRPCTaskExecutor {
                                     BlueberryText.text("blueberry", "discord.activity.join_request.accept")
                                             .withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)
                                             .withStyle(style -> {
-                                                style = style.withHoverEvent(new HoverEvent(
-                                                        HoverEvent.Action.SHOW_TEXT,
+                                                style = style.withHoverEvent(new HoverEvent.ShowText(
                                                         BlueberryText.text("blueberry", "discord.activity.join_request.accept.hover_text")
                                                 ));
-                                                style = style.withClickEvent(new ClickEvent(
-                                                        ClickEvent.Action.RUN_COMMAND,
+                                                style = style.withClickEvent(new ClickEvent.RunCommand(
                                                         "/cblueberry discord accept " + user.getUserId()
                                                 ));
                                                 return style;
@@ -139,12 +137,10 @@ public class DiscordRPCTaskExecutor {
                                     BlueberryText.text("blueberry", "discord.activity.join_request.deny")
                                             .withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
                                             .withStyle(style -> {
-                                                style = style.withHoverEvent(new HoverEvent(
-                                                        HoverEvent.Action.SHOW_TEXT,
+                                                style = style.withHoverEvent(new HoverEvent.ShowText(
                                                         BlueberryText.text("blueberry", "discord.activity.join_request.deny.hover_text")
                                                 ));
-                                                style = style.withClickEvent(new ClickEvent(
-                                                        ClickEvent.Action.RUN_COMMAND,
+                                                style = style.withClickEvent(new ClickEvent.RunCommand(
                                                         "/cblueberry discord deny " + user.getUserId()
                                                 ));
                                                 return style;
@@ -154,12 +150,10 @@ public class DiscordRPCTaskExecutor {
                                     BlueberryText.text("blueberry", "discord.activity.join_request.ignore")
                                             .withStyle(ChatFormatting.GRAY, ChatFormatting.BOLD)
                                             .withStyle(style -> {
-                                                style = style.withHoverEvent(new HoverEvent(
-                                                        HoverEvent.Action.SHOW_TEXT,
+                                                style = style.withHoverEvent(new HoverEvent.ShowText(
                                                         BlueberryText.text("blueberry", "discord.activity.join_request.ignore.hover_text")
                                                 ));
-                                                style = style.withClickEvent(new ClickEvent(
-                                                        ClickEvent.Action.RUN_COMMAND,
+                                                style = style.withClickEvent(new ClickEvent.RunCommand(
                                                         "/cblueberry discord ignore " + user.getUserId()
                                                 ));
                                                 return style;
@@ -169,6 +163,7 @@ public class DiscordRPCTaskExecutor {
 
                         @Override
                         public void onActivityJoin(@NotNull String secret) {
+                            /*
                             var core = Objects.requireNonNull(lateInitCore.get());
                             var lobbyManager = core.lobbyManager();
                             lobbyManager.connectLobbyWithActivitySecret(secret, (result, lobby) -> {
@@ -187,10 +182,12 @@ public class DiscordRPCTaskExecutor {
                                 }
                                 lobbyManager.flushNetwork();
                             });
+                            */
                         }
 
                         @Override
                         public void onNetworkMessage(long lobbyId, long userId, byte channelId, byte @NotNull [] data) {
+                            /*
                             if (channelId == NETWORK_SYSTEM_MESSAGE_ID) {
                                 try {
                                     // TODO: fix null
@@ -207,6 +204,7 @@ public class DiscordRPCTaskExecutor {
                                     LOGGER.warn("Error handling network message of id " + channelId, e);
                                 }
                             }
+                            */
                         }
                     });
                     try (Core core = new Core(params)) {

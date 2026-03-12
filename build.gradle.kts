@@ -9,8 +9,8 @@ plugins {
     kotlin("jvm") version net.blueberrymc.gradle.buildSrc.constants.KOTLIN_VERSION
     `maven-publish`
     `java-library`
-    id("fabric-loom") version "1.15-SNAPSHOT" apply false
-    id("com.gradleup.shadow") version "9.3.1" apply false
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT" apply false
+    id("com.gradleup.shadow") version "9.3.2" apply false
 }
 
 apply<net.blueberrymc.gradle.buildSrc.BuildPlugin>()
@@ -102,17 +102,17 @@ subprojects {
 allprojects {
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(25))
         }
     }
 
     tasks {
         compileKotlin {
-            compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+            compilerOptions.jvmTarget.set(JvmTarget.JVM_25)
         }
 
         compileTestKotlin {
-            compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+            compilerOptions.jvmTarget.set(JvmTarget.JVM_25)
         }
 
         javadoc {

@@ -3,6 +3,7 @@ package net.blueberrymc.command;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.blueberrymc.client.BlueberryClient;
@@ -24,6 +25,7 @@ import net.blueberrymc.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.ClickEvent;
@@ -39,6 +41,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -68,19 +72,23 @@ public class BlueberryCommand {
                                 .executes(context -> executeTpsCommand(context.getSource()))
                         )
                         .then(literal("version")
-                                .executes(context -> executeVersionCommand(context.getSource()))
+                                .executes(context -> executeVersionCommand(convertCommandSource(context)))
                         )
                         .then(literal("permission")
                                 .then(literal("check")
                                         .then(argument("node", StringArgumentType.string())
-                                                .executes(context -> executePermissionCheckCommand(context.getSource(), StringArgumentType.getString(context, "node"), null))
+                                                .executes(context -> executePermissionCheckCommand(convertCommandSource(context), StringArgumentType.getString(context, "node"), null))
                                                 .then(argument("player", EntityArgument.player())
-                                                        .executes(context -> executePermissionCheckCommand(context.getSource(), StringArgumentType.getString(context, "node"), EntityArgument.getPlayer(context, "player")))
+                                                        .executes(context -> executePermissionCheckCommand(convertCommandSource(context), StringArgumentType.getString(context, "node"), EntityArgument.getPlayer(context, "player")))
                                                 )
                                         )
                                 )
                         )
         );
+    }
+
+    private static CommandSource convertCommandSource(CommandContext<CommandSourceStack> context) {
+        return context.getSource().getPlayer() == null ? context.getSource().getServer() : context.getSource().getPlayer().commandSource();
     }
 
     private static int executeModStatusCommand(CommandSourceStack source, BlueberryMod mod) {
@@ -148,7 +156,7 @@ public class BlueberryCommand {
         return 1;
     }
 
-    public static int executeVersionCommand(@NotNull CommandSourceStack source) {
+    public static int executeVersionCommand(@NotNull CommandSource source) {
         BlueberryVersion v = Versioning.getVersion();
         boolean cached = VersionChecker.isCached();
         MutableComponent versionDiff = BlueberryCommonComponents.EMPTY_TEXT;
@@ -172,40 +180,48 @@ public class BlueberryCommand {
                 LOGGER.warn("Version checker threw exception when fetching cached result", e);
             }
         }
-        source.sendSuccess(
-                () -> Component.literal(" |  ")
+        source.sendSystemMessage(
+                Component.literal(" |  ")
                         .append(Component.literal(Util.capitalize(v.getName())).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
                         .append(" ")
                         .append(Component.literal((Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion() + "." + v.getBuildNumber()).withStyle(ChatFormatting.LIGHT_PURPLE))
                         .append(Component.literal(" (").withStyle(ChatFormatting.DARK_GRAY))
                         .append(Component.literal("API " + (Character.isDigit(v.getVersion().charAt(0)) ? "v" : "") + v.getVersion()).withStyle(ChatFormatting.DARK_GREEN))
                         .append(Component.literal(") (").withStyle(ChatFormatting.DARK_GRAY))
-                        .append(Component.literal("Minecraft " + SharedConstants.getCurrentVersion().getId()).withStyle(ChatFormatting.GRAY))
-                        .append(Component.literal(")").withStyle(ChatFormatting.DARK_GRAY)),
-                false);
-        source.sendSuccess(
-                () -> Component.literal(" |  ")
+                        .append(Component.literal("Minecraft " + SharedConstants.getCurrentVersion().id()).withStyle(ChatFormatting.GRAY))
+                        .append(Component.literal(")").withStyle(ChatFormatting.DARK_GRAY)));
+        source.sendSystemMessage(
+                Component.literal(" |  ")
                         .append(BlueberryText.text("blueberry", "blueberry.mod.command.version.built_at").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
-                        .append(Component.literal(v.getBuiltAt())),
-                false);
+                        .append(Component.literal(v.getBuiltAt())));
         MutableComponent finalVersionDiff = versionDiff;
-        source.sendSuccess(
-                () -> Component.literal(" |  ")
+        source.sendSystemMessage(
+                Component.literal(" |  ")
                         .append(BlueberryText.text("blueberry", "blueberry.mod.command.version.commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
-                        .append(Component.literal(v.getShortCommit()).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open GitHub"))).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_REPO + "/commit/" + v.getCommit()))))
-                        .append(finalVersionDiff),
-                false);
-        source.sendSuccess(
-                () -> Component.literal(" |  ")
+                        .append(Component.literal(v.getShortCommit()).withStyle(style -> {
+                            try {
+                                return style.withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open GitHub")))
+                                        .withClickEvent(new ClickEvent.OpenUrl(new URI("https://github.com/" + Constants.GITHUB_REPO + "/commit/" + v.getCommit())));
+                            } catch (URISyntaxException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }))
+                        .append(finalVersionDiff));
+        source.sendSystemMessage(
+                Component.literal(" |  ")
                         .append(BlueberryText.text("blueberry", "blueberry.mod.command.version.magmacube_commit_hash").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
                         .append(Component.literal(v.getShortMagmaCubeCommit())
-                                .withStyle(style ->
-                                        style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open GitHub")))
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/" + Constants.GITHUB_MAGMA_CUBE_REPO + "/commit/" + v.getMagmaCubeCommit())))
-                        ),
-                false);
+                                .withStyle(style -> {
+                                    try {
+                                        return style.withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open GitHub")))
+                                                .withClickEvent(new ClickEvent.OpenUrl(new URI("https://github.com/" + Constants.GITHUB_MAGMA_CUBE_REPO + "/commit/" + v.getMagmaCubeCommit())));
+                                    } catch (URISyntaxException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                })
+                        ));
         if (!cached) {
-            source.sendSuccess(() -> Component.literal("").append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checking_for_new_version").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)), false);
+            source.sendSystemMessage(Component.literal("").append(BlueberryText.text("blueberry", "blueberry.mod.command.version.checking_for_new_version").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)));
             VersionChecker.check().thenAccept(result -> {
                 String key = result.getStatusKey();
                 Object[] args = switch (key) {
@@ -216,24 +232,24 @@ public class BlueberryCommand {
                 };
                 MutableComponent text = BlueberryText.text("blueberry", "blueberry.mod.command.version.checker." + key, args);
                 if (key.equals("error")) {
-                    source.sendSuccess(() -> text.withStyle(ChatFormatting.RED), false);
+                    source.sendSystemMessage(text.withStyle(ChatFormatting.RED));
                 } else {
-                    source.sendSuccess(() -> BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.result").append(text).withStyle(getChatFormattingForVersionCheckerKey(key)), false);
+                    source.sendSystemMessage(BlueberryText.text("blueberry", "blueberry.mod.command.version.checker.result").append(text).withStyle(getChatFormattingForVersionCheckerKey(key)));
                 }
             });
         }
         return 1;
     }
 
-    public static int executePermissionCheckCommand(@NotNull CommandSourceStack source, @NotNull String permission, @Nullable Player player) {
+    public static int executePermissionCheckCommand(@NotNull CommandSource source, @NotNull String permission, @Nullable Player player) {
         PermissionHolder holder = (PermissionHolder) Objects.requireNonNullElse(player, source);
         PermissionState state = holder.getPermissionState(permission);
-        source.sendSuccess(() -> Component.literal("")
+        source.sendSystemMessage(Component.literal("")
                 .append(Component.literal("Permission check for ").withStyle(ChatFormatting.AQUA))
-                .append(Component.literal(permission).withStyle(ChatFormatting.GOLD)), false);
-        source.sendSuccess(() -> Component.literal("")
+                .append(Component.literal(permission).withStyle(ChatFormatting.GOLD)));
+        source.sendSystemMessage(Component.literal("")
                 .append(Component.literal("  Result: ").withStyle(ChatFormatting.AQUA))
-                .append(Component.literal(state.name().toLowerCase()).withStyle(getChatFormattingForPermissionState(state))), false);
+                .append(Component.literal(state.name().toLowerCase()).withStyle(getChatFormattingForPermissionState(state))));
         return 0;
     }
 

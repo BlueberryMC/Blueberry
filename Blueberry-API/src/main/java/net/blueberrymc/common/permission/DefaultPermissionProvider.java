@@ -3,6 +3,7 @@ package net.blueberrymc.common.permission;
 import com.mojang.authlib.GameProfile;
 import net.blueberrymc.common.Blueberry;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BaseCommandBlock;
@@ -56,7 +57,7 @@ public class DefaultPermissionProvider implements PermissionProvider {
     public @NotNull PermissionState getPermissionStateForPlayer(@NotNull UUID uuid, @NotNull String permission) {
         MinecraftServer server = Blueberry.getUtil().getMinecraftServer();
         if (server == null) return PermissionState.UNDEFINED;
-        Optional<GameProfile> profile = server.getProfileCache().get(uuid);
+        Optional<NameAndId> profile = server.services().profileResolver().fetchById(uuid).map(NameAndId::new);
         if (profile.isEmpty()) {
             return PermissionState.UNDEFINED;
         }

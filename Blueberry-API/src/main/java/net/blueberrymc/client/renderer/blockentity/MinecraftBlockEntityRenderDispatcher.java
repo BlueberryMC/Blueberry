@@ -13,5 +13,5 @@ public interface MinecraftBlockEntityRenderDispatcher {
      * @param blockEntityType block entity type
      * @param blockEntityRenderer renderer
      */
-    void registerSpecialRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?> blockEntityRenderer);
+    void registerSpecialRenderer(@NotNull BlockEntityType<?> blockEntityType, @NotNull BlockEntityRenderer<?, ?> blockEntityRenderer);
 }

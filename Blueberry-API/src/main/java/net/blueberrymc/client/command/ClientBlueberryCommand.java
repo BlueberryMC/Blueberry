@@ -9,18 +9,20 @@ import net.blueberrymc.client.commands.ClientCommandHandler;
 import net.blueberrymc.command.BlueberryCommand;
 import net.blueberrymc.common.resources.BlueberryText;
 import net.blueberrymc.common.util.DiscordRPCTaskExecutor;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
 
-import static net.minecraft.commands.Commands.argument;
-import static net.minecraft.commands.Commands.literal;
+import static net.blueberrymc.client.commands.ClientCommandHandler.literal;
+import static net.blueberrymc.client.commands.ClientCommandHandler.argument;
 
 /**
  * <code>/cblueberry</code> command definition and implementation
  */
 public class ClientBlueberryCommand implements ClientCommandHandler {
     @Override
-    public void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
+    public void register(@NotNull CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(
                 literal("cblueberry")
                         .then(literal("version")
@@ -53,34 +55,34 @@ public class ClientBlueberryCommand implements ClientCommandHandler {
         );
     }
 
-    private static int executeDiscordAccept(@NotNull CommandSourceStack source, long id) {
+    private static int executeDiscordAccept(@NotNull CommandSource source, long id) {
         DiscordRPCTaskExecutor.submitTask(core -> core.activityManager().sendRequestReply(id, ActivityJoinRequestReply.YES, result -> {
             if (result == Result.OK) {
-                source.sendSuccess(() -> BlueberryText.text("blueberry", "discord.activity.join_request.accept.accepted"), false);
+                source.sendSystemMessage(BlueberryText.text("blueberry", "discord.activity.join_request.accept.accepted"));
             } else {
-                source.sendFailure(BlueberryText.text("blueberry", "discord.error_with_result", result.name()));
+                source.sendSystemMessage(BlueberryText.text("blueberry", "discord.error_with_result", result.name()).withStyle(ChatFormatting.RED));
             }
         }));
         return 0;
     }
 
-    private static int executeDiscordDeny(@NotNull CommandSourceStack source, long id) {
+    private static int executeDiscordDeny(@NotNull CommandSource source, long id) {
         DiscordRPCTaskExecutor.submitTask(core -> core.activityManager().sendRequestReply(id, ActivityJoinRequestReply.NO, result -> {
             if (result == Result.OK) {
-                source.sendSuccess(() -> BlueberryText.text("blueberry", "discord.activity.join_request.deny.denied"), false);
+                source.sendSystemMessage(BlueberryText.text("blueberry", "discord.activity.join_request.deny.denied"));
             } else {
-                source.sendFailure(BlueberryText.text("blueberry", "discord.error_with_result", result.name()));
+                source.sendSystemMessage(BlueberryText.text("blueberry", "discord.error_with_result", result.name()).withStyle(ChatFormatting.RED));
             }
         }));
         return 0;
     }
 
-    private static int executeDiscordIgnore(@NotNull CommandSourceStack source, long id) {
+    private static int executeDiscordIgnore(@NotNull CommandSource source, long id) {
         DiscordRPCTaskExecutor.submitTask(core -> core.activityManager().sendRequestReply(id, ActivityJoinRequestReply.IGNORE, result -> {
             if (result == Result.OK) {
-                source.sendSuccess(() -> BlueberryText.text("blueberry", "discord.activity.join_request.ignore.ignored"), false);
+                source.sendSystemMessage(BlueberryText.text("blueberry", "discord.activity.join_request.ignore.ignored"));
             } else {
-                source.sendFailure(BlueberryText.text("blueberry", "discord.error_with_result", result.name()));
+                source.sendSystemMessage(BlueberryText.text("blueberry", "discord.error_with_result", result.name()).withStyle(ChatFormatting.RED));
             }
         }));
         return 0;

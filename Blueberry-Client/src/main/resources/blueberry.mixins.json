@@ -3,7 +3,6 @@
   "package": "net.blueberrymc.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8.7",
-  "refmap": "blueberry.mixins.refmap.json",
   "client": [
     "client.MixinClientBrandRetriever",
     "client.MixinMinecraft",
@@ -13,14 +12,10 @@
     "client.gui.font.MixinFontManager",
     "client.gui.screens.MixinLoadingOverlay",
     "client.gui.screens.MixinPauseScreen",
-    "client.gui.screens.MixinReceivingLevelScreen",
     "client.gui.screens.MixinScreenAccessor",
     "client.gui.screens.MixinTitleScreen",
     "client.main.MixinMain",
     "client.multiplayer.MixinClientPacketListener",
-    "client.renderer.MixinBlockEntityWithoutLevelRenderer",
-    "client.renderer.block.MixinBlockRenderDispatcher",
-    "client.renderer.block.MixinLiquidBlockRenderer",
     "client.renderer.blockentity.MixinBlockEntityRenderDispatcher",
     "client.resources.model.MixinModelBakery"
   ],

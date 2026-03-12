@@ -6,7 +6,7 @@ import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,19 +23,20 @@ import java.util.Set;
 
 @Mixin(ModelBakery.class)
 public abstract class MixinModelBakery {
+    /*
     @Shadow
-    public abstract UnbakedModel getModel(ResourceLocation resourceLocation);
+    public abstract UnbakedModel getModel(Identifier resourceLocation);
 
     @Shadow
     @Final
-    private Map<ResourceLocation, UnbakedModel> unbakedCache;
+    private Map<Identifier, UnbakedModel> unbakedCache;
 
     @Shadow
     @Final
-    private Map<ResourceLocation, UnbakedModel> topLevelModels;
+    private Map<Identifier, UnbakedModel> topLevelModels;
 
     @Unique
-    private void addModelToCache(ResourceLocation resourceLocation) {
+    private void addModelToCache(Identifier resourceLocation) {
         UnbakedModel unbakedModel = this.getModel(resourceLocation);
         this.unbakedCache.put(resourceLocation, unbakedModel);
         this.topLevelModels.put(resourceLocation, unbakedModel);
@@ -43,15 +44,16 @@ public abstract class MixinModelBakery {
     }
 
     @Unique
-    public Set<ResourceLocation> getSpecialModels() {
+    public Set<Identifier> getSpecialModels() {
         return BlueberryClientImpl.specialModels;
     }
 
     @Inject(at = @At(value = "TAIL"), method = "<init>")
-    public void addSpecialModels(BlockColors blockColors, ProfilerFiller profilerFiller, Map<ResourceLocation, BlockModel> map, Map<ResourceLocation, List<ModelBakery.LoadedJson>> map2, CallbackInfo ci) {
+    public void addSpecialModels(BlockColors blockColors, ProfilerFiller profilerFiller, Map<Identifier, BlockModel> map, Map<Identifier, List<ModelBakery.LoadedJson>> map2, CallbackInfo ci) {
         new SpecialModelRegistryEvent().callEvent();
-        for (ResourceLocation resourceLocation : getSpecialModels()) {
+        for (Identifier resourceLocation : getSpecialModels()) {
             this.addModelToCache(resourceLocation);
         }
     }
+    */
 }

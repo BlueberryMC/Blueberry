@@ -1,7 +1,7 @@
 package net.blueberrymc.registry;
 
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,11 +40,11 @@ public class DeferredRegister<T> {
     @NotNull
     public Registry<T> getRegistry() { return registry.getRegistry(); }
 
-    private final Set<Map.Entry<ResourceLocation, Supplier<? extends T>>> suppliers = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Map.Entry<Identifier, Supplier<? extends T>>> suppliers = Collections.synchronizedSet(new HashSet<>());
 
     @NotNull
     public <R extends T> RegistryObject<R> register(@NotNull String name, @NotNull Supplier<R> sup) {
-        ResourceLocation location = new ResourceLocation(modId, name);
+        Identifier location = Identifier.fromNamespaceAndPath(modId, name);
         RegistryObject<R> object = new RegistryObject<>(sup).setResourceLocation(location);
         suppliers.add(new AbstractMap.SimpleImmutableEntry<>(location, object));
         return object;

@@ -20,11 +20,11 @@ dependencies {
         exclude("org.ow2.asm", "asm-tree")
         exclude("org.ow2.asm", "asm-common")
     }
-    implementation("org.ow2.asm:asm:9.7")
-    implementation("org.ow2.asm:asm-tree:9.7")
-    implementation("org.ow2.asm:asm-analysis:9.7")
-    implementation("org.ow2.asm:asm-commons:9.7")
-    implementation("org.ow2.asm:asm-util:9.7")
+    implementation("org.ow2.asm:asm:9.9.1")
+    implementation("org.ow2.asm:asm-tree:9.9.1")
+    implementation("org.ow2.asm:asm-analysis:9.9.1")
+    implementation("org.ow2.asm:asm-commons:9.9.1")
+    implementation("org.ow2.asm:asm-util:9.9.1")
 
     // ingredients for baking installer
     implementation("io.sigpipe:jbsdiff:1.0")

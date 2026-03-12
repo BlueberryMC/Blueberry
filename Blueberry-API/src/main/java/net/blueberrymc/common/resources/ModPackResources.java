@@ -5,7 +5,7 @@ import com.mojang.logging.LogUtils;
 import net.blueberrymc.common.bml.BlueberryMod;
 import net.minecraft.DetectedVersion;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -66,12 +66,12 @@ public class ModPackResources extends AbstractPackResources {
         return null;
     }
 
-    private static String getPathFromLocation(PackType packType, ResourceLocation resourceLocation) {
-        return String.format(Locale.ROOT, "%s/%s/%s", packType.getDirectory(), resourceLocation.getNamespace(), resourceLocation.getPath());
+    private static String getPathFromLocation(PackType packType, Identifier Identifier) {
+        return String.format(Locale.ROOT, "%s/%s/%s", packType.getDirectory(), Identifier.getNamespace(), Identifier.getPath());
     }
 
-    public IoSupplier<InputStream> getResource(@NotNull PackType packType, @NotNull ResourceLocation resourceLocation) {
-        return this.getResource(getPathFromLocation(packType, resourceLocation));
+    public IoSupplier<InputStream> getResource(@NotNull PackType packType, @NotNull Identifier Identifier) {
+        return this.getResource(getPathFromLocation(packType, Identifier));
     }
 
     private String addPrefix(String s) {
@@ -96,14 +96,14 @@ public class ModPackResources extends AbstractPackResources {
             String s4 = s3 + s2 + "/";
 
             while(enumeration.hasMoreElements()) {
-                ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();
+                ZipEntry zipEntry = enumeration.nextElement();
                 if (!zipEntry.isDirectory()) {
                     String s5 = zipEntry.getName();
                     if (s5.startsWith(s4)) {
                         String s6 = s5.substring(s3.length());
-                        ResourceLocation resourceLocation = ResourceLocation.tryBuild(s, s6);
-                        if (resourceLocation != null) {
-                            resourceOutput.accept(resourceLocation, IoSupplier.create(zipFile, zipEntry));
+                        Identifier identifier = Identifier.tryBuild(s, s6);
+                        if (identifier != null) {
+                            resourceOutput.accept(identifier, IoSupplier.create(zipFile, zipEntry));
                         } else {
                             LOGGER.warn("Invalid path in datapack: {}:{}, ignoring", s, s6);
                         }
@@ -129,7 +129,7 @@ public class ModPackResources extends AbstractPackResources {
                 String s2 = zipEntry.getName();
                 String s3 = extractNamespace(s, s2);
                 if (!s3.isEmpty()) {
-                    if (ResourceLocation.isValidNamespace(s3)) {
+                    if (Identifier.isValidNamespace(s3)) {
                         set.add(s3);
                     } else {
                         LOGGER.warn("Non [a-z0-9_.-] character in namespace {} in pack {}, ignoring", s3, this.zipFileAccess.file);
@@ -170,7 +170,9 @@ public class ModPackResources extends AbstractPackResources {
         sb.append("{\n");
         sb.append("  \"pack\": {\n");
         sb.append("    \"description\": \"Mod Resources for ").append(mod.getDescription().modId()).append("\",");
-        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().getPackVersion(PackType.CLIENT_RESOURCES));
+        sb.append("    \"pack_format\": ").append(DetectedVersion.tryDetectVersion().packVersion(PackType.CLIENT_RESOURCES)).append(",");
+        sb.append("    \"min_format\": ").append(DetectedVersion.tryDetectVersion().packVersion(PackType.CLIENT_RESOURCES)).append(",");
+        sb.append("    \"max_format\": ").append(DetectedVersion.tryDetectVersion().packVersion(PackType.CLIENT_RESOURCES));
         sb.append("  }\n");
         sb.append("}\n");
         return new ByteArrayInputStream(sb.toString().getBytes(StandardCharsets.UTF_8));

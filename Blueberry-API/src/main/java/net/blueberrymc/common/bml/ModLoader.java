@@ -206,6 +206,7 @@ public interface ModLoader {
                 );
                 PackSelectionConfig config = new PackSelectionConfig(true, Pack.Position.BOTTOM, false);
                 Pack pack = Pack.readMetaAndCreate(locationInfo, resourcesSupplier, PackType.CLIENT_RESOURCES, config);
+                if (pack == null) throw new IllegalArgumentException("Failed to create pack for mod " + mod.getDescription().modId());
                 consumer.accept(pack);
             } catch (IllegalArgumentException ex) {
                 break; // resource manager has not been loaded yet

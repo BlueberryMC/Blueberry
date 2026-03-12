@@ -5,11 +5,11 @@ const val TTS_VERSION = "1.17.9"
 const val LOG4J_VERSION = "2.19.0"
 const val LWJGL_VERSION = "3.3.3"
 @Suppress("unused") // see .github/workflows/build.yml
-const val MAJOR_VERSION = "1.20"
-const val MINECRAFT_VERSION = "1.20.6"
-const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/05b6f1c6b46a29d6ea82b4e0d42190e42402030f/client.jar"
-const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/145ff0858209bcfc164859ba735d4199aafa1eea/server.jar"
-const val KOTLIN_VERSION = "2.0.0"
+const val MAJOR_VERSION = "26"
+const val MINECRAFT_VERSION = "26.1-pre-1"
+const val CLIENT_JAR_URL = "https://piston-data.mojang.com/v1/objects/a623b4ac667739eb36956494a3e7ce98ff4da095/client.jar"
+const val SERVER_JAR_URL = "https://piston-data.mojang.com/v1/objects/07127fc27cad5f29b326cb9c5ef8bb24599e2c11/server.jar"
+const val KOTLIN_VERSION = "2.3.10"
 
 val SERVER_REPOSITORIES_LIST = listOf(
     "https://repo.spongepowered.org/maven/",

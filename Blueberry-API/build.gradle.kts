@@ -1,10 +1,7 @@
 import net.blueberrymc.gradle.buildSrc.constants.*
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
-import org.gradle.jvm.component.internal.DefaultJvmSoftwareComponent
-import org.gradle.jvm.component.internal.JvmSoftwareComponentInternal
 
 plugins {
-    id("fabric-loom") version "1.15-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
 }
 
 version = API_VERSION
@@ -12,11 +9,10 @@ version = API_VERSION
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:$MINECRAFT_VERSION")
-    mappings(loom.officialMojangMappings())
+    api("net.fabricmc:fabric-loader:0.18.4")
 
     implementation("org.jetbrains:annotations:24.0.1")
     compileOnlyApi("org.jetbrains:annotations:24.0.1")
-    compileOnlyApi("net.fabricmc:fabric-loader:0.18.4")
     api("com.github.JnCrMx:discord-game-sdk4j:v0.5.5")
 //    api("com.google.code.findbugs:jsr305:3.0.2")
 //    api("com.google.code.gson:gson:2.10")
@@ -24,11 +20,11 @@ dependencies {
     api("it.unimi.dsi:fastutil:8.5.12")
     compileOnly("org.apache.commons:commons-lang3:3.13.0")
     api("org.yaml:snakeyaml:2.2")
-    compileOnlyApi("org.ow2.asm:asm:9.7")
-    compileOnlyApi("org.ow2.asm:asm-tree:9.7")
-    compileOnlyApi("org.ow2.asm:asm-analysis:9.7")
-    compileOnlyApi("org.ow2.asm:asm-commons:9.7")
-    compileOnlyApi("org.ow2.asm:asm-util:9.7")
+    compileOnlyApi("org.ow2.asm:asm:9.9.1")
+    compileOnlyApi("org.ow2.asm:asm-tree:9.9.1")
+    compileOnlyApi("org.ow2.asm:asm-analysis:9.9.1")
+    compileOnlyApi("org.ow2.asm:asm-commons:9.9.1")
+    compileOnlyApi("org.ow2.asm:asm-util:9.9.1")
     api("org.spongepowered:mixin:0.8.7")
     api("net.blueberrymc:native-util:2.1.2")
     compileOnly("ca.weblite:java-objc-bridge:1.1")
@@ -77,10 +73,6 @@ tasks {
         filesMatching("**/*.json") {
             filter(org.apache.tools.ant.filters.EscapeUnicode::class.java)
         }
-    }
-
-    remapJar {
-        enabled = false
     }
 
     jar {

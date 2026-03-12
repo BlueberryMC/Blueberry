@@ -200,7 +200,7 @@ public class Block {
     }
 
     public boolean isClientSide() {
-        return level.isClientSide;
+        return level.isClientSide();
     }
 
     public int getX() {
